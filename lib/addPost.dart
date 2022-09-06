@@ -1,33 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'firebase_options.dart';
-
-// Future<void> main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-//   runApp(addPost());
-// }
-
-// class addPost extends StatelessWidget {
-//   const addPost({Key? key}) : super(key: key);
-
-//   // This widget is the root of your application.
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'أضافة منشور',
-//       theme: ThemeData(
-//         scaffoldBackgroundColor: Color(0xFFecfbfa),
-//         appBarTheme: const AppBarTheme(
-//           // iconTheme: IconThemeData(color: Colors.black),
-//           color: Color(0xFF39d6ce),
-//         ),
-//         textTheme: TextTheme(headline2: TextStyle(color: Color(0xFF2a3563))),
-//       ),
-//       home: const MyStatefulWidget(),
-//     );
-//   }
-// }
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class addPost extends StatefulWidget {
   const addPost({Key? key}) : super(key: key);
@@ -36,16 +14,17 @@ class addPost extends StatefulWidget {
   State<addPost> createState() => _MyStatefulWidgetState();
 }
 
-class _MyStatefulWidgetState extends State<addPost> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController contactInfoController = TextEditingController();
-  TextEditingController descriptionController = TextEditingController();
+TextEditingController nameController = TextEditingController();
+TextEditingController contactInfoController = TextEditingController();
+TextEditingController descriptionController = TextEditingController();
 
+class _MyStatefulWidgetState extends State<addPost> {
   @override
   Widget build(BuildContext context) {
+    print("hello");
     return Scaffold(
       appBar: AppBar(
-        title: const Text('أضافة منشور'),
+        title: const Text('إضافة منشور'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(30),
@@ -61,7 +40,7 @@ class _MyStatefulWidgetState extends State<addPost> {
             textDirection: TextDirection.rtl,
             child: TextField(
               textAlign: TextAlign.right,
-              controller: contactInfoController,
+              controller: nameController,
               decoration: const InputDecoration(
                   labelText: "الاسم", hintText: "مثال: جامعة الملك سعود"),
             ),
@@ -71,15 +50,75 @@ class _MyStatefulWidgetState extends State<addPost> {
             child: TextField(
               textAlign: TextAlign.right,
               controller: contactInfoController,
-              decoration: const InputDecoration(
-                  labelText: 'الوصف', hintText: "مثال: جامعة الملك سعود"),
+              decoration: const InputDecoration(labelText: 'الوصف'),
             ),
           ),
+          ElevatedButton(
+            onPressed: addImage,
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  side: BorderSide(width: 3, color: Colors.black),
+                ),
+              ),
+            ),
+            child: Text('أضف صورة'),
+          ),
+          Text(
+            strImg ?? '',
+          ),
+          ElevatedButton(
+            onPressed: addToDB,
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                  side: BorderSide(width: 3, color: Colors.black),
+                ),
+              ),
+            ),
+            child: Text('أضف منشور'),
+          )
         ]),
       ),
     );
   }
-}
+
+  late File image;
+  String? strImg;
+  var imageUrl;
+  CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+  final storage = FirebaseStorage.instance.ref('postsImage');
+
+  Future<void> addToDB() async {
+    // strImg = image.path;s
+    if (image != null) {
+      UploadTask uploadTask = storage.ref().child(image.path).putFile(image);
+      print('uploaded to storage');
+      imageUrl = await (await uploadTask).ref.getDownloadURL();
+    }
+    print("2");
+    await posts.add({
+      'name': nameController.text,
+      'img': imageUrl,
+    }).then((value) => print("Post Added"));
+  }
+
+  Future<void> addImage() async {
+    await Permission.photos.request();
+    var permissionStatus = await Permission.photos.status;
+    if (permissionStatus.isGranted) {
+      XFile? img = await ImagePicker().pickImage(source: ImageSource.gallery);
+      print('109');
+      setState(() {
+        image = File(img!.path);
+        if (image != null) {
+          print('not null'); //yes
+        }
+      });
+    }
+  }
 
 // // class MyStatefulWidget extends StatefulWidget {
 //   const MyStatefulWidget({Key? key}) : super(key: key);
@@ -227,3 +266,4 @@ class _MyStatefulWidgetState extends State<addPost> {
 //         ));
 //   }
 // }
+}

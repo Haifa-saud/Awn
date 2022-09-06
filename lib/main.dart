@@ -19,9 +19,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Home Page',
       theme: ThemeData(
-        scaffoldBackgroundColor: Color(0xFFecfbfa),
+        scaffoldBackgroundColor: Color(0xFFfcfffe),
         appBarTheme: const AppBarTheme(
-          // iconTheme: IconThemeData(color: Colors.black),
           color: Color(0xFF39d6ce),
         ),
         textTheme:
@@ -33,6 +32,17 @@ class MyApp extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(width: 3, color: Color(0xFF2a3563)),
           ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+              textStyle: TextStyle(fontSize: 15),
+              backgroundColor: Color(0xFFfcfffe), // background (button) color
+              foregroundColor: Color(0xFF39d6ce),
+              padding: EdgeInsets.all(5),
+              fixedSize: Size(20, 30),
+              side: BorderSide(
+                  width: 2, color: Color(0xFF39d6ce)) // foreground (text) color
+              ),
         ),
       ),
       home: const MyHomePage(),
@@ -73,16 +83,3 @@ class MyHomePage extends StatelessWidget {
     );
   }
 }
-
-// database test
-//CollectionReference users = FirebaseFirestore.instance.collection('users');
-
-// Future<void> addUser() async {
-//   // Call the user's CollectionReference to add a new user
-//   await users.add({
-//     'full_name': 'fullName', // John Doe
-//     'company': 'company', // Stokes and Sons
-//     'age': 'age' // 42
-//   }).then((value) => print("User Added"));
-//   // .catchError((error) => print("Failed to add user: $error"));
-// }
