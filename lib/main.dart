@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';  
 import 'package:file_picker/file_picker.dart';  
-import 'dart:html';
     void main() => runApp(const MyApp());  
       
     class MyApp extends StatelessWidget {
@@ -343,20 +342,20 @@ import 'dart:html';
       //   ),  
       // ),
           
-             ElevatedButton(
-                onPressed: () async{  
-                  final result = await FilePicker.platform.pickFiles();
-                  if(result == null){
-                    print("Please Enter your certification  ") ;
-                  }
+            //  ElevatedButton(
+            //     onPressed: () async{  
+            //       final result = await FilePicker.platform.pickFiles();
+            //       if(result == null){
+            //         print("Please Enter your certification  ") ;
+            //       }
 
-                },
-                child: Text("pick a file: ")
-              ),
+            //     },
+            //     child: Text("pick a file: ")
+            //   ),
             
                
               //  ****** Submit button **** 
-              new Container(  
+               Container(  
                   padding: const EdgeInsets.only(left: 150.0, top: 40.0),  
                   child: ElevatedButton(
                     onPressed: () {

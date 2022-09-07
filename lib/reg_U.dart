@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';  
 import 'package:file_picker/file_picker.dart';  
-import 'dart:html';
+
+
     void main() => runApp(const MyApp());  
       
     class MyApp extends StatelessWidget {
@@ -61,7 +62,7 @@ import 'dart:html';
                           margin: const EdgeInsets.all(5),
                           child: TextFormField(  
                  decoration: const InputDecoration(  
-                  icon: const Icon(Icons.person_sharp),  
+                  icon:  Icon(Icons.person_sharp),  
                   hintText: 'Enter your first name',  
                   labelText: 'Firsl Name',  
                 ),  
@@ -76,7 +77,7 @@ import 'dart:html';
               Container( //Lasr name
                           padding: EdgeInsets.only(left:50, bottom: 0, right: 13 ,top:0), //You can use EdgeInsets like above
                           //EdgeInsets.only(left:20, bottom: 5, right: 15 ,top:5),
-                          margin: EdgeInsets.all(5),
+                          margin: const EdgeInsets.all(5),
                           child: 
                           TextFormField(  
                 decoration: const InputDecoration(  
@@ -93,11 +94,11 @@ import 'dart:html';
                         ),
               
               Container( //First name
-                   padding: EdgeInsets.all(10), //You can use EdgeInsets like above
-                   margin: EdgeInsets.all(5),
+                   padding: const EdgeInsets.all(10), //You can use EdgeInsets like above
+                   margin: const EdgeInsets.all(5),
                    child: TextFormField(  
                 decoration: const InputDecoration(  
-                  icon: const Icon(Icons.phone),  
+                  icon:  Icon(Icons.phone),  
                   hintText: 'Enter a phone number',  
                   labelText: 'Phone',  
                 ),  
@@ -115,7 +116,7 @@ import 'dart:html';
                    margin: EdgeInsets.all(5),
                    child: TextFormField(  
                 decoration: const InputDecoration(  
-                icon: const Icon(Icons.calendar_today),  
+                icon:  Icon(Icons.calendar_today),  
                 hintText: 'DD-MM-YYYY',  
                 labelText: 'Date of Birth',  
                 ),  
@@ -145,7 +146,7 @@ import 'dart:html';
                 padding: EdgeInsets.only(left:0, bottom: 0, right: 250 ,top:15),
                 child:
                  Text( "Gender: ",
-                style: TextStyle(fontSize: 20),
+                style: const TextStyle(fontSize: 20),
                 textAlign: TextAlign.left, // has impact
                 ),
                 ),
@@ -268,80 +269,80 @@ import 'dart:html';
               ),  
                         ),
 
-      //         Container( 
-      //     child: Column(
-      //       children: [
-      //         Row(
-      //           mainAxisAlignment: MainAxisAlignment.spaceAround,
-      //           children:[
-      //             Container(
-      //               padding: EdgeInsets.only(left:15, bottom: 0, right: 5 ,top:15),
-      //               child:Icon(Icons.wheelchair_pickup_sharp, size: 25, color: Color.fromARGB(255, 167, 161, 161) ),
-      //               ),
+          Container( 
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children:[
+                  Container(
+                    padding: EdgeInsets.only(left:15, bottom: 0, right: 5 ,top:15),
+                    child:Icon(Icons.wheelchair_pickup_sharp, size: 25, color: Color.fromARGB(255, 167, 161, 161) ),
+                    ),
                     
-      //         Container(
-      //           padding: EdgeInsets.only(left:0, bottom: 0, right: 150 ,top:15),
-      //           child:
-      //            Text( "Type of disability : ",
-      //           style: TextStyle(fontSize: 20),
-      //           textAlign: TextAlign.left, // has impact
-      //           ),
-      //           ),
-      //           ],
-      //         ),
-      //         Row(
-      //           mainAxisAlignment: MainAxisAlignment.spaceAround,
-      //           children: [
-      //             Row( children: [
-      //                 Checkbox(
-      //                   value: Check_blind,
-      //                   onChanged: (value) {
-      //                     setState(() {
-      //                       Check_blind = value!;
-      //                       disability = disability + "Blind" ;
-      //                       });
-      //                       },
-      //       ),
-      //             Text('Blind',
-      //           style: TextStyle(fontSize: 18))
-      //           ],
-      //         ),
-      //         Row(
-      //           children: [
-      //             Checkbox(
-      //                   value: Check_deaf,
-      //                   onChanged: (value) {
-      //                     setState(() {
-      //                       Check_deaf = value!;
-      //                       disability = disability + "Deaf" ;
-      //                       });
-      //                       },
-      //       ),
+              Container(
+                padding: EdgeInsets.only(left:0, bottom: 0, right: 150 ,top:15),
+                child:
+                 Text( "Type of disability : ",
+                style: TextStyle(fontSize: 20),
+                textAlign: TextAlign.left, // has impact
+                ),
+                ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Row( children: [
+                      Checkbox(
+                        value: Check_blind,
+                        onChanged: (value) {
+                          setState(() {
+                            Check_blind = value!;
+                            disability = disability + "Blind" ;
+                            });
+                            },
+            ),
+                  Text('Blind',
+                style: TextStyle(fontSize: 18))
+                ],
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                        value: Check_deaf,
+                        onChanged: (value) {
+                          setState(() {
+                            Check_deaf = value!;
+                            disability = disability + "Deaf" ;
+                            });
+                            },
+            ),
 
-      //             Text('Deaf',
-      //             style: TextStyle(fontSize: 18))
-      //           ],
-      //         ),
-      //          Row(
-      //           children: [
-      //             Checkbox(
-      //                   value: Check_wheal,
-      //                   onChanged: (value) {
-      //                     setState(() {
-      //                       Check_wheal = value!;
-      //                       disability = disability + "wheelchair user" ;
-      //                       });
-      //                       },
-      //       ),
-      //             Text('wheelchair user',
-      //             style: TextStyle(fontSize: 18))
-      //           ],
-      //         ),
-      //       ],
-      //     ),
-      //     ]
-      //   ),  
-      // ),
+                  Text('Deaf',
+                  style: TextStyle(fontSize: 18))
+                ],
+              ),
+               Row(
+                children: [
+                  Checkbox(
+                        value: Check_wheal,
+                        onChanged: (value) {
+                          setState(() {
+                            Check_wheal = value!;
+                            disability = disability + "wheelchair user" ;
+                            });
+                            },
+            ),
+                  Text('wheelchair user',
+                  style: TextStyle(fontSize: 18))
+                ],
+              ),
+            ],
+          ),
+          ]
+        ),  
+      ),
           
              ElevatedButton(
                 onPressed: () async{  
@@ -356,7 +357,7 @@ import 'dart:html';
             
                
               //  ****** Submit button **** 
-              new Container(  
+               Container(  
                   padding: const EdgeInsets.only(left: 150.0, top: 40.0),  
                   child: ElevatedButton(
                     onPressed: () {

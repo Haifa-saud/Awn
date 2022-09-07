@@ -1,8 +1,8 @@
 version: "Apple Swift version 5.6.1 (swiftlang-5.6.0.323.66 clang-1316.0.20.12)"
-options: "9a1a92567da5ba281853eeb8aa848932366c22d4c906cd6a3183548b7eafb970"
-build_start_time: [1662502968, 539227008]
-build_end_time: [1662502969, 479534149]
+options: "79aef02e90101e4374d32f07dca42413333317180c201b33b648567cfb3a4aac"
+build_start_time: [1662572990, 618411064]
+build_end_time: [1662573000, 649441003]
 inputs:
-  "/Users/doodi/Desktop/444_Awn/awn/macos/Flutter/GeneratedPluginRegistrant.swift": [1662502950, 910596847]
+  "/Users/doodi/Desktop/444_Awn/awn/macos/Flutter/GeneratedPluginRegistrant.swift": [1662572977, 788794994]
   "/Users/doodi/Desktop/444_Awn/awn/macos/Runner/AppDelegate.swift": [1661879081, 0]
   "/Users/doodi/Desktop/444_Awn/awn/macos/Runner/MainFlutterWindow.swift": [1661879081, 0]
