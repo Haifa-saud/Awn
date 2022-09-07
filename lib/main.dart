@@ -27,22 +27,24 @@ class MyApp extends StatelessWidget {
             const TextTheme(headline2: TextStyle(color: Color(0xFF2a3563))),
         inputDecorationTheme: const InputDecorationTheme(
           enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(width: 3, color: Color(0xFF39d6ce)),
-          ),
+              // borderSide: BorderSide(width: 3, color: Color(0xFF39d6ce)),
+              ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(width: 3, color: Color(0xFF2a3563)),
-          ),
+              // borderSide: BorderSide(width: 3, color: Color(0xFF2a3563)),
+              ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
               textStyle: TextStyle(fontSize: 15),
-              backgroundColor: Color(0xFFfcfffe), // background (button) color
-              foregroundColor: Color(0xFF39d6ce),
+              backgroundColor: Color(0xFF39d6ce), // background (button) color
+              foregroundColor: Color(0xFFfcfffe),
               padding: EdgeInsets.all(5),
-              fixedSize: Size(20, 30),
+              fixedSize: const Size(10.0, 40.0),
               side: BorderSide(
-                  width: 2, color: Color(0xFF39d6ce)) // foreground (text) color
-              ),
+                  width: 2,
+                  color: Color(0xFF39d6ce)), // foreground (text) color
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50))),
         ),
       ),
       home: const MyHomePage(),
@@ -57,7 +59,7 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('عون'),
+        title: Text('Awn'),
       ),
       body: Center(
         child: Column(
@@ -76,10 +78,9 @@ class MyHomePage extends StatelessWidget {
             MaterialPageRoute(builder: (context) => const addPost()),
           );
         },
-        // onPressed: addUser,
-        tooltip: 'أضف منشور',
+        tooltip: 'Add Post',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
