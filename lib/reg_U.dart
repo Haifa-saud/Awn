@@ -75,7 +75,7 @@ import 'package:file_picker/file_picker.dart';
               ),  
                         ),
               Container( //Lasr name
-                          padding: EdgeInsets.only(left:50, bottom: 0, right: 13 ,top:0), //You can use EdgeInsets like above
+                          padding: const EdgeInsets.only(left:50, bottom: 0, right: 13 ,top:0), //You can use EdgeInsets like above
                           //EdgeInsets.only(left:20, bottom: 5, right: 15 ,top:5),
                           margin: const EdgeInsets.all(5),
                           child: 
@@ -138,14 +138,14 @@ import 'package:file_picker/file_picker.dart';
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children:[
                   Container(
-                    padding: EdgeInsets.only(left:10, bottom: 0, right: 0 ,top:15),
-                    child:Icon(Icons.person_pin, size: 25, color: Color.fromARGB(255, 167, 161, 161) ),
+                    padding: const EdgeInsets.only(left:10, bottom: 0, right: 0 ,top:15),
+                    child:const Icon(Icons.person_pin, size: 25, color: Color.fromARGB(255, 167, 161, 161) ),
                     ),
                     
               Container(
                 padding: EdgeInsets.only(left:0, bottom: 0, right: 250 ,top:15),
                 child:
-                 Text( "Gender: ",
+                 const Text( "Gender: ",
                 style: const TextStyle(fontSize: 20),
                 textAlign: TextAlign.left, // has impact
                 ),
@@ -164,7 +164,7 @@ import 'package:file_picker/file_picker.dart';
                       });
                     },
                     ),
-                  Text('male',
+                  const Text('male',
                 style: TextStyle(fontSize: 20))
                 ],
               ),
@@ -176,7 +176,7 @@ import 'package:file_picker/file_picker.dart';
                           gender = value.toString();
                       });
                     },),
-                  Text('Female',
+                  const Text('Female',
                   style: TextStyle(fontSize: 18))
                 ],
               ),
@@ -193,7 +193,7 @@ import 'package:file_picker/file_picker.dart';
                  margin: const EdgeInsets.all(5),
                  child: TextFormField(  
                  decoration: const InputDecoration(  
-                  icon: const Icon(Icons.email),  
+                  icon: Icon(Icons.email),  
                   hintText: 'Enter your email',  
                   labelText: 'email',  
                 ),  
@@ -208,7 +208,7 @@ import 'package:file_picker/file_picker.dart';
               ),  
                         ),
               Container( // confirm Email
-                padding: EdgeInsets.only(left:50, bottom: 0, right: 13 ,top:0), //You can use EdgeInsets like above
+                padding: const EdgeInsets.only(left:50, bottom: 0, right: 13 ,top:0), //You can use EdgeInsets like above
                  margin: const EdgeInsets.all(5),
                  child: TextFormField(  
                  decoration: const InputDecoration(  
@@ -269,21 +269,21 @@ import 'package:file_picker/file_picker.dart';
               ),  
                         ),
 
-          Container( 
-          child: Column(
+
+          Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children:[
                   Container(
-                    padding: EdgeInsets.only(left:15, bottom: 0, right: 5 ,top:15),
-                    child:Icon(Icons.wheelchair_pickup_sharp, size: 25, color: Color.fromARGB(255, 167, 161, 161) ),
+                    padding: const EdgeInsets.only(left:15, bottom: 0, right: 5 ,top:15),
+                    child:const Icon(Icons.wheelchair_pickup_sharp, size: 25, color: Color.fromARGB(255, 167, 161, 161) ),
                     ),
                     
               Container(
-                padding: EdgeInsets.only(left:0, bottom: 0, right: 150 ,top:15),
+                padding: const EdgeInsets.only(left:0, bottom: 0, right: 150 ,top:15),
                 child:
-                 Text( "Type of disability : ",
+                 const Text( "Type of disability : ",
                 style: TextStyle(fontSize: 20),
                 textAlign: TextAlign.left, // has impact
                 ),
@@ -303,7 +303,7 @@ import 'package:file_picker/file_picker.dart';
                             });
                             },
             ),
-                  Text('Blind',
+                  const Text('Blind',
                 style: TextStyle(fontSize: 18))
                 ],
               ),
@@ -319,7 +319,7 @@ import 'package:file_picker/file_picker.dart';
                             },
             ),
 
-                  Text('Deaf',
+                  const Text('Deaf',
                   style: TextStyle(fontSize: 18))
                 ],
               ),
@@ -334,7 +334,7 @@ import 'package:file_picker/file_picker.dart';
                             });
                             },
             ),
-                  Text('wheelchair user',
+                 const Text('wheelchair user',
                   style: TextStyle(fontSize: 18))
                 ],
               ),
@@ -342,18 +342,18 @@ import 'package:file_picker/file_picker.dart';
           ),
           ]
         ),  
-      ),
+      
           
-             ElevatedButton(
-                onPressed: () async{  
-                  final result = await FilePicker.platform.pickFiles();
-                  if(result == null){
-                    print("Please Enter your certification  ") ;
-                  }
+            //  ElevatedButton(
+            //     onPressed: () async{  
+            //       final result = await FilePicker.platform.pickFiles();
+            //       if(result == null){
+            //         print("Please Enter your certification  ") ;
+            //       }
 
-                },
-                child: Text("pick a file: ")
-              ),
+            //     },
+            //     child: const Text("pick a file: ")
+            //   ),
             
                
               //  ****** Submit button **** 

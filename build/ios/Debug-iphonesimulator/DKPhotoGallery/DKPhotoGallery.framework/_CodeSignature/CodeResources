@@ -8,6 +8,15 @@
 		<data>
 		52WrWkcTdeR4uIRuajHW78EFssw=
 		</data>
+		<key>DKPhotoGallery.bundle/Base.lproj/DKPhotoGallery 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			NA0j4SwR2AsLRfnHuNxL8Z1By44=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>DKPhotoGallery.bundle/Base.lproj/DKPhotoGallery.strings</key>
 		<dict>
 			<key>hash</key>
@@ -23,7 +32,7 @@
 		</data>
 		<key>DKPhotoGallery.bundle/_CodeSignature/CodeDirectory</key>
 		<data>
-		pvn/pQSQn+MbdG4Vt/DFxb3F6lE=
+		A+aa3QZxohw+BSxptPJJkEo+PQk=
 		</data>
 		<key>DKPhotoGallery.bundle/_CodeSignature/CodeRequirements</key>
 		<data>
@@ -31,21 +40,39 @@
 		</data>
 		<key>DKPhotoGallery.bundle/_CodeSignature/CodeRequirements-1</key>
 		<data>
-		qu7fh1fPkVw6WZbm1LG0j1zxdGA=
+		0RiJYeDKnFUK11W/cwgIPDiMJFw=
 		</data>
 		<key>DKPhotoGallery.bundle/_CodeSignature/CodeResources</key>
 		<data>
-		cOYFy0yf6nStRam/QXlYzDfQQug=
+		Z0/m+K4EuV0iSzMFz/G69huwmUk=
 		</data>
 		<key>DKPhotoGallery.bundle/_CodeSignature/CodeSignature</key>
 		<data>
 		2jmj7l5rSw0yVb/vlWAYkK/YBwk=
 		</data>
+		<key>DKPhotoGallery.bundle/en.lproj/DKPhotoGallery 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			lBygwcHp7X/0n1lfhAX4rhrabvk=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>DKPhotoGallery.bundle/en.lproj/DKPhotoGallery.strings</key>
 		<dict>
 			<key>hash</key>
 			<data>
 			lBygwcHp7X/0n1lfhAX4rhrabvk=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>DKPhotoGallery.bundle/zh-Hans.lproj/DKPhotoGallery 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			TC+NpTOWlgfdj3gzJygtTnl0V0o=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -125,6 +152,19 @@
 			ZCsVwfKM8mjt5zaJm6WkbcRe3sKvR3Lhz9xWEuw/0w4=
 			</data>
 		</dict>
+		<key>DKPhotoGallery.bundle/Base.lproj/DKPhotoGallery 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			NA0j4SwR2AsLRfnHuNxL8Z1By44=
+			</data>
+			<key>hash2</key>
+			<data>
+			SDI8mZH3KxLV35hSqjP1DaoT/Ur7RH3bmV+MnjMnx54=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>DKPhotoGallery.bundle/Base.lproj/DKPhotoGallery.strings</key>
 		<dict>
 			<key>hash</key>
@@ -153,11 +193,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			pvn/pQSQn+MbdG4Vt/DFxb3F6lE=
+			A+aa3QZxohw+BSxptPJJkEo+PQk=
 			</data>
 			<key>hash2</key>
 			<data>
-			YyzozchodwEbsGjxx3XzG210d/B/mfZXWYttOPLwB5o=
+			pJ9cCU3HfZtBmK4Asu24gv9UFwRVZWEmf56YgF1WDxE=
 			</data>
 		</dict>
 		<key>DKPhotoGallery.bundle/_CodeSignature/CodeRequirements</key>
@@ -175,22 +215,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			qu7fh1fPkVw6WZbm1LG0j1zxdGA=
+			0RiJYeDKnFUK11W/cwgIPDiMJFw=
 			</data>
 			<key>hash2</key>
 			<data>
-			1xk1XmCSuUkPb/h5M8cmVnyy02nix5cA7/+rMmdWa7c=
+			Qszj+0zGw62/yxkmBj0TtWjSDvIjC2481FL5iqPCK/c=
 			</data>
 		</dict>
 		<key>DKPhotoGallery.bundle/_CodeSignature/CodeResources</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			cOYFy0yf6nStRam/QXlYzDfQQug=
+			Z0/m+K4EuV0iSzMFz/G69huwmUk=
 			</data>
 			<key>hash2</key>
 			<data>
-			zvUgDhd/1pTd13qMeP3UVvKcyVvlbLuLVCX+jjzAAT0=
+			XtvckpQ25W1MucjB4FpPButRU6wZISGlAEtP/mD3YI4=
 			</data>
 		</dict>
 		<key>DKPhotoGallery.bundle/_CodeSignature/CodeSignature</key>
@@ -204,6 +244,19 @@
 			47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=
 			</data>
 		</dict>
+		<key>DKPhotoGallery.bundle/en.lproj/DKPhotoGallery 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			lBygwcHp7X/0n1lfhAX4rhrabvk=
+			</data>
+			<key>hash2</key>
+			<data>
+			79OWR8uzUiipYvXTl3V4OfE8HGNgQXp4Is5CjRpErmE=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>DKPhotoGallery.bundle/en.lproj/DKPhotoGallery.strings</key>
 		<dict>
 			<key>hash</key>
@@ -213,6 +266,19 @@
 			<key>hash2</key>
 			<data>
 			79OWR8uzUiipYvXTl3V4OfE8HGNgQXp4Is5CjRpErmE=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>DKPhotoGallery.bundle/zh-Hans.lproj/DKPhotoGallery 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			TC+NpTOWlgfdj3gzJygtTnl0V0o=
+			</data>
+			<key>hash2</key>
+			<data>
+			KI058+XFexomjnRqlnWcg5B3sueg9C1fAlugBgmGNzs=
 			</data>
 			<key>optional</key>
 			<true/>

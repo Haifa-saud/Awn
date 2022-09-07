@@ -8,15 +8,37 @@
 		<data>
 		52WrWkcTdeR4uIRuajHW78EFssw=
 		</data>
+		<key>Base.lproj/DKPhotoGallery 2.strings</key>
+		<data>
+		NA0j4SwR2AsLRfnHuNxL8Z1By44=
+		</data>
 		<key>Base.lproj/DKPhotoGallery.strings</key>
 		<data>
 		NA0j4SwR2AsLRfnHuNxL8Z1By44=
 		</data>
+		<key>en.lproj/DKPhotoGallery 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			lBygwcHp7X/0n1lfhAX4rhrabvk=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>en.lproj/DKPhotoGallery.strings</key>
 		<dict>
 			<key>hash</key>
 			<data>
 			lBygwcHp7X/0n1lfhAX4rhrabvk=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>zh-Hans.lproj/DKPhotoGallery 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			TC+NpTOWlgfdj3gzJygtTnl0V0o=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -44,6 +66,17 @@
 			ZCsVwfKM8mjt5zaJm6WkbcRe3sKvR3Lhz9xWEuw/0w4=
 			</data>
 		</dict>
+		<key>Base.lproj/DKPhotoGallery 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			NA0j4SwR2AsLRfnHuNxL8Z1By44=
+			</data>
+			<key>hash2</key>
+			<data>
+			SDI8mZH3KxLV35hSqjP1DaoT/Ur7RH3bmV+MnjMnx54=
+			</data>
+		</dict>
 		<key>Base.lproj/DKPhotoGallery.strings</key>
 		<dict>
 			<key>hash</key>
@@ -55,6 +88,19 @@
 			SDI8mZH3KxLV35hSqjP1DaoT/Ur7RH3bmV+MnjMnx54=
 			</data>
 		</dict>
+		<key>en.lproj/DKPhotoGallery 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			lBygwcHp7X/0n1lfhAX4rhrabvk=
+			</data>
+			<key>hash2</key>
+			<data>
+			79OWR8uzUiipYvXTl3V4OfE8HGNgQXp4Is5CjRpErmE=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>en.lproj/DKPhotoGallery.strings</key>
 		<dict>
 			<key>hash</key>
@@ -64,6 +110,19 @@
 			<key>hash2</key>
 			<data>
 			79OWR8uzUiipYvXTl3V4OfE8HGNgQXp4Is5CjRpErmE=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>zh-Hans.lproj/DKPhotoGallery 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			TC+NpTOWlgfdj3gzJygtTnl0V0o=
+			</data>
+			<key>hash2</key>
+			<data>
+			KI058+XFexomjnRqlnWcg5B3sueg9C1fAlugBgmGNzs=
 			</data>
 			<key>optional</key>
 			<true/>

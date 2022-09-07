@@ -8,15 +8,37 @@
 		<data>
 		ISX2I3g/4oh8fZyDExsv9FUgd4Q=
 		</data>
+		<key>Base.lproj/DKImagePickerController 2.strings</key>
+		<data>
+		4xGD8Rwvi93HvaqnO7+vDZWDMBM=
+		</data>
 		<key>Base.lproj/DKImagePickerController.strings</key>
 		<data>
 		4xGD8Rwvi93HvaqnO7+vDZWDMBM=
 		</data>
+		<key>ar.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			hmgKVe/ELj2gURZGT+GZDwZaP7Q=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>ar.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
 			<data>
 			hmgKVe/ELj2gURZGT+GZDwZaP7Q=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>da.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			D/EoHjvTwHAWEzVuC2G6vBsJnu4=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -30,11 +52,29 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>de.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			aBIMF8wyDvY06aV2Bd4D1ivcRU4=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>de.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
 			<data>
 			aBIMF8wyDvY06aV2Bd4D1ivcRU4=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>en.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			9Q/DfMw3bDYmzyQL9Dp2TQkyUvM=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -48,11 +88,29 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>es.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			NevVA8t5NN7C0rKXChImH4O3YfE=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>es.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
 			<data>
 			NevVA8t5NN7C0rKXChImH4O3YfE=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>fr.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			6cJMOe8JrYF03L3W9F79fIYPtE8=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -66,11 +124,29 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>hu.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			0eCEwKbFu38BHkg5r6N8402dkXs=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>hu.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
 			<data>
 			0eCEwKbFu38BHkg5r6N8402dkXs=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>it.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			TAlKCVsmH6cihPALHZhnFoQs5LE=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -84,11 +160,29 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>ja.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			PIZnwQ5EdXn9Sde2m08gpbjHacs=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>ja.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
 			<data>
 			PIZnwQ5EdXn9Sde2m08gpbjHacs=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>ko.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			kJxeSwpa45LW72gQKW/iC9Jn4zU=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -102,11 +196,29 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>nb-NO.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			GT/zie43E+HBEWl2kTAJRkDdE9s=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>nb-NO.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
 			<data>
 			GT/zie43E+HBEWl2kTAJRkDdE9s=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>nl.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			lAVKBUVMnJkxVl9jrus2i2k1oIk=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -120,11 +232,29 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>pt_BR.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			tUPVite8WGcESkhEVtVsN+8aEx8=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>pt_BR.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
 			<data>
 			tUPVite8WGcESkhEVtVsN+8aEx8=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>ru.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			0rIAuu7v039vnJh99/NkEhlYpXI=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -138,11 +268,29 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>tr.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			558fSIGiBHUJCg2iZQvHWlivw1Q=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>tr.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
 			<data>
 			558fSIGiBHUJCg2iZQvHWlivw1Q=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>ur.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			6EYiiFsDKyAlJwepmIqOnx80kwA=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -156,6 +304,15 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>vi.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			001MdN+6p4Wj2GxyuQi9jI2OymI=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>vi.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
@@ -165,11 +322,29 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>zh-Hans.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			Qfv+Sv1HN+PP6w3kSD8UxfCs8m8=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>zh-Hans.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
 			<data>
 			Qfv+Sv1HN+PP6w3kSD8UxfCs8m8=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>zh-Hant.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			xDMDoCCnErpChkw3aU6nZGMhrMw=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -197,6 +372,17 @@
 			CIgsBVR7dJfYRZM+znGIqsbYiRefGmdO6zbli091yn8=
 			</data>
 		</dict>
+		<key>Base.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			4xGD8Rwvi93HvaqnO7+vDZWDMBM=
+			</data>
+			<key>hash2</key>
+			<data>
+			ELjMRLCkLklsKSO6rFYxrtU1AXPGCM/jJcf6s27mQfE=
+			</data>
+		</dict>
 		<key>Base.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
@@ -208,6 +394,19 @@
 			ELjMRLCkLklsKSO6rFYxrtU1AXPGCM/jJcf6s27mQfE=
 			</data>
 		</dict>
+		<key>ar.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			hmgKVe/ELj2gURZGT+GZDwZaP7Q=
+			</data>
+			<key>hash2</key>
+			<data>
+			8EBEfhbg9Wp48uZkSBXh83/CjuaZbY0Pl5MP0h7k198=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>ar.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
@@ -217,6 +416,19 @@
 			<key>hash2</key>
 			<data>
 			8EBEfhbg9Wp48uZkSBXh83/CjuaZbY0Pl5MP0h7k198=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>da.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			D/EoHjvTwHAWEzVuC2G6vBsJnu4=
+			</data>
+			<key>hash2</key>
+			<data>
+			Se5q7h7rJFaZACyuxQHvVnbMpZuFEPY2ghUK5n4o08I=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -234,6 +446,19 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>de.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			aBIMF8wyDvY06aV2Bd4D1ivcRU4=
+			</data>
+			<key>hash2</key>
+			<data>
+			H7oPc9FDMsyBTv1ge4zzQ9mwsX0FoBuLZ9b7IesFuOM=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>de.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
@@ -243,6 +468,19 @@
 			<key>hash2</key>
 			<data>
 			H7oPc9FDMsyBTv1ge4zzQ9mwsX0FoBuLZ9b7IesFuOM=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>en.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			9Q/DfMw3bDYmzyQL9Dp2TQkyUvM=
+			</data>
+			<key>hash2</key>
+			<data>
+			wRktIAnVAnqy13yInBFBAY0DrBHpEtI9oKtzLeXD3RI=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -260,6 +498,19 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>es.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			NevVA8t5NN7C0rKXChImH4O3YfE=
+			</data>
+			<key>hash2</key>
+			<data>
+			TYau/PSO1F3K80YkOSGGsuUdKr+GbcbO0xkmsoVguEE=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>es.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
@@ -269,6 +520,19 @@
 			<key>hash2</key>
 			<data>
 			TYau/PSO1F3K80YkOSGGsuUdKr+GbcbO0xkmsoVguEE=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>fr.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			6cJMOe8JrYF03L3W9F79fIYPtE8=
+			</data>
+			<key>hash2</key>
+			<data>
+			XeqMTtiKSK1J6ujdx7yhXp7BWuvKJYI+RQnYiYny4D8=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -286,6 +550,19 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>hu.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			0eCEwKbFu38BHkg5r6N8402dkXs=
+			</data>
+			<key>hash2</key>
+			<data>
+			koXD1oSMQ6BAgGJmcCgH62mWYajI2uBMC9WX+USGCWU=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>hu.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
@@ -295,6 +572,19 @@
 			<key>hash2</key>
 			<data>
 			koXD1oSMQ6BAgGJmcCgH62mWYajI2uBMC9WX+USGCWU=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>it.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			TAlKCVsmH6cihPALHZhnFoQs5LE=
+			</data>
+			<key>hash2</key>
+			<data>
+			nhSK2bw/+PLGTtW27tPjkOk71T+MncfskpqPwK2lhZI=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -312,6 +602,19 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>ja.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			PIZnwQ5EdXn9Sde2m08gpbjHacs=
+			</data>
+			<key>hash2</key>
+			<data>
+			KeL0orI52PODaxhrV4RvgbgC4Q6krDkO/sprxqlRPfU=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>ja.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
@@ -321,6 +624,19 @@
 			<key>hash2</key>
 			<data>
 			KeL0orI52PODaxhrV4RvgbgC4Q6krDkO/sprxqlRPfU=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>ko.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			kJxeSwpa45LW72gQKW/iC9Jn4zU=
+			</data>
+			<key>hash2</key>
+			<data>
+			FCrA4Gc0Mj90bRXELikqH38ISm+VZn/fTFdAWqFNWgw=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -338,6 +654,19 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>nb-NO.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			GT/zie43E+HBEWl2kTAJRkDdE9s=
+			</data>
+			<key>hash2</key>
+			<data>
+			djVG/NpWtRWjSA3G1iIg53ggesmLPWxj3L7oc2E6h8M=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>nb-NO.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
@@ -347,6 +676,19 @@
 			<key>hash2</key>
 			<data>
 			djVG/NpWtRWjSA3G1iIg53ggesmLPWxj3L7oc2E6h8M=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>nl.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			lAVKBUVMnJkxVl9jrus2i2k1oIk=
+			</data>
+			<key>hash2</key>
+			<data>
+			wObmt9BBd0IFYimw+uGyKGjKEALrJsjZa+4YtbpoR5g=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -364,6 +706,19 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>pt_BR.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			tUPVite8WGcESkhEVtVsN+8aEx8=
+			</data>
+			<key>hash2</key>
+			<data>
+			n6iu95SLuBRFRQbd6crMWsW4I6N5HJDoNF0YNzoYpBw=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>pt_BR.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
@@ -373,6 +728,19 @@
 			<key>hash2</key>
 			<data>
 			n6iu95SLuBRFRQbd6crMWsW4I6N5HJDoNF0YNzoYpBw=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>ru.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			0rIAuu7v039vnJh99/NkEhlYpXI=
+			</data>
+			<key>hash2</key>
+			<data>
+			M12gTcd21LAS83vmg70IxBhMrkr9SUy+lMNgqQqgJn0=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -390,6 +758,19 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>tr.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			558fSIGiBHUJCg2iZQvHWlivw1Q=
+			</data>
+			<key>hash2</key>
+			<data>
+			CuIDAgluqD/JKtE9pTTvnu9rGSot//IS3XV5HYlNKFU=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>tr.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
@@ -399,6 +780,19 @@
 			<key>hash2</key>
 			<data>
 			CuIDAgluqD/JKtE9pTTvnu9rGSot//IS3XV5HYlNKFU=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>ur.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			6EYiiFsDKyAlJwepmIqOnx80kwA=
+			</data>
+			<key>hash2</key>
+			<data>
+			OX1UoR/0JwgfTkhVAuVLC8rm8pkso6MssB+Tb+Kemxg=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -416,6 +810,19 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>vi.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			001MdN+6p4Wj2GxyuQi9jI2OymI=
+			</data>
+			<key>hash2</key>
+			<data>
+			N5fi2LsY43ka7PJFMBqTc+GjU5z417xGXSmegrxxUJc=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>vi.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
@@ -429,6 +836,19 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>zh-Hans.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			Qfv+Sv1HN+PP6w3kSD8UxfCs8m8=
+			</data>
+			<key>hash2</key>
+			<data>
+			gW58yg4AYSSFypzzxa1sQ8teATRYb34fi4Jrfwasbuo=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 		<key>zh-Hans.lproj/DKImagePickerController.strings</key>
 		<dict>
 			<key>hash</key>
@@ -438,6 +858,19 @@
 			<key>hash2</key>
 			<data>
 			gW58yg4AYSSFypzzxa1sQ8teATRYb34fi4Jrfwasbuo=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>zh-Hant.lproj/DKImagePickerController 2.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			xDMDoCCnErpChkw3aU6nZGMhrMw=
+			</data>
+			<key>hash2</key>
+			<data>
+			VoNMNcj3ugOpQ10JjxUvPX5MoSBLftKJdiq9sJ1ijsA=
 			</data>
 			<key>optional</key>
 			<true/>
