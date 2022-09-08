@@ -119,7 +119,7 @@ class _TextScreenState extends State<TextScreen> {
       ),
       body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           //mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
@@ -129,20 +129,28 @@ class _TextScreenState extends State<TextScreen> {
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 15),
-              margin: EdgeInsets.only(bottom: 20, top: 20),
-              width: double.infinity,
+              margin: EdgeInsets.only(top: 20),
+              //  width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
                   _selectDate(context);
                   showDate = true;
                 },
-                child: const Text('Date Picker'),
+                child: const Text(
+                  'Date Picker',
+                ),
               ),
             ),
-            showDate ? Center(child: Text(getDate())) : const SizedBox(),
+            showDate
+                ? Center(
+                    child: Text(getDate(),
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w600)))
+                : const SizedBox(),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 15),
-              width: double.infinity,
+              margin: EdgeInsets.only(top: 20),
+              //  width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
                   _selectTime(context);
