@@ -1,9 +1,16 @@
 
 import 'package:flutter/material.dart';  
 import 'package:file_picker/file_picker.dart';  
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firebase_options.dart';
+import 'package:flutter/services.dart';
 
-
-    void main() => runApp(const MyApp());  
+  Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const MyApp());
+  } 
       
     class MyApp extends StatelessWidget {
     const MyApp({super.key});
@@ -22,8 +29,10 @@ import 'package:file_picker/file_picker.dart';
         );  
       }  
     }  
+    
     // Create a Form widget.  
     class MyCustomForm extends StatefulWidget {
+
       const MyCustomForm({super.key});
   
       @override  
@@ -33,21 +42,43 @@ import 'package:file_picker/file_picker.dart';
     }  
     // Create a corresponding State class, which holds data related to the form.  
     class MyCustomFormState extends State<MyCustomForm> {  
+      CollectionReference posts = FirebaseFirestore.instance.collection('users');
       // Create a global key that uniquely identifies the Form widget  
       // and allows validation of the form.  
       final _formKey = GlobalKey<FormState>();
+
       String gender = "male";
       String password = "";
       String confirmPassword= "";
       String email = "";
       String confirmEmail= "";
       String disability = "";
-      bool isBlind = true;
-      bool isDeaf = true;
-      bool isWheelchair = true;
+      int phoneNumber = 0 ;
+      String fName  = "";
+      String lName  = "";
+      String bDay= "";
+
+      
       bool Check_blind = false;
       bool Check_deaf = false;
       bool Check_wheal = false;
+      bool isBlind = true;
+      bool isDeaf = true;
+      bool isWheelchair = true;
+
+      Future<void> addToDB() async {
+   
+    await posts.add({
+      'Type': 'Volunteer' ,
+      'name': fName +" "+ lName ,
+      'Email': confirmEmail,
+      'password': confirmPassword,
+      'phone number': phoneNumber,
+      'gender': gender,
+      
+    }).then((value) => print("User Added"));
+  }
+
 
       @override  
       Widget build(BuildContext context) {  
@@ -72,6 +103,7 @@ import 'package:file_picker/file_picker.dart';
                   if (value == null || value.isEmpty) {
                     return 'Please Enter Your First Name';
                     }
+                    else{ fName = value.toString(); }
                     return null;
                     },
               ),  
@@ -90,6 +122,7 @@ import 'package:file_picker/file_picker.dart';
                   if (value == null || value.isEmpty) {
                     return 'Please Your Last Name';
                     }
+                    else{ lName = value.toString(); }
                     return null;
                     },
               ),
@@ -99,15 +132,21 @@ import 'package:file_picker/file_picker.dart';
                    padding: const EdgeInsets.all(10), //You can use EdgeInsets like above
                    margin: const EdgeInsets.all(5),
                    child: TextFormField(  
+                    
                 decoration: const InputDecoration(  
                   icon:  Icon(Icons.phone),  
                   hintText: 'Enter a phone number',  
                   labelText: 'Phone',  
-                ),  
+                ),keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly
+                  ],
                 validator: (value) {  
                   if (value == null || value.isEmpty) {  
                     return 'Please enter valid phone number';  
                   }  
+                  else{ phoneNumber = int.parse(value); 
+                  }
                   return null;  
                 },  
               ),  
@@ -126,6 +165,7 @@ import 'package:file_picker/file_picker.dart';
                   if (value == null || value.isEmpty) {  
                     return 'Please enter valid date';  
                   }  
+                  else{ bDay = value.toString(); }
                   return null;  
                 },  
                ),  
@@ -250,7 +290,7 @@ import 'package:file_picker/file_picker.dart';
                         ),
 
               Container( // confirm pass
-                padding: EdgeInsets.only(left:50, bottom: 0, right: 13 ,top:0), //You can use EdgeInsets like above
+                padding: EdgeInsets.only( left:50, bottom: 0, right: 13 ,top:0 ), //You can use EdgeInsets like above
                 margin: const EdgeInsets.all(5),
                 child: TextFormField(  
                   obscureText: true,
@@ -287,7 +327,7 @@ import 'package:file_picker/file_picker.dart';
                 child:
                  const Text( "Type of disability : ",
                 style: TextStyle(fontSize: 20),
-                textAlign: TextAlign.left, // has impact
+                textAlign: TextAlign.left, 
                 ),
                 ),
                 ],
@@ -366,15 +406,18 @@ import 'package:file_picker/file_picker.dart';
                   padding: const EdgeInsets.only(left: 150.0, top: 40.0),  
                   child: ElevatedButton(
                     onPressed: () {
-                      // Validate returns true if the form is valid, or false otherwise.
-                    if (_formKey.currentState!.validate() && email==confirmEmail) {
+                     // Validate returns true if the form is valid, or false otherwise.
+                    if (_formKey.currentState!.validate() ) {
                           // If the form is valid, display a snackbar. In the real world,
                           // you'd often call a server or save the information in a database.
+                          addToDB() ;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Wlcome to Awn')),
+                            const SnackBar(
+                              content: Text('Welcome to Awn')
+                              ),
                           );
-                        }
-                      },
+                        } },
+                      
                             child: const Text('Submit'),
                     ),
                   ),  

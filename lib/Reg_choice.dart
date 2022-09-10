@@ -20,16 +20,17 @@ import 'package:flutter/material.dart';
         );  
       }  
     }  
+
     class MyCustomForm extends StatefulWidget {
        const MyCustomForm({super.key});
   
       @override  
-      MyCustomFormState createState() {  
-        return MyCustomFormState();  
+      reg_choice createState() {  
+        return reg_choice();  
       }  
     }  
     // Create a corresponding State class, which holds data related to the form.  
-    class MyCustomFormState extends State<MyCustomForm> {
+    class reg_choice extends State<MyCustomForm> {
 
       final _formKey = GlobalKey<FormState>();
 
@@ -47,7 +48,7 @@ import 'package:flutter/material.dart';
                     if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a snackbar. In the real world,
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Wlcome to Awn')),
+                            const SnackBar(content: Text('register as user')),
                           );
                         }
                       },
@@ -62,7 +63,7 @@ import 'package:flutter/material.dart';
                     if (_formKey.currentState!.validate()) {
                           // If the form is valid, display a snackbar. In the real world,
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Wlcome to Awn')),
+                            const SnackBar(content: Text('register as volunteer')),
                           );
                         }
                       },

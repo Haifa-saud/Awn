@@ -1,25 +1,7 @@
 
 import 'package:flutter/material.dart';  
 import 'package:file_picker/file_picker.dart';  
-    void main() => runApp(const MyApp());  
-      
-    class MyApp extends StatelessWidget {
-    const MyApp({super.key});
-  
-      @override  
-      Widget build(BuildContext context) {  
-        const appTitle = 'Sign Up';  
-        return MaterialApp(  
-          title: appTitle,  
-          home: Scaffold(  
-            appBar: AppBar(  
-              title: const Text(appTitle),  
-            ),  
-            body: MyCustomForm(),  
-          ),  
-        );  
-      }  
-    }  
+    
     // Create a Form widget.  
     class MyCustomForm extends StatefulWidget {  
       @override  
