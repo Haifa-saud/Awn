@@ -36,38 +36,107 @@ class _AddRequestState extends State<viewRequests> {
             //crossAxisAlignment: CrossAxisAlignment.center,
             // mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  // child: Text('hello')
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: requests,
-                    builder: (
-                      BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot,
-                    ) {
-                      if (snapshot.hasError) {
-                        print('line 48');
-                        return Text('Something went wring');
-                      }
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        print('line 51');
-                        return Text('Loading');
-                      }
-                      final data = snapshot.requireData;
-                      print('line 55');
-                      return ListView.builder(
-                        itemCount: data.size,
-                        itemBuilder: (context, index) {
-                          print('line 59');
-                          return Text(
-                              'Date: ${data.docs[index]['date']} Time:${data.docs[index]['time']} Description: ${data.docs[index]['description']} Duration: ${data.docs[index]['duration']}');
+              Expanded(
+                  child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      // child: Text('hello')
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: requests,
+                        builder: (
+                          BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot,
+                        ) {
+                          if (snapshot.hasError) {
+                            print('line 48');
+                            return Text('Something went wring');
+                          }
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            print('line 51');
+                            return Text('Loading');
+                          }
+                          final data = snapshot.requireData;
+                          print('line 55');
+                          return ListView.builder(
+                            itemCount: data.size,
+                            itemBuilder: (context, index) {
+                              print('line 59');
+                              return Container(
+                                  // elevation: 5.0,
+                                  height: 150,
+                                  width: 300,
+                                  child: Card(
+                                      child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.calendar_today,
+                                                size: 30, color: Colors.red),
+                                            Text(' ${data.docs[index]['date']}',
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.w600)),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.schedule,
+                                                size: 30, color: Colors.red),
+                                            Text(' ${data.docs[index]['time']}',
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.w600)),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.schedule,
+                                                size: 30, color: Colors.red),
+                                            Text(
+                                                ' Duration: ${data.docs[index]['duration']}',
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.w600)),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.description,
+                                                size: 30, color: Colors.red),
+                                            Text(
+                                                ' ${data.docs[index]['description']}',
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.w600)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )));
+                            },
+                          );
                         },
-                      );
-                    },
-                  ))
+                      )))
             ],
-          )
-          /*
+          )),
+    );
+  }
+}
+ /*
       Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -100,7 +169,3 @@ class _AddRequestState extends State<viewRequests> {
                 ))
           ],
         ),*/
-          ),
-    );
-  }
-}
