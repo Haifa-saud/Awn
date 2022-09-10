@@ -31,10 +31,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # flutter_localizations:
-  #   sdk: flutter
-  # intl:
-  # intl_translation:
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -46,11 +43,19 @@ dependencies:
   firebase_storage: ^10.3.7
   image_picker: ^0.8.5+3
   permission_handler: ^10.0.0
-  # scoped_model: "^0.2.0"
+  google_maps_flutter_web: ^0.4.0+2
+  google_maps_flutter: ^2.2.0
+  http: ^0.13.5
+  json_serializable: ^6.3.1
+  json_annotation: ^4.6.0
+  geolocator: ^9.0.1
+  floating_search_bar: ^0.3.0
+  flutter_google_places: ^0.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -58,6 +63,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  build_runner: ^2.2.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -69,8 +75,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets\images\background.png
-    - assets\images\IMG_6087.jpg
+    - assets/locations.json
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

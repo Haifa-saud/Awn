@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.awn">
+     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
    <application
         android:label="awn"
         android:name="${applicationName}"
@@ -30,5 +32,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data android:name="com.google.android.geo.API_KEY"  
+             android:value="AIzaSyDjvdpO2NTl4A3hVapI6RFC5id08pJiWcE"/>
+        
+       
     </application>
 </manifest>
