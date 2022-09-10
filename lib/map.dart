@@ -46,21 +46,6 @@ class _MyStatefulWidgetState extends State<maps> {
     });
   }
 
-  // void getMarkers(double lat, double long) {
-  //   MarkerId markerId = MarkerId(lat.toString() + long.toString());
-  //   Marker _marker = Marker(
-  //       markerId: markerId,
-  //       position: LatLng(lat, long),
-  //       icon: BitmapDescriptor.defaultMarker,
-  //       infoWindow: InfoWindow(
-  //         snippet: 'Address',
-  //         title: 'Institution Location ',
-  //       ));
-  //   setState(() {
-  //     markers[markerId] = _marker;
-  //   });
-  // }
-
   @override
   void initState() {
     // markers.add(Marker(
@@ -74,7 +59,6 @@ class _MyStatefulWidgetState extends State<maps> {
     //   icon: BitmapDescriptor.defaultMarker, //Icon for Marker
     // ));
 
-    //you can add more markers here
     super.initState();
     getCurrentPosition();
   }
@@ -168,7 +152,7 @@ class _MyStatefulWidgetState extends State<maps> {
       //   print('null var');
       // }
     } else if (index == 0) {
-      // backToHomePage();
+      Navigator.pop(context);
     } else {}
   }
 }

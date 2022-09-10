@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:awn/addPost.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -43,14 +41,10 @@ class MyApp extends StatelessWidget {
             enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(100.0),
                 borderSide: BorderSide(color: Colors.grey.shade400)),
-
-            // focusedBorder: OutlineInputBorder(
-            //     // borderSide: BorderSide(width: 3, color: Color(0xFF2a3563)),
-            //     ),
             contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
             focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(100.0),
-                borderSide: BorderSide(color: Colors.grey)),
+                borderSide: BorderSide(color: Color(0xFF39d6ce))),
             errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(100.0),
                 borderSide: BorderSide(color: Colors.red, width: 2.0)),
@@ -64,7 +58,7 @@ class MyApp extends StatelessWidget {
               foregroundColor: Color(0xFFfcfffe),
               shadowColor: Colors.transparent,
               padding: EdgeInsets.all(5),
-              minimumSize: Size(50, 50),
+              // minimumSize: Size(0, 50),
 
               // side: BorderSide(
               //     width: 2,
@@ -90,7 +84,7 @@ class MyHomePage extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
-          Text('Awn'),
+          // Text('Awn'),
           Container(
             padding: const EdgeInsets.fromLTRB(60, 10, 60, 10),
             child: ElevatedButton(
