@@ -26,7 +26,7 @@ class _AddRequestState extends State<viewRequests> {
       appBar: AppBar(
         title: const Text('Awn Requist(view)'),
         centerTitle: true,
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFF39d6ce),
       ),
       body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
@@ -62,71 +62,111 @@ class _AddRequestState extends State<viewRequests> {
                             itemBuilder: (context, index) {
                               print('line 59');
                               return Container(
-                                  // elevation: 5.0,
-                                  height: 150,
-                                  width: 300,
+
+                                  //elevation: 5.0,
+                                  // height: 150,
+                                  //width: 150,
                                   child: Card(
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: 100, vertical: 15),
                                       child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.calendar_today,
-                                                size: 30, color: Colors.red),
-                                            Text(' ${data.docs[index]['date']}',
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight:
-                                                        FontWeight.w600)),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.schedule,
-                                                size: 30, color: Colors.red),
-                                            Text(' ${data.docs[index]['time']}',
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight:
-                                                        FontWeight.w600)),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.schedule,
-                                                size: 30, color: Colors.red),
-                                            Text(
-                                                ' Duration: ${data.docs[index]['duration']}',
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight:
-                                                        FontWeight.w600)),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.description,
-                                                size: 30, color: Colors.red),
-                                            Text(
-                                                ' ${data.docs[index]['description']}',
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight:
-                                                        FontWeight.w600)),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  )));
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.all(20),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.calendar_today,
+                                                    size: 30,
+                                                    color: Colors.red),
+                                                Text(
+                                                    ' ${data.docs[index]['date']}',
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.w600)),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(20),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.schedule,
+                                                    size: 30,
+                                                    color: Colors.red),
+                                                Text(
+                                                    ' ${data.docs[index]['time']}',
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.w600)),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(20),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.schedule,
+                                                    size: 30,
+                                                    color: Colors.red),
+                                                Text(
+                                                    ' Duration: ${data.docs[index]['duration']}',
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.w600)),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(20),
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.description,
+                                                    size: 30,
+                                                    color: Colors.red),
+                                                Text(
+                                                    ' ${data.docs[index]['description']}',
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.w600)),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(20),
+                                            // width: 150,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  width: 100,
+                                                  child: ElevatedButton(
+                                                      onPressed: () {},
+                                                      child: Text('Accept')),
+                                                ),
+                                                Container(
+                                                  width: 100,
+                                                  child: ElevatedButton(
+                                                      onPressed: () {},
+                                                      child: Text('Deny')),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          /* Container(
+                                              child: ElevatedButton(
+                                                  onPressed: (() {}),
+                                                  child: Text('apdove'))),*/
+                                        ],
+                                      )));
                             },
                           );
                         },
