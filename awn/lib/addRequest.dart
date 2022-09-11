@@ -24,7 +24,7 @@ class _AddRequestState extends State<addRequest> {
       appBar: AppBar(
         title: const Text('Awn Requist'),
         centerTitle: true,
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFF39d6ce),
       ),
       body: Center(
         child: Column(
@@ -58,6 +58,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
   bool showDate = false;
   bool showTime = false;
   bool showDateTime = false;
+  var title = '';
   var description = '';
   var duration = '';
 
@@ -141,124 +142,179 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     CollectionReference requests =
         FirebaseFirestore.instance.collection('requests');
     return Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              //calin methods
-              margin: EdgeInsets.only(top: 50),
-              child: Text('Please select the time and date',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              margin: EdgeInsets.only(bottom: 10, top: 20),
-              width: 150,
-              child: ElevatedButton(
-                onPressed: () {
-                  _selectDate(context);
-                  showDate = true;
-                },
-                child: const Text('Date Picker'),
+      key: _formKey,
+      // Expanded(
+      child: Padding(
+          padding: const EdgeInsets.fromLTRB(30, 20, 30, 30),
+          child: SingleChildScrollView(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              //title
+              Container(
+                //calin methods
+                margin: EdgeInsets.only(top: 5, bottom: 10),
+                child: Text('Title',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                //  child: Text('Duration'),
               ),
-            ),
-            showDate ? Center(child: Text(getDate())) : const SizedBox(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              width: 150,
-              child: ElevatedButton(
-                onPressed: () {
-                  _selectTime(context);
-                  showTime = true;
-                },
-                child: const Text('Timer Picker'),
+              TextFormField(
+                decoration: const InputDecoration(
+                  // icon: Icon(Icons.schedule),
+                  hintText: 'title',
+                  /*   enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(width: 1, color: Colors.black),
+                //<-- SEE HERE
               ),
-            ),
-            showTime
-                ? Center(child: Text(getTime(selectedTime)))
-                : const SizedBox(),
-            Container(
-              //calin methods
-              margin: EdgeInsets.only(top: 10, bottom: 10),
-              child: Text('Duration',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                  icon: Icon(Icons.schedule),
-                  hintText: 'for about 2 hours',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 1, color: Colors.black),
-                    //<-- SEE HERE
-                  )
+              errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(width: 1, color: Colors.red)),*/ //boarder style
                   //labelText: 'duration',
-                  ),
-              onChanged: (value) {
-                duration = value;
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please specify the duration';
-                }
-              },
-            ),
-            Container(
-              //calin methods
-              margin: EdgeInsets.only(top: 10, bottom: 10),
-              child: Text('Describtion',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                icon: Icon(Icons.description),
-                hintText: 'enter description here',
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(width: 1, color: Colors.black), //<-- SEE HERE
                 ),
-                // labelText: 'describtion',
+                onChanged: (value) {
+                  title = value;
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please specify the title';
+                  }
+                },
               ),
-              //keyboardType: TextInputType.datetime,
-              keyboardType: TextInputType.multiline,
-              maxLines: 4,
-              onChanged: (value) {
-                description = value;
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please Provide a description';
-                }
-              },
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Container(
-                width: 150,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Sending Data to firestor'),
-                      ));
-                      requests
-                          .add({
-                            'date': getDate(),
-                            'time': getTime(selectedTime),
-                            'duration': duration,
-                            'description': description
-                          })
-                          .then((value) => backToHomePage())
-                          .catchError(
-                              (error) => print("Failed to add request:$error"));
-                    }
-                  },
-                  child: Text('Submit'),
-                ))
-          ],
-        ));
+              // time and date
+              Container(
+                margin: EdgeInsets.only(top: 10, bottom: 10),
+                child: Text('Please select the time and date',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+              ),
+              //date picker
+              Container(
+                //padding: const EdgeInsets.symmetric(horizontal: 15),
+                //  margin: EdgeInsets.only(bottom: 10, top: 20),
+                // width: 150,
+                child: Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _selectDate(context);
+                        showDate = true;
+                      },
+                      child: const Text('Date Picker'),
+                    ),
+                    showDate
+                        ? Container(
+                            margin: EdgeInsets.only(left: 5),
+                            child: Text(getDate()))
+                        : const SizedBox(),
+                  ],
+                ),
+              ),
+
+              //time picker
+              Container(
+                  //padding: const EdgeInsets.symmetric(horizontal: 15),
+                  //width: 150,
+                  child: Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      _selectTime(context);
+                      showTime = true;
+                    },
+                    child: const Text('Timer Picker'),
+                  ),
+                  showTime
+                      ? Container(
+                          margin: EdgeInsets.only(left: 5),
+                          child: Text(getTime(selectedTime)))
+                      : const SizedBox(),
+                ],
+              )),
+              //showTime ? Text(getTime(selectedTime)) : const SizedBox(),
+              //duration
+              Container(
+                //calin methods
+                margin: EdgeInsets.only(top: 10, bottom: 10),
+                child: Text('Duration',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                //  child: Text('Duration'),
+              ),
+              TextFormField(
+                decoration: const InputDecoration(
+                  //icon: Icon(Icons.schedule),
+                  hintText: 'for about 2 hours',
+
+                  //labelText: 'duration',
+                ),
+                onChanged: (value) {
+                  duration = value;
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please specify the duration';
+                  }
+                },
+              ),
+
+              Container(
+                //calin methods
+                margin: EdgeInsets.only(top: 10, bottom: 10),
+                child: Text('Describtion',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+              ),
+              TextFormField(
+                decoration: const InputDecoration(
+                  // icon: Icon(Icons.description),
+                  hintText: 'enter location here',
+
+                  // labelText: 'describtion',
+                ),
+                //keyboardType: TextInputType.datetime,
+                keyboardType: TextInputType.multiline,
+                //   maxLines: 2,
+                maxLength: 150,
+                onChanged: (value) {
+                  description = value;
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please Provide a description';
+                  }
+                },
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                  width: 150,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Sending Data to firestor'),
+                        ));
+                        requests
+                            .add({
+                              'title': title,
+                              'date': getDate(),
+                              'time': getTime(selectedTime),
+                              'duration': duration,
+                              'description': description
+                            })
+                            .then((value) => backToHomePage())
+                            .catchError((error) =>
+                                print("Failed to add request:$error"));
+                      }
+                    },
+                    child: Text('Submit'),
+                  ))
+            ],
+          ))),
+    );
   }
 
   void backToHomePage() {
