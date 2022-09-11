@@ -76,66 +76,91 @@ class _AddRequestState extends State<viewRequests> {
                                             CrossAxisAlignment.center,
                                         children: [
                                           Padding(
-                                            padding: EdgeInsets.all(20),
+                                            padding: EdgeInsets.all(10),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                    ' ${data.docs[index]['title']}',
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .underline)),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 20),
                                             child: Row(
                                               children: [
                                                 Icon(Icons.calendar_today,
-                                                    size: 30,
+                                                    size: 20,
                                                     color: Colors.red),
                                                 Text(
                                                     ' ${data.docs[index]['date']}',
                                                     style: TextStyle(
-                                                        fontSize: 20,
+                                                        fontSize: 15,
                                                         fontWeight:
                                                             FontWeight.w600)),
+                                                Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 40),
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(Icons.schedule,
+                                                          size: 20,
+                                                          color: Colors.red),
+                                                      Text(
+                                                          ' ${data.docs[index]['time']}',
+                                                          style: TextStyle(
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600)),
+                                                    ],
+                                                  ),
+                                                ),
                                               ],
                                             ),
                                           ),
                                           Padding(
-                                            padding: EdgeInsets.all(20),
+                                            padding: EdgeInsets.only(left: 20),
                                             child: Row(
                                               children: [
                                                 Icon(Icons.schedule,
-                                                    size: 30,
-                                                    color: Colors.red),
-                                                Text(
-                                                    ' ${data.docs[index]['time']}',
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        fontWeight:
-                                                            FontWeight.w600)),
-                                              ],
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.all(20),
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.schedule,
-                                                    size: 30,
+                                                    size: 20,
                                                     color: Colors.red),
                                                 Text(
                                                     ' Duration: ${data.docs[index]['duration']}',
                                                     style: TextStyle(
-                                                        fontSize: 20,
+                                                        fontSize: 15,
                                                         fontWeight:
                                                             FontWeight.w600)),
                                               ],
                                             ),
                                           ),
                                           Padding(
-                                            padding: EdgeInsets.all(20),
+                                            padding: EdgeInsets.only(
+                                                left: 20, top: 20, right: 20),
+                                            // padding: EdgeInsets.symmetric(
+                                            //    horizontal: 50, vertical: 50),
                                             child: Row(
                                               children: [
                                                 Icon(Icons.description,
-                                                    size: 30,
+                                                    size: 20,
                                                     color: Colors.red),
-                                                Text(
-                                                    ' ${data.docs[index]['description']}',
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        fontWeight:
-                                                            FontWeight.w600)),
+                                                Flexible(
+                                                    child: Text(
+                                                        ' ${data.docs[index]['description']}',
+                                                        //   overflow:
+                                                        //   TextOverflow.ellipsis,
+                                                        style: TextStyle(
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600))),
                                               ],
                                             ),
                                           ),
@@ -147,6 +172,8 @@ class _AddRequestState extends State<viewRequests> {
                                                   MainAxisAlignment.center,
                                               children: [
                                                 Container(
+                                                  margin: EdgeInsets.symmetric(
+                                                      horizontal: 5),
                                                   width: 100,
                                                   child: ElevatedButton(
                                                       onPressed: () {},

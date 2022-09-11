@@ -21,25 +21,12 @@ class _AddRequestState extends State<addRequest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Awn Requist'),
-        centerTitle: true,
-        backgroundColor: Color(0xFF39d6ce),
-      ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          //mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Column(children: <Widget>[
-              Text('',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-              AwnRequestForm(),
-            ]),
-          ],
+        appBar: AppBar(
+          title: const Text('Awn Requist'),
+          centerTitle: true,
+          backgroundColor: Color(0xFF39d6ce),
         ),
-      ),
-    );
+        body: AwnRequestForm());
   }
 }
 
@@ -150,57 +137,69 @@ class AwnRequestFormState extends State<AwnRequestForm> {
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
+            // mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               //title
-              Container(
-                //calin methods
-                margin: EdgeInsets.only(top: 5, bottom: 10),
+              Padding(
+                padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
+                // margin: EdgeInsets.only(top: 5, bottom: 10),
                 child: Text('Title',
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                //fontSize: 20, fontWeight: FontWeight.w600
                 //  child: Text('Duration'),
               ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  // icon: Icon(Icons.schedule),
-                  hintText: 'title',
-                  /*   enabledBorder: OutlineInputBorder(
+              Container(
+                  padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      // icon: Icon(Icons.schedule),
+                      hintText: 'Help with shopping',
+                      labelText: 'Title',
+                      /*   enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(width: 1, color: Colors.black),
                 //<-- SEE HERE
               ),
               errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(width: 1, color: Colors.red)),*/ //boarder style
-                  //labelText: 'duration',
-                ),
-                onChanged: (value) {
-                  title = value;
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please specify the title';
-                  }
-                },
-              ),
+                      //labelText: 'duration',
+                    ),
+                    onChanged: (value) {
+                      title = value;
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please specify the title';
+                      }
+                    },
+                  )),
               // time and date
-              Container(
-                margin: EdgeInsets.only(top: 10, bottom: 10),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                // margin: EdgeInsets.only(top: 10, bottom: 10),
                 child: Text('Please select the time and date',
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                    style: TextStyle(fontWeight: FontWeight.bold)),
               ),
               //date picker
+
               Container(
+                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                 //padding: const EdgeInsets.symmetric(horizontal: 15),
                 //  margin: EdgeInsets.only(bottom: 10, top: 20),
                 // width: 150,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
                       onPressed: () {
                         _selectDate(context);
                         showDate = true;
                       },
+                      style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.grey.shade500,
+                          backgroundColor: Colors.white,
+                          padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
+                          side: BorderSide(
+                              color: Colors.grey.shade400, width: 1)),
                       child: const Text('Date Picker'),
                     ),
                     showDate
@@ -214,32 +213,39 @@ class AwnRequestFormState extends State<AwnRequestForm> {
 
               //time picker
               Container(
+                  padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                   //padding: const EdgeInsets.symmetric(horizontal: 15),
                   //width: 150,
                   child: Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _selectTime(context);
-                      showTime = true;
-                    },
-                    child: const Text('Timer Picker'),
-                  ),
-                  showTime
-                      ? Container(
-                          margin: EdgeInsets.only(left: 5),
-                          child: Text(getTime(selectedTime)))
-                      : const SizedBox(),
-                ],
-              )),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          _selectTime(context);
+                          showTime = true;
+                        },
+                        style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.grey.shade500,
+                            backgroundColor: Colors.white,
+                            padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
+                            side: BorderSide(
+                                color: Colors.grey.shade400, width: 1)),
+                        child: const Text('Timer Picker'),
+                      ),
+                      showTime
+                          ? Container(
+                              margin: EdgeInsets.only(left: 5),
+                              child: Text(getTime(selectedTime)))
+                          : const SizedBox(),
+                    ],
+                  )),
               //showTime ? Text(getTime(selectedTime)) : const SizedBox(),
               //duration
               Container(
                 //calin methods
-                margin: EdgeInsets.only(top: 10, bottom: 10),
+                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                 child: Text('Duration',
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 //  child: Text('Duration'),
               ),
               TextFormField(
@@ -261,15 +267,14 @@ class AwnRequestFormState extends State<AwnRequestForm> {
 
               Container(
                 //calin methods
-                margin: EdgeInsets.only(top: 10, bottom: 10),
+                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                 child: Text('Describtion',
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                    style: TextStyle(fontWeight: FontWeight.bold)),
               ),
               TextFormField(
                 decoration: const InputDecoration(
                   // icon: Icon(Icons.description),
-                  hintText: 'enter location here',
+                  hintText: 'enter description here',
 
                   // labelText: 'describtion',
                 ),
@@ -286,32 +291,47 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   }
                 },
               ),
-              SizedBox(
-                height: 10,
-              ),
               Container(
-                  width: 150,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text('Sending Data to firestor'),
-                        ));
-                        requests
-                            .add({
-                              'title': title,
-                              'date': getDate(),
-                              'time': getTime(selectedTime),
-                              'duration': duration,
-                              'description': description
-                            })
-                            .then((value) => backToHomePage())
-                            .catchError((error) =>
-                                print("Failed to add request:$error"));
-                      }
-                    },
-                    child: Text('Submit'),
-                  ))
+                //calin methods
+                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                child: Text('Location',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+
+              /* SizedBox(
+                height: 6000,
+              ),*/
+              Center(
+                  child: Container(
+                      padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                      width: 150,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('Sending Data to firestor'),
+                            ));
+                            requests
+                                .add({
+                                  'title': title,
+                                  'date': getDate(),
+                                  'time': getTime(selectedTime),
+                                  'duration': duration,
+                                  'description': description
+                                })
+                                .then((value) => backToHomePage())
+                                .catchError((error) =>
+                                    print("Failed to add request:$error"));
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.grey.shade500,
+                            backgroundColor: Colors.white,
+                            padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
+                            side: BorderSide(
+                                color: Colors.grey.shade400, width: 1)),
+                        child: Text('Submit'),
+                      )))
             ],
           ))),
     );
