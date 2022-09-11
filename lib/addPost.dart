@@ -39,24 +39,6 @@ class _MyStatefulWidgetState extends State<addPost> {
 
   var selectedCategory;
 
-  String Lat = '', Lng = '';
-  String locMsg = '', imageMsg = '';
-  void addLocation() async {
-    var selectedLoc = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const maps()),
-    );
-    print(selectedLoc);
-    locMsg = selectedLoc.toString();
-
-    if (selectedLoc != null) {
-      Lat = selectedLoc.latitude.toString();
-      Lng = selectedLoc.longitude.toString();
-    }
-    print(Lat);
-    print(Lng);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,15 +127,18 @@ class _MyStatefulWidgetState extends State<addPost> {
                   child: const Text('Add Location (required)*'),
                 ),
                 // ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(8, 0, 0, 4),
-                  child: Text(
-                    locMsg,
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: imageMsg == 'Please add a location.'
-                            ? Colors.red
-                            : Colors.grey.shade500),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                  child: TextFormField(
+                    enabled: true,
+                    textAlign: TextAlign.left,
+                    controller: TextEditingController()..text = locMsg,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please add a location.';
+                      }
+                      return null;
+                    },
                   ),
                 ),
               ],
@@ -176,16 +161,18 @@ class _MyStatefulWidgetState extends State<addPost> {
                       side: BorderSide(color: Colors.grey.shade400, width: 1)),
                   child: const Text('Add Image (required)*'),
                 ),
-                // ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(8, 0, 0, 4),
-                  child: Text(
-                    imageMsg,
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: imageMsg == 'Please add an image.'
-                            ? Colors.red
-                            : Colors.grey.shade500),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                  child: TextFormField(
+                    enabled: true,
+                    textAlign: TextAlign.left,
+                    controller: TextEditingController()..text = imageMsg,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please add an image.';
+                      }
+                      return null;
+                    },
                   ),
                 ),
               ],
@@ -268,9 +255,17 @@ class _MyStatefulWidgetState extends State<addPost> {
                 borderRadius: BorderRadius.circular(30),
               ),
               child: ElevatedButton(
-                onPressed:
-                    // if (_formKey.currentState!.validate())
-                    addToDB,
+                onPressed: () {
+                  // Validate returns true if the form is valid, or false otherwise.
+                  if (_formKey.currentState!.validate()) {
+                    // If the form is valid, display a snackbar. In the real world,
+                    // you'd often call a server or save the information in a database.
+                    addToDB();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Post added sucessfully')),
+                    );
+                  }
+                },
                 child: const Text('Add Post'),
               ),
             ),
@@ -335,37 +330,24 @@ class _MyStatefulWidgetState extends State<addPost> {
       UploadTask uploadTask = storage.putFile(image);
       TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
       imageUrl = await (await uploadTask).ref.getDownloadURL();
-      if (locMsg != '' && imageMsg != '') {
-        print('will be added to db');
-        await posts.add({
-          'name': nameController.text,
-          'description': descriptionController.text,
-          'category': selectedCategory,
-          'img': imageUrl,
-          'latitude': Lat,
-          'longitude': Lng,
-        }).then((value) {
-          nameController.clear();
-          descriptionController.clear();
-          numberController.clear();
-          websiteController.clear();
-          locMsg = '';
-          imageMsg = '';
-          backToHomePage();
-        });
-      } else if (locMsg == '') {
-        locMsg = 'Please add a location.';
-        print(locMsg);
-        if (imageMsg == '') {
-          imageMsg = 'Please add an image.';
-          print(imageMsg);
-        }
-      } else {
-        imageMsg = 'Please add an image.';
-        print(imageMsg);
-      }
+      print('will be added to db');
+      await posts.add({
+        'name': nameController.text,
+        'description': descriptionController.text,
+        'category': selectedCategory,
+        'img': imageUrl,
+        'latitude': Lat,
+        'longitude': Lng,
+      }).then((value) {
+        nameController.clear();
+        descriptionController.clear();
+        numberController.clear();
+        websiteController.clear();
+        locMsg = '';
+        imageMsg = '';
+        backToHomePage();
+      });
     } catch (e) {
-      imageMsg = 'Please add an image.';
       print(imageMsg);
     }
   }
@@ -383,5 +365,23 @@ class _MyStatefulWidgetState extends State<addPost> {
         }
       });
     }
+  }
+
+  String Lat = '', Lng = '';
+  String locMsg = '', imageMsg = '';
+  void addLocation() async {
+    var selectedLoc = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const maps()),
+    );
+    print(selectedLoc);
+    locMsg = selectedLoc.toString();
+
+    if (selectedLoc != null) {
+      Lat = selectedLoc.latitude.toString();
+      Lng = selectedLoc.longitude.toString();
+    }
+    print(Lat);
+    print(Lng);
   }
 }
