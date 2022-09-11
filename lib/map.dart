@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class maps extends StatefulWidget {
-  const maps({Key? key}) : super(key: key);
+  const maps({Key? key, required String dataId}) : super(key: key);
 
   @override
   State<maps> createState() => _MyStatefulWidgetState();
@@ -13,7 +13,9 @@ class maps extends StatefulWidget {
 class _MyStatefulWidgetState extends State<maps> {
   GoogleMapController? mapController;
   List<Marker> markers = <Marker>[];
-  late Position position;
+  Position? position;
+
+  String dataId = '';
 
   LatLng _center = const LatLng(24.7136, 46.6753);
   Position? currentLocation;
@@ -48,16 +50,18 @@ class _MyStatefulWidgetState extends State<maps> {
 
   @override
   void initState() {
-    // markers.add(Marker(
-    //   //add marker on google map
-    //   markerId: MarkerId(_center.toString()),
-    //   position: _center, //position of marker
-    //   infoWindow: const InfoWindow(
-    //     //popup info
-    //     title: 'Institution Location ',
-    //   ),
-    //   icon: BitmapDescriptor.defaultMarker, //Icon for Marker
-    // ));
+    markers.add(Marker(
+      markerId:
+          const MarkerId('1'), //have one id for all markers to avoid duplicate
+      position: position == null
+          ? LatLng(position!.latitude, position!.longitude)
+          : _center,
+      infoWindow: const InfoWindow(
+        title: 'Institution Location ',
+      ),
+      icon: BitmapDescriptor.defaultMarker,
+      draggable: true, //Icon for Marker
+    ));
 
     super.initState();
     getCurrentPosition();
@@ -69,20 +73,29 @@ class _MyStatefulWidgetState extends State<maps> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Google Map in Flutter"),
+        title: const Text("Add Institution Location"),
       ),
       body: GoogleMap(
         onTap: (tapped) async {
-          // markers.clear();
-          markers.add(Marker(
-            markerId: MarkerId(
-                tapped.latitude.toString() + tapped.longitude.toString()),
-            position: LatLng(tapped.latitude, tapped.longitude),
-            infoWindow: const InfoWindow(
-              title: 'Institution Location ',
-            ),
-            icon: BitmapDescriptor.defaultMarker,
-          ));
+          // if (selectedLoc != null) {
+          //   Marker marker = markers.firstWhere(
+          //       (marker) => marker.markerId.value == selectedLoc,
+          //       orElse: () => null);
+          //   setState(() {
+          //     markers.remove(marker);
+          //   });
+          // }
+          markers.insert(
+              0,
+              Marker(
+                markerId: MarkerId('1'),
+                position: LatLng(tapped.latitude, tapped.longitude),
+                infoWindow: const InfoWindow(
+                  title: 'Institution Location ',
+                ),
+                draggable: true,
+                icon: BitmapDescriptor.defaultMarker,
+              ));
           selectedLoc = LatLng(tapped.latitude, tapped.longitude);
         },
         zoomGesturesEnabled: true,
@@ -110,8 +123,8 @@ class _MyStatefulWidgetState extends State<maps> {
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Text("Add Post"),
-            activeIcon: Text("Add Post"),
+            icon: Text("Add Location"),
+            activeIcon: Text("Add Location"),
             label: '',
           )
         ],
@@ -147,7 +160,13 @@ class _MyStatefulWidgetState extends State<maps> {
   Future<void> _onItemTapped(int index) async {
     if (index == 1) {
       // try {
-      Navigator.pop(context, selectedLoc);
+      if (selectedLoc != position) {
+        Navigator.pop(context, selectedLoc);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please set a location.')),
+        );
+      }
       // } catch (Exception) {
       //   print('null var');
       // }

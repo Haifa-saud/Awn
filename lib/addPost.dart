@@ -1,5 +1,6 @@
 // import 'dart:js_util';
 import 'package:awn/map.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -61,13 +62,6 @@ class _MyStatefulWidgetState extends State<addPost> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
-            // const Padding(
-            //   padding: EdgeInsets.fromLTRB(6, 4, 6, 4),
-            //   child: Text(
-            //     'Provide some information about the institution.',
-            //     style: TextStyle(fontWeight: FontWeight.normal),
-            //   ),
-            // ),
             /*name*/ Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
               child: Directionality(
@@ -108,41 +102,53 @@ class _MyStatefulWidgetState extends State<addPost> {
                 isExpanded: false,
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
-              child: Text(
-                'Institution Location',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-            /*location*/ Column(
-              children: [
-                ElevatedButton(
-                  onPressed: addLocation,
-                  style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.grey.shade500,
-                      backgroundColor: Colors.white,
-                      padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
-                      side: BorderSide(color: Colors.grey.shade400, width: 1)),
-                  child: const Text('Add Location (required)*'),
-                ),
-                // ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                  child: TextFormField(
-                    enabled: true,
-                    textAlign: TextAlign.left,
-                    controller: TextEditingController()..text = locMsg,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please add a location.';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ],
-            ),
+            // const Padding(
+            //   padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
+            //   child: Text(
+            //     'Institution Location',
+            //     style: TextStyle(fontWeight: FontWeight.bold),
+            //   ),
+            // ),
+            // /*location*/ Column(
+            //   children: [
+            //     ElevatedButton(
+            //       onPressed: addLocation,
+            //       style: ElevatedButton.styleFrom(
+            //           foregroundColor: Colors.grey.shade500,
+            //           backgroundColor: Colors.white,
+            //           padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
+            //           side: BorderSide(color: Colors.grey.shade400, width: 1)),
+            //       child: const Text('Add Location'),
+            //     ),
+            //     // ),
+            //     // Container(
+            //     //   padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+            //     //   child: TextFormField(
+            //     //     enabled: true,
+            //     //     textAlign: TextAlign.left,
+            //     //     controller: TextEditingController()..text = locMsg,
+            //     //     validator: (value) {
+            //     //       if (value == null || value.isEmpty) {
+            //     //         return 'Please add a location.';
+            //     //       }
+            //     //       return null;
+            //     //     },
+            //     //   ),
+            //     // ),
+            //     Padding(
+            //       padding: EdgeInsets.fromLTRB(8, 0, 0, 4),
+            //       child: Text(
+            //         locMsg,
+            //         style: TextStyle(
+            //           fontSize: 15,
+            //           // color: imageMsg == 'Please add a location.'
+            //           //     ? Colors.red
+            //           //     : Colors.grey.shade500),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
               child: Text(
@@ -159,25 +165,22 @@ class _MyStatefulWidgetState extends State<addPost> {
                       backgroundColor: Colors.white,
                       padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
                       side: BorderSide(color: Colors.grey.shade400, width: 1)),
-                  child: const Text('Add Image (required)*'),
+                  child: const Text('Add Image'),
                 ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                  child: TextFormField(
-                    enabled: true,
-                    textAlign: TextAlign.left,
-                    controller: TextEditingController()..text = imageMsg,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please add an image.';
-                      }
-                      return null;
-                    },
+                Padding(
+                  padding: EdgeInsets.fromLTRB(8, 0, 0, 4),
+                  child: Text(
+                    imagePath,
+                    style: TextStyle(
+                      fontSize: 15,
+                      // color: imageMsg == 'Please add a location.'
+                      //     ? Colors.red
+                      //     : Colors.grey.shade500),
+                    ),
                   ),
                 ),
               ],
             ),
-
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
               child: Text(
@@ -226,8 +229,8 @@ class _MyStatefulWidgetState extends State<addPost> {
                 decoration: InputDecoration(
                   labelText: 'Description',
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide(color: Colors.grey.shade400)),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30.0),
                   ),
@@ -256,101 +259,26 @@ class _MyStatefulWidgetState extends State<addPost> {
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  // Validate returns true if the form is valid, or false otherwise.
                   if (_formKey.currentState!.validate()) {
-                    // If the form is valid, display a snackbar. In the real world,
-                    // you'd often call a server or save the information in a database.
                     addToDB();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Post added sucessfully')),
+                      const SnackBar(content: Text('Post added successfully')),
                     );
                   }
                 },
-                child: const Text('Add Post'),
+                child: const Text('Next'),
               ),
             ),
           ]),
         ),
       ),
-      //   bottomNavigationBar: BottomNavigationBarTheme(
-      //     data: BottomNavigationBarThemeData(
-      //       backgroundColor: Colors.blue.shade100,
-      //       unselectedItemColor:  Color(0xFFF434A50),
-      //       elevation: 3.0,
-      //       unselectedIconTheme:
-      //           const IconThemeData(color: Colors.yellow, size: 30, opacity: 0.5),
-      //       // enableFeedback: true,
-      //       // unselectedIconTheme: Size(15, 14),
-      //       // type: BottomNavigationBarType.,
-      //     ),
-      //     child: BottomNavigationBar(
-      //       items: const <BottomNavigationBarItem>[
-      //         BottomNavigationBarItem(
-      //           icon: Text("Cancel"),
-      //           activeIcon: Text("Cancel"),
-      //           label: '',
-      //         ),
-      //         BottomNavigationBarItem(
-      //           icon: Text("Add Post"),
-      //           activeIcon: Text("Add Post"),
-      //           label: '',
-      //         )
-      //       ],
-      //       currentIndex: _selectedIndex,
-      //       onTap: _onItemTapped,
-      //     ),
-      //   ),
     );
   }
 
-  // int _selectedIndex = 0;
-  // void _onItemTapped(int index) {
-  //   if (index == 1) {
-  //     addToDB();
-  //   } else if (index == 0) {
-  //     backToHomePage();
-  //   }
-  // }
-
-  late File image;
-  String? strImg;
-  var imageUrl;
-  CollectionReference posts = FirebaseFirestore.instance.collection('posts');
-
-  void backToHomePage() {
-    Navigator.pop(context);
-  }
-
-  Future<void> addToDB() async {
-    try {
-      print('test');
-      final path = 'postsImage/${image}';
-      final storage = FirebaseStorage.instance.ref().child(path);
-      strImg = Path.basename(image.path);
-      UploadTask uploadTask = storage.putFile(image);
-      TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
-      imageUrl = await (await uploadTask).ref.getDownloadURL();
-      print('will be added to db');
-      await posts.add({
-        'name': nameController.text,
-        'description': descriptionController.text,
-        'category': selectedCategory,
-        'img': imageUrl,
-        'latitude': Lat,
-        'longitude': Lng,
-      }).then((value) {
-        nameController.clear();
-        descriptionController.clear();
-        numberController.clear();
-        websiteController.clear();
-        locMsg = '';
-        imageMsg = '';
-        backToHomePage();
-      });
-    } catch (e) {
-      print(imageMsg);
-    }
-  }
+  String imagePath = '';
+  File? imageDB;
+  String strImg = '';
+  // var imageUrl;
 
   Future<void> addImage() async {
     await Permission.photos.request();
@@ -358,30 +286,79 @@ class _MyStatefulWidgetState extends State<addPost> {
     if (permissionStatus.isGranted) {
       XFile? img = await ImagePicker().pickImage(source: ImageSource.gallery);
       setState(() {
-        image = File(img!.path);
-        if (image != null) {
-          print('Image path $image');
-          imageMsg = image.toString();
-        }
+        File image = File(img!.path);
+        print('Image path $image');
+        imagePath = image.toString();
+        imageDB = image;
       });
     }
   }
 
-  String Lat = '', Lng = '';
-  String locMsg = '', imageMsg = '';
-  void addLocation() async {
-    var selectedLoc = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const maps()),
-    );
-    print(selectedLoc);
-    locMsg = selectedLoc.toString();
+  Future<void> addToDB() async {
+    CollectionReference posts = FirebaseFirestore.instance.collection('posts');
 
-    if (selectedLoc != null) {
-      Lat = selectedLoc.latitude.toString();
-      Lng = selectedLoc.longitude.toString();
+    //in case the user uploaded an image
+    if (imagePath != '') {
+      File image = imageDB!;
+      final storage =
+          FirebaseStorage.instance.ref().child('postsImage/${image}');
+      strImg = Path.basename(image.path);
+      UploadTask uploadTask = storage.putFile(image);
+      TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+      imagePath = await (await uploadTask).ref.getDownloadURL();
     }
-    print(Lat);
-    print(Lng);
+
+    print('will be added to db');
+    //add all value without the location
+    DocumentReference docReference = await posts.add({
+      'name': nameController.text,
+      'category': selectedCategory,
+      'img': imagePath,
+      // 'latitude': Lat,
+      // 'longitude': Lng,
+      'Website': websiteController.text,
+      'Phone number': numberController.text,
+      'description': descriptionController.text,
+    });
+
+    print('added to db');
+    nameController.clear();
+    descriptionController.clear();
+    numberController.clear();
+    websiteController.clear();
+    // locMsg = '';
+    imagePath = '';
+    String dataId = docReference.id;
+    print("Document written with ID: ${docReference.id}");
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => maps(
+            dataId: dataId,
+          ),
+        ));
   }
+
+  void backToHomePage() {
+    Navigator.pop(context);
+  }
+
+  // String Lat = '', Lng = '';
+  // String locMsg = '', imageMsg = '';
+  // void addLocation() async {
+  //   var selectedLoc = await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => const maps()),
+  //   );
+  //   print(selectedLoc);
+  //   locMsg = selectedLoc.toString();
+
+  //   if (selectedLoc != null) {
+  //     Lat = selectedLoc.latitude.toString();
+  //     Lng = selectedLoc.longitude.toString();
+  //   }
+  //   print(Lat);
+  //   print(Lng);
+  // }
 }

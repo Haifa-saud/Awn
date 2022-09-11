@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
           // iconTheme: IconThemeData(color: Colors.black),
           foregroundColor: AppTheme.darkerText,
         ),
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           bodyText1: TextStyle(),
           bodyText2: TextStyle(),
         ).apply(
@@ -58,11 +58,6 @@ class MyApp extends StatelessWidget {
               foregroundColor: Color(0xFFfcfffe),
               shadowColor: Colors.transparent,
               padding: EdgeInsets.all(5),
-              // minimumSize: Size(0, 50),
-
-              // side: BorderSide(
-              //     width: 2,
-              //     color: Color(0xFF39d6ce)), // foreground (text) color
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0))),
         ),
@@ -91,15 +86,6 @@ class MyHomePage extends StatelessWidget {
               onPressed: () {},
               child: Text('Add Post'),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => maps()),
-              );
-            },
-            child: const Icon(Icons.add),
           ),
         ],
       ),
