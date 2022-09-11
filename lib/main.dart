@@ -22,6 +22,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Home Page',
+      routes: {
+        // When navigating to the "/" route, build the FirstScreen widget.
+        '/homePage': (context) => const MyHomePage(),
+      },
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFFfcfffe),
         appBarTheme: const AppBarTheme(

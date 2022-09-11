@@ -314,8 +314,8 @@ class _MyStatefulWidgetState extends State<addPost> {
       'name': nameController.text,
       'category': selectedCategory,
       'img': imagePath,
-      // 'latitude': Lat,
-      // 'longitude': Lng,
+      'latitude': '',
+      'longitude': '',
       'Website': websiteController.text,
       'Phone number': numberController.text,
       'description': descriptionController.text,
@@ -338,10 +338,6 @@ class _MyStatefulWidgetState extends State<addPost> {
             dataId: dataId,
           ),
         ));
-  }
-
-  void backToHomePage() {
-    Navigator.pop(context);
   }
 
   // String Lat = '', Lng = '';

@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'main.dart';
+
 class maps extends StatefulWidget {
-  const maps({Key? key, required String dataId}) : super(key: key);
+  final String dataId;
+  const maps({Key? key, required this.dataId}) : super(key: key);
 
   @override
   State<maps> createState() => _MyStatefulWidgetState();
@@ -13,12 +16,10 @@ class maps extends StatefulWidget {
 class _MyStatefulWidgetState extends State<maps> {
   GoogleMapController? mapController;
   List<Marker> markers = <Marker>[];
-  Position? position;
+  Position position =
+      Position.fromMap({'latitude': 24.7136, 'longitude': 46.6753});
 
-  String dataId = '';
-
-  LatLng _center = const LatLng(24.7136, 46.6753);
-  Position? currentLocation;
+  String DBId = '';
 
   void getCurrentPosition() async {
     bool serviceEnabled;
@@ -50,12 +51,11 @@ class _MyStatefulWidgetState extends State<maps> {
 
   @override
   void initState() {
+    getCurrentPosition();
     markers.add(Marker(
       markerId:
           const MarkerId('1'), //have one id for all markers to avoid duplicate
-      position: position == null
-          ? LatLng(position!.latitude, position!.longitude)
-          : _center,
+      position: LatLng(position.latitude, position.longitude),
       infoWindow: const InfoWindow(
         title: 'Institution Location ',
       ),
@@ -63,11 +63,11 @@ class _MyStatefulWidgetState extends State<maps> {
       draggable: true, //Icon for Marker
     ));
 
+    DBId = widget.dataId;
     super.initState();
-    getCurrentPosition();
   }
 
-  LatLng? selectedLoc = null;
+  LatLng selectedLoc = LatLng(24.7136, 46.6753);
 
   @override
   Widget build(BuildContext context) {
@@ -77,14 +77,6 @@ class _MyStatefulWidgetState extends State<maps> {
       ),
       body: GoogleMap(
         onTap: (tapped) async {
-          // if (selectedLoc != null) {
-          //   Marker marker = markers.firstWhere(
-          //       (marker) => marker.markerId.value == selectedLoc,
-          //       orElse: () => null);
-          //   setState(() {
-          //     markers.remove(marker);
-          //   });
-          // }
           markers.insert(
               0,
               Marker(
@@ -99,7 +91,6 @@ class _MyStatefulWidgetState extends State<maps> {
           selectedLoc = LatLng(tapped.latitude, tapped.longitude);
         },
         zoomGesturesEnabled: true,
-        // markers: markers,
         mapType: MapType.normal,
         myLocationEnabled: true,
         myLocationButtonEnabled: true,
@@ -109,7 +100,7 @@ class _MyStatefulWidgetState extends State<maps> {
           });
         },
         initialCameraPosition: CameraPosition(
-          target: _center,
+          target: LatLng(position.latitude, position.longitude),
           zoom: 10.0,
         ),
         markers: Set<Marker>.of(markers),
@@ -118,8 +109,8 @@ class _MyStatefulWidgetState extends State<maps> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Text("Cancel"),
-            activeIcon: Text("Cancel"),
+            icon: Text("Skip"),
+            activeIcon: Text("Skip"),
             label: '',
           ),
           BottomNavigationBarItem(
@@ -159,19 +150,23 @@ class _MyStatefulWidgetState extends State<maps> {
   int _selectedIndex = 0;
   Future<void> _onItemTapped(int index) async {
     if (index == 1) {
-      // try {
-      if (selectedLoc != position) {
-        Navigator.pop(context, selectedLoc);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please set a location.')),
-        );
-      }
-      // } catch (Exception) {
-      //   print('null var');
-      // }
+      //there will always be a selected location(either the current or the selected by the user)
+      final postID = FirebaseFirestore.instance.collection('posts').doc(DBId);
+      postID.update({
+        'latitude': selectedLoc.latitude,
+        'longitude': selectedLoc.longitude
+      });
+      backToHomePage();
     } else if (index == 0) {
-      Navigator.pop(context);
-    } else {}
+      backToHomePage();
+    }
+  }
+
+  void backToHomePage() {
+    // Navigator.popUntil(context, ModalRoute.withName('/homePage'));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MyHomePage()),
+    );
   }
 }
