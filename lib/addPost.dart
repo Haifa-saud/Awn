@@ -303,9 +303,7 @@ class _MyStatefulWidgetState extends State<addPost> {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => maps(
-            dataId: dataId,
-          ),
+          builder: (context) => maps(dataId: dataId, typeOfRequest: 'P'),
         ));
   }
 }

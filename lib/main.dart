@@ -1,11 +1,12 @@
 import 'package:awn/addPost.dart';
+import 'package:awn/addRequest.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'appTheme.dart';
 import 'firebase_options.dart';
 import 'package:awn/map.dart';
+import 'package:path/path.dart' as Path;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Home Page',
       routes: {
-        '/homePage': (context) => const MyHomePage(),
+        '/homePage': (context) => MyHomePage(),
       },
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFFfcfffe),
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
           elevation: 0,
           color: Colors.transparent,
           // iconTheme: IconThemeData(color: Colors.black),
-          foregroundColor: AppTheme.darkerText,
+          // foregroundColor: AppTheme.darkerText,
         ),
         textTheme: const TextTheme(
           // headline1: TextStyle(fontSize: 100.0), //cant find where it is used
@@ -42,7 +43,7 @@ class MyApp extends StatelessWidget {
 
           button: TextStyle(fontSize: 18), //the button text
         ).apply(
-          bodyColor: AppTheme.darkerText,
+          // bodyColor: AppTheme.darkerText,
           displayColor: Colors.blue,
         ),
         inputDecorationTheme: InputDecorationTheme(
@@ -80,16 +81,30 @@ class MyApp extends StatelessWidget {
           // margin: EdgeInsets.all(10),
         ),
       ),
-      home: const MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+  MyHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _onItemTapped(int index) async {
+      if (index == 1) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => addRequest()),
+        );
+      } else if (index == 0) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => addPost()),
+        );
+      }
+    }
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -110,7 +125,7 @@ class MyHomePage extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => addPost()),
+            MaterialPageRoute(builder: (context) => addRequest()),
           );
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('Add Post'),
@@ -127,74 +142,32 @@ class MyHomePage extends StatelessWidget {
         tooltip: 'Add Post',
         child: const Icon(Icons.add),
       ),
-    );
-  }
-
-  // FutureBuilder<String> addImage() {
-  //   return new FutureBuilder<String>(
-  //     future: loadBackground(),
-  //     builder: (BuildContext context, AsyncSnapshot<String> image) {
-  //       if (image.hasData) {
-  //         return Image.network(image.data.toString()); // image is ready
-  //         //return Text('data');
-  //       } else {
-  //         return new Container(); // placeholder
-  //       }
-  //     },
-  //   );
-  // }
-
-  // Future<String> loadBackground() async {
-  //   Reference ref = FirebaseStorage.instance
-  //       .ref()
-  //       .child("background.png"); //.child(_file_name[0]);
-
-  //   //get image url from firebase storage
-  //   var url = await ref.getDownloadURL();
-  //   print('url: ' + url);
-  //   return url;
-  // }
-
-  Widget getAppBarUI() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0, left: 18, right: 18),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Choose your',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    letterSpacing: 0.2,
-                    color: AppTheme.grey,
-                  ),
-                ),
-                Text(
-                  'Design Course',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                    letterSpacing: 0.27,
-                    color: AppTheme.darkerText,
-                  ),
-                ),
-              ],
-            ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Text("Add Post"),
+            activeIcon: Text("Add Post"),
+            label: '',
           ),
-          Container(
-            width: 60,
-            height: 60,
-            child: Image.asset('assets/design_course/userImage.png'),
+          BottomNavigationBarItem(
+            icon: Text("Awn Request"),
+            activeIcon: Text("Add Request"),
+            label: '',
           )
         ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
+
+  int _selectedIndex = 0;
+  // Future<void> _onItemTapped(int index) async {
+  //   if (index == 1) {
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => addRequest()),
+  //     );
+  //   } else if (index == 0) {}
+  // }
 }
