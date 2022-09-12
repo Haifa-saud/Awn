@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'package:intl/intl.dart';
 import 'main.dart';
+import 'package:awn/ViewMap.dart';
 
 class viewRequests extends StatefulWidget {
   const viewRequests({Key? key}) : super(key: key);
@@ -72,7 +73,7 @@ class _AddRequestState extends State<viewRequests> {
                                   //width: 150,
                                   child: Card(
                                       margin: EdgeInsets.symmetric(
-                                          horizontal: 100, vertical: 15),
+                                          horizontal: 10, vertical: 15),
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
@@ -109,7 +110,7 @@ class _AddRequestState extends State<viewRequests> {
                                                             FontWeight.w600)),
                                                 Padding(
                                                   padding:
-                                                      EdgeInsets.only(left: 40),
+                                                      EdgeInsets.only(left: 80),
                                                   child: Row(
                                                     children: [
                                                       Icon(Icons.schedule,
@@ -129,7 +130,8 @@ class _AddRequestState extends State<viewRequests> {
                                             ),
                                           ),
                                           Padding(
-                                            padding: EdgeInsets.only(left: 20),
+                                            padding: EdgeInsets.only(
+                                                left: 20, top: 15),
                                             child: Row(
                                               children: [
                                                 Icon(Icons.schedule,
@@ -167,6 +169,33 @@ class _AddRequestState extends State<viewRequests> {
                                               ],
                                             ),
                                           ),
+                                          Padding(
+                                              padding: EdgeInsets.all(10),
+                                              child: ElevatedButton(
+                                                  onPressed: () {
+                                                    /* Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              viewMap(),
+                                                        ));*/
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                      foregroundColor:
+                                                          Colors.grey.shade500,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              14, 20, 14, 20),
+                                                      side: BorderSide(
+                                                          color: Colors
+                                                              .grey.shade400,
+                                                          width: 2)),
+                                                  child: Text('Location',
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.black)))),
                                           Padding(
                                             padding: EdgeInsets.all(20),
                                             // width: 150,

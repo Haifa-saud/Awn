@@ -40,6 +40,8 @@ class _MyStatefulWidgetState extends State<addPost> {
 
   var selectedCategory;
 
+  var editImg = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,7 +136,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                           padding: EdgeInsets.fromLTRB(17, 16, 17, 16),
                           side: BorderSide(
                               color: Colors.grey.shade400, width: 1)),
-                      child: const Text('Add Image'),
+                      child: Text(editImg == '' ? 'Add Image' : editImg),
                     ),
                   ],
                 ),
@@ -257,6 +259,7 @@ class _MyStatefulWidgetState extends State<addPost> {
         print('Image path $image');
         imagePath = image.toString();
         imageDB = image;
+        editImg = 'Update Image';
       });
     }
   }
@@ -293,7 +296,6 @@ class _MyStatefulWidgetState extends State<addPost> {
     descriptionController.clear();
     numberController.clear();
     websiteController.clear();
-    // locMsg = '';
     imagePath = '';
     String dataId = docReference.id;
     print("Document written with ID: ${docReference.id}");
@@ -301,9 +303,7 @@ class _MyStatefulWidgetState extends State<addPost> {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => maps(
-            dataId: dataId,
-          ),
+          builder: (context) => maps(dataId: dataId, typeOfRequest: 'P'),
         ));
   }
 }

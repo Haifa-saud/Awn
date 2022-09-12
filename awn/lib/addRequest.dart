@@ -310,15 +310,11 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                 },
               ),
               Container(
-                //calin methods
                 padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                 child: Text('Location',
                     style: TextStyle(fontWeight: FontWeight.bold)),
               ),
 
-              /* SizedBox(
-                height: 6000,
-              ),*/
               Center(
                   child: Container(
                       padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
@@ -377,9 +373,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => maps(
-            dataId: dataId,
-          ),
+          builder: (context) => maps(dataId: dataId, typeOfRequest: 'R'),
         ));
   }
 }
