@@ -1,0 +1,8 @@
+version: "Apple Swift version 5.6.1 (swiftlang-5.6.0.323.66 clang-1316.0.20.12)"
+options: "9a1a92567da5ba281853eeb8aa848932366c22d4c906cd6a3183548b7eafb970"
+build_start_time: [1662387825, 475058078]
+build_end_time: [1662387827, 452044963]
+inputs:
+  "/Users/Leena/Desktop/444/awn_app/macos/Flutter/GeneratedPluginRegistrant.swift": [1662387805, 598078012]
+  "/Users/Leena/Desktop/444/awn_app/macos/Runner/AppDelegate.swift": [1657744753, 0]
+  "/Users/Leena/Desktop/444/awn_app/macos/Runner/MainFlutterWindow.swift": [1657744753, 0]
