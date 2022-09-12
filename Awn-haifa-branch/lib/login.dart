@@ -1,3 +1,6 @@
+import 'package:awn/homePage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -13,7 +16,11 @@ import 'forgotPassword.dart';
 import 'main.dart';
 
 class login extends StatefulWidget {
-  const login({Key? key}) : super(key: key);
+  final VoidCallback onClickedSignUp;
+  const login({
+    Key? key,
+    required this.onClickedSignUp,
+  }) : super(key: key);
 
   @override
   _loginState createState() => _loginState();
@@ -24,10 +31,26 @@ TextEditingController contactInfoController = TextEditingController();
 TextEditingController descriptionController = TextEditingController();
 
 class _loginState extends State<login> {
-  Key _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  bool _passwordVisible = false;
+  void initState() {
+    _passwordVisible = false;
+  }
+
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+
+    super.dispose();
+  }
+
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
+      key: _scaffoldKey,
       body: Center(
         child: Container(
           decoration: BoxDecoration(
@@ -71,6 +94,7 @@ class _loginState extends State<login> {
                   height: height * 0.05,
                 ),
                 TextFormField(
+                  controller: emailController,
                   decoration: InputDecoration(
                     labelText: "Enter Email",
                     hintText: "Email",
@@ -88,22 +112,37 @@ class _loginState extends State<login> {
                         borderRadius: BorderRadius.circular(100.0),
                         borderSide: BorderSide(color: Colors.red, width: 2.0)),
                   ),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
-                    if (value!.isEmpty ||
-                        !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                      return "please enter a valid Email address";
-                    } else {
-                      return null;
-                    }
+                    value != null && value.length < 8
+                        ? 'Enter a valid password'
+                        : null;
                   },
                 ),
                 SizedBox(
                   height: height * 0.05,
                 ),
                 TextFormField(
+                  controller: passwordController,
+                  obscureText: !_passwordVisible,
                   decoration: InputDecoration(
                     labelText: "Enter Password",
                     hintText: "Password",
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        // Based on passwordVisible state choose the icon
+                        _passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Theme.of(context).primaryColorDark,
+                      ),
+                      onPressed: () {
+                        // Update the state i.e. toogle the state of passwordVisible variable
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                    ),
                     contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100.0),
@@ -118,13 +157,11 @@ class _loginState extends State<login> {
                         borderRadius: BorderRadius.circular(100.0),
                         borderSide: BorderSide(color: Colors.red, width: 2.0)),
                   ),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) {
-                    if (value!.isEmpty ||
-                        !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                      return "please enter your Password";
-                    } else {
-                      return null;
-                    }
+                    value != null && value.length < 8
+                        ? 'Enter a valid password'
+                        : null;
                   },
                 ),
                 SizedBox(
@@ -196,13 +233,16 @@ class _loginState extends State<login> {
                             color: Colors.white),
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: signIn,
+                    /*() {
                       //After successful login we will redirect to profile page. Let's create profile page now
-                      // Navigator.pushReplacement(
-                      // context,
-                      // MaterialPageRoute(
-                      //  builder: (context) => ProfilePage()));
-                    },
+
+                      
+                    },*/
+                    // Navigator.pushReplacement(
+                    // context,
+                    // MaterialPageRoute(
+                    //  builder: (context) => ProfilePage()));
                   ),
                 ),
                 Container(
@@ -211,15 +251,16 @@ class _loginState extends State<login> {
                   child: Text.rich(TextSpan(children: [
                     TextSpan(text: "Don\'t have an account? "),
                     TextSpan(
-                      text: 'Create',
                       recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          // Navigator.push(
-                          //  context,
-                          //  MaterialPageRoute(
-                          //    builder: (context) =>
-                          //     RegistrationPage()));
-                        },
+                        ..onTap = widget.onClickedSignUp,
+                      text: 'Create',
+
+                      // Navigator.push(
+                      //  context,
+                      //  MaterialPageRoute(
+                      //    builder: (context) =>
+                      //     RegistrationPage()));
+
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).accentColor),
@@ -232,5 +273,36 @@ class _loginState extends State<login> {
         ),
       ),
     );
+  }
+
+  final dbRef = FirebaseDatabase.instance.ref().child("users");
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  Future signIn() async {
+    final newUser = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    );
+    /*if (newUser != null) {
+      //print("success");
+      var user = auth.currentUser;
+      final userID = user!.uid;
+      await FirebaseDatabase.instance
+          .ref()
+          .child("users")
+          .child(userID)
+          .once()
+          .then((DatabaseEvent event) {
+        final DataSnapshot dataSnapshot = event.snapshot;
+        String value = dataSnapshot.value;
+        if (value != null) {
+          setState(() {
+            if (dataSnapshot.value['Type'] == 'Volunteer') {
+            } else if (dataSnapshot.value['Spicial need user']) {}
+          });
+        }
+      });
+    } else {
+      print("fail");
+    }*/
   }
 }
