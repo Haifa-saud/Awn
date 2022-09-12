@@ -47,7 +47,22 @@ class _MyStatefulWidgetState extends State<addPost> {
         title: const Text('Add Post'),
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              content: const Text('Discard the changes you made?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {},
+                  child: const Text('Keep editing'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Discard'),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       body: Form(
@@ -64,21 +79,18 @@ class _MyStatefulWidgetState extends State<addPost> {
             ),
             /*name*/ Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-              child: Directionality(
-                textDirection: TextDirection.ltr,
-                child: TextFormField(
-                  textAlign: TextAlign.left,
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                      labelText: "Name (required)*",
-                      hintText: "E.g. King Saud University"),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the institution name.';
-                    }
-                    return null;
-                  },
-                ),
+              child: TextFormField(
+                textAlign: TextAlign.left,
+                controller: nameController,
+                decoration: const InputDecoration(
+                    labelText: "Name (required)*",
+                    hintText: "E.g. King Saud University"),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the institution name.';
+                  }
+                  return null;
+                },
               ),
             ),
             /*category*/ Container(
@@ -102,55 +114,8 @@ class _MyStatefulWidgetState extends State<addPost> {
                 isExpanded: false,
               ),
             ),
-            // const Padding(
-            //   padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
-            //   child: Text(
-            //     'Institution Location',
-            //     style: TextStyle(fontWeight: FontWeight.bold),
-            //   ),
-            // ),
-            // /*location*/ Column(
-            //   children: [
-            //     ElevatedButton(
-            //       onPressed: addLocation,
-            //       style: ElevatedButton.styleFrom(
-            //           foregroundColor: Colors.grey.shade500,
-            //           backgroundColor: Colors.white,
-            //           padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
-            //           side: BorderSide(color: Colors.grey.shade400, width: 1)),
-            //       child: const Text('Add Location'),
-            //     ),
-            //     // ),
-            //     // Container(
-            //     //   padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-            //     //   child: TextFormField(
-            //     //     enabled: true,
-            //     //     textAlign: TextAlign.left,
-            //     //     controller: TextEditingController()..text = locMsg,
-            //     //     validator: (value) {
-            //     //       if (value == null || value.isEmpty) {
-            //     //         return 'Please add a location.';
-            //     //       }
-            //     //       return null;
-            //     //     },
-            //     //   ),
-            //     // ),
-            //     Padding(
-            //       padding: EdgeInsets.fromLTRB(8, 0, 0, 4),
-            //       child: Text(
-            //         locMsg,
-            //         style: TextStyle(
-            //           fontSize: 15,
-            //           // color: imageMsg == 'Please add a location.'
-            //           //     ? Colors.red
-            //           //     : Colors.grey.shade500),
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
             const Padding(
-              padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
+              padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
                 'Institution Image',
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -158,31 +123,34 @@ class _MyStatefulWidgetState extends State<addPost> {
             ),
             /*image*/ Column(
               children: [
-                ElevatedButton(
-                  onPressed: addImage,
-                  style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.grey.shade500,
-                      backgroundColor: Colors.white,
-                      padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
-                      side: BorderSide(color: Colors.grey.shade400, width: 1)),
-                  child: const Text('Add Image'),
+                new Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: addImage,
+                      style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.blue,
+                          backgroundColor: Colors.white,
+                          padding: EdgeInsets.fromLTRB(17, 16, 17, 16),
+                          side: BorderSide(
+                              color: Colors.grey.shade400, width: 1)),
+                      child: const Text('Add Image'),
+                    ),
+                  ],
                 ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(8, 0, 0, 4),
+                  padding: EdgeInsets.fromLTRB(8, 8, 0, 4),
                   child: Text(
                     imagePath,
                     style: TextStyle(
                       fontSize: 15,
-                      // color: imageMsg == 'Please add a location.'
-                      //     ? Colors.red
-                      //     : Colors.grey.shade500),
                     ),
                   ),
                 ),
               ],
             ),
             const Padding(
-              padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
+              padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
                 'Contact Information',
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -206,13 +174,15 @@ class _MyStatefulWidgetState extends State<addPost> {
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.digitsOnly
                 ],
+                maxLength: 10,
                 textAlign: TextAlign.left,
                 controller: numberController,
-                decoration: const InputDecoration(labelText: 'Phone Number'),
+                decoration: const InputDecoration(
+                    labelText: 'Phone Number', hintText: '05XXXXXXXX'),
               ),
             ),
             const Padding(
-              padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
+              padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
                 'About',
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -233,6 +203,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                       borderSide: BorderSide(color: Colors.grey.shade400)),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide(color: Colors.blue, width: 2),
                   ),
                 ),
               ),
@@ -261,9 +232,6 @@ class _MyStatefulWidgetState extends State<addPost> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     addToDB();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Post added successfully')),
-                    );
                   }
                 },
                 child: const Text('Next'),
@@ -278,7 +246,6 @@ class _MyStatefulWidgetState extends State<addPost> {
   String imagePath = '';
   File? imageDB;
   String strImg = '';
-  // var imageUrl;
 
   Future<void> addImage() async {
     await Permission.photos.request();
@@ -339,22 +306,4 @@ class _MyStatefulWidgetState extends State<addPost> {
           ),
         ));
   }
-
-  // String Lat = '', Lng = '';
-  // String locMsg = '', imageMsg = '';
-  // void addLocation() async {
-  //   var selectedLoc = await Navigator.push(
-  //     context,
-  //     MaterialPageRoute(builder: (context) => const maps()),
-  //   );
-  //   print(selectedLoc);
-  //   locMsg = selectedLoc.toString();
-
-  //   if (selectedLoc != null) {
-  //     Lat = selectedLoc.latitude.toString();
-  //     Lng = selectedLoc.longitude.toString();
-  //   }
-  //   print(Lat);
-  //   print(Lng);
-  // }
 }

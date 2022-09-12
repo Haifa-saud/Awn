@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoding/geocoding.dart';
 
 import 'main.dart';
 
@@ -60,7 +61,7 @@ class _MyStatefulWidgetState extends State<maps> {
         title: 'Institution Location ',
       ),
       icon: BitmapDescriptor.defaultMarker,
-      draggable: true, //Icon for Marker
+      // draggable: true,
     ));
 
     DBId = widget.dataId;
@@ -76,7 +77,10 @@ class _MyStatefulWidgetState extends State<maps> {
         title: const Text("Add Institution Location"),
       ),
       body: GoogleMap(
+        // onChanged: print('test'),
+        // mapToolbarEnabled: true,
         onTap: (tapped) async {
+          markers.removeAt(0);
           markers.insert(
               0,
               Marker(
@@ -89,7 +93,19 @@ class _MyStatefulWidgetState extends State<maps> {
                 icon: BitmapDescriptor.defaultMarker,
               ));
           selectedLoc = LatLng(tapped.latitude, tapped.longitude);
+          List<Placemark> placemark = await placemarkFromCoordinates(
+              selectedLoc.latitude, selectedLoc.longitude);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(placemark[0].street.toString() +
+                  ', ' +
+                  placemark[0].subLocality.toString() +
+                  '\n' +
+                  placemark[0].administrativeArea.toString() +
+                  ', ' +
+                  placemark[0].country.toString())));
         },
+        // List<Placemark> placemarks = await placemarkFromCoordinates(52.2165157, 6.9437819);
+
         zoomGesturesEnabled: true,
         mapType: MapType.normal,
         myLocationEnabled: true,
@@ -157,8 +173,18 @@ class _MyStatefulWidgetState extends State<maps> {
         'longitude': selectedLoc.longitude
       });
       backToHomePage();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Post added successfully'),
+        ),
+      );
     } else if (index == 0) {
       backToHomePage();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Post added successfully'),
+        ),
+      );
     }
   }
 

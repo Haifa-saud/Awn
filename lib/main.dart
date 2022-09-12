@@ -23,7 +23,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Home Page',
       routes: {
-        // When navigating to the "/" route, build the FirstScreen widget.
         '/homePage': (context) => const MyHomePage(),
       },
       theme: ThemeData(
@@ -35,35 +34,50 @@ class MyApp extends StatelessWidget {
           foregroundColor: AppTheme.darkerText,
         ),
         textTheme: const TextTheme(
-          bodyText1: TextStyle(),
-          bodyText2: TextStyle(),
+          // headline1: TextStyle(fontSize: 100.0), //cant find where it is used
+          headline6: TextStyle(fontSize: 30.0), //header at the app bar
+          bodyText2: TextStyle(fontSize: 20.0), //the body text
+          subtitle1: TextStyle(fontSize: 19.0), //the text field label
+          subtitle2: TextStyle(fontSize: 120.0), //the text field
+
+          button: TextStyle(fontSize: 18), //the button text
         ).apply(
           bodyColor: AppTheme.darkerText,
           displayColor: Colors.blue,
         ),
         inputDecorationTheme: InputDecorationTheme(
-            enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(100.0),
-                borderSide: BorderSide(color: Colors.grey.shade400)),
-            contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-            focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(100.0),
-                borderSide: BorderSide(color: Color(0xFF39d6ce))),
-            errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(100.0),
-                borderSide: BorderSide(color: Colors.red, width: 2.0)),
-            focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(100.0),
-                borderSide: BorderSide(color: Colors.red, width: 2.0))),
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(100.0),
+              borderSide: BorderSide(color: Colors.grey.shade400)),
+          contentPadding: EdgeInsets.fromLTRB(20, 12, 20, 12),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(100.0),
+              borderSide: BorderSide(color: Colors.blue, width: 2)),
+          errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(100.0),
+              borderSide: BorderSide(color: Colors.red, width: 2.0)),
+          focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(100.0),
+              borderSide: BorderSide(color: Colors.red, width: 2.0)),
+          floatingLabelStyle: TextStyle(fontSize: 22, color: Colors.blue),
+          helperStyle: TextStyle(fontSize: 14),
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-              textStyle: TextStyle(fontSize: 15),
+              // textStyle: TextStyle(fontSize: 15),
               backgroundColor: Colors.transparent, // background (button) color
               foregroundColor: Color(0xFFfcfffe),
               shadowColor: Colors.transparent,
               padding: EdgeInsets.all(5),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0))),
+        ),
+        snackBarTheme: const SnackBarThemeData(
+          backgroundColor: Color(0xFF39d6ce),
+          actionTextColor: Colors.black,
+          behavior: SnackBarBehavior.floating,
+          elevation: 1,
+          // margin: EdgeInsets.all(10),
         ),
       ),
       home: const MyHomePage(),
@@ -83,7 +97,6 @@ class MyHomePage extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
-          // Text('Awn'),
           Container(
             padding: const EdgeInsets.fromLTRB(60, 10, 60, 10),
             child: ElevatedButton(
@@ -99,6 +112,17 @@ class MyHomePage extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (context) => addPost()),
           );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Add Post'),
+            action: SnackBarAction(
+              label: 'Dismiss',
+              disabledTextColor: Colors.white,
+              textColor: Colors.yellow,
+              onPressed: () {
+                //Do whatever you want
+              },
+            ),
+          ));
         },
         tooltip: 'Add Post',
         child: const Icon(Icons.add),
