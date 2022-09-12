@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'file.dart';
 import 'firebase_options.dart';
 import 'package:awn/map.dart';
 import 'package:path/path.dart' as Path;
@@ -125,7 +126,7 @@ class MyHomePage extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => addRequest()),
+            MaterialPageRoute(builder: (context) => addFile()),
           );
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('Add Post'),
@@ -162,12 +163,4 @@ class MyHomePage extends StatelessWidget {
   }
 
   int _selectedIndex = 0;
-  // Future<void> _onItemTapped(int index) async {
-  //   if (index == 1) {
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(builder: (context) => addRequest()),
-  //     );
-  //   } else if (index == 0) {}
-  // }
 }
