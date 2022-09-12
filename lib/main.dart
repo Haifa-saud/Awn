@@ -33,16 +33,21 @@ class MyApp extends StatelessWidget {
           elevation: 0,
           color: Colors.transparent,
           // iconTheme: IconThemeData(color: Colors.black),
-          // foregroundColor: AppTheme.darkerText,
+          foregroundColor: Colors.black,
         ),
         textTheme: const TextTheme(
           // headline1: TextStyle(fontSize: 100.0), //cant find where it is used
-          headline6: TextStyle(fontSize: 30.0), //header at the app bar
-          bodyText2: TextStyle(fontSize: 20.0), //the body text
+          headline6: TextStyle(
+              fontSize: 22.0, color: Colors.black), //header at the app bar
+          bodyText2: TextStyle(
+              fontSize: 20.0, fontWeight: FontWeight.bold), //the body text
           subtitle1: TextStyle(fontSize: 19.0), //the text field label
           subtitle2: TextStyle(fontSize: 120.0), //the text field
 
-          button: TextStyle(fontSize: 18), //the button text
+          button: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              decoration: TextDecoration.underline), //the button text
         ).apply(
           // bodyColor: AppTheme.darkerText,
           displayColor: Colors.blue,
@@ -79,7 +84,7 @@ class MyApp extends StatelessWidget {
           actionTextColor: Colors.black,
           behavior: SnackBarBehavior.floating,
           elevation: 1,
-          // margin: EdgeInsets.all(10),
+          contentTextStyle: TextStyle(fontSize: 16),
         ),
       ),
       home: MyHomePage(),

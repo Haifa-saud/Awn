@@ -46,7 +46,7 @@ class _MyStatefulWidgetState extends State<addPost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Post'),
+        title: const Text('Add a Post', textAlign: TextAlign.center),
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
           onPressed: () => showDialog<String>(
@@ -55,11 +55,12 @@ class _MyStatefulWidgetState extends State<addPost> {
               content: const Text('Discard the changes you made?'),
               actions: <Widget>[
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.of(context).pop(),
                   child: const Text('Keep editing'),
                 ),
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () =>
+                      Navigator.of(context).popUntil((route) => route.isFirst),
                   child: const Text('Discard'),
                 ),
               ],
@@ -70,7 +71,7 @@ class _MyStatefulWidgetState extends State<addPost> {
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(30, 20, 30, 30),
+          padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
           child: ListView(children: <Widget>[
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
@@ -120,12 +121,11 @@ class _MyStatefulWidgetState extends State<addPost> {
               padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
                 'Institution Image',
-                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
             /*image*/ Column(
               children: [
-                new Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
@@ -133,7 +133,10 @@ class _MyStatefulWidgetState extends State<addPost> {
                       style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.blue,
                           backgroundColor: Colors.white,
-                          padding: EdgeInsets.fromLTRB(17, 16, 17, 16),
+                          padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
+                          textStyle: const TextStyle(
+                            fontSize: 18,
+                          ),
                           side: BorderSide(
                               color: Colors.grey.shade400, width: 1)),
                       child: Text(editImg == '' ? 'Add Image' : editImg),
@@ -212,6 +215,7 @@ class _MyStatefulWidgetState extends State<addPost> {
             ),
             Container(
               margin: const EdgeInsets.fromLTRB(60, 10, 50, 10),
+              width: 250,
               decoration: BoxDecoration(
                 boxShadow: const [
                   BoxShadow(
@@ -231,9 +235,31 @@ class _MyStatefulWidgetState extends State<addPost> {
                 borderRadius: BorderRadius.circular(30),
               ),
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     addToDB();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Please fill the required fields above'),
+                        backgroundColor: Colors.red.shade400,
+                        margin: EdgeInsets.fromLTRB(8, 0, 20, 0),
+                        behavior: SnackBarBehavior.floating,
+                        action: SnackBarAction(
+                          label: 'Dismiss',
+                          disabledTextColor: Colors.white,
+                          textColor: Colors.white,
+                          onPressed: () {
+                            //Do whatever you want
+                          },
+                        ),
+                      ),
+                    );
                   }
                 },
                 child: const Text('Next'),

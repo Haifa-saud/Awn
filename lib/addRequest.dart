@@ -23,10 +23,26 @@ class _AddRequestState extends State<addRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Add Request'),
+          title: const Text('Request Awn', textAlign: TextAlign.center),
           leading: IconButton(
             icon: const Icon(Icons.close, color: Colors.black),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => showDialog<String>(
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                content: const Text('Discard the changes you made?'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Keep editing'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context)
+                        .popUntil((route) => route.isFirst),
+                    child: const Text('Discard'),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
         body: AwnRequestForm());
@@ -141,218 +157,216 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     return format.format(dt);
   }
 
+  @override
   Widget build(BuildContext context) {
-    /*CollectionReference requests =
-        FirebaseFirestore.instance.collection('requests');*/
     return Form(
       key: _formKey,
-      // Expanded(
       child: Padding(
-          padding: const EdgeInsets.fromLTRB(30, 20, 30, 30),
-          child: SingleChildScrollView(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            // mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              //title
-              Padding(
-                padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
-                // margin: EdgeInsets.only(top: 5, bottom: 10),
-                child: Text('Title',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                //fontSize: 20, fontWeight: FontWeight.w600
-                //  child: Text('Duration'),
-              ),
-              Container(
-                  padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      // icon: Icon(Icons.schedule),
-                      hintText: 'Help with shopping',
-                      labelText: 'Title',
-                      /*   enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 1, color: Colors.black),
-                //<-- SEE HERE
-              ),
-              errorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(width: 1, color: Colors.red)),*/ //boarder style
-                      //labelText: 'duration',
-                    ),
-                    onChanged: (value) {
-                      title = value;
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please specify the title';
-                      }
-                    },
-                  )),
-              // time and date
-              Padding(
+        padding: const EdgeInsets.all(15),
+        child: ListView(
+          children: <Widget>[
+            /*title*/ Container(
+              padding: const EdgeInsets.fromLTRB(6, 12, 6, 6),
+              child: Text('What help do you need?'),
+            ),
+            Container(
                 padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                // margin: EdgeInsets.only(top: 10, bottom: 10),
-                child: Text('Please select the time and date',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-              //date picker
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    hintText: 'E.g. Help with shopping',
+                  ),
+                  onChanged: (value) {
+                    title = value;
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a title';
+                    }
+                  },
+                )),
 
-              Container(
+            // time and date
+            Container(
+              padding: EdgeInsets.fromLTRB(6, 35, 6, 6),
+              child: Text('Time and Date'),
+            ),
+
+            //date picker
+            Container(
+              padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      _selectDate(context);
+                      showDate = true;
+                    },
+                    style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.blue,
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                        ),
+                        side:
+                            BorderSide(color: Colors.grey.shade400, width: 1)),
+                    child: const Text('Update Date'),
+                  ),
+                  showDate
+                      ? Container(
+                          margin: EdgeInsets.only(right: 50),
+                          child: Text(getDate_formated()))
+                      // DateFormat('yyyy/MM/dd').format(selectedDate)
+                      : const SizedBox(),
+                ],
+              ),
+            ),
+
+            //time picker
+            Container(
                 padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                //padding: const EdgeInsets.symmetric(horizontal: 15),
-                //  margin: EdgeInsets.only(bottom: 10, top: 20),
-                // width: 150,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        _selectDate(context);
-                        showDate = true;
+                        _selectTime(context);
+                        showTime = true;
                       },
                       style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.grey.shade500,
+                          foregroundColor: Colors.blue,
                           backgroundColor: Colors.white,
-                          padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
+                          padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
+                          textStyle: const TextStyle(
+                            fontSize: 18,
+                          ),
                           side: BorderSide(
                               color: Colors.grey.shade400, width: 1)),
-                      child: const Text('Change Date'),
+                      child: const Text('Update Time'),
                     ),
-                    showDate
+                    showTime
                         ? Container(
-                            margin: EdgeInsets.only(left: 5),
-                            child: Text(getDate_formated()))
-
-                        // DateFormat('yyyy/MM/dd').format(selectedDate)
+                            margin: EdgeInsets.only(right: 50),
+                            child: Text(getTime(selectedTime)))
                         : const SizedBox(),
                   ],
-                ),
-              ),
+                )),
 
-              //time picker
-              Container(
-                  padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                  //padding: const EdgeInsets.symmetric(horizontal: 15),
-                  //width: 150,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          _selectTime(context);
-                          showTime = true;
-                        },
-                        style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.grey.shade500,
-                            backgroundColor: Colors.white,
-                            padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
-                            side: BorderSide(
-                                color: Colors.grey.shade400, width: 1)),
-                        child: const Text('Change Time'),
-                      ),
-                      showTime
-                          ? Container(
-                              margin: EdgeInsets.only(left: 5),
-                              child: Text(getTime(selectedTime)))
-                          : const SizedBox(),
-                    ],
-                  )),
-              //showTime ? Text(getTime(selectedTime)) : const SizedBox(),
-              //duration
-              Container(
-                //calin methods
-                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                child: Text('Duration',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                //  child: Text('Duration'),
-              ),
-              TextFormField(
+            //duration
+            Container(
+              padding: EdgeInsets.fromLTRB(6, 35, 6, 8),
+              child: Text('Duration'),
+            ),
+
+            Container(
+              padding: const EdgeInsets.fromLTRB(6, 8, 6, 12),
+              child: TextFormField(
                 decoration: const InputDecoration(
-                  //icon: Icon(Icons.schedule),
-                  hintText: 'for about 2 hours',
-
-                  //labelText: 'duration',
+                  hintText: 'E.g. For about 2 hours',
                 ),
                 onChanged: (value) {
                   duration = value;
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please specify the duration';
+                    return 'Please enter the duration';
                   }
                 },
               ),
+            ),
 
-              Container(
-                //calin methods
-                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                child: Text('Describtion',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  // icon: Icon(Icons.description),
-                  hintText: 'enter description here',
+            //description
+            Container(
+              padding: EdgeInsets.fromLTRB(6, 35, 6, 8),
+              child: Text('Description',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
 
-                  // labelText: 'describtion',
+            Container(
+              padding: const EdgeInsets.fromLTRB(6, 8, 6, 12),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: 'Describe the help in more details',
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide(color: Colors.grey.shade400)),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide(color: Colors.blue, width: 2),
+                  ),
                 ),
+
                 //keyboardType: TextInputType.datetime,
                 keyboardType: TextInputType.multiline,
-                //   maxLines: 2,
+                maxLines: 3,
                 maxLength: 150,
                 onChanged: (value) {
                   description = value;
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please Provide a description';
+                    return 'Please provide a description';
                   }
                 },
               ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                child: Text('Location',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
+            ),
 
-              Center(
-                  child: Container(
-                      padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                      width: 150,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            addToDB();
-                            /*
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text('Sending Data to firestor'),
-                            ));
-                            requests.add({
-                              'title': title,
-                              'date_ymd': getDate(),
-                              'date_dmy': getDate_formated(),
-                              'time': getTime(selectedTime),
-                              'duration': duration,
-                              'description': description,
-                              'latitude': '',
-                              'longitude': ''
-                            })
-                                /*  .then((value) => backToHomePage())
-                                .catchError((error) =>
-                                    print("Failed to add request:$error"))*/
-                                ;*/
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.grey.shade500,
-                            backgroundColor: Colors.white,
-                            padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
-                            side: BorderSide(
-                                color: Colors.grey.shade400, width: 1)),
-                        child: Text('Next'),
-                      )))
-            ],
-          ))),
+            /*button*/ Container(
+              margin: const EdgeInsets.fromLTRB(60, 10, 50, 10),
+              width: 300,
+              decoration: BoxDecoration(
+                boxShadow: const [
+                  BoxShadow(
+                      color: Colors.black26,
+                      offset: Offset(0, 4),
+                      blurRadius: 5.0)
+                ],
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  stops: [0.0, 1.0],
+                  colors: [
+                    Colors.blue,
+                    Color(0xFF39d6ce),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    addToDB();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Please fill the required fields above'),
+                        backgroundColor: Colors.red.shade400,
+                        margin: EdgeInsets.fromLTRB(8, 0, 20, 0),
+                        behavior: SnackBarBehavior.floating,
+                        action: SnackBarAction(
+                          label: 'Dismiss',
+                          disabledTextColor: Colors.white,
+                          textColor: Colors.white,
+                          onPressed: () {
+                            //Do whatever you want
+                          },
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Next'),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -377,12 +391,3 @@ class AwnRequestFormState extends State<AwnRequestForm> {
         ));
   }
 }
-//map
-/*
-  void backToHomePage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MyHomePage()),
-    );
-  }*/
-
