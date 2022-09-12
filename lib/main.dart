@@ -36,7 +36,6 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.black,
         ),
         textTheme: const TextTheme(
-          // headline1: TextStyle(fontSize: 100.0), //cant find where it is used
           headline6: TextStyle(
               fontSize: 22.0, color: Colors.black), //header at the app bar
           bodyText2: TextStyle(
