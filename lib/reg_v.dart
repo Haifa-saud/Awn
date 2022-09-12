@@ -57,6 +57,7 @@ import 'package:flutter/services.dart';
       String fName  = "";
       String lName  = "";
       String bDay= "";
+      String description = "";
 
       
       bool Check_blind = false;
@@ -69,13 +70,14 @@ import 'package:flutter/services.dart';
       Future<void> addToDB() async {
    
     await posts.add({
-      'Type': 'special need user' ,
+      'Type': 'Volunteer' ,
       'name': fName+" "+ lName ,
       'Email': confirmEmail,
       'password': confirmPassword,
       'phone number': phoneNumber,
-      'gender': gender,      
-      
+      'description': description,
+      'gender': gender,  
+         
     }).then((value) => print("User Added"));
   }
 
@@ -119,10 +121,10 @@ import 'package:flutter/services.dart';
                   labelText: 'Last Name',  
                 ),  
                 validator: (value) { 
+                  lName = value.toString(); 
                   if (value == null || value.isEmpty) {
                     return 'Please Your Last Name';
                     }
-                    else{ lName = value.toString(); }
                     return null;
                     },
               ),
@@ -135,7 +137,7 @@ import 'package:flutter/services.dart';
                     
                 decoration: const InputDecoration(  
                   icon:  Icon(Icons.phone),  
-                  hintText: 'Enter a phone number',  
+                  hintText: '05xxxxxxxx',  
                   labelText: 'Phone',  
                 ),keyboardType: TextInputType.number,
                 inputFormatters: <TextInputFormatter>[
@@ -145,7 +147,7 @@ import 'package:flutter/services.dart';
                   if (value == null || value.isEmpty) {  
                     return 'Please enter valid phone number';  
                   }  
-                  else{ phoneNumber = int.parse(value); }
+                  phoneNumber = int.parse(value); 
                   return null;  
                 },  
               ),  
@@ -164,7 +166,7 @@ import 'package:flutter/services.dart';
                   if (value == null || value.isEmpty) {  
                     return 'Please enter valid date';  
                   }  
-                  else{ bDay = value.toString(); }
+                  bDay = value.toString(); 
                   return null;  
                 },  
                ),  
@@ -240,34 +242,18 @@ import 'package:flutter/services.dart';
                 ),  
                 validator: (value) { 
                   if (value == null || value.isEmpty) {
+                    email = value.toString();
                     return 'Please enter your email';
                     }
-                    email = value.toString();
+                    if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                    return 'Please enter a valid email';
+                    }
                     return null;
                     },
                     
               ),  
                         ),
-              Container( // confirm Email
-                padding: const EdgeInsets.only(left:50, bottom: 0, right: 13 ,top:0), //You can use EdgeInsets like above
-                 margin: const EdgeInsets.all(5),
-                 child: TextFormField(  
-                 decoration: const InputDecoration(  
-                  hintText: 'Enter your email',  
-                  labelText: 'confirm email',  
-                ),  
-                validator: (value) { 
-                  confirmEmail = value.toString();
-                  if (value == null || value.isEmpty) {
-                    return 'Please Enter your email again';
-                    }
-                  if (email != confirmEmail) {
-                    return 'email does not match';
-                    }
-                    return null;
-                    },
-              ),  
-                        ),
+             
 
               Container( //  pass
                  padding: const EdgeInsets.all(10), //You can use EdgeInsets like above
@@ -283,6 +269,16 @@ import 'package:flutter/services.dart';
                   if (value == null || value.isEmpty) {
                     return 'Please Enter your Password  ';
                     }
+                  if (!RegExp(r'(?=.*[A-Z])').hasMatch(value) ) {
+                    return 'Password must contain an upper case letter';
+                    }
+                  if (!RegExp(r'(?=.*?[0-9])').hasMatch(value) ) {
+                    return 'Password must contain a number';
+                    }
+                  if (value.length < 7 ) {
+                    return 'Password must contain at least 8 characters';
+                    }
+                    
                     return null;
                     },
               ),  
@@ -309,96 +305,38 @@ import 'package:flutter/services.dart';
                     },
               ),  
                         ),
+            Text("Password must contain an Upper case lettter, a digit and at least 8 characters"),
 
 
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children:[
-                  Container(
-                    padding: const EdgeInsets.only(left:15, bottom: 0, right: 5 ,top:15),
-                    child:const Icon(Icons.wheelchair_pickup_sharp, size: 25, color: Color.fromARGB(255, 167, 161, 161) ),
-                    ),
-                    
-              Container(
-                padding: const EdgeInsets.only(left:0, bottom: 0, right: 150 ,top:15),
-                child:
-                 const Text( "Type of disability : ",
-                style: TextStyle(fontSize: 20),
-                textAlign: TextAlign.left, 
+
+             Text("please enter your skills: "),
+             Container(
+              padding: const EdgeInsets.only(left:10, bottom: 0, right: 30 ,top:15),
+              child: TextFormField(
+              decoration: const InputDecoration(
+                icon: Icon(Icons.description),
+                hintText: 'enter description here',
+                enabledBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(width: 1, color: Color.fromARGB(255, 120, 119, 119)), //<-- SEE HERE
                 ),
-                ),
-                ],
+                // labelText: 'describtion',
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Row( children: [
-                      Checkbox(
-                        value: Check_blind,
-                        onChanged: (value) {
-                          setState(() {
-                            Check_blind = value!;
-                            disability = disability + "Blind" ;
-                            });
-                            },
+              
+              //keyboardType: TextInputType.datetime,
+              keyboardType: TextInputType.multiline,
+              maxLines: 8,
+              onChanged: (value) {
+                description = value;
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please Provide a description';
+                }
+              },
             ),
-                  const Text('Blind',
-                style: TextStyle(fontSize: 18))
-                ],
-              ),
-              Row(
-                children: [
-                  Checkbox(
-                        value: Check_deaf,
-                        onChanged: (value) {
-                          setState(() {
-                            Check_deaf = value!;
-                            disability = disability + "Deaf" ;
-                            });
-                            },
-            ),
-
-                  const Text('Deaf',
-                  style: TextStyle(fontSize: 18))
-                ],
-              ),
-               Row(
-                children: [
-                  Checkbox(
-                        value: Check_wheal,
-                        onChanged: (value) {
-                          setState(() {
-                            Check_wheal = value!;
-                            disability = disability + "wheelchair user" ;
-                            });
-                            },
-            ),
-                 const Text('wheelchair user',
-                  style: TextStyle(fontSize: 18))
-                ],
-              ),
-            ],
-          ),
-          ]
-        ),  
-      
-          
-             ElevatedButton(
-                onPressed: () async{  
-                  final result = await FilePicker.platform.pickFiles();
-                  if(result == null){
-                    print("Please Enter your certification  ") ;
-                  }
-                  else{
-                     const Text("resme uploded ") ;
-                  }
-
-                },
-                child: const Text("upload resume : ")
-              ),
             
+            ),
                
               //  ****** Submit button **** 
                Container(  
@@ -425,9 +363,4 @@ import 'package:flutter/services.dart';
           ), 
         );  
       }  
-
-        
-
-    
-      
     }
