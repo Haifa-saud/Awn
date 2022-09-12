@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'package:intl/intl.dart';
 import 'main.dart';
+import 'package:awn/map.dart';
 
 class addRequest extends StatefulWidget {
   const addRequest({Key? key}) : super(key: key);
@@ -141,8 +142,8 @@ class AwnRequestFormState extends State<AwnRequestForm> {
   }
 
   Widget build(BuildContext context) {
-    CollectionReference requests =
-        FirebaseFirestore.instance.collection('requests');
+    /*CollectionReference requests =
+        FirebaseFirestore.instance.collection('requests');*/
     return Form(
       key: _formKey,
       // Expanded(
@@ -325,21 +326,25 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
+                            addToDB();
+                            /*
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('Sending Data to firestor'),
                             ));
-                            requests
-                                .add({
-                                  'title': title,
-                                  'date_ymd': getDate(),
-                                  'date_dmy': getDate_formated(),
-                                  'time': getTime(selectedTime),
-                                  'duration': duration,
-                                  'description': description
-                                })
-                                .then((value) => backToHomePage())
+                            requests.add({
+                              'title': title,
+                              'date_ymd': getDate(),
+                              'date_dmy': getDate_formated(),
+                              'time': getTime(selectedTime),
+                              'duration': duration,
+                              'description': description,
+                              'latitude': '',
+                              'longitude': ''
+                            })
+                                /*  .then((value) => backToHomePage())
                                 .catchError((error) =>
-                                    print("Failed to add request:$error"));
+                                    print("Failed to add request:$error"))*/
+                                ;*/
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -348,17 +353,42 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                             padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
                             side: BorderSide(
                                 color: Colors.grey.shade400, width: 1)),
-                        child: Text('Submit'),
+                        child: Text('Next'),
                       )))
             ],
           ))),
     );
   }
 
+  Future<void> addToDB() async {
+    CollectionReference requests =
+        FirebaseFirestore.instance.collection('requests');
+    DocumentReference docReference = await requests.add({
+      'title': title,
+      'date_ymd': getDate(),
+      'date_dmy': getDate_formated(),
+      'time': getTime(selectedTime),
+      'duration': duration,
+      'description': description,
+      'latitude': '',
+      'longitude': ''
+    });
+    String dataId = docReference.id;
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => maps(
+            dataId: dataId,
+          ),
+        ));
+  }
+}
+//map
+/*
   void backToHomePage() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => MyHomePage()),
     );
-  }
-}
+  }*/
+
