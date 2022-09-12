@@ -7,10 +7,10 @@ import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 
   Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
-  } 
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    runApp(const MyApp());
+    } 
       
     class MyApp extends StatelessWidget {
     const MyApp({super.key});
@@ -36,12 +36,10 @@ import 'package:flutter/services.dart';
       const MyCustomForm({super.key});
   
       @override  
-      MyCustomFormState createState() {  
-        return MyCustomFormState();  
-      }  
+      reg_U createState() => reg_U();
     }  
     // Create a corresponding State class, which holds data related to the form.  
-    class MyCustomFormState extends State<MyCustomForm> {  
+    class reg_U extends State<MyCustomForm> {  
       CollectionReference posts = FirebaseFirestore.instance.collection('users');
       // Create a global key that uniquely identifies the Form widget  
       // and allows validation of the form.  
@@ -145,8 +143,7 @@ import 'package:flutter/services.dart';
                   if (value == null || value.isEmpty) {  
                     return 'Please enter valid phone number';  
                   }  
-                  else{ phoneNumber = int.parse(value); 
-                  }
+                  else{ phoneNumber = int.parse(value); }
                   return null;  
                 },  
               ),  
@@ -240,7 +237,7 @@ import 'package:flutter/services.dart';
                   labelText: 'email',  
                 ),  
                 validator: (value) { 
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
                     return 'Please enter your email';
                     }
                     email = value.toString();
