@@ -8965,6 +8965,13 @@ negated the permissions granted in the license. In the spirit of
 permissive licensing, and of not having licensing issues being an
 obstacle to adoption, that text has been removed.
 --------------------------------------------------------------------------------
+geocoder
+
+TODO: Add your license here.
+
+--------------------------------------------------------------------------------
+geocoding
+geocoding_platform_interface
 geolocator
 geolocator_android
 geolocator_apple

@@ -2,9 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoding/geocoding.dart';
+
+import 'main.dart';
 
 class maps extends StatefulWidget {
-  const maps({Key? key}) : super(key: key);
+  final String dataId;
+  const maps({Key? key, required this.dataId}) : super(key: key);
 
   @override
   State<maps> createState() => _MyStatefulWidgetState();
@@ -13,10 +17,10 @@ class maps extends StatefulWidget {
 class _MyStatefulWidgetState extends State<maps> {
   GoogleMapController? mapController;
   List<Marker> markers = <Marker>[];
-  late Position position;
+  Position position =
+      Position.fromMap({'latitude': 24.7136, 'longitude': 46.6753});
 
-  LatLng _center = const LatLng(24.7136, 46.6753);
-  Position? currentLocation;
+  String DBId = '';
 
   void getCurrentPosition() async {
     bool serviceEnabled;
@@ -48,45 +52,61 @@ class _MyStatefulWidgetState extends State<maps> {
 
   @override
   void initState() {
-    // markers.add(Marker(
-    //   //add marker on google map
-    //   markerId: MarkerId(_center.toString()),
-    //   position: _center, //position of marker
-    //   infoWindow: const InfoWindow(
-    //     //popup info
-    //     title: 'Institution Location ',
-    //   ),
-    //   icon: BitmapDescriptor.defaultMarker, //Icon for Marker
-    // ));
-
-    super.initState();
     getCurrentPosition();
+    markers.add(Marker(
+      markerId:
+          const MarkerId('1'), //have one id for all markers to avoid duplicate
+      position: LatLng(position.latitude, position.longitude),
+      infoWindow: const InfoWindow(
+        title: 'Institution Location ',
+      ),
+      icon: BitmapDescriptor.defaultMarker,
+      // draggable: true,
+    ));
+
+    DBId = widget.dataId;
+    super.initState();
   }
 
-  LatLng? selectedLoc = null;
+  LatLng selectedLoc = LatLng(24.7136, 46.6753);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Google Map in Flutter"),
+        title: const Text("Add Institution Location"),
       ),
       body: GoogleMap(
+        // onChanged: print('test'),
+        // mapToolbarEnabled: true,
         onTap: (tapped) async {
-          // markers.clear();
-          markers.add(Marker(
-            markerId: MarkerId(
-                tapped.latitude.toString() + tapped.longitude.toString()),
-            position: LatLng(tapped.latitude, tapped.longitude),
-            infoWindow: const InfoWindow(
-              title: 'Institution Location ',
-            ),
-            icon: BitmapDescriptor.defaultMarker,
-          ));
+          markers.removeAt(0);
+          markers.insert(
+              0,
+              Marker(
+                markerId: MarkerId('1'),
+                position: LatLng(tapped.latitude, tapped.longitude),
+                infoWindow: const InfoWindow(
+                  title: 'Institution Location ',
+                ),
+                draggable: true,
+                icon: BitmapDescriptor.defaultMarker,
+              ));
           selectedLoc = LatLng(tapped.latitude, tapped.longitude);
+          List<Placemark> placemark = await placemarkFromCoordinates(
+              selectedLoc.latitude, selectedLoc.longitude);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(placemark[0].street.toString() +
+                  ', ' +
+                  placemark[0].subLocality.toString() +
+                  '\n' +
+                  placemark[0].administrativeArea.toString() +
+                  ', ' +
+                  placemark[0].country.toString())));
         },
+        // List<Placemark> placemarks = await placemarkFromCoordinates(52.2165157, 6.9437819);
+
         zoomGesturesEnabled: true,
-        // markers: markers,
         mapType: MapType.normal,
         myLocationEnabled: true,
         myLocationButtonEnabled: true,
@@ -96,7 +116,7 @@ class _MyStatefulWidgetState extends State<maps> {
           });
         },
         initialCameraPosition: CameraPosition(
-          target: _center,
+          target: LatLng(position.latitude, position.longitude),
           zoom: 10.0,
         ),
         markers: Set<Marker>.of(markers),
@@ -105,13 +125,13 @@ class _MyStatefulWidgetState extends State<maps> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Text("Cancel"),
-            activeIcon: Text("Cancel"),
+            icon: Text("Skip"),
+            activeIcon: Text("Skip"),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Text("Add Post"),
-            activeIcon: Text("Add Post"),
+            icon: Text("Add Location"),
+            activeIcon: Text("Add Location"),
             label: '',
           )
         ],
@@ -146,13 +166,33 @@ class _MyStatefulWidgetState extends State<maps> {
   int _selectedIndex = 0;
   Future<void> _onItemTapped(int index) async {
     if (index == 1) {
-      // try {
-      Navigator.pop(context, selectedLoc);
-      // } catch (Exception) {
-      //   print('null var');
-      // }
+      //there will always be a selected location(either the current or the selected by the user)
+      final postID = FirebaseFirestore.instance.collection('posts').doc(DBId);
+      postID.update({
+        'latitude': selectedLoc.latitude,
+        'longitude': selectedLoc.longitude
+      });
+      backToHomePage();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Post added successfully'),
+        ),
+      );
     } else if (index == 0) {
-      Navigator.pop(context);
-    } else {}
+      backToHomePage();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Post added successfully'),
+        ),
+      );
+    }
+  }
+
+  void backToHomePage() {
+    // Navigator.popUntil(context, ModalRoute.withName('/homePage'));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MyHomePage()),
+    );
   }
 }
