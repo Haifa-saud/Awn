@@ -8,7 +8,9 @@ import 'main.dart';
 
 class maps extends StatefulWidget {
   final String dataId;
-  const maps({Key? key, required this.dataId}) : super(key: key);
+  final String typeOfRequest;
+  const maps({Key? key, required this.dataId, required this.typeOfRequest})
+      : super(key: key);
 
   @override
   State<maps> createState() => _MyStatefulWidgetState();
@@ -17,10 +19,15 @@ class maps extends StatefulWidget {
 class _MyStatefulWidgetState extends State<maps> {
   GoogleMapController? mapController;
   List<Marker> markers = <Marker>[];
+  List<Marker> _markers = <Marker>[];
+
   Position position =
       Position.fromMap({'latitude': 24.7136, 'longitude': 46.6753});
 
   String DBId = '';
+  bool addPost = true;
+  String collName = '', sucessMsg = '';
+  BorderRadius border = BorderRadius.circular(0);
 
   void getCurrentPosition() async {
     bool serviceEnabled;
@@ -48,24 +55,51 @@ class _MyStatefulWidgetState extends State<maps> {
     setState(() {
       position = currentLocation;
     });
+
+    markers.add(Marker(
+      markerId: MarkerId('24242'
+          // currentLocation.latitude.toString() +
+          //   currentLocation.longitude.toString()
+          ),
+      position: LatLng(currentLocation.latitude, currentLocation.longitude),
+      infoWindow: const InfoWindow(
+        title: 'Institution Location ',
+      ),
+      icon: BitmapDescriptor.defaultMarker,
+      draggable: true,
+    ));
   }
 
   @override
   void initState() {
     getCurrentPosition();
-    markers.add(Marker(
-      markerId:
-          const MarkerId('1'), //have one id for all markers to avoid duplicate
-      position: LatLng(position.latitude, position.longitude),
-      infoWindow: const InfoWindow(
-        title: 'Institution Location ',
-      ),
-      icon: BitmapDescriptor.defaultMarker,
-      // draggable: true,
-    ));
+    // markers.add(Marker(
+    //   markerId: MarkerId(
+    //       position.latitude.toString() + position.longitude.toString()),
+    //   position: LatLng(position.latitude, position.longitude),
+    //   infoWindow: const InfoWindow(
+    //     title: 'Institution Location ',
+    //   ),
+    //   icon: BitmapDescriptor.defaultMarker,
+    //   draggable: true,
+    // ));
 
+    addPost = widget.typeOfRequest == 'P' ? true : false;
+    if (addPost) {
+      collName = 'posts';
+      border = const BorderRadius.only(
+        topRight: Radius.circular(30),
+        bottomRight: Radius.circular(30),
+      );
+      sucessMsg = 'Post is added successfully';
+    } else {
+      collName = 'requests';
+      border = BorderRadius.circular(30);
+      sucessMsg = 'Request is sent successfully';
+    }
     DBId = widget.dataId;
     super.initState();
+    print(addPost);
   }
 
   LatLng selectedLoc = LatLng(24.7136, 46.6753);
@@ -74,69 +108,158 @@ class _MyStatefulWidgetState extends State<maps> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Institution Location"),
+        title: const Text("Add Location"),
       ),
-      body: GoogleMap(
-        // onChanged: print('test'),
-        // mapToolbarEnabled: true,
-        onTap: (tapped) async {
-          markers.removeAt(0);
-          markers.insert(
-              0,
-              Marker(
-                markerId: MarkerId('1'),
-                position: LatLng(tapped.latitude, tapped.longitude),
-                infoWindow: const InfoWindow(
-                  title: 'Institution Location ',
-                ),
-                draggable: true,
-                icon: BitmapDescriptor.defaultMarker,
-              ));
-          selectedLoc = LatLng(tapped.latitude, tapped.longitude);
-          List<Placemark> placemark = await placemarkFromCoordinates(
-              selectedLoc.latitude, selectedLoc.longitude);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(placemark[0].street.toString() +
-                  ', ' +
-                  placemark[0].subLocality.toString() +
-                  '\n' +
-                  placemark[0].administrativeArea.toString() +
-                  ', ' +
-                  placemark[0].country.toString())));
-        },
-        // List<Placemark> placemarks = await placemarkFromCoordinates(52.2165157, 6.9437819);
+      body: Stack(
+        children: <Widget>[
+          GoogleMap(
+            markers: markers.toSet(),
+            onTap: (tapped) async {
+              markers.removeAt(0);
+              markers.insert(
+                  0,
+                  Marker(
+                    markerId: MarkerId(tapped.latitude.toString() +
+                        tapped.longitude.toString()),
+                    position: LatLng(tapped.latitude, tapped.longitude),
+                    infoWindow: const InfoWindow(
+                      title: 'Selected Location ',
+                    ),
+                    draggable: true,
+                    icon: BitmapDescriptor.defaultMarker,
+                  ));
+              setState(() {
+                _markers = markers;
+                print("items ready and set state");
+              });
 
-        zoomGesturesEnabled: true,
-        mapType: MapType.normal,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: true,
-        onMapCreated: (controller) {
-          setState(() {
-            mapController = controller;
-          });
-        },
-        initialCameraPosition: CameraPosition(
-          target: LatLng(position.latitude, position.longitude),
-          zoom: 10.0,
-        ),
-        markers: Set<Marker>.of(markers),
-      ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Text("Skip"),
-            activeIcon: Text("Skip"),
-            label: '',
+              print(markers);
+              selectedLoc = LatLng(tapped.latitude, tapped.longitude);
+              List<Placemark> placemark = await placemarkFromCoordinates(
+                  selectedLoc.latitude, selectedLoc.longitude);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text(placemark[0].street.toString() +
+                        ', ' +
+                        placemark[0].subLocality.toString() +
+                        '\n' +
+                        placemark[0].administrativeArea.toString() +
+                        ', ' +
+                        placemark[0].country.toString()),
+                    action: SnackBarAction(
+                      label: 'Dismiss',
+                      disabledTextColor: Colors.white,
+                      textColor: Colors.white,
+                      onPressed: () {
+                        //Do whatever you want
+                      },
+                    )),
+              );
+            },
+            zoomGesturesEnabled: true,
+            mapType: MapType.normal,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            onMapCreated: (controller) {
+              setState(() {
+                mapController = controller;
+              });
+            },
+            initialCameraPosition: CameraPosition(
+              target: LatLng(position.latitude, position.longitude),
+              zoom: 10.0,
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Text("Add Location"),
-            activeIcon: Text("Add Location"),
-            label: '',
-          )
+          Positioned.fill(
+            bottom: 15,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Visibility(
+                      visible: addPost,
+                      child: Container(
+                        width: 120,
+
+                        // margin: const EdgeInsets.fromLTRB(40, 0, 0, 0),
+                        decoration: const BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black26,
+                                offset: Offset(0, 4),
+                                blurRadius: 5.0)
+                          ],
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            stops: [0.0, 1.0],
+                            colors: [
+                              Colors.blue,
+                              Color(0xFF39d6ce),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            bottomLeft: Radius.circular(30),
+                          ),
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            backToHomePage();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            textStyle: const TextStyle(
+                              fontSize: 18,
+                            ),
+                            // side: BorderSide.only(
+                            //     color: Colors.grey.shade400, width: 1),
+                          ),
+                          child: const Text('Skip'),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 140,
+                      // margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black26,
+                              offset: Offset(0, 4),
+                              blurRadius: 5.0)
+                        ],
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomRight,
+                          end: Alignment.topLeft,
+                          stops: [0.0, 1.0],
+                          colors: [
+                            Colors.blue,
+                            Color(0xFF39d6ce),
+                          ],
+                        ),
+                        // borderRadius: BorderRadius.circular(30),
+                        borderRadius: border,
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          updateDB();
+                          backToHomePage();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          textStyle: const TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                        child: const Text('Add Location'),
+                      ),
+                    ),
+                  ]),
+            ),
+          ),
         ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
       ),
 
       // FloatingSearchBar.builder(
@@ -163,36 +286,23 @@ class _MyStatefulWidgetState extends State<maps> {
     );
   }
 
-  int _selectedIndex = 0;
-  Future<void> _onItemTapped(int index) async {
-    if (index == 1) {
-      //there will always be a selected location(either the current or the selected by the user)
-      final postID = FirebaseFirestore.instance.collection('posts').doc(DBId);
-      postID.update({
-        'latitude': selectedLoc.latitude,
-        'longitude': selectedLoc.longitude
-      });
-      backToHomePage();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Post added successfully'),
-        ),
-      );
-    } else if (index == 0) {
-      backToHomePage();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Post added successfully'),
-        ),
-      );
-    }
+  Future<void> updateDB() async {
+    final postID = FirebaseFirestore.instance.collection(collName).doc(DBId);
+    postID.update(
+        {'latitude': selectedLoc.latitude, 'longitude': selectedLoc.longitude});
   }
 
   void backToHomePage() {
-    // Navigator.popUntil(context, ModalRoute.withName('/homePage'));
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MyHomePage()),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(sucessMsg),
+      ),
     );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => MyHomePage()),
+    // );
+
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }

@@ -21,6 +21,7 @@ version: 1.0.0+1
 
 environment:
   sdk: '>=2.18.0-271.7.beta <3.0.0'
+  
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -52,8 +53,11 @@ dependencies:
   floating_search_bar: ^0.3.0
   flutter_google_places: ^0.3.0
   google_maps_controller: ^1.2.0
-  geocoder: ^0.2.1
+  # geocoder: ^0.2.1
   geocoding: ^2.0.5
+  intl: ^0.17.0
+  geocode: ^1.0.2
+  file_picker: ^3.0.4
 
 dev_dependencies:
   flutter_test:
