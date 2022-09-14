@@ -1,12 +1,12 @@
 //import 'package:flutter/foundation.dart';
 //import 'dart:html';
-
 import 'package:awn/addPost.dart';
 import 'package:awn/addRequest.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_maps_controller/google_maps_controller.dart';
 //import 'package:permission_handler/permission_handler.dart';
 import 'firebase_options.dart';
 //import 'package:firebase_storage/firebase_storage.dart';
@@ -183,125 +183,347 @@ class _MyPostListState extends State<Postlist> {
                             print('line 51');
                             return CircularProgressIndicator();
                           }
-                          final data = snapshot.requireData;
-                          print('line 55');
-                          return ListView.builder(
-                            itemCount: data.size,
-                            itemBuilder: (context, index) {
-                              print('line 59');
-                              return Card(
-                                  child: Column(
-                                children: [
-                                  //title
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.fromLTRB(10, 0, 290, 15),
-                                    child: Text(
-                                      ' ${data.docs[index]['name']}',
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ),
-                                  //category
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
-                                    child: Text(
-                                        ' ${data.docs[index]['category']}',
-                                        style: TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w500)),
-                                  ),
-                                  //website
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                    child: Row(
+                          if (!snapshot.hasData) {
+                            return Text('No available posts');
+                          } else {
+                            final data = snapshot.requireData;
+                            print('line 55');
+                            return ListView.builder(
+                              itemCount: data.size,
+                              itemBuilder: (context, index) {
+                                bool phone =
+                                    data.docs[index]['Phone number'] == ''
+                                        ? false
+                                        : true;
+                                bool website = data.docs[index]['Website'] == ''
+                                    ? false
+                                    : true;
+                                bool description =
+                                    data.docs[index]['description'] == ''
+                                        ? false
+                                        : true;
+                                bool loc = data.docs[index]['latitude'] == ''
+                                    ? false
+                                    : true;
+                                bool img = data.docs[index]['img'] == ''
+                                    ? false
+                                    : true;
+                                // Icon icon = data.docs[index]['img'] == '' ? Icon(Icons.navigate_before,
+                                //     color: Colors.white);
+
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 36.0, vertical: 16),
+                                  child: Container(
+                                    child: Stack(
                                       children: [
-                                        Text('${data.docs[index]['Website']}',
-                                            style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w500)),
-                                      ],
-                                    ),
-                                  ),
-                                  //phone number
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                            '${data.docs[index]['Phone number']}',
-                                            style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w500)),
-                                      ],
-                                    ),
-                                  ),
-                                  //description
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
-                                    child: Row(
-                                      children: [
-                                        Flexible(
-                                          child: Text(
-                                              'Description: ${data.docs[index]['description']}',
-                                              //   overflow:
-                                              //   TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.w500)),
+                                        Container(
+                                          width: 600,
+                                          margin: EdgeInsets.only(top: 12),
+                                          padding: EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    blurRadius: 32,
+                                                    color: Colors.black45,
+                                                    spreadRadius: -8)
+                                              ],
+                                              borderRadius:
+                                                  BorderRadius.circular(15)),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 0, 0, 0),
+                                                child: Text(
+                                                    '${data.docs[index]['name']}',
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(
+                                                        fontSize: 18)),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    1, 0, 4, 4),
+                                                child: Text(
+                                                    '${data.docs[index]['category']}',
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(
+                                                        fontSize: 14)),
+                                              ),
+                                              Positioned(
+                                                top: 0,
+                                                right: 0,
+                                                child: Image.network(
+                                                  data.docs[index]['img'],
+                                                  width: 100,
+                                                  height: 100,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (BuildContext
+                                                          context,
+                                                      Object exception,
+                                                      StackTrace? stackTrace) {
+                                                    return const Text(
+                                                        'Image couldnt load');
+                                                  },
+                                                ),
+                                              ),
+                                              Visibility(
+                                                visible: website ||
+                                                    phone ||
+                                                    description,
+                                                child: ExpansionTile(
+                                                  title: Text(
+                                                    'View more',
+                                                    style: const TextStyle(
+                                                      fontSize: 15.0,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 450,
+                                                      child: Visibility(
+                                                        visible: phone,
+                                                        child: Text(
+                                                          '${data.docs[index]['Phone number']}',
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 15.0,
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    158,
+                                                                    0,
+                                                                    0,
+                                                                    0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 450,
+                                                      child: Visibility(
+                                                        visible: website,
+                                                        child: Text(
+                                                          '${data.docs[index]['Website']}',
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 15.0,
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    158,
+                                                                    0,
+                                                                    0,
+                                                                    0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    //description
+                                                    SizedBox(
+                                                      width: 450,
+                                                      child: Visibility(
+                                                        visible: website,
+                                                        child: Text(
+                                                          '${data.docs[index]['description']}',
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 15.0,
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    158,
+                                                                    0,
+                                                                    0,
+                                                                    0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Visibility(
+                                                      visible: phone,
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        child: ElevatedButton(
+                                                            style: ElevatedButton
+                                                                .styleFrom(
+                                                                    foregroundColor:
+                                                                        Colors
+                                                                            .blue,
+                                                                    backgroundColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    padding:
+                                                                        const EdgeInsets.fromLTRB(
+                                                                            17,
+                                                                            16,
+                                                                            17,
+                                                                            16),
+                                                                    textStyle:
+                                                                        const TextStyle(
+                                                                      fontSize:
+                                                                          18,
+                                                                    ),
+                                                                    side: BorderSide(
+                                                                        color: Colors
+                                                                            .grey
+                                                                            .shade400,
+                                                                        width:
+                                                                            1)),
+                                                            child: Text(
+                                                                'Add Image'),
+                                                            onPressed: () {
+                                                              double latitude =
+                                                                  double.parse(data
+                                                                              .docs[
+                                                                          index]
+                                                                      [
+                                                                      'latitude']);
+                                                              double longitude =
+                                                                  double.parse(data
+                                                                              .docs[
+                                                                          index]
+                                                                      [
+                                                                      'longitude']);
+                                                              (Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (context) => MapsPage(
+                                                                        latitude:
+                                                                            latitude,
+                                                                        longitude:
+                                                                            longitude),
+                                                                  )));
+                                                            }),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                  //location
-                                  Padding(
-                                      padding: EdgeInsets.all(10),
-                                      child: ElevatedButton(
-                                          onPressed: () {
-                                            double latitude = double.parse(data
-                                                .docs[index]['latitude']
-                                                .toString());
-                                            double longitude = double.parse(data
-                                                .docs[index]['longitude']
-                                                .toString());
+                                );
+                                //   print('line 59');
+                                //   return Card(
+                                //       child: Column(
+                                //     children: [
+                                //       //title
+                                //       Padding(
+                                //         padding:
+                                //             EdgeInsets.fromLTRB(10, 0, 290, 15),
+                                //         child: Text(
+                                //           ' ${data.docs[index]['name']}',
+                                //           textAlign: TextAlign.left,
+                                //         ),
+                                //       ),
+                                //       //category
+                                //       Padding(
+                                //         padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
+                                //         child: Text(
+                                //             ' ${data.docs[index]['category']}',
+                                //             style: TextStyle(
+                                //                 fontSize: 17,
+                                //                 fontWeight: FontWeight.w500)),
+                                //       ),
+                                //       //website
+                                //       Padding(
+                                //         padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
+                                //         child: Row(
+                                //           children: [
+                                //             Text('${data.docs[index]['Website']}',
+                                //                 style: TextStyle(
+                                //                     fontSize: 17,
+                                //                     fontWeight: FontWeight.w500)),
+                                //           ],
+                                //         ),
+                                //       ),
+                                //       //phone number
+                                //       Padding(
+                                //         padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
+                                //         child: Row(
+                                //           children: [
+                                //             Text(
+                                //                 '${data.docs[index]['Phone number']}',
+                                //                 style: TextStyle(
+                                //                     fontSize: 17,
+                                //                     fontWeight: FontWeight.w500)),
+                                //           ],
+                                //         ),
+                                //       ),
+                                //       //description
+                                //       Padding(
+                                //         padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
+                                //         child: Row(
+                                //           children: [
+                                //             Flexible(
+                                //               child: Text(
+                                //                   'Description: ${data.docs[index]['description']}',
+                                //                   //   overflow:
+                                //                   //   TextOverflow.ellipsis,
+                                //                   style: TextStyle(
+                                //                       fontSize: 17,
+                                //                       fontWeight: FontWeight.w500)),
+                                //             ),
+                                //           ],
+                                //         ),
+                                //       ),
+                                //       //location
+                                //       Padding(
+                                //           padding: EdgeInsets.all(10),
+                                //           child: ElevatedButton(
+                                //               onPressed: () {
+                                //                 double latitude = double.parse(data
+                                //                     .docs[index]['latitude']
+                                //                     .toString());
+                                //                 double longitude = double.parse(data
+                                //                     .docs[index]['longitude']
+                                //                     .toString());
 
-                                            (Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      MapsPage(
-                                                          latitude: latitude,
-                                                          longitude: longitude),
-                                                )));
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.grey.shade500,
-                                              backgroundColor: Colors.white,
-                                              padding: EdgeInsets.fromLTRB(
-                                                  14, 20, 14, 20),
-                                              side: BorderSide(
-                                                  color: Colors.grey.shade400,
-                                                  width: 2)),
-                                          child: Text('Location',
-                                              style: TextStyle(
-                                                  color: Colors.black)))),
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.location_on_outlined,
-                                            size: 20, color: Colors.red),
-                                        Text('location',
-                                            style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w500)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ));
-                            },
-                          );
+                                //                 (Navigator.push(
+                                //                     context,
+                                //                     MaterialPageRoute(
+                                //                       builder: (context) =>
+                                //                           MapsPage(
+                                //                               latitude: latitude,
+                                //                               longitude: longitude),
+                                //                     )));
+                                //               },
+                                //               style: ElevatedButton.styleFrom(
+                                //                   foregroundColor:
+                                //                       Colors.grey.shade500,
+                                //                   backgroundColor: Colors.white,
+                                //                   padding: EdgeInsets.fromLTRB(
+                                //                       14, 20, 14, 20),
+                                //                   side: BorderSide(
+                                //                       color: Colors.grey.shade400,
+                                //                       width: 2)),
+                                //               child: Text('Location',
+                                //                   style: TextStyle(
+                                //                       color: Colors.black)))),
+                                //       Padding(
+                                //         padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
+                                //         child: Row(
+                                //           children: [
+                                //             Icon(Icons.location_on_outlined,
+                                //                 size: 20, color: Colors.red),
+                                //             Text('location',
+                                //                 style: TextStyle(
+                                //                     fontSize: 17,
+                                //                     fontWeight: FontWeight.w500)),
+                                //           ],
+                                //         ),
+                                //       ),
+                                //     ],
+                                //   ));
+                              },
+                            );
+                          }
                         },
                       )))
             ],
@@ -462,4 +684,52 @@ class Post {
 
   Post(this.name, this.category, this.img, this.website, this.phoneNum,
       this.description, this.latitude, this.longitude);
+}
+
+class MapsPage extends StatefulWidget {
+  final double latitude;
+  final double longitude;
+  @override
+  const MapsPage({Key? key, required this.latitude, required this.longitude})
+      : super(key: key);
+  State<MapsPage> createState() => _MapsPageState();
+}
+
+class _MapsPageState extends State<MapsPage> {
+  late GoogleMapController myController;
+  /*getMarkerData() async {
+    FirebaseFirestore.instance.collection('requests').;
+  }*/
+
+  Widget build(BuildContext context) {
+    Set<Marker> getMarker() {
+      return <Marker>[
+        Marker(
+            markerId: MarkerId(''),
+            position: LatLng(widget.latitude, widget.longitude),
+            icon: BitmapDescriptor.defaultMarker,
+            infoWindow: InfoWindow(title: 'Special need location'))
+      ].toSet();
+    }
+
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Awn Request Location'),
+          leading: IconButton(
+            icon: const Icon(Icons.navigate_before, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: GoogleMap(
+          markers: getMarker(),
+          mapType: MapType.normal,
+          initialCameraPosition: CameraPosition(
+            target: LatLng(widget.latitude, widget.longitude),
+            zoom: 14.0,
+          ),
+          onMapCreated: (GoogleMapController controller) {
+            myController = controller;
+          },
+        ));
+  }
 }
