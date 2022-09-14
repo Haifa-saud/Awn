@@ -6,8 +6,24 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>Awn</string>
+
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allow access to photo library</string>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+
+	<key>UIBackgroundModes</key>
+	<array>
+	<string>fetch</string>
+   <string>remote-notification</string>
+   </array>
+
+   <key>NSAppTransportSecurity</key>
+   <dict>
+    <key>NSAllowsLocalNetworking</key>
+    <true/>
+	</dict>
+
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

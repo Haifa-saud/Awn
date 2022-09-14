@@ -1,47 +1,20 @@
 
 import 'package:flutter/material.dart';  
-import 'package:file_picker/file_picker.dart';  
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
+import 'package:awn/main.dart'; 
 
-  Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
-  } 
-      
-    class MyApp extends StatelessWidget {
-    const MyApp({super.key});
-  
-      @override  
-      Widget build(BuildContext context) {  
-        const appTitle = 'Sign Up';  
-        return MaterialApp(  
-          title: appTitle,  
-          home: Scaffold(  
-            appBar: AppBar(  
-              title: const Text(appTitle),  
-            ),  
-            body: MyCustomForm(),  
-          ),  
-        );  
-      }  
-    }  
     
     // Create a Form widget.  
-    class MyCustomForm extends StatefulWidget {
-
-      const MyCustomForm({super.key});
-  
+    class Register_V extends StatefulWidget {
+      const Register_V({super.key}) ;
       @override  
-      MyCustomFormState createState() {  
-        return MyCustomFormState();  
-      }  
+      State<Register_V> createState() =>  MyCustomFormState();
     }  
     // Create a corresponding State class, which holds data related to the form.  
-    class MyCustomFormState extends State<MyCustomForm> {  
+    class MyCustomFormState extends State<Register_V> {  
       CollectionReference posts = FirebaseFirestore.instance.collection('users');
       // Create a global key that uniquely identifies the Form widget  
       // and allows validation of the form.  
@@ -53,10 +26,10 @@ import 'package:flutter/services.dart';
       String email = "";
       String confirmEmail= "";
       String disability = "";
-      int phoneNumber = 0 ;
+      String phoneNumber = "" ;
       String fName  = "";
       String lName  = "";
-      String bDay= "";
+      String bDay = "";
       String description = "";
 
       
@@ -81,11 +54,36 @@ import 'package:flutter/services.dart';
     }).then((value) => print("User Added"));
   }
 
-
+  GlobalKey<ScaffoldState> _scaffoldStateKey =  GlobalKey();
       @override  
       Widget build(BuildContext context) {  
+
+        
         // Build a Form widget using the _formKey created above.  
-        return Form(  
+        return Scaffold(
+      appBar: AppBar(
+        title: const Text('Add Post'),
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.black),
+          onPressed: () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              content: const Text('Discard the changes you made?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {},
+                  child: const Text('Keep editing'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Discard'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body:Form(  
           key: _formKey,  
           child: SingleChildScrollView(
           child: Column(  
@@ -147,7 +145,7 @@ import 'package:flutter/services.dart';
                   if (value == null || value.isEmpty) {  
                     return 'Please enter valid phone number';  
                   }  
-                  phoneNumber = int.parse(value); 
+                  phoneNumber = value.toString(); 
                   return null;  
                 },  
               ),  
@@ -357,10 +355,14 @@ import 'package:flutter/services.dart';
                       
                             child: const Text('Submit'),
                     ),
-                  ),  
+                  ), 
+
+
             ],  
           ), 
           ), 
-        );  
+        )
+        ); 
+         
       }  
     }

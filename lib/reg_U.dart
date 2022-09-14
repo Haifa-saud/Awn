@@ -10,32 +10,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'main.dart';
-import 'package:open_file/open_file.dart';
 
 //import 'package:simple_permissions/simple_permissions.dart';
 
-  Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp( const MyApp()); }
-
-  class MyApp extends StatelessWidget {
-    const MyApp({super.key});
   
-      @override  
-      Widget build(BuildContext context) {  
-        const appTitle = 'Sign Up';  
-        return MaterialApp(  
-          title: appTitle,  
-          home: Scaffold(  
-            appBar: AppBar(  
-              title: const Text(appTitle),  
-            ),  
-            body: reg_U(),  
-          ),  
-        );  
-      }  
-    }  
 
     class reg_U extends StatefulWidget {
       const reg_U({super.key});
@@ -51,7 +29,7 @@ import 'package:open_file/open_file.dart';
         final result = await FilePicker.platform.pickFiles();
         if(result == null)  return ; 
         final file = result.files.first;
-        openfile(file);
+        
 
         // print('Name: ${file.name}');
         // print('Name: ${file.bytes}');
@@ -59,10 +37,6 @@ import 'package:open_file/open_file.dart';
         // print('Name: ${file.path}');
 
        // final newFile = await saveFilePermanetly(file);
-
-        // $ git add .
-
-
       }
       // Future<File> saveFilePermanetly(PlatformFile file) async {
       //   final appStorage = await getApplicationDocumentsDirectory();
@@ -70,20 +44,18 @@ import 'package:open_file/open_file.dart';
       //   return File(file.path!).copy(newFile.path);
 
       // }
-       void openfile(PlatformFile file){
-        OpenFile.open( file.path! );
-
-       }
+       
       Future uploadFile() async{
         final path = 'User/${pickedFile!.name}';
         final file = File(pickedFile!.path!);
         final ref = FirebaseStorage.instance.ref().child(path);
         ref.putFile(file);
       }
-      CollectionReference posts = FirebaseFirestore.instance.collection('users');
+      
       // Create a global key that uniquely identifies the Form widget  
       // and allows validation of the form. 
       final _formKey = GlobalKey<FormState>();
+      CollectionReference posts = FirebaseFirestore.instance.collection('users');
 
       String gender = "male";
       String password = "";
@@ -121,7 +93,30 @@ import 'package:open_file/open_file.dart';
       @override  
       Widget build(BuildContext context) {  
         // Build a Form widget using the _formKey created above.  
-        return Form(  
+        return Scaffold(
+      appBar: AppBar(
+        title: const Text('Add Post'),
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.black),
+          onPressed: () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              content: const Text('Discard the changes you made?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {},
+                  child: const Text('Keep editing'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Discard'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body:Form(  
           key: _formKey,  
           child: SingleChildScrollView(
           child: Column(  
@@ -416,7 +411,7 @@ import 'package:open_file/open_file.dart';
                             Check_other = value!; });
                             },
                    ),
-                   const Text('wheelchair user',
+                   const Text('Other',
                    style: TextStyle(fontSize: 18))
                    ],
               ),
@@ -433,9 +428,7 @@ import 'package:open_file/open_file.dart';
                 
               ),
               
-            
-            
-               
+
               //  ****** Submit button **** 
                Container(  
                   padding: const EdgeInsets.only(left: 150.0, top: 40.0),  
@@ -479,6 +472,7 @@ import 'package:open_file/open_file.dart';
             ],  
           ), 
           ), 
+        )
         );  
       }  
 
