@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'firebase_options.dart';
@@ -38,6 +39,8 @@ TextEditingController passwordController = TextEditingController();
 TextEditingController cofirmPasswordController = TextEditingController();
 TextEditingController nameController = TextEditingController();
 TextEditingController numberController = TextEditingController();
+TextEditingController bioController = TextEditingController();
+
 String group = "gender";
 String group1 = "role";
 bool blind = false;
@@ -45,10 +48,14 @@ bool mute = false;
 bool deaf = false;
 bool physical = false;
 bool other = false;
-late PlatformFile pickedFile;
+PlatformFile pickedFile = new PlatformFile(name: '', size: 0);
 String label = "click to upload disability certificate";
 bool upload = false;
-String filePath = "click to choose file";
+String filePath = "Pick file";
+File? fileDB;
+//Wedd's change
+String password = "";
+String confirm_password = "";
 
 class _registerState extends State<register> {
   @override
@@ -65,38 +72,15 @@ class _registerState extends State<register> {
     super.dispose();
   }
 
+  //   void clearForm() {
+  //   nameController.clear();
+  //   descriptionController.clear();
+  //   numberController.clear();
+  //   websiteController.clear();
+  //   imagePath = '';
+  // }
+
   //add file methods
-
-  var editImg = '';
-  Future<void> addImage() async {
-    await Permission.photos.request();
-    var permissionStatus = await Permission.photos.status;
-    if (permissionStatus.isGranted) {
-      XFile? img = await ImagePicker().pickImage(source: ImageSource.gallery);
-      setState(() {
-        File image = File(img!.path);
-        print('Image path $image');
-        // imagePath = image.toString();
-        // imageDB = image;
-        editImg = 'Update Image';
-      });
-    }
-  }
-
-  Future uploadFile() async {
-    final path = 'User/${pickedFile.name}';
-    final file = File(pickedFile.path!);
-    final ref = FirebaseStorage.instance.ref().child(path);
-    UploadTask uploadTask = ref.putFile(file);
-
-    String filePath = Path.basename(file.path);
-    TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
-    filePath = await (await uploadTask).ref.getDownloadURL();
-
-    CollectionReference posts = FirebaseFirestore.instance.collection('users');
-
-    DocumentReference docReference = await posts.add({'file': filePath});
-  }
 
   DateTime selectedDate = DateTime.now();
   bool showDate = false;
@@ -118,7 +102,6 @@ class _registerState extends State<register> {
   }
 
   String getDate() {
-    // ignore: unnecessary_null_comparison
     if (selectedDate == null) {
       return 'select date';
     } else {
@@ -157,8 +140,6 @@ class _registerState extends State<register> {
                   if (snapshot.connectionState == ConnectionState.done &&
                       snapshot.hasData) {
                     return Center(
-                      //width: 100,
-                      // height: 100,
                       child: Image.network(
                         snapshot.data!,
                         fit: BoxFit.cover,
@@ -197,8 +178,8 @@ class _registerState extends State<register> {
                   ),
                   TextFormField(
                     controller: emailController,
-                    decoration: theme.inputfield(
-                        "enter your email", "example@example.example"),
+                    decoration:
+                        theme.inputfield("Email", "example@example.example"),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (email) {
                       if (email != null && !EmailValidator.validate(email))
@@ -212,8 +193,7 @@ class _registerState extends State<register> {
                   ),
                   TextFormField(
                     controller: nameController,
-                    decoration:
-                        theme.inputfield("enter your name", "Sara Adams"),
+                    decoration: theme.inputfield("Name", "Sara Ahmad"),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
                       if (value != null && value.length < 2)
@@ -248,7 +228,10 @@ class _registerState extends State<register> {
                                 });
                               },
                             ),
-                            Text("Female"),
+                            Text("Female",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal)),
                             Radio(
                               value: "Male",
                               groupValue: group,
@@ -259,7 +242,10 @@ class _registerState extends State<register> {
                                 });
                               },
                             ),
-                            Text("Male"),
+                            Text("Male",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal)),
                           ],
                         ),
                         Row(
@@ -267,19 +253,23 @@ class _registerState extends State<register> {
                             Text("Register As:"),
                           ],
                         ),
+                        Row(children: [
+                          Radio(
+                            value: "Special Need User",
+                            groupValue: group1,
+                            onChanged: (T) {
+                              print(T);
+                              setState(() {
+                                group1 = T!;
+                              });
+                            },
+                          ),
+                          Text("Special Needs User",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.normal)),
+                        ]),
                         Row(
                           children: [
-                            Radio(
-                              value: "Special Needs User",
-                              groupValue: group1,
-                              onChanged: (T) {
-                                print(T);
-                                setState(() {
-                                  group1 = T!;
-                                });
-                              },
-                            ),
-                            Text("Special Needs User"),
                             Radio(
                               value: "Volunteer",
                               groupValue: group1,
@@ -290,7 +280,10 @@ class _registerState extends State<register> {
                                 });
                               },
                             ),
-                            Text("Volunteer"),
+                            Text("Volunteer",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal)),
                           ],
                         ),
                       ],
@@ -298,23 +291,35 @@ class _registerState extends State<register> {
                   ),
                   Container(
                     child: LayoutBuilder(builder: (context, constraints) {
-                      if (group1.isNotEmpty && group1 == "Volunteer") {
-                        return Card(
-                            color: Color.fromARGB(255, 243, 241, 241),
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: TextField(
-                                maxLines: 5, //or null
-                                decoration: InputDecoration.collapsed(
-                                    hintText:
-                                        "Enter your bio here. \n(talk briefly about yourself! )"),
+                      if (group1 == "Volunteer") {
+                        return Container(
+                          padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                          child: TextFormField(
+                            keyboardType: TextInputType.multiline,
+                            maxLines: 4,
+                            maxLength: 300,
+                            textAlign: TextAlign.left,
+                            controller: bioController,
+                            decoration: InputDecoration(
+                              hintText:
+                                  "Enter your bio here.\n(talk briefly about yourself! )",
+                              labelText: 'Bio',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                  borderSide:
+                                      BorderSide(color: Colors.grey.shade400)),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                                borderSide:
+                                    BorderSide(color: Colors.blue, width: 2),
                               ),
-                            ));
-                      } else if (group1.isNotEmpty &&
-                          group1 == 'Special Need User') {
+                            ),
+                          ),
+                        );
+                      } else if (group1 == 'Special Need User') {
                         return Column(
                           children: [
-                            Text(
+                            /* Text(
                               "Click to upload your disability certificate:",
                             ),
                             Container(
@@ -332,9 +337,7 @@ class _registerState extends State<register> {
                                   child: Text(
                                     filePath,
                                     style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight
-                                          .bold, /*color: Colors.white*/
+                                      fontSize: 15, /*color: Colors.white*/
                                     ),
                                   ),
                                 ),
@@ -342,15 +345,13 @@ class _registerState extends State<register> {
 
                                 /*() {
                                  //After successful login we will redirect to profile page. Let's create profile page now
-
-                      
                                 },*/
                                 // Navigator.pushReplacement(
                                 // context,
                                 // MaterialPageRoute(
                                 //  builder: (context) => ProfilePage()));
                               ),
-                            ),
+                            ),*/
                             SizedBox(
                               height: height * 0.01,
                             ),
@@ -364,48 +365,65 @@ class _registerState extends State<register> {
                             SizedBox(
                               height: height * 0.01,
                             ),
+
+                            //Wedd's change
+                            // each row must have a check box and a text
+                            Row(children: [
+                              SizedBox(
+                                height: 24.0,
+                                width: 35.0,
+                                child: Checkbox(
+                                    value: blind,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        blind = value!;
+                                      });
+                                    }),
+                              ),
+                              Text("Visually Impaired",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal)),
+                            ]),
+
+                            Row(children: [
+                              SizedBox(
+                                height: 24.0,
+                                width: 35.0,
+                                child: Checkbox(
+                                    value: mute,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        mute = value!;
+                                      });
+                                    }),
+                              ),
+                              Text("Vocally Impaired",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal)),
+                            ]),
+
+                            Row(children: [
+                              SizedBox(
+                                height: 24.0,
+                                width: 35.0,
+                                child: Checkbox(
+                                    value: deaf,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        deaf = value!;
+                                      });
+                                    }),
+                              ),
+                              Text("Hearing Impaired",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal)),
+                            ]),
+
                             Row(
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 24.0,
-                                  width: 35.0,
-                                  child: Checkbox(
-                                      value: blind,
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          blind = value!;
-                                        });
-                                      }),
-                                ),
-                                Text("Visually Impaired"),
-                                SizedBox(
-                                  height: 24.0,
-                                  width: 35.0,
-                                  child: Checkbox(
-                                      value: mute,
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          mute = value!;
-                                        });
-                                      }),
-                                ),
-                                Text("Vocally Impaired"),
-                              ],
-                            ),
-                            Row(
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 24.0,
-                                  width: 35.0,
-                                  child: Checkbox(
-                                      value: deaf,
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          deaf = value!;
-                                        });
-                                      }),
-                                ),
-                                Text("hearing Impaired"),
+                              children: [
                                 SizedBox(
                                   height: 24.0,
                                   width: 35.0,
@@ -417,7 +435,10 @@ class _registerState extends State<register> {
                                         });
                                       }),
                                 ),
-                                Text("physically Impaired"),
+                                Text("Physically Impaired",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.normal)),
                               ],
                             ),
                             Row(
@@ -433,13 +454,16 @@ class _registerState extends State<register> {
                                         });
                                       }),
                                 ),
-                                Text("other"),
+                                Text("other",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.normal)),
                               ],
                             ),
                           ],
                         );
                       } else {
-                        return Text('Click to select your date of birth');
+                        return Text('');
                       }
                     }),
                   ),
@@ -447,6 +471,7 @@ class _registerState extends State<register> {
                     height: height * 0.01,
                   ),
                   // WEDD START FROM HERE
+                  //DOB
                   Container(
                     // padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
                     margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -458,7 +483,8 @@ class _registerState extends State<register> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          "Click to select your date of birth:",
+                          "Date of Birth:",
+                          textAlign: TextAlign.left, //style:TextStyle(re)
                         ),
                         SizedBox(
                           height: height * 0.01,
@@ -501,27 +527,44 @@ class _registerState extends State<register> {
                     ),
                   ),
                   //END HERE
+                  //Phone number
                   TextFormField(
                     controller: numberController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                    maxLength: 10,
                     decoration: theme.inputfield(
                         "enter your phone number", "0555555555"),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
+                    //wedd's chnges
                     validator: (value) {
-                      if (value != null && value.length < 10)
-                        return "Enter a valid number";
-                      else
-                        return null;
+                      // if (value != null && value.length < 10)
+                      //   return "Enter a valid number";
+                      // else
+                      //   return null;
+
+                      //Wedd's changes
+                      if (value == null) {
+                        return "Please enter a phone number";
+                      } else if (value.length != 10) {
+                        return "Please enter a valid phone number";
+                      }
                     },
                   ),
                   SizedBox(
                     height: height * 0.01,
                   ),
+                  //Password
                   TextFormField(
                     controller: passwordController,
                     obscureText: !_passwordVisible,
                     decoration: InputDecoration(
-                      labelText: "Enter Password",
-                      hintText: "Password",
+                      labelText: "Password",
+                      //Wedd's change
+                      hintText:
+                          "must have upper case, digit, more than 8 digits",
                       suffixIcon: IconButton(
                         icon: Icon(
                           // Based on passwordVisible state choose the icon
@@ -555,10 +598,37 @@ class _registerState extends State<register> {
                     ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      if (value != null && value.length < 6)
-                        return " min 6 alpanumerical characters";
-                      else
+                      //خليت اللي يسبب ايرور كومنت عشان ماقدرت اسوي رن
+                      //Wedd's change
+                      // RegExp Upper = RegExp(r'^(?=.*? [A-Z])');
+                      // RegExp digit = RegExp(r'^(?=.*?[0-9])');
+                      // if (value == null){
+                      //   return "please enter a password";
+                      // } else if (value.length < 7) {
+                      //   return "password should at least be 8 digits"; //ود موجودة ؟
+                      // }  else if (!Upper.hasMatch(value)) {
+                      // return "password should contain an Upper case";
+                      // }  else if (!digit.hasMatch(value)) {
+                      //   return "password should contain a number";
+
+                      // } else {
+                      //   return null;
+                      // }
+                      // شكرا !!!!
+                      RegExp Upper = RegExp(r'^(?=.*?[A-Z])');
+                      RegExp digit = RegExp(r'^(?=.*?[0-9])');
+
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a password';
+                      } else if (value.length < 8) {
+                        return 'Password must be at least 8 digits ';
+                      } else if (!Upper.hasMatch(value)) {
+                        return 'Password should contain an upper case';
+                      } else if (!digit.hasMatch(value)) {
+                        return 'Password should contain a number';
+                      } else {
                         return null;
+                      }
                     },
                   ),
                   SizedBox(
@@ -568,7 +638,7 @@ class _registerState extends State<register> {
                     controller: cofirmPasswordController,
                     obscureText: !_passwordVisible,
                     decoration: InputDecoration(
-                      labelText: "Enter Password",
+                      labelText: "Confirm Password",
                       hintText: "Password",
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -603,10 +673,12 @@ class _registerState extends State<register> {
                     ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      if (value != null && value.length < 6)
-                        return " min 6 alpanumerical characters";
-                      else
+                      //Wedd's change
+                      if (value == null) {
+                        return "please confirm password";
+                      } else {
                         return null;
+                      }
                     },
                   ),
                   SizedBox(
@@ -680,7 +752,7 @@ class _registerState extends State<register> {
                     margin: EdgeInsets.fromLTRB(50, 10, 50, 10),
                     //child: Text('Don\'t have an account? Create'),
                     child: Text.rich(TextSpan(children: [
-                      TextSpan(text: "Don\'t have an account? "),
+                      TextSpan(text: "Already have an account? "),
                       TextSpan(
                         recognizer: TapGestureRecognizer()
                           ..onTap = widget.onClickedSignIn,
@@ -717,12 +789,12 @@ class _registerState extends State<register> {
     }
     setState(() {
       pickedFile = result.files.first;
-      final path = 'User/${pickedFile.name}';
-      final file = File(pickedFile.path!);
-      final ref = FirebaseStorage.instance.ref().child(path);
-      UploadTask uploadTask = ref.putFile(file);
+      fileDB = File(pickedFile.path!);
 
-      filePath = Path.basename(file.path);
+      // final path = 'User/${pickedFile.name}'; //خليه جالسه اجرب
+      // final file = File(pickedFile.path!);
+      // final ref = FirebaseStorage.instance.ref().child(path);
+      // UploadTask uploadTask = ref.putFile(file);
     });
   }
 
@@ -736,7 +808,23 @@ class _registerState extends State<register> {
       );
     } on FirebaseAuthException catch (e) {
       print(e);
-      Utils.showSnackBar(e.message);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('e.message'),
+          backgroundColor: Colors.red.shade400,
+          margin: EdgeInsets.fromLTRB(6, 0, 3, 0),
+          behavior: SnackBarBehavior.floating,
+          action: SnackBarAction(
+            label: 'Dismiss',
+            disabledTextColor: Colors.white,
+            textColor: Colors.white,
+            onPressed: () {
+              //Do whatever you want
+            },
+          ),
+        ),
+      );
+      // Utils.showSnackBar(e.message);
     }
   }
 }
@@ -755,37 +843,62 @@ bool other = false;*/
     String number = numberController.text;
     String age = globals.bDay;
     String disability = "";
+    String bio = bioController.text;
 
     if (blind == true && blind != null) disability += " blind,";
     if (mute == true && mute != null) disability += " mute,";
     if (deaf == true && deaf != null) disability += " deaf,";
     if (physical == true && physical != null) disability += " physical,";
     if (other == true && other != null) disability += " other,";
-
-    final path = 'User/${pickedFile.name}';
-    final file = File(pickedFile.path!);
-    final ref = FirebaseStorage.instance.ref().child(path);
-    UploadTask uploadTask = ref.putFile(file);
-
-    String filePath = Path.basename(file.path);
-    TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
-    filePath = await (await uploadTask).ref.getDownloadURL();
-
-    //DocumentReference docReference = await posts.add({'file': filePath});
-
-    Map<String, dynamic> userData = {
-      "Email": email,
-      "Type": group1,
-      "Disability": disability,
-      "gender": group,
-      "name": name,
-      "phone number": number,
-      "DOB": age,
-      "file": filePath,
-    };
     final userRef = db.collection("users").doc(user!.uid);
-    if (!((await userRef.get()).exists)) {
-      await userRef.set(userData);
+
+    Map<String, dynamic> userData;
+    if (group1 == "Volunteer") {
+      if (!((await userRef.get()).exists)) {
+        await userRef.set({
+          "Email": email,
+          "Type": group1,
+          "bio": bio,
+          "gender": group,
+          "name": name,
+          "phone number": number,
+          "DOB": age,
+        });
+      } else {
+        // if (result.files.first != null){
+        // var len = pickedFile? ?? '0';
+        if (fileDB == null) {
+          File file = fileDB!;
+          String filePath = Path.basename(file.path);
+
+          final path = 'User/${pickedFile.name}';
+          // String pickedPath = pickedFile.path == '' ? '' : pickedFile.path;
+          // final file = File(pickedFile!.path!);
+          // if (result.files.first != null){
+          final ref = FirebaseStorage.instance.ref().child(filePath);
+          UploadTask uploadTask = ref.putFile(file);
+
+          // String filePath = Path.basename(file.path);
+          TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+          filePath = await (await uploadTask).ref.getDownloadURL();
+          if (!((await userRef.get()).exists)) {
+            await userRef.set({
+              "Email": email,
+              "Type": group1,
+              "Disability": disability,
+              "gender": group,
+              "name": name,
+              "phone number": number,
+              "DOB": age,
+              "file": filePath,
+            });
+          }
+          // final userRef = db.collection("users").doc(user!.uid);
+          // if (!((await userRef.get()).exists)) {
+          //   await userRef.set(userData);
+          // }
+        }
+      }
     }
   }
 }

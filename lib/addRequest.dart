@@ -18,6 +18,16 @@ class addRequest extends StatefulWidget {
   State<addRequest> createState() => _AddRequestState();
 }
 
+TextEditingController titleController = TextEditingController();
+TextEditingController durationController = TextEditingController();
+TextEditingController descController = TextEditingController();
+void clearForm() {
+  titleController.clear();
+  durationController.clear();
+  descController.clear();
+  ;
+}
+
 class _AddRequestState extends State<addRequest> {
   @override
   Widget build(BuildContext context) {
@@ -36,8 +46,10 @@ class _AddRequestState extends State<addRequest> {
                     child: const Text('Keep editing'),
                   ),
                   TextButton(
-                    onPressed: () => Navigator.of(context)
-                        .popUntil((route) => route.isFirst),
+                    onPressed: () {
+                      clearForm();
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    },
                     child: const Text('Discard'),
                   ),
                 ],
@@ -165,23 +177,28 @@ class AwnRequestFormState extends State<AwnRequestForm> {
         padding: const EdgeInsets.all(15),
         child: ListView(
           children: <Widget>[
+            Container(
+                child: Text(
+              '*indicates requered fields',
+              style: TextStyle(fontSize: 15),
+            )),
             /*title*/ Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 6),
-              child: Text('What help do you need?'),
+              child: Text('What help do you need?*'),
             ),
             Container(
                 padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                 child: TextFormField(
+                  controller: titleController,
                   decoration: const InputDecoration(
                     hintText: 'E.g. Help with shopping',
                   ),
-                  onChanged: (value) {
-                    title = value;
-                  },
+                  // onChanged: (value) {title = value; },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a title';
                     }
+                    return null;
                   },
                 )),
 
@@ -256,18 +273,17 @@ class AwnRequestFormState extends State<AwnRequestForm> {
             //duration
             Container(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 8),
-              child: Text('Duration'),
+              child: Text('Duration*'),
             ),
 
             Container(
               padding: const EdgeInsets.fromLTRB(6, 8, 6, 12),
               child: TextFormField(
+                controller: durationController,
                 decoration: const InputDecoration(
                   hintText: 'E.g. For about 2 hours',
                 ),
-                onChanged: (value) {
-                  duration = value;
-                },
+                // onChanged: (value) {duration = value;},
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the duration';
@@ -279,13 +295,14 @@ class AwnRequestFormState extends State<AwnRequestForm> {
             //description
             Container(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 8),
-              child: Text('Description',
+              child: Text('Description*',
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
 
             Container(
               padding: const EdgeInsets.fromLTRB(6, 8, 6, 12),
               child: TextFormField(
+                controller: descController,
                 decoration: InputDecoration(
                   hintText: 'Describe the help in more details',
                   enabledBorder: OutlineInputBorder(
@@ -374,12 +391,12 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     CollectionReference requests =
         FirebaseFirestore.instance.collection('requests');
     DocumentReference docReference = await requests.add({
-      'title': title,
+      'title': titleController.text,
       'date_ymd': getDate(),
       'date_dmy': getDate_formated(),
       'time': getTime(selectedTime),
-      'duration': duration,
-      'description': description,
+      'duration': durationController.text,
+      'description': descController.text,
       'latitude': '',
       'longitude': ''
     });
@@ -389,5 +406,13 @@ class AwnRequestFormState extends State<AwnRequestForm> {
         MaterialPageRoute(
           builder: (context) => maps(dataId: dataId, typeOfRequest: 'R'),
         ));
+    clearForm();
+  }
+
+  void clearForm() {
+    titleController.clear();
+    durationController.clear();
+    descController.clear();
+    ;
   }
 }

@@ -69,7 +69,6 @@ class MyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-              // textStyle: TextStyle(fontSize: 15),
               backgroundColor: Colors.transparent, // background (button) color
               foregroundColor: Color(0xFFfcfffe),
               shadowColor: Colors.transparent,
@@ -104,13 +103,4 @@ class MainPage extends StatelessWidget {
       },
     );
   }
-
-  /* static GetPage() {
-    Page:
-    homePage();
-    binding:
-    BindingsBuilder(() {
-      Get.put(logoController());
-    });
-  }*/
 }

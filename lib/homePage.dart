@@ -1,7 +1,8 @@
 import 'package:awn/addPost.dart';
 import 'package:awn/addRequest.dart';
-import 'package:awn/postList.dart';
 import 'package:awn/viewRequests.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,32 +19,36 @@ class homePage extends StatefulWidget {
   MyHomePage createState() => MyHomePage();
 }
 
+final user = FirebaseAuth.instance.currentUser!;
+String userId = user.uid;
+String userType = '';
+
 class MyHomePage extends State<homePage> {
-  // MyHomePage({super.key});
   final Stream<QuerySnapshot> posts = FirebaseFirestore.instance
       .collection('posts')
       .orderBy("category")
       .snapshots();
+
   @override
   Widget build(BuildContext context) {
     Future<void> _onItemTapped(int index) async {
       if (index == 0) {
-        Navigator.of(context).popUntil((route) => route.isFirst);
-      } else if (index == 1) {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => addPost()),
         );
-      } else if (index == 2) {
+      } else if (index == 1) {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => addRequest()),
         );
-      } else if (index == 3) {
+      } else if (index == 2) {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => viewRequests()),
         );
+      } else if (index == 3) {
+        FirebaseAuth.instance.signOut();
       }
     }
 
@@ -92,6 +97,7 @@ class MyHomePage extends State<homePage> {
                           } else {
                             final data = snapshot.requireData;
                             print('line 55');
+                            // print(document["Type"]);
                             return ListView.builder(
                               itemCount: data.size,
                               itemBuilder: (context, index) {
@@ -320,71 +326,31 @@ class MyHomePage extends State<homePage> {
                       )))
             ],
           )),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xFF39d6ce),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Postlist()),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Add Post'),
-            action: SnackBarAction(
-              label: 'Dismiss',
-              disabledTextColor: Colors.white,
-              textColor: Colors.yellow,
-              onPressed: () {
-                //Do whatever you want
-              },
-            ),
-          ));
-        },
-        tooltip: 'Increment',
-        elevation: 4.0,
-        child: PopupMenuButton<int>(
-          offset: Offset(0, -170),
-          itemBuilder: (context) => const [
-            PopupMenuItem<int>(
-                value: 0,
-                child: Text(
-                  'Item 0',
-                )),
-            PopupMenuItem<int>(
-                value: 1,
-                child: Text(
-                  'Item 1',
-                )),
-            PopupMenuItem<int>(
-                value: 2,
-                child: Text(
-                  'Item 2',
-                )),
-          ],
-          child: Icon(Icons.add),
-        ),
-      ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             //index 0
-            icon: Icon(Icons.home_filled),
-            activeIcon: Icon(Icons.home_filled, color: Colors.grey),
-            label: 'Home',
+            icon: Icon(Icons.add, color: Colors.grey.shade700),
+            activeIcon: Icon(Icons.add, color: Colors.grey.shade700),
+            label: 'Add Post',
           ),
           BottomNavigationBarItem(
-            icon: Text("Add Post"),
-            activeIcon: Text("Add Post"),
-            label: '',
+            //index 1
+            icon: Icon(Icons.handshake, color: Colors.grey.shade700),
+            activeIcon: Icon(Icons.handshake, color: Colors.grey.shade700),
+            label: 'Request Awn',
           ),
           BottomNavigationBarItem(
-            icon: Text("Awn Request"),
-            activeIcon: Text("Add Request"),
-            label: '',
+            //index 2
+            icon: Icon(Icons.handshake, color: Colors.grey.shade700),
+            activeIcon: Icon(Icons.handshake, color: Colors.grey.shade700),
+            label: 'View Requests',
           ),
           BottomNavigationBarItem(
-            icon: Text("View Awn Request"),
-            activeIcon: Text("View Add Request"),
-            label: '',
+            //index 3
+            icon: Icon(Icons.logout, color: Colors.grey.shade700),
+            activeIcon: Icon(Icons.logout, color: Colors.grey.shade700),
+            label: 'Logout',
           )
         ],
         currentIndex: _selectedIndex,
@@ -395,93 +361,4 @@ class MyHomePage extends State<homePage> {
   }
 
   int _selectedIndex = 0;
-}
-
-class SpendingCategoryModel {
-  final String label;
-  final int price;
-  final Color color;
-
-  const SpendingCategoryModel(this.label, this.price, this.color);
-}
-
-abstract class AppColors {
-  static const headerTextColor = Color(0xFF466994);
-  static const secondaryAccent = Color(0xFF3b67b5);
-  static const primaryWhiteColor = Color(0xFFF7F7F7);
-  static const categoryColor1 = Color(0xFFffd084);
-  static const categoryColor2 = Color(0xFFb2f0fb);
-  static const categoryColor3 = Color(0xFFfddddc);
-
-  static const darkModeBackground = Color(0xFF0f153a);
-  static const darkModeCardColor = Color(0xFF1b1a4a);
-  static const darkModeCategoryColor = Color(0xFF7f6446);
-}
-
-// import 'package:flutter/material.dart';
-// import 'package:app_colors.dart';
-// import 'package:spending_category_model.dart';
-// import 'package:minimal_grocery/widgets/custom_icon_button.dart';
-// import 'package:minimal_grocery/widgets/price_text.dart';
-
-class SpendingCategory extends StatelessWidget {
-  final SpendingCategoryModel data;
-
-  SpendingCategory(this.data);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 120,
-      child: Stack(
-        children: [
-          Container(
-            height: 100,
-            margin: EdgeInsets.only(top: 12),
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-                color: MediaQuery.of(context).platformBrightness ==
-                        Brightness.light
-                    ? Colors.white
-                    : AppColors.darkModeCardColor,
-                boxShadow: [
-                  BoxShadow(
-                      blurRadius: 32, color: Colors.black45, spreadRadius: -8)
-                ],
-                borderRadius: BorderRadius.circular(16)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Row(children: [
-                  // CustomIconButton(icon: Icons.file_upload),
-                  SizedBox(width: 8),
-                  // CustomIconButton(icon: Icons.folder)
-                ])
-              ],
-            ),
-          ),
-          Container(
-            width: 132,
-            height: 24,
-            alignment: Alignment.center,
-            margin: EdgeInsets.only(left: 16),
-            padding: EdgeInsets.symmetric(vertical: 4, horizontal: 24),
-            decoration: BoxDecoration(
-              color: data.color,
-              borderRadius: BorderRadius.circular(36),
-            ),
-            child: Text(
-              data.label,
-              style: TextStyle(
-                  color: MediaQuery.of(context).platformBrightness ==
-                          Brightness.light
-                      ? Colors.white
-                      : AppColors.darkModeCategoryColor,
-                  fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
