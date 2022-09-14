@@ -1,5 +1,6 @@
 import 'package:awn/addPost.dart';
 import 'package:awn/addRequest.dart';
+import 'package:awn/postList.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -152,25 +153,67 @@ class MyHomePage extends StatelessWidget {
           ),
         ),
       ),
-      body:
-          //  ListView(
-          //   children: <Widget>[
-          //     Container(
-          //       padding: const EdgeInsets.fromLTRB(60, 10, 60, 10),
-          //       child: ElevatedButton(
-          //         onPressed: () {},
-          //         child: Text('Add Post'),
-          //       ),
-          //     ),
-          //   ],
-          // ),
-          Expanded(
+      body: Expanded(
         child: ListView(children: [
           for (var model in categoryModels)
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 36.0, vertical: 16),
-              child: SpendingCategory(model),
+              child: Container(
+                height: 120,
+                child: Stack(
+                  children: [
+                    Container(
+                      height: 100,
+                      margin: EdgeInsets.only(top: 12),
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          color: MediaQuery.of(context).platformBrightness ==
+                                  Brightness.light
+                              ? Colors.white
+                              : AppColors.darkModeCardColor,
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 32,
+                                color: Colors.black45,
+                                spreadRadius: -8)
+                          ],
+                          borderRadius: BorderRadius.circular(16)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Row(children: [
+                            // CustomIconButton(icon: Icons.file_upload),
+                            SizedBox(width: 8),
+                            // CustomIconButton(icon: Icons.folder)
+                          ])
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 132,
+                      height: 24,
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.only(left: 16),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 4, horizontal: 24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(36),
+                      ),
+                      child: Text(
+                        'data.label',
+                        style: TextStyle(
+                            color: MediaQuery.of(context).platformBrightness ==
+                                    Brightness.light
+                                ? Colors.white
+                                : AppColors.darkModeCategoryColor,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             )
         ]),
       ),
@@ -200,43 +243,43 @@ class MyHomePage extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => addFile()),
+            MaterialPageRoute(builder: (context) => Postlist()),
           );
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Add Post'),
-            action: SnackBarAction(
-              label: 'Dismiss',
-              disabledTextColor: Colors.white,
-              textColor: Colors.yellow,
-              onPressed: () {
-                //Do whatever you want
-              },
-            ),
-          ));
+          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          //   content: Text('Add Post'),
+          //   action: SnackBarAction(
+          //     label: 'Dismiss',
+          //     disabledTextColor: Colors.white,
+          //     textColor: Colors.yellow,
+          //     onPressed: () {
+          //       //Do whatever you want
+          //     },
+          //   ),
+          // ));
         },
         tooltip: 'Increment',
         elevation: 4.0,
-        child: PopupMenuButton<int>(
-          offset: Offset(0, -170),
-          itemBuilder: (context) => const [
-            PopupMenuItem<int>(
-                value: 0,
-                child: Text(
-                  'Item 0',
-                )),
-            PopupMenuItem<int>(
-                value: 1,
-                child: Text(
-                  'Item 1',
-                )),
-            PopupMenuItem<int>(
-                value: 2,
-                child: Text(
-                  'Item 2',
-                )),
-          ],
-          child: Icon(Icons.add),
-        ),
+        // child: PopupMenuButton<int>(
+        //   offset: Offset(0, -170),
+        //   itemBuilder: (context) => const [
+        //     PopupMenuItem<int>(
+        //         value: 0,
+        //         child: Text(
+        //           'Item 0',
+        //         )),
+        //     PopupMenuItem<int>(
+        //         value: 1,
+        //         child: Text(
+        //           'Item 1',
+        //         )),
+        //     PopupMenuItem<int>(
+        //         value: 2,
+        //         child: Text(
+        //           'Item 2',
+        //         )),
+        //   ],
+        //   child: Icon(Icons.add),
+        // ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -327,8 +370,6 @@ class SpendingCategory extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Image.asset(data.image, width: 64),
-                // PriceText(price: data.price),
                 Row(children: [
                   // CustomIconButton(icon: Icons.file_upload),
                   SizedBox(width: 8),

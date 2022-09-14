@@ -36,8 +36,6 @@ class _AddRequestState extends State<viewRequests> {
       body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 0),
           child: Column(
-            // crossAxisAlignment: CrossAxisAlignment.start,
-            // mainAxisSize: MainAxisSize.max,
             children: [
               Expanded(
                   child: Container(
@@ -50,12 +48,12 @@ class _AddRequestState extends State<viewRequests> {
                         ) {
                           if (snapshot.hasError) {
                             print('line 48');
-                            return Text('Something went wring');
+                            return Text('Something went wrong');
                           }
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             print('line 51');
-                            return Text('Loading');
+                            return CircularProgressIndicator();
                           }
                           final data = snapshot.requireData;
                           print('line 55');
@@ -65,8 +63,6 @@ class _AddRequestState extends State<viewRequests> {
                               print('line 59');
                               return Card(
                                   child: Column(
-                                // mainAxisAlignment: MainAxisAlignment.start,
-                                // crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   //title
                                   Padding(
