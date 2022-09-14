@@ -90,6 +90,9 @@ class _loginState extends State<login> {
                 child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(
+                  height: height * 0.2,
+                ),
                 FutureBuilder(
                     future: storage.downloadURL('logo.png'),
                     builder:
@@ -115,6 +118,9 @@ class _loginState extends State<login> {
                       }
                       return Container();
                     }),
+                SizedBox(
+                  height: height * 0.05,
+                ),
 
                 /*Obx(() => ListView.separated(
                       itemBuilder: ((context, index) {
@@ -146,6 +152,9 @@ class _loginState extends State<login> {
                         color: Color.fromARGB(255, 95, 94, 94)),
                   ),
                 ),
+                SizedBox(
+                  height: height * 0.05,
+                ),
                 TextFormField(
                   controller: emailController,
                   decoration: InputDecoration(
@@ -172,6 +181,9 @@ class _loginState extends State<login> {
                     else
                       return null;
                   },
+                ),
+                SizedBox(
+                  height: height * 0.05,
                 ),
                 TextFormField(
                   controller: passwordController,
@@ -216,6 +228,9 @@ class _loginState extends State<login> {
                       return null;
                   },
                 ),
+                SizedBox(
+                  height: height * 0.01,
+                ),
                 Container(
                   margin: EdgeInsets.fromLTRB(10, 0, 10, 20),
                   alignment: Alignment.topLeft,
@@ -235,6 +250,9 @@ class _loginState extends State<login> {
                       ),
                     ),
                   ),
+                ),
+                SizedBox(
+                  height: height * 0.01,
                 ),
                 Container(
                   margin: EdgeInsets.fromLTRB(70, 10, 50, 10),

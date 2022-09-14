@@ -310,7 +310,8 @@ class _registerState extends State<register> {
                                         "Enter your bio here. \n(talk briefly about yourself! )"),
                               ),
                             ));
-                      } else {
+                      } else if (group1.isNotEmpty &&
+                          group1 == 'Special Need User') {
                         return Column(
                           children: [
                             Text(
@@ -437,6 +438,8 @@ class _registerState extends State<register> {
                             ),
                           ],
                         );
+                      } else {
+                        return Text('Click to select your date of birth');
                       }
                     }),
                   ),

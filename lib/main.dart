@@ -1,7 +1,7 @@
 import 'package:awn/Utils.dart';
 import 'package:awn/authentication.dart';
 import 'package:awn/homePage.dart';
-import 'package:awn/hompage.dart';
+
 import 'package:awn/login.dart';
 
 import 'package:awn/register.dart';
@@ -11,7 +11,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'firebase_options.dart';
-import 'package:awn/homepage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,19 +25,65 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      scaffoldMessengerKey: Utils.messengerKey,
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Home Page',
+      /* routes: {
+        '/homePage': (context) => homePage(),
+      },*/
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Color(0xFFfcfffe),
+        appBarTheme: const AppBarTheme(
+          elevation: 0,
+          color: Color(0xFF39d6ce), // Colors.transparent,
+          foregroundColor: Colors.white,
+        ),
+        textTheme: const TextTheme(
+          headline6: TextStyle(
+              fontSize: 22.0, color: Colors.black), //header at the app bar
+          bodyText2: TextStyle(
+              fontSize: 20.0, fontWeight: FontWeight.bold), //the body text
+          subtitle1: TextStyle(fontSize: 19.0), //the text field label
+          subtitle2: TextStyle(fontSize: 120.0), //the text field
+
+          button: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              decoration: TextDecoration.underline), //the button text
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(100.0),
+              borderSide: BorderSide(color: Colors.grey.shade400)),
+          contentPadding: EdgeInsets.fromLTRB(20, 12, 20, 12),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(100.0),
+              borderSide: BorderSide(color: Colors.blue, width: 2)),
+          errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(100.0),
+              borderSide: BorderSide(color: Colors.red, width: 2.0)),
+          focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(100.0),
+              borderSide: BorderSide(color: Colors.red, width: 2.0)),
+          floatingLabelStyle: TextStyle(fontSize: 22, color: Colors.blue),
+          helperStyle: TextStyle(fontSize: 14),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+              // textStyle: TextStyle(fontSize: 15),
+              backgroundColor: Colors.transparent, // background (button) color
+              foregroundColor: Color(0xFFfcfffe),
+              shadowColor: Colors.transparent,
+              padding: EdgeInsets.all(5),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0))),
+        ),
+        snackBarTheme: const SnackBarThemeData(
+          backgroundColor: Color(0xFF39d6ce),
+          actionTextColor: Colors.black,
+          behavior: SnackBarBehavior.floating,
+          elevation: 1,
+          contentTextStyle: TextStyle(fontSize: 16),
+        ),
       ),
       home: MainPage(),
     );
@@ -52,7 +97,7 @@ class MainPage extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot != null) {
           UserHelper.saveUser(snapshot.data);
-          return homepage();
+          return homePage();
         } else {
           return AuthenticationPage();
         }
