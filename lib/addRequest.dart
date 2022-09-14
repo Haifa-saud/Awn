@@ -25,7 +25,7 @@ class _AddRequestState extends State<addRequest> {
         appBar: AppBar(
           title: const Text('Request Awn', textAlign: TextAlign.center),
           leading: IconButton(
-            icon: const Icon(Icons.close, color: Colors.black),
+            icon: const Icon(Icons.close, color: Colors.white),
             onPressed: () => showDialog<String>(
               context: context,
               builder: (BuildContext context) => AlertDialog(
