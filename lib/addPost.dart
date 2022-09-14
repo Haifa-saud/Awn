@@ -59,8 +59,10 @@ class _MyStatefulWidgetState extends State<addPost> {
                   child: const Text('Keep editing'),
                 ),
                 TextButton(
-                  onPressed: () =>
-                      Navigator.of(context).popUntil((route) => route.isFirst),
+                  onPressed: () {
+                    clearForm();
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
                   child: const Text('Discard'),
                 ),
               ],
@@ -184,6 +186,15 @@ class _MyStatefulWidgetState extends State<addPost> {
                 controller: numberController,
                 decoration: const InputDecoration(
                     labelText: 'Phone Number', hintText: '05XXXXXXXX'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    print('empty');
+                  } else {
+                    if (value.length != 10) {
+                      return 'Please enter a phone number of 10 digits';
+                    }
+                  }
+                },
               ),
             ),
             const Padding(
@@ -246,9 +257,10 @@ class _MyStatefulWidgetState extends State<addPost> {
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Please fill the required fields above'),
+                        content: Text(
+                            'Please fill in the required fields above, and in the specified format (if any).'),
                         backgroundColor: Colors.red.shade400,
-                        margin: EdgeInsets.fromLTRB(8, 0, 20, 0),
+                        margin: EdgeInsets.fromLTRB(6, 0, 3, 0),
                         behavior: SnackBarBehavior.floating,
                         action: SnackBarAction(
                           label: 'Dismiss',
@@ -304,6 +316,7 @@ class _MyStatefulWidgetState extends State<addPost> {
       imagePath = await (await uploadTask).ref.getDownloadURL();
     }
 
+    String dataId = '';
     print('will be added to db');
     //add all value without the location
     DocumentReference docReference = await posts.add({
@@ -316,20 +329,24 @@ class _MyStatefulWidgetState extends State<addPost> {
       'Phone number': numberController.text,
       'description': descriptionController.text,
     });
+    dataId = docReference.id;
+    print("Document written with ID: ${docReference.id}");
 
     print('added to db');
-    nameController.clear();
-    descriptionController.clear();
-    numberController.clear();
-    websiteController.clear();
-    imagePath = '';
-    String dataId = docReference.id;
-    print("Document written with ID: ${docReference.id}");
+    clearForm();
 
     Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => maps(dataId: dataId, typeOfRequest: 'P'),
         ));
+  }
+
+  void clearForm() {
+    nameController.clear();
+    descriptionController.clear();
+    numberController.clear();
+    websiteController.clear();
+    imagePath = '';
   }
 }

@@ -24,9 +24,9 @@ class _MyStatefulWidgetState extends State<maps> {
   Position position =
       Position.fromMap({'latitude': 24.7136, 'longitude': 46.6753});
 
-  String DBId = '';
+  String DBId = ' ';
   bool addPost = true;
-  String collName = '', sucessMsg = '';
+  String collName = ' ', sucessMsg = '';
   BorderRadius border = BorderRadius.circular(0);
 
   void getCurrentPosition() async {
@@ -57,11 +57,9 @@ class _MyStatefulWidgetState extends State<maps> {
     });
 
     markers.add(Marker(
-      markerId: MarkerId('24242'
-          // currentLocation.latitude.toString() +
-          //   currentLocation.longitude.toString()
-          ),
-      position: LatLng(currentLocation.latitude, currentLocation.longitude),
+      markerId: MarkerId(
+          position.latitude.toString() + position.longitude.toString()),
+      position: LatLng(position.latitude, position.longitude),
       infoWindow: const InfoWindow(
         title: 'Institution Location ',
       ),
@@ -97,7 +95,9 @@ class _MyStatefulWidgetState extends State<maps> {
       border = BorderRadius.circular(30);
       sucessMsg = 'Request is sent successfully';
     }
+    print(collName);
     DBId = widget.dataId;
+    print(DBId);
     super.initState();
     print(addPost);
   }
@@ -108,8 +108,29 @@ class _MyStatefulWidgetState extends State<maps> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Location"),
-      ),
+          title: const Text("Add Location"),
+          //   leading: IconButton(
+          //     icon: const Icon(Icons.close, color: Colors.black),
+          //     onPressed: () => showDialog<String>(
+          //       context: context,
+          //       builder: (BuildContext context) => AlertDialog(
+          //         content: const Text('Discard the changes you made?'),
+          //         actions: <Widget>[
+          //           TextButton(
+          //             onPressed: () => Navigator.of(context).pop(),
+          //             child: const Text('Keep editing'),
+          //           ),
+          //           TextButton(
+          //             onPressed: () {
+          //               Navigator.of(context).popUntil((route) => route.isFirst);
+          //             },
+          //             child: const Text('Discard'),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          automaticallyImplyLeading: false),
       body: Stack(
         children: <Widget>[
           GoogleMap(
@@ -287,9 +308,16 @@ class _MyStatefulWidgetState extends State<maps> {
   }
 
   Future<void> updateDB() async {
+    print(position.latitude.toString() + position.longitude.toString());
+    print("Maps Id: $DBId");
+    print(DBId);
+    print(collName);
     final postID = FirebaseFirestore.instance.collection(collName).doc(DBId);
-    postID.update(
-        {'latitude': selectedLoc.latitude, 'longitude': selectedLoc.longitude});
+    print(postID);
+    postID.update({
+      'latitude': selectedLoc.latitude.toString(),
+      'longitude': selectedLoc.longitude.toString()
+    });
   }
 
   void backToHomePage() {
