@@ -169,19 +169,7 @@ class _AddRequestState extends State<viewRequests> {
                                           child: Text('Location',
                                               style: TextStyle(
                                                   color: Colors.black)))),
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.location_on_outlined,
-                                            size: 20, color: Colors.red),
-                                        Text('location',
-                                            style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w500)),
-                                      ],
-                                    ),
-                                  ),
+
                                   //buttons
                                   Padding(
                                     padding: EdgeInsets.all(20),

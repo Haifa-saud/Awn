@@ -58,6 +58,9 @@ dependencies:
   intl: ^0.17.0
   geocode: ^1.0.2
   file_picker: ^3.0.4
+  firebase_auth: ^3.8.0
+  email_validator: ^2.1.17
+  get: ^4.6.5
 
 dev_dependencies:
   flutter_test:
