@@ -164,17 +164,30 @@ class _ViewMyRequistState extends State<ViewMyRequistSN> {
                                     padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
                                     child: Row(
                                       children: [
-                                        // Icon(Icons.description,
-                                        //     size: 20, color: Colors.red),
-                                        Flexible(
+                                        Text('Status: ',
+                                            //   overflow:
+                                            //   TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w500)),
+                                        Padding(
+                                          padding: EdgeInsets.all(10),
                                           child: Text(
-                                              'Status: ${data.docs[index]['status']}',
+                                              '${data.docs[index]['status']}',
                                               //   overflow:
                                               //   TextOverflow.ellipsis,
                                               style: TextStyle(
+                                                  background: Paint()
+                                                    ..strokeWidth = 20.0
+                                                    ..color = getColor(data
+                                                        .docs[index]['status'])
+                                                    ..style =
+                                                        PaintingStyle.stroke
+                                                    ..strokeJoin =
+                                                        StrokeJoin.round,
                                                   fontSize: 17,
                                                   fontWeight: FontWeight.w500)),
-                                        ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -188,4 +201,13 @@ class _ViewMyRequistState extends State<ViewMyRequistSN> {
           )),
     );
   }
+}
+
+Color getColor(String stat) {
+  if (stat == 'Approved')
+    return Colors.green.shade300;
+  else if (stat == 'Pending')
+    return Colors.orange.shade300;
+  else
+    return Colors.white;
 }
