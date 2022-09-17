@@ -62,7 +62,10 @@ dependencies:
   email_validator: ^2.1.17
   get: ^4.6.5
   regexed_validator: ^2.0.0+1
-
+  flutter_local_notifications: ^10.0.0
+  firebase_messaging: ^13.0.2
+  firebase_analytics: ^8.0.2
+  flutter_scroll_to_top: ^2.2.4
 dev_dependencies:
   flutter_test:
     sdk: flutter

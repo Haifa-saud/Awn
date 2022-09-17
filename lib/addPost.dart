@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:regexed_validator/regexed_validator.dart';
 import 'firebase_options.dart';
@@ -29,15 +30,10 @@ TextEditingController websiteController = TextEditingController();
 
 class _MyStatefulWidgetState extends State<addPost> {
   final _formKey = GlobalKey<FormState>();
+  // final dataKey = GlobalKey();
+
   GlobalKey<ScaffoldState> _scaffoldStateKey = GlobalKey();
 
-  var categories = [
-    'Education',
-    'Transportation',
-    'Government',
-    'Entertainment',
-    'Other',
-  ];
   CollectionReference category =
       FirebaseFirestore.instance.collection('postCategory');
 
@@ -86,6 +82,7 @@ class _MyStatefulWidgetState extends State<addPost> {
               ),
             ),
             /*name*/ Container(
+              // key: dataKey,
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
               child: TextFormField(
                 textAlign: TextAlign.left,
@@ -112,13 +109,6 @@ class _MyStatefulWidgetState extends State<addPost> {
                       if (!snapshot.hasData) {
                         return Text("Loading");
                       } else {
-                        // List<DropdownMenuItem> categories = [];
-                        // for (int i = 0;
-                        //     i < snapshot.data!.docs.length;
-                        //     i++) {
-                        //       DocumentSnapshot snap = snapshot.data!.docs[i];
-                        //   categories.add(DropdownMenuItem(child: Text(snap.id)), value: snap.id);
-                        // }
                         return DropdownButtonFormField(
                           // value: shopId,
                           isDense: true,
@@ -131,12 +121,6 @@ class _MyStatefulWidgetState extends State<addPost> {
                               ? 'Please select a category.'
                               : null,
                           hint: const Text('Category (required)*'),
-                          //  items: categories.map((String items) {
-                          //     return DropdownMenuItem<String>(
-                          //       value: items,
-                          //       child: Text(items),
-                          //     );
-                          //   }).toList(),
                           items: snapshot.data!.docs
                               .map((DocumentSnapshot document) {
                             return DropdownMenuItem<String>(
@@ -148,27 +132,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                           isExpanded: false,
                         );
                       }
-                    })
-
-                // DropdownButtonFormField(
-                //   onChanged: (value) {
-                //     setState(() {
-                //       selectedCategory = value;
-                //     });
-                //   },
-                //   validator: (value) =>
-                //       value == null ? 'Please select a category.' : null,
-                //   items: categories.map((String items) {
-                //     return DropdownMenuItem<String>(
-                //       value: items,
-                //       child: Text(items),
-                //     );
-                //   }).toList(),
-                //   value: selectedCategory,
-                //   hint: const Text('Category (required)*'),
-                //   isExpanded: false,
-                // ),
-                ),
+                    })),
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
@@ -337,6 +301,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                   if (_formKey.currentState!.validate()) {
                     addToDB();
                   } else {
+                    // Scrollable.ensureVisible(dataKey.currentContext!);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(

@@ -3,14 +3,17 @@ import 'package:awn/addRequest.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'file.dart';
 import 'firebase_options.dart';
 import 'package:awn/map.dart';
 import 'package:path/path.dart' as Path;
+import 'notification.dart';
 
 class homePage extends StatefulWidget {
   const homePage({Key? key, required this.user}) : super(key: key);
@@ -29,6 +32,8 @@ class MyHomePage extends State<homePage> {
       .collection('posts')
       .orderBy("category")
       .snapshots();
+
+  final notification = new myNotifications();
 
   @override
   Widget build(BuildContext context) {
@@ -73,21 +78,27 @@ class MyHomePage extends State<homePage> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const SizedBox(
-          width: 700,
-          child: Text('Awn',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              )),
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(70),
+          title: const SizedBox(
+            width: 700,
+            child: Text('Awn',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                )),
           ),
-        ),
-      ),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(70),
+            ),
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.notifications),
+              tooltip: 'My Notification',
+              onPressed: () => notification.showNotification(),
+            ),
+          ]),
       body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 0),
           child: Column(
@@ -391,4 +402,7 @@ class MyHomePage extends State<homePage> {
   }
 
   int _selectedIndex = 0;
+
+  
 }
+
