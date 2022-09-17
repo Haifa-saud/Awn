@@ -61,6 +61,7 @@ dependencies:
   firebase_auth: ^3.8.0
   email_validator: ^2.1.17
   get: ^4.6.5
+  regexed_validator: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:

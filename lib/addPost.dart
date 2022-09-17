@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:regexed_validator/regexed_validator.dart';
 import 'firebase_options.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -37,6 +38,8 @@ class _MyStatefulWidgetState extends State<addPost> {
     'Entertainment',
     'Other',
   ];
+  CollectionReference category =
+      FirebaseFirestore.instance.collection('postCategory');
 
   var selectedCategory;
 
@@ -87,11 +90,14 @@ class _MyStatefulWidgetState extends State<addPost> {
               child: TextFormField(
                 textAlign: TextAlign.left,
                 controller: nameController,
+                maxLength: 50,
                 decoration: const InputDecoration(
                     labelText: "Name (required)*",
                     hintText: "E.g. King Saud University"),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null ||
+                      value.isEmpty ||
+                      (value.trim()).isEmpty) {
                     return 'Please enter the institution name.';
                   }
                   return null;
@@ -99,26 +105,70 @@ class _MyStatefulWidgetState extends State<addPost> {
               ),
             ),
             /*category*/ Container(
-              padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-              child: DropdownButtonFormField(
-                onChanged: (value) {
-                  setState(() {
-                    selectedCategory = value;
-                  });
-                },
-                validator: (value) =>
-                    value == null ? 'Please select a category.' : null,
-                items: categories.map((String items) {
-                  return DropdownMenuItem<String>(
-                    value: items,
-                    child: Text(items),
-                  );
-                }).toList(),
-                value: selectedCategory,
-                hint: const Text('Category (required)*'),
-                isExpanded: false,
-              ),
-            ),
+                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                child: StreamBuilder<QuerySnapshot>(
+                    stream: category.snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return Text("Loading");
+                      } else {
+                        // List<DropdownMenuItem> categories = [];
+                        // for (int i = 0;
+                        //     i < snapshot.data!.docs.length;
+                        //     i++) {
+                        //       DocumentSnapshot snap = snapshot.data!.docs[i];
+                        //   categories.add(DropdownMenuItem(child: Text(snap.id)), value: snap.id);
+                        // }
+                        return DropdownButtonFormField(
+                          // value: shopId,
+                          isDense: true,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedCategory = value;
+                            });
+                          },
+                          validator: (value) => value == null
+                              ? 'Please select a category.'
+                              : null,
+                          hint: const Text('Category (required)*'),
+                          //  items: categories.map((String items) {
+                          //     return DropdownMenuItem<String>(
+                          //       value: items,
+                          //       child: Text(items),
+                          //     );
+                          //   }).toList(),
+                          items: snapshot.data!.docs
+                              .map((DocumentSnapshot document) {
+                            return DropdownMenuItem<String>(
+                              value: ((document.data() as Map)['category']),
+                              child: Text((document.data() as Map)['category']),
+                            );
+                          }).toList(),
+                          value: selectedCategory,
+                          isExpanded: false,
+                        );
+                      }
+                    })
+
+                // DropdownButtonFormField(
+                //   onChanged: (value) {
+                //     setState(() {
+                //       selectedCategory = value;
+                //     });
+                //   },
+                //   validator: (value) =>
+                //       value == null ? 'Please select a category.' : null,
+                //   items: categories.map((String items) {
+                //     return DropdownMenuItem<String>(
+                //       value: items,
+                //       child: Text(items),
+                //     );
+                //   }).toList(),
+                //   value: selectedCategory,
+                //   hint: const Text('Category (required)*'),
+                //   isExpanded: false,
+                // ),
+                ),
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
@@ -165,7 +215,6 @@ class _MyStatefulWidgetState extends State<addPost> {
                           size: 30,
                           color: Colors.red,
                         ),
-                        // This is where the _image value sets to null on tap of the red circle icon
                         onTap: () {
                           setState(
                             () {
@@ -187,6 +236,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
+            //website
             Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
               child: Directionality(
@@ -195,9 +245,16 @@ class _MyStatefulWidgetState extends State<addPost> {
                   textAlign: TextAlign.left,
                   controller: websiteController,
                   decoration: const InputDecoration(labelText: 'Website'),
+                  validator: (value) {
+                    if (value!.isNotEmpty && !validator.url(value)) {
+                      return 'Please enter a valid website Url';
+                    }
+                    return null;
+                  },
                 ),
               ),
             ),
+            //phone number
             Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
               child: TextFormField(
@@ -221,6 +278,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                 },
               ),
             ),
+            //description
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(

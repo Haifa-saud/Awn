@@ -71,16 +71,6 @@ class _MyStatefulWidgetState extends State<maps> {
   @override
   void initState() {
     getCurrentPosition();
-    // markers.add(Marker(
-    //   markerId: MarkerId(
-    //       position.latitude.toString() + position.longitude.toString()),
-    //   position: LatLng(position.latitude, position.longitude),
-    //   infoWindow: const InfoWindow(
-    //     title: 'Institution Location ',
-    //   ),
-    //   icon: BitmapDescriptor.defaultMarker,
-    //   draggable: true,
-    // ));
 
     addPost = widget.typeOfRequest == 'P' ? true : false;
     if (addPost) {

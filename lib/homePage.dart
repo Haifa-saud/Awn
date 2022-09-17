@@ -13,15 +13,16 @@ import 'package:awn/map.dart';
 import 'package:path/path.dart' as Path;
 
 class homePage extends StatefulWidget {
-  const homePage({Key? key}) : super(key: key);
+  const homePage({Key? key, required this.user}) : super(key: key);
+  final User user;
 
   @override
   MyHomePage createState() => MyHomePage();
 }
 
-final user = FirebaseAuth.instance.currentUser!;
-String userId = user.uid;
-String userType = '';
+// final user = FirebaseAuth.instance.currentUser!;
+// String userId = user.uid;
+// String userType = '';
 
 class MyHomePage extends State<homePage> {
   final Stream<QuerySnapshot> posts = FirebaseFirestore.instance
@@ -52,6 +53,23 @@ class MyHomePage extends State<homePage> {
       }
     }
 
+    // final data = FirebaseFirestore.instance
+    //     .collection('users')
+    //     .where('Email', isEqualTo: widget.user.email)
+    //     // .snapshots()
+    //     .get()
+    //     .then((snapshot) => print(snapshot.docs[0].data()));
+    //   user = snapshot.docs[0].data();
+    //   print(user);
+    //   print(user['name']);
+    // });
+
+    // final user = data.get()['name'];
+
+    // final userName = user?['name'];
+
+    // print(user?['name']);
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -74,6 +92,9 @@ class MyHomePage extends State<homePage> {
           padding: const EdgeInsets.symmetric(vertical: 0),
           child: Column(
             children: [
+              Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 0),
+                  child: Text("hello")), //widget.user.email!)),
               Expanded(
                   child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -145,6 +166,15 @@ class MyHomePage extends State<homePage> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceEvenly,
                                             children: [
+                                              Padding(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    1, 0, 4, 4),
+                                                child: Text(
+                                                    'Welcome', // ${userName}',
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(
+                                                        fontSize: 14)),
+                                              ),
                                               Padding(
                                                 padding: EdgeInsets.fromLTRB(
                                                     0, 0, 0, 0),

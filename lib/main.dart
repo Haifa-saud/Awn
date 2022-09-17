@@ -100,7 +100,8 @@ class MainPage extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot != null) {
           UserHelper.saveUser(snapshot.data);
-          return homePage();
+          final user = snapshot.data;
+          return homePage(user: user!);
         } else {
           return AuthenticationPage();
         }
