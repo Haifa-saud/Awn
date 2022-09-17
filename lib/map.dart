@@ -1,0 +1,336 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoding/geocoding.dart';
+
+import 'main.dart';
+
+class maps extends StatefulWidget {
+  final String dataId;
+  final String typeOfRequest;
+  const maps({Key? key, required this.dataId, required this.typeOfRequest})
+      : super(key: key);
+
+  @override
+  State<maps> createState() => _MyStatefulWidgetState();
+}
+
+class _MyStatefulWidgetState extends State<maps> {
+  GoogleMapController? mapController;
+  List<Marker> markers = <Marker>[];
+  List<Marker> _markers = <Marker>[];
+
+  Position position =
+      Position.fromMap({'latitude': 24.7136, 'longitude': 46.6753});
+
+  String DBId = ' ';
+  bool addPost = true;
+  String collName = ' ', sucessMsg = '';
+  BorderRadius border = BorderRadius.circular(0);
+
+  void getCurrentPosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+    Position currentLocation = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      position = currentLocation;
+    });
+
+    markers.add(Marker(
+      markerId: MarkerId(
+          position.latitude.toString() + position.longitude.toString()),
+      position: LatLng(position.latitude, position.longitude),
+      infoWindow: const InfoWindow(
+        title: 'Institution Location ',
+      ),
+      icon: BitmapDescriptor.defaultMarker,
+      draggable: true,
+    ));
+  }
+
+  @override
+  void initState() {
+    getCurrentPosition();
+    // markers.add(Marker(
+    //   markerId: MarkerId(
+    //       position.latitude.toString() + position.longitude.toString()),
+    //   position: LatLng(position.latitude, position.longitude),
+    //   infoWindow: const InfoWindow(
+    //     title: 'Institution Location ',
+    //   ),
+    //   icon: BitmapDescriptor.defaultMarker,
+    //   draggable: true,
+    // ));
+
+    addPost = widget.typeOfRequest == 'P' ? true : false;
+    if (addPost) {
+      collName = 'posts';
+      border = const BorderRadius.only(
+        topRight: Radius.circular(30),
+        bottomRight: Radius.circular(30),
+      );
+      sucessMsg = 'Post is added successfully';
+    } else {
+      collName = 'requests';
+      border = BorderRadius.circular(30);
+      sucessMsg = 'Request is sent successfully';
+    }
+    print(collName);
+    DBId = widget.dataId;
+    print(DBId);
+    super.initState();
+    print(addPost);
+  }
+
+  LatLng selectedLoc = LatLng(24.7136, 46.6753);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          title: const Text("Add Location"),
+          //   leading: IconButton(
+          //     icon: const Icon(Icons.close, color: Colors.black),
+          //     onPressed: () => showDialog<String>(
+          //       context: context,
+          //       builder: (BuildContext context) => AlertDialog(
+          //         content: const Text('Discard the changes you made?'),
+          //         actions: <Widget>[
+          //           TextButton(
+          //             onPressed: () => Navigator.of(context).pop(),
+          //             child: const Text('Keep editing'),
+          //           ),
+          //           TextButton(
+          //             onPressed: () {
+          //               Navigator.of(context).popUntil((route) => route.isFirst);
+          //             },
+          //             child: const Text('Discard'),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          automaticallyImplyLeading: false),
+      body: Stack(
+        children: <Widget>[
+          GoogleMap(
+            markers: markers.toSet(),
+            onTap: (tapped) async {
+              markers.removeAt(0);
+              markers.insert(
+                  0,
+                  Marker(
+                    markerId: MarkerId(tapped.latitude.toString() +
+                        tapped.longitude.toString()),
+                    position: LatLng(tapped.latitude, tapped.longitude),
+                    infoWindow: const InfoWindow(
+                      title: 'Selected Location ',
+                    ),
+                    draggable: true,
+                    icon: BitmapDescriptor.defaultMarker,
+                  ));
+              setState(() {
+                _markers = markers;
+                print("items ready and set state");
+              });
+
+              print(markers);
+              selectedLoc = LatLng(tapped.latitude, tapped.longitude);
+              List<Placemark> placemark = await placemarkFromCoordinates(
+                  selectedLoc.latitude, selectedLoc.longitude);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text(placemark[0].street.toString() +
+                        ', ' +
+                        placemark[0].subLocality.toString() +
+                        '\n' +
+                        placemark[0].administrativeArea.toString() +
+                        ', ' +
+                        placemark[0].country.toString()),
+                    action: SnackBarAction(
+                      label: 'Dismiss',
+                      disabledTextColor: Colors.white,
+                      textColor: Colors.white,
+                      onPressed: () {
+                        //Do whatever you want
+                      },
+                    )),
+              );
+            },
+            zoomGesturesEnabled: true,
+            mapType: MapType.normal,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            onMapCreated: (controller) {
+              setState(() {
+                mapController = controller;
+              });
+            },
+            initialCameraPosition: CameraPosition(
+              target: LatLng(position.latitude, position.longitude),
+              zoom: 10.0,
+            ),
+          ),
+          Positioned.fill(
+            bottom: 15,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Visibility(
+                      visible: addPost,
+                      child: Container(
+                        width: 120,
+
+                        // margin: const EdgeInsets.fromLTRB(40, 0, 0, 0),
+                        decoration: const BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black26,
+                                offset: Offset(0, 4),
+                                blurRadius: 5.0)
+                          ],
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            stops: [0.0, 1.0],
+                            colors: [
+                              Colors.blue,
+                              Color(0xFF39d6ce),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            bottomLeft: Radius.circular(30),
+                          ),
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            backToHomePage();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            textStyle: const TextStyle(
+                              fontSize: 18,
+                            ),
+                            // side: BorderSide.only(
+                            //     color: Colors.grey.shade400, width: 1),
+                          ),
+                          child: const Text('Skip'),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 140,
+                      // margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black26,
+                              offset: Offset(0, 4),
+                              blurRadius: 5.0)
+                        ],
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomRight,
+                          end: Alignment.topLeft,
+                          stops: [0.0, 1.0],
+                          colors: [
+                            Colors.blue,
+                            Color(0xFF39d6ce),
+                          ],
+                        ),
+                        // borderRadius: BorderRadius.circular(30),
+                        borderRadius: border,
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          updateDB();
+                          backToHomePage();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          textStyle: const TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                        child: const Text('Add Location'),
+                      ),
+                    ),
+                  ]),
+            ),
+          ),
+        ],
+      ),
+
+      // FloatingSearchBar.builder(
+      //         pinned: true,
+      //         itemCount: 100,
+      //         padding: EdgeInsets.only(top: 10.0),
+      //         itemBuilder: (BuildContext context, int index) {
+      //           return ListTile(
+      //             leading: Text(index.toString()),
+      //           );
+      //         },
+      //         leading: CircleAvatar(
+      //           child: Text("RD"),
+      //         ),
+      //         endDrawer: Drawer(
+      //           child: Container(),
+      //         ),
+      //         onChanged: (String value) {},
+      //         onTap: () {},
+      //         decoration: InputDecoration.collapsed(
+      //           hintText: "Search...",
+      //         ),
+      //       ),
+    );
+  }
+
+  Future<void> updateDB() async {
+    print(position.latitude.toString() + position.longitude.toString());
+    print("Maps Id: $DBId");
+    print(DBId);
+    print(collName);
+    final postID = FirebaseFirestore.instance.collection(collName).doc(DBId);
+    print(postID);
+    postID.update({
+      'latitude': selectedLoc.latitude.toString(),
+      'longitude': selectedLoc.longitude.toString()
+    });
+  }
+
+  void backToHomePage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(sucessMsg),
+      ),
+    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => MyHomePage()),
+    // );
+
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+}
