@@ -145,14 +145,38 @@ class _MyStatefulWidgetState extends State<addPost> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(8, 8, 0, 4),
-                  child: Text(
-                    imagePath,
-                    style: TextStyle(
-                      fontSize: 15,
+                Stack(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(8, 8, 0, 4),
+                      child: Text(
+                        imagePath,
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
+                      ),
                     ),
-                  ),
+                    Positioned(
+                      right: 5.0,
+                      bottom: 5.0,
+                      child: InkWell(
+                        child: Icon(
+                          Icons.remove_circle,
+                          size: 30,
+                          color: Colors.red,
+                        ),
+                        // This is where the _image value sets to null on tap of the red circle icon
+                        onTap: () {
+                          setState(
+                            () {
+                              imagePath = '';
+                              imageDB = null;
+                            },
+                          );
+                        },
+                      ),
+                    )
+                  ],
                 ),
               ],
             ),

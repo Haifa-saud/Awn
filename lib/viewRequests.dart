@@ -36,8 +36,6 @@ class _AddRequestState extends State<viewRequests> {
       body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 0),
           child: Column(
-            // crossAxisAlignment: CrossAxisAlignment.start,
-            // mainAxisSize: MainAxisSize.max,
             children: [
               Expanded(
                   child: Container(
@@ -65,8 +63,6 @@ class _AddRequestState extends State<viewRequests> {
                               print('line 59');
                               return Card(
                                   child: Column(
-                                // mainAxisAlignment: MainAxisAlignment.start,
-                                // crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   //title
                                   Padding(
@@ -173,19 +169,7 @@ class _AddRequestState extends State<viewRequests> {
                                           child: Text('Location',
                                               style: TextStyle(
                                                   color: Colors.black)))),
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.location_on_outlined,
-                                            size: 20, color: Colors.red),
-                                        Text('location',
-                                            style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w500)),
-                                      ],
-                                    ),
-                                  ),
+
                                   //buttons
                                   Padding(
                                     padding: EdgeInsets.all(20),
