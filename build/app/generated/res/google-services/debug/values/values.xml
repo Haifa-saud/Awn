@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">1039829394290-ivk17df2oviqq7d53rk8pf5hsskom6r6.apps.googleusercontent.com</string>
+    <string name="firebase_database_url" translatable="false">https://awn-swe-444-c20ee-default-rtdb.europe-west1.firebasedatabase.app</string>
+    <string name="gcm_defaultSenderId" translatable="false">1039829394290</string>
+    <string name="google_api_key" translatable="false">AIzaSyADY5AhCL7tHDEwRAnhtuuDRx6nufJHZ5E</string>
+    <string name="google_app_id" translatable="false">1:1039829394290:android:9a6398d7862f8ed3d833eb</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyADY5AhCL7tHDEwRAnhtuuDRx6nufJHZ5E</string>
+    <string name="google_storage_bucket" translatable="false">awn-swe-444-c20ee.appspot.com</string>
+    <string name="project_id" translatable="false">awn-swe-444-c20ee</string>
+</resources>
