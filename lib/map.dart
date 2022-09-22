@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'main.dart';
 
@@ -98,29 +99,7 @@ class _MyStatefulWidgetState extends State<maps> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text("Add Location"),
-          //   leading: IconButton(
-          //     icon: const Icon(Icons.close, color: Colors.black),
-          //     onPressed: () => showDialog<String>(
-          //       context: context,
-          //       builder: (BuildContext context) => AlertDialog(
-          //         content: const Text('Discard the changes you made?'),
-          //         actions: <Widget>[
-          //           TextButton(
-          //             onPressed: () => Navigator.of(context).pop(),
-          //             child: const Text('Keep editing'),
-          //           ),
-          //           TextButton(
-          //             onPressed: () {
-          //               Navigator.of(context).popUntil((route) => route.isFirst);
-          //             },
-          //             child: const Text('Discard'),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          automaticallyImplyLeading: false),
+          title: const Text("Add Location"), automaticallyImplyLeading: false),
       body: Stack(
         children: <Widget>[
           GoogleMap(
@@ -308,6 +287,10 @@ class _MyStatefulWidgetState extends State<maps> {
       'latitude': selectedLoc.latitude.toString(),
       'longitude': selectedLoc.longitude.toString()
     });
+    if (collName == 'requests') {
+      var time = DateTime.now().second.toString();
+      
+    }
   }
 
   void backToHomePage() {
@@ -316,11 +299,6 @@ class _MyStatefulWidgetState extends State<maps> {
         content: Text(sucessMsg),
       ),
     );
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => MyHomePage()),
-    // );
-
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }

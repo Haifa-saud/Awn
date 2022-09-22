@@ -352,7 +352,6 @@ class _MyStatefulWidgetState extends State<addPost> {
   Future<void> addToDB() async {
     CollectionReference posts = FirebaseFirestore.instance.collection('posts');
 
-    //in case the user uploaded an image
     if (imagePath != '') {
       File image = imageDB!;
       final storage =

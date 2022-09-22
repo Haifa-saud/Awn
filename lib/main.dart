@@ -1,65 +1,99 @@
 import 'package:awn/Utils.dart';
 import 'package:awn/authentication.dart';
 import 'package:awn/homePage.dart';
-
 import 'package:awn/addRequest.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:awn/login.dart';
 
 import 'package:awn/register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:workmanager/workmanager.dart';
 import 'firebase_options.dart';
 import 'package:awn/map.dart';
 import 'package:path/path.dart' as Path;
-
 import 'notification.dart';
+import 'package:awn/notification/registerNotification.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print('A bg message just showed up :  ${message.messageId}');
-}
+// void callbackDispatcher() {
+//   Workmanager().executeTask((taskName, inputData) {
+//     switch (taskName) {
+//       case 'firstTask':
+//         sendData();
+//         break;
+//     }
+//     return Future.value(true);
+//   });
+// }
+// void callbackDispatcher() {
+//   Workmanager().executeTask((task, inputData) {
+//     FlutterLocalNotificationsPlugin flip =
+//          FlutterLocalNotificationsPlugin();
+//     var android = AndroidInitializationSettings('@mipmap/ic_launcher');
+//     var settings = InitializationSettings(android: android);
+//     flip.initialize(settings);
+//     _showNotificationWithDefaultSound(flip);
+//     return Future.value(true);
+//   });
+// }
+// Future _showNotificationWithDefaultSound(flip) async {
+//   // Show a notification after every 15 minute with the first
+//   // appearance happening a minute after invoking the method
+//   var androidPlatformChannelSpecifics =
+//       const AndroidNotificationDetails('your channel id', 'your channel name',
+//           importance: Importance.max,
+//           priority: Priority.high);
+//   var platformChannelSpecifics = NotificationDetails(
+//     android: androidPlatformChannelSpecifics,
+//   );
+//   await flip.show(
+//       0,
+//       'Geeks fo rGeeks',
+//       'Your are one step away to connect with GeeksforGeeks',
+//       platformChannelSpecifics,
+//       payload: 'Default_Sound');
+// }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  WidgetsFlutterBinding.ensureInitialized();
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // await flutterLocalNotificationsPlugin
+  //     .resolvePlatformSpecificImplementation<
+  //         AndroidFlutterLocalNotificationsPlugin>()
+  //     ?.createNotificationChannel(channel);
 
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+  var time = DateTime.now().second.toString();
+  await Workmanager()
+      .registerPeriodicTask(time, 'firstTask', frequency: Duration(minutes: 1));
 
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // FlutterLocalNotificationsPlugin notifications =
+  //     FlutterLocalNotificationsPlugin();
+  // AndroidInitializationSettings androidInit =
+  //     AndroidInitializationSettings('ic_launcher.png');
+  // // var iOSInit =  IOSInitializationSettings();
+  // var initSettings = InitializationSettings(android: androidInit); //, iOSInit);
+  // notifications.initialize(initSettings);
 
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Home Page',
-      /* routes: {
-        '/homePage': (context) => homePage(),
-      },*/
       theme: ThemeData(
-        scaffoldBackgroundColor: Color(0xFFfcfffe),
+        scaffoldBackgroundColor: const Color(0xFFfcfffe),
         appBarTheme: const AppBarTheme(
           elevation: 0,
           color: Color(0xFF39d6ce), // Colors.transparent,
@@ -82,25 +116,25 @@ class MyApp extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(100.0),
               borderSide: BorderSide(color: Colors.grey.shade400)),
-          contentPadding: EdgeInsets.fromLTRB(20, 12, 20, 12),
+          contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(100.0),
-              borderSide: BorderSide(color: Colors.blue, width: 2)),
+              borderSide: const BorderSide(color: Colors.blue, width: 2)),
           errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(100.0),
-              borderSide: BorderSide(color: Colors.red, width: 2.0)),
+              borderSide: const BorderSide(color: Colors.red, width: 2.0)),
           focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(100.0),
-              borderSide: BorderSide(color: Colors.red, width: 2.0)),
-          floatingLabelStyle: TextStyle(fontSize: 22, color: Colors.blue),
-          helperStyle: TextStyle(fontSize: 14),
+              borderSide: const BorderSide(color: Colors.red, width: 2.0)),
+          floatingLabelStyle: const TextStyle(fontSize: 22, color: Colors.blue),
+          helperStyle: const TextStyle(fontSize: 14),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent, // background (button) color
-              foregroundColor: Color(0xFFfcfffe),
+              foregroundColor: const Color(0xFFfcfffe),
               shadowColor: Colors.transparent,
-              padding: EdgeInsets.all(5),
+              padding: const EdgeInsets.all(5),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0))),
         ),
@@ -125,9 +159,9 @@ class MainPage extends StatelessWidget {
         if (snapshot.hasData && snapshot != null) {
           UserHelper.saveUser(snapshot.data);
           final user = snapshot.data;
-          return homePage(user: user!);
+          return const homePage();
         } else {
-          return AuthenticationPage();
+          return const AuthenticationPage();
         }
       },
     );
