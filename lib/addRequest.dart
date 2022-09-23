@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'firebase_options.dart';
+import 'services/firebase_options.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -397,6 +397,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
       'time': getTime(selectedTime),
       'duration': durationController.text,
       'description': descController.text,
+      'notificationStatus': 'pending',
       'latitude': '',
       'longitude': ''
     });

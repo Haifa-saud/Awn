@@ -80,7 +80,7 @@ class _MyStatefulWidgetState extends State<maps> {
         topRight: Radius.circular(30),
         bottomRight: Radius.circular(30),
       );
-      sucessMsg = 'Post is added successfully';
+      sucessMsg = 'Place is added successfully';
     } else {
       collName = 'requests';
       border = BorderRadius.circular(30);
@@ -289,7 +289,6 @@ class _MyStatefulWidgetState extends State<maps> {
     });
     if (collName == 'requests') {
       var time = DateTime.now().second.toString();
-      
     }
   }
 

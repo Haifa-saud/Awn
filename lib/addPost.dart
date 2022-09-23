@@ -8,7 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:regexed_validator/regexed_validator.dart';
-import 'firebase_options.dart';
+import 'services/firebase_options.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -30,7 +30,6 @@ TextEditingController websiteController = TextEditingController();
 
 class _MyStatefulWidgetState extends State<addPost> {
   final _formKey = GlobalKey<FormState>();
-  // final dataKey = GlobalKey();
 
   GlobalKey<ScaffoldState> _scaffoldStateKey = GlobalKey();
 
@@ -45,7 +44,7 @@ class _MyStatefulWidgetState extends State<addPost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add a Post', textAlign: TextAlign.center),
+        title: const Text('Add a Place', textAlign: TextAlign.center),
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
           onPressed: () => showDialog<String>(

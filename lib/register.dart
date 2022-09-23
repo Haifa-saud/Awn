@@ -1,33 +1,26 @@
-import 'package:awn/Utils.dart';
+// ignore_for_file: non_constant_identifier_names
+
+import 'package:awn/services/Utils.dart';
 import 'package:awn/login.dart';
 import 'package:awn/services/firebase_storage_services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'firebase_options.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:path/path.dart' as Path;
-import 'forgotPassword.dart';
-import 'main.dart';
 import 'package:email_validator/email_validator.dart';
-import 'theme.dart';
-import 'myGlobal.dart' as globals;
+import 'services/theme.dart';
+import 'services/myGlobal.dart' as globals;
 
 class register extends StatefulWidget {
-  final Function() onClickedSignIn;
+  // final Function() onClickedSignIn;
   const register({
     Key? key,
-    required this.onClickedSignIn,
+    // required this.onClickedSignIn,
   }) : super(key: key);
 
   @override
@@ -62,6 +55,7 @@ class _registerState extends State<register> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _passwordVisible = false;
+  @override
   void dispose() {
     emailController.text = "";
     passwordController.text = "";
@@ -71,16 +65,6 @@ class _registerState extends State<register> {
 
     super.dispose();
   }
-
-  //   void clearForm() {
-  //   nameController.clear();
-  //   descriptionController.clear();
-  //   numberController.clear();
-  //   websiteController.clear();
-  //   imagePath = '';
-  // }
-
-  //add file methods
 
   DateTime selectedDate = DateTime.now();
   bool showDate = false;
@@ -126,7 +110,7 @@ class _registerState extends State<register> {
           Colors.white54,
           Colors.blue.shade200
         ], begin: Alignment.topRight, end: Alignment.bottomLeft)),
-        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         padding: const EdgeInsets.only(left: 40, right: 40),
         child: ListView(
           children: [
@@ -164,7 +148,7 @@ class _registerState extends State<register> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
+                  const Center(
                     child: Text(
                       "Register",
                       style: TextStyle(
@@ -182,10 +166,11 @@ class _registerState extends State<register> {
                         theme.inputfield("Email", "example@example.example"),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (email) {
-                      if (email != null && !EmailValidator.validate(email))
+                      if (email != null && !EmailValidator.validate(email)) {
                         return "Enter a valid email";
-                      else
+                      } else {
                         return null;
+                      }
                     },
                   ),
                   SizedBox(
@@ -196,21 +181,22 @@ class _registerState extends State<register> {
                     decoration: theme.inputfield("Name", "Sara Ahmad"),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      if (value != null && value.length < 2)
+                      if (value != null && value.length < 2) {
                         return "Enter a valid name";
-                      else
+                      } else {
                         return null;
+                      }
                     },
                   ),
                   SizedBox(
                     height: height * 0.01,
                   ),
                   Container(
-                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                     child: Column(
                       children: [
                         Row(
-                          children: [
+                          children: const [
                             Text(
                               "Gender:",
                             ),
@@ -222,13 +208,12 @@ class _registerState extends State<register> {
                               value: "Female",
                               groupValue: group,
                               onChanged: (T) {
-                                print(T);
                                 setState(() {
                                   group = T!;
                                 });
                               },
                             ),
-                            Text("Female",
+                            const Text("Female",
                                 style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.normal)),
@@ -242,14 +227,14 @@ class _registerState extends State<register> {
                                 });
                               },
                             ),
-                            Text("Male",
+                            const Text("Male",
                                 style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.normal)),
                           ],
                         ),
                         Row(
-                          children: [
+                          children: const [
                             Text("Register As:"),
                           ],
                         ),
@@ -264,7 +249,7 @@ class _registerState extends State<register> {
                               });
                             },
                           ),
-                          Text("Special Needs User",
+                          const Text("Special Needs User",
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.normal)),
                         ]),
@@ -274,13 +259,12 @@ class _registerState extends State<register> {
                               value: "Volunteer",
                               groupValue: group1,
                               onChanged: (T) {
-                                print(T);
                                 setState(() {
                                   group1 = T!;
                                 });
                               },
                             ),
-                            Text("Volunteer",
+                            const Text("Volunteer",
                                 style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.normal)),
@@ -310,8 +294,8 @@ class _registerState extends State<register> {
                                       BorderSide(color: Colors.grey.shade400)),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(30.0),
-                                borderSide:
-                                    BorderSide(color: Colors.blue, width: 2),
+                                borderSide: const BorderSide(
+                                    color: Colors.blue, width: 2),
                               ),
                             ),
                           ),
@@ -356,7 +340,7 @@ class _registerState extends State<register> {
                               height: height * 0.01,
                             ),
                             Row(
-                              children: <Widget>[
+                              children: const <Widget>[
                                 Text(
                                   "Select imparity/ imparities: ",
                                 ),
@@ -380,7 +364,7 @@ class _registerState extends State<register> {
                                       });
                                     }),
                               ),
-                              Text("Visually Impaired",
+                              const Text("Visually Impaired",
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.normal)),
@@ -398,7 +382,7 @@ class _registerState extends State<register> {
                                       });
                                     }),
                               ),
-                              Text("Vocally Impaired",
+                              const Text("Vocally Impaired",
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.normal)),
@@ -416,7 +400,7 @@ class _registerState extends State<register> {
                                       });
                                     }),
                               ),
-                              Text("Hearing Impaired",
+                              const Text("Hearing Impaired",
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.normal)),
@@ -435,7 +419,7 @@ class _registerState extends State<register> {
                                         });
                                       }),
                                 ),
-                                Text("Physically Impaired",
+                                const Text("Physically Impaired",
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.normal)),
@@ -454,7 +438,7 @@ class _registerState extends State<register> {
                                         });
                                       }),
                                 ),
-                                Text("other",
+                                const Text("other",
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.normal)),
@@ -463,7 +447,7 @@ class _registerState extends State<register> {
                           ],
                         );
                       } else {
-                        return Text('');
+                        return const Text('');
                       }
                     }),
                   ),
@@ -482,7 +466,7 @@ class _registerState extends State<register> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           "Date of Birth:",
                           textAlign: TextAlign.left, //style:TextStyle(re)
                         ),
@@ -501,14 +485,16 @@ class _registerState extends State<register> {
                               style: ElevatedButton.styleFrom(
                                   foregroundColor: Colors.grey.shade500,
                                   backgroundColor: Colors.white,
-                                  padding: EdgeInsets.fromLTRB(14, 10, 14, 10),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(14, 10, 14, 10),
                                   side: BorderSide(
                                       color: Colors.grey.shade400, width: 1)),
                               child: Padding(
-                                padding: EdgeInsets.fromLTRB(40, 0, 40, 0),
+                                padding:
+                                    const EdgeInsets.fromLTRB(40, 0, 40, 0),
                                 child: Text(
                                   getDate(),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight:
                                         FontWeight.bold, /*color: Colors.white*/
@@ -520,7 +506,7 @@ class _registerState extends State<register> {
                         ),
                         showDate
                             ? Container(
-                                margin: EdgeInsets.only(left: 5),
+                                margin: const EdgeInsets.only(left: 5),
                                 child: Text(getDate()))
                             : const SizedBox(),
                       ],
@@ -580,21 +566,21 @@ class _registerState extends State<register> {
                           });
                         },
                       ),
-                      contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                      contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey)),
+                          borderSide: const BorderSide(color: Colors.grey)),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
                           borderSide: BorderSide(color: Colors.grey.shade400)),
                       errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
                           borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
+                              const BorderSide(color: Colors.red, width: 2.0)),
                       focusedErrorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
                           borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
+                              const BorderSide(color: Colors.red, width: 2.0)),
                     ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
@@ -615,18 +601,20 @@ class _registerState extends State<register> {
                       //   return null;
                       // }
                       // شكرا !!!!
-                      RegExp Upper = RegExp(r'^(?=.*?[A-Z])');
-                      RegExp digit = RegExp(r'^(?=.*?[0-9])');
+                      // RegExp Upper = RegExp(r'^(?=.*?[A-Z])');
+                      // RegExp digit = RegExp(r'^(?=.*?[0-9])');
 
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a password';
-                      } else if (value.length < 8) {
-                        return 'Password must be at least 8 digits ';
-                      } else if (!Upper.hasMatch(value)) {
-                        return 'Password should contain an upper case';
-                      } else if (!digit.hasMatch(value)) {
-                        return 'Password should contain a number';
-                      } else {
+                      if (value == null || value.isEmpty || value.length < 8) {
+                        return 'Please enter a password min 8';
+                      }
+                      // else if (value.length < 8) {
+                      //   return 'Password must be at least 8 digits ';
+                      // } else if (!Upper.hasMatch(value)) {
+                      //   return 'Password should contain an upper case';
+                      // } else if (!digit.hasMatch(value)) {
+                      //   return 'Password should contain a number';
+                      // }
+                      else {
                         return null;
                       }
                     },
@@ -655,21 +643,21 @@ class _registerState extends State<register> {
                           });
                         },
                       ),
-                      contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                      contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey)),
+                          borderSide: const BorderSide(color: Colors.grey)),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
                           borderSide: BorderSide(color: Colors.grey.shade400)),
                       errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
                           borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
+                              const BorderSide(color: Colors.red, width: 2.0)),
                       focusedErrorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
                           borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
+                              const BorderSide(color: Colors.red, width: 2.0)),
                     ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
@@ -688,9 +676,9 @@ class _registerState extends State<register> {
                     height: height * 0.01,
                   ),
                   Container(
-                    margin: EdgeInsets.fromLTRB(50, 0, 50, 10),
+                    margin: const EdgeInsets.fromLTRB(50, 0, 50, 10),
                     decoration: BoxDecoration(
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                             color: Colors.black26,
                             offset: Offset(0, 4),
@@ -715,18 +703,19 @@ class _registerState extends State<register> {
                               borderRadius: BorderRadius.circular(30.0),
                             ),
                           ),
-                          minimumSize: MaterialStateProperty.all(Size(50, 50)),
+                          minimumSize:
+                              MaterialStateProperty.all(const Size(50, 50)),
                           backgroundColor:
                               MaterialStateProperty.all(Colors.transparent),
                           shadowColor:
                               MaterialStateProperty.all(Colors.transparent),
                         ),
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
+                        child: const Padding(
+                          padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
                           child: Text(
                             'Register',
                             style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           ),
@@ -738,8 +727,9 @@ class _registerState extends State<register> {
                             Utils.showSnackBar(
                                 "confirm password does not match");
                             return;
-                          } else
+                          } else {
                             signUp();
+                          }
                         }
 
                         // Navigator.pushReplacement(
@@ -749,13 +739,21 @@ class _registerState extends State<register> {
                         ),
                   ),
                   Container(
-                    margin: EdgeInsets.fromLTRB(50, 10, 50, 10),
+                    margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                     //child: Text('Don\'t have an account? Create'),
                     child: Text.rich(TextSpan(children: [
-                      TextSpan(text: "Already have an account? "),
+                      const TextSpan(
+                        text: "Already have an account? ",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 95, 94, 94)),
+                      ),
                       TextSpan(
                         recognizer: TapGestureRecognizer()
-                          ..onTap = widget.onClickedSignIn,
+                          ..onTap = () {
+                            Navigator.pushNamed(context, "/login");
+                          },
                         text: 'Log In',
 
                         // Navigator.push(
@@ -806,13 +804,14 @@ class _registerState extends State<register> {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+      UserHelper.saveUser(user);
     } on FirebaseAuthException catch (e) {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('e.message'),
+          content: const Text('e.message'),
           backgroundColor: Colors.red.shade400,
-          margin: EdgeInsets.fromLTRB(6, 0, 3, 0),
+          margin: const EdgeInsets.fromLTRB(6, 0, 3, 0),
           behavior: SnackBarBehavior.floating,
           action: SnackBarAction(
             label: 'Dismiss',
@@ -844,61 +843,67 @@ bool other = false;*/
     String age = globals.bDay;
     String disability = "";
     String bio = bioController.text;
-
+    final user = FirebaseAuth.instance.currentUser!;
+    String userId = user.uid;
     if (blind == true && blind != null) disability += " blind,";
     if (mute == true && mute != null) disability += " mute,";
     if (deaf == true && deaf != null) disability += " deaf,";
     if (physical == true && physical != null) disability += " physical,";
     if (other == true && other != null) disability += " other,";
-    final userRef = db.collection("users").doc(user!.uid);
+    final userRef = db.collection("users").doc(user.uid);
+    //final volRef = db.collection("volunteers").doc(user!.uid);
 
     Map<String, dynamic> userData;
-    if (group1 == "Volunteer") {
-      if (!((await userRef.get()).exists)) {
-        await userRef.set({
-          "Email": email,
-          "Type": group1,
-          "bio": bio,
-          "gender": group,
-          "name": name,
-          "phone number": number,
-          "DOB": age,
-        });
-      } else {
-        // if (result.files.first != null){
-        // var len = pickedFile? ?? '0';
-        if (fileDB == null) {
-          File file = fileDB!;
-          String filePath = Path.basename(file.path);
-
-          final path = 'User/${pickedFile.name}';
-          // String pickedPath = pickedFile.path == '' ? '' : pickedFile.path;
-          // final file = File(pickedFile!.path!);
-          // if (result.files.first != null){
-          final ref = FirebaseStorage.instance.ref().child(filePath);
-          UploadTask uploadTask = ref.putFile(file);
-
-          // String filePath = Path.basename(file.path);
-          TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
-          filePath = await (await uploadTask).ref.getDownloadURL();
-          if (!((await userRef.get()).exists)) {
-            await userRef.set({
-              "Email": email,
-              "Type": group1,
-              "Disability": disability,
-              "gender": group,
-              "name": name,
-              "phone number": number,
-              "DOB": age,
-              "file": filePath,
-            });
-          }
-          // final userRef = db.collection("users").doc(user!.uid);
-          // if (!((await userRef.get()).exists)) {
-          //   await userRef.set(userData);
-          // }
-        }
-      }
+    // if (group1 == "Volunteer") {
+    if (!((await userRef.get()).exists)) {
+      await userRef.set({
+        "Email": email,
+        "Type": group1,
+        "bio": bio,
+        "gender": group,
+        "name": name,
+        "phone number": number,
+        "DOB": age,
+        "Disability": disability,
+        "id": userId,
+      });
     }
+    // } else if (group1 == "Special Need User") {
+    // if (result.files.first != null){
+    // var len = pickedFile? ?? '0';
+    //   if (fileDB == null) {
+    //     File file = fileDB!;
+    //     //String filePath = Path.basename(file.path);
+
+    //     final path = 'User/${pickedFile.name}';
+    //     // String pickedPath = pickedFile.path == '' ? '' : pickedFile.path;
+    //     // final file = File(pickedFile!.path!);
+    //     // if (result.files.first != null){
+    //     final ref = FirebaseStorage.instance.ref().child(filePath);
+    //     UploadTask uploadTask = ref.putFile(file);
+    //     final user = FirebaseAuth.instance.currentUser!;
+    //     String userId = user.uid;
+    //     // String filePath = Path.basename(file.path);
+    //     TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+    //     filePath = await (await uploadTask).ref.getDownloadURL();
+    //     if (!((await userRef.get()).exists)) {
+    //       await userRef.set({
+    //         "Email": email,
+    //         "id": userId,
+    //         "Type": group1,
+    //         "Disability": disability,
+    //         "gender": group,
+    //         "name": name,
+    //         "phone number": number,
+    //         "DOB": age,
+    //         //"file": filePath,
+    //       });
+    //     }
+    //     // final userRef = db.collection("users").doc(user!.uid);
+    //     // if (!((await userRef.get()).exists)) {
+    //     //   await userRef.set(userData);
+    //     // }
+    //   }
+    // }
   }
 }

@@ -1,85 +1,24 @@
-import 'package:awn/Utils.dart';
-import 'package:awn/authentication.dart';
 import 'package:awn/homePage.dart';
-import 'package:awn/addRequest.dart';
-import 'package:awn/viewRequests.dart';
 import 'package:awn/login.dart';
-
 import 'package:awn/register.dart';
+import 'package:awn/services/registerNotification.dart';
+import 'package:awn/volunteerPage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:get/get.dart';
 import 'package:workmanager/workmanager.dart';
-import 'firebase_options.dart';
-import 'package:awn/map.dart';
-import 'package:path/path.dart' as Path;
-import 'notification.dart';
-import 'package:awn/notification/registerNotification.dart';
-
-// void callbackDispatcher() {
-//   Workmanager().executeTask((taskName, inputData) {
-//     switch (taskName) {
-//       case 'firstTask':
-//         sendData();
-//         break;
-//     }
-//     return Future.value(true);
-//   });
-// }
-// void callbackDispatcher() {
-//   Workmanager().executeTask((task, inputData) {
-//     FlutterLocalNotificationsPlugin flip =
-//          FlutterLocalNotificationsPlugin();
-//     var android = AndroidInitializationSettings('@mipmap/ic_launcher');
-//     var settings = InitializationSettings(android: android);
-//     flip.initialize(settings);
-//     _showNotificationWithDefaultSound(flip);
-//     return Future.value(true);
-//   });
-// }
-// Future _showNotificationWithDefaultSound(flip) async {
-//   // Show a notification after every 15 minute with the first
-//   // appearance happening a minute after invoking the method
-//   var androidPlatformChannelSpecifics =
-//       const AndroidNotificationDetails('your channel id', 'your channel name',
-//           importance: Importance.max,
-//           priority: Priority.high);
-//   var platformChannelSpecifics = NotificationDetails(
-//     android: androidPlatformChannelSpecifics,
-//   );
-//   await flip.show(
-//       0,
-//       'Geeks fo rGeeks',
-//       'Your are one step away to connect with GeeksforGeeks',
-//       platformChannelSpecifics,
-//       payload: 'Default_Sound');
-// }
+import 'services/firebase_options.dart';
+import 'services/myGlobal.dart' as globals;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // await flutterLocalNotificationsPlugin
-  //     .resolvePlatformSpecificImplementation<
-  //         AndroidFlutterLocalNotificationsPlugin>()
-  //     ?.createNotificationChannel(channel);
 
   var time = DateTime.now().second.toString();
   await Workmanager()
       .registerPeriodicTask(time, 'firstTask', frequency: Duration(minutes: 1));
-
-  // FlutterLocalNotificationsPlugin notifications =
-  //     FlutterLocalNotificationsPlugin();
-  // AndroidInitializationSettings androidInit =
-  //     AndroidInitializationSettings('ic_launcher.png');
-  // // var iOSInit =  IOSInitializationSettings();
-  // var initSettings = InitializationSettings(android: androidInit); //, iOSInit);
-  // notifications.initialize(initSettings);
 
   runApp(const MyApp());
 }
@@ -90,6 +29,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        '/homePage': (ctx) => const homePage(userType: 'Special Need User'),
+        '/volunteerPage': (ctx) =>
+            const homePage(userType: 'Volunteer'), //const volunteerPage(),
+        "/register": (ctx) => const register(),
+        "/login": (ctx) => const login(),
+      },
       debugShowCheckedModeBanner: false,
       title: 'Home Page',
       theme: ThemeData(
@@ -146,24 +92,7 @@ class MyApp extends StatelessWidget {
           contentTextStyle: TextStyle(fontSize: 16),
         ),
       ),
-      home: MainPage(),
-    );
-  }
-}
-
-class MainPage extends StatelessWidget {
-  Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot != null) {
-          UserHelper.saveUser(snapshot.data);
-          final user = snapshot.data;
-          return const homePage();
-        } else {
-          return const AuthenticationPage();
-        }
-      },
+      home: const login(),
     );
   }
 }
