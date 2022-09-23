@@ -1,16 +1,16 @@
 import 'package:awn/addPost.dart';
 import 'package:awn/addRequest.dart';
+import 'package:awn/login.dart';
 
 import 'package:awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
-import 'login.dart';
 import 'myGlobal.dart' as globals;
 
-class homePage extends StatefulWidget {
-  const homePage({Key? key}) : super(key: key);
+class volunteerPage extends StatefulWidget {
+  const volunteerPage({Key? key}) : super(key: key);
 
   @override
   MyHomePage createState() => MyHomePage();
@@ -20,7 +20,7 @@ final user = FirebaseAuth.instance.currentUser!;
 String userId = user.uid;
 //final String userType = session.getUserType();
 
-class MyHomePage extends State<homePage> {
+class MyHomePage extends State<volunteerPage> {
   final Stream<QuerySnapshot> posts = FirebaseFirestore.instance
       .collection('posts')
       .orderBy("category")
@@ -59,7 +59,7 @@ class MyHomePage extends State<homePage> {
       if (index == 0) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const viewRequests()),
+          MaterialPageRoute(builder: (context) => const addPost()),
         );
       } else if (index == 1) {
         Navigator.push(
@@ -75,7 +75,6 @@ class MyHomePage extends State<homePage> {
       else if (index == 2) {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const login()));
-
         FirebaseAuth.instance.signOut();
       }
     }
@@ -85,7 +84,7 @@ class MyHomePage extends State<homePage> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: SizedBox(
-          child: Text('homePage',
+          child: Text('VolPge',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 30,

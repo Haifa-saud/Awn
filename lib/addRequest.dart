@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -388,8 +389,16 @@ class AwnRequestFormState extends State<AwnRequestForm> {
   }
 
   Future<void> addToDB() async {
-    CollectionReference requests =
-        FirebaseFirestore.instance.collection('requests');
+    final user = FirebaseAuth.instance.currentUser!;
+    String userId = user.uid;
+    // print('============================================');
+    // print('userId');
+    //  print(userId);
+
+    CollectionReference requests = FirebaseFirestore.instance
+        .collection("userData")
+        .doc(userId)
+        .collection('requests');
     DocumentReference docReference = await requests.add({
       'title': titleController.text,
       'date_ymd': getDate(),
