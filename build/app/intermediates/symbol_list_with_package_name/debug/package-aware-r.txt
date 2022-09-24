@@ -3,7 +3,16 @@ attr activityAction
 attr activityName
 attr alpha
 attr alwaysExpand
+attr ambientEnabled
+attr backgroundColor
 attr buttonSize
+attr cameraBearing
+attr cameraMaxZoomPreference
+attr cameraMinZoomPreference
+attr cameraTargetLat
+attr cameraTargetLng
+attr cameraTilt
+attr cameraZoom
 attr circleCrop
 attr clearTop
 attr colorScheme
@@ -23,6 +32,13 @@ attr fontWeight
 attr imageAspectRatio
 attr imageAspectRatioAdjust
 attr lStar
+attr latLngBoundsNorthEastLatitude
+attr latLngBoundsNorthEastLongitude
+attr latLngBoundsSouthWestLatitude
+attr latLngBoundsSouthWestLongitude
+attr liteMode
+attr mapId
+attr mapType
 attr nestedScrollViewStyle
 attr placeholderActivityName
 attr primaryActivityName
@@ -36,6 +52,16 @@ attr splitMinSmallestWidth
 attr splitMinWidth
 attr splitRatio
 attr ttcIndex
+attr uiCompass
+attr uiMapToolbar
+attr uiRotateGestures
+attr uiScrollGestures
+attr uiScrollGesturesDuringRotateOrZoom
+attr uiTiltGestures
+attr uiZoomControls
+attr uiZoomGestures
+attr useViewLifecycle
+attr zOrderOnTop
 color androidx_core_ripple_material_light
 color androidx_core_secondary_text_default_material_light
 color browser_actions_bg_grey
@@ -166,6 +192,7 @@ id chronometer
 id dark
 id dialog_button
 id forever
+id hybrid
 id icon
 id icon_group
 id icon_only
@@ -184,6 +211,7 @@ id notification_main_column_container
 id right_icon
 id right_side
 id rtl
+id satellite
 id standard
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans
@@ -198,6 +226,7 @@ id tag_transition_group
 id tag_unhandled_key_event_manager
 id tag_unhandled_key_listeners
 id tag_window_insets_animation_callback
+id terrain
 id text
 id text2
 id time
@@ -266,6 +295,7 @@ styleable FontFamilyFont android_font android_fontWeight android_fontStyle andro
 styleable GradientColor android_startColor android_endColor android_type android_centerX android_centerY android_gradientRadius android_tileMode android_centerColor android_startX android_startY android_endX android_endY
 styleable GradientColorItem android_color android_offset
 styleable LoadingImageView circleCrop imageAspectRatio imageAspectRatioAdjust
+styleable MapAttrs ambientEnabled backgroundColor cameraBearing cameraMaxZoomPreference cameraMinZoomPreference cameraTargetLat cameraTargetLng cameraTilt cameraZoom latLngBoundsNorthEastLatitude latLngBoundsNorthEastLongitude latLngBoundsSouthWestLatitude latLngBoundsSouthWestLongitude liteMode mapId mapType uiCompass uiMapToolbar uiRotateGestures uiScrollGestures uiScrollGesturesDuringRotateOrZoom uiTiltGestures uiZoomControls uiZoomGestures useViewLifecycle zOrderOnTop
 styleable SignInButton buttonSize colorScheme scopeUris
 styleable SplitPairFilter primaryActivityName secondaryActivityAction secondaryActivityName
 styleable SplitPairRule clearTop finishPrimaryWithSecondary finishSecondaryWithPrimary splitLayoutDirection splitMinSmallestWidth splitMinWidth splitRatio

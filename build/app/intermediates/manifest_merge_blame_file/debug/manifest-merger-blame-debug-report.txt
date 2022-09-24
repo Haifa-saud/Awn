@@ -15,318 +15,349 @@
 15    <uses-permission android:name="android.permission.INTERNET" />
 15-->/Users/doodi/Desktop/444_Awn/awn/android/app/src/debug/AndroidManifest.xml:7:5-66
 15-->/Users/doodi/Desktop/444_Awn/awn/android/app/src/debug/AndroidManifest.xml:7:22-64
-16    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-16-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-80
-16-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:9:22-77
-17
-18    <queries>
-18-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-17:15
-19        <intent>
-19-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:12:9-16:18
-20            <action android:name="android.intent.action.GET_CONTENT" />
-20-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-72
-20-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:13:21-69
-21
-22            <data android:mimeType="*/*" />
-22-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-44
-22-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:15:19-41
-23        </intent>
-24    </queries>
-25
-26    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-26-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:24:5-79
-26-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:24:22-76
-27    <uses-permission android:name="android.permission.WAKE_LOCK" />
-27-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:24:5-68
-27-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:24:22-65
-28    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
-28-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:25:5-79
-28-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:25:22-76
-29    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
-29-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:26:5-110
-29-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:26:22-107
-30
-31    <application
-32        android:name="android.app.Application"
-33        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-33-->[androidx.core:core:1.8.0] /Users/doodi/.gradle/caches/transforms-3/0ce731f8c62e88af9af421907435d7da/transformed/core-1.8.0/AndroidManifest.xml:24:18-86
-34        android:debuggable="true"
-35        android:icon="@mipmap/ic_launcher"
-36        android:label="awn" >
-37        <activity
-38            android:name="com.example.awn.MainActivity"
-39            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-40            android:exported="true"
-41            android:hardwareAccelerated="true"
-42            android:launchMode="singleTop"
-43            android:theme="@style/LaunchTheme"
-44            android:windowSoftInputMode="adjustResize" >
-45
-46            <!--
-47                 Specifies an Android theme to apply to this Activity as soon as
-48                 the Android process has started. This theme is visible to the user
-49                 while the Flutter UI initializes. After that, this theme continues
-50                 to determine the Window background behind the Flutter UI.
-51            -->
-52            <meta-data
-53                android:name="io.flutter.embedding.android.NormalTheme"
-54                android:resource="@style/NormalTheme" />
-55
-56            <intent-filter>
-57                <action android:name="android.intent.action.MAIN" />
-58
-59                <category android:name="android.intent.category.LAUNCHER" />
-60            </intent-filter>
-61        </activity>
-62        <!--
-63             Don't delete the meta-data below.
-64             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
-65        -->
-66        <meta-data
-67            android:name="flutterEmbedding"
-68            android:value="2" />
-69
-70        <service
-70-->[:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
-71            android:name="com.google.firebase.components.ComponentDiscoveryService"
-71-->[:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:10:18-89
-72            android:directBootAware="true"
-72-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:35:13-43
-73            android:exported="false" >
-73-->[com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:10:13-37
-74            <meta-data
-74-->[:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
-75                android:name="com.google.firebase.components:io.flutter.plugins.firebase.auth.FlutterFirebaseAuthRegistrar"
-75-->[:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-124
-76                android:value="com.google.firebase.components.ComponentRegistrar" />
-76-->[:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
-77            <meta-data
-77-->[:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
-78                android:name="com.google.firebase.components:io.flutter.plugins.firebase.database.FlutterFirebaseAppRegistrar"
-78-->[:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-127
-79                android:value="com.google.firebase.components.ComponentRegistrar" />
-79-->[:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
-80            <meta-data
-80-->[:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
-81                android:name="com.google.firebase.components:io.flutter.plugins.firebase.storage.FlutterFirebaseAppRegistrar"
-81-->[:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-126
-82                android:value="com.google.firebase.components.ComponentRegistrar" />
-82-->[:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
-83            <meta-data
-83-->[:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
-84                android:name="com.google.firebase.components:io.flutter.plugins.firebase.firestore.FlutterFirebaseFirestoreRegistrar"
-84-->[:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-134
-85                android:value="com.google.firebase.components.ComponentRegistrar" />
-85-->[:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
-86            <meta-data
-86-->[:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
-87                android:name="com.google.firebase.components:io.flutter.plugins.firebase.core.FlutterFirebaseCoreRegistrar"
-87-->[:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-124
-88                android:value="com.google.firebase.components.ComponentRegistrar" />
-88-->[:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
-89            <meta-data
-89-->[com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:11:13-13:85
-90                android:name="com.google.firebase.components:com.google.firebase.analytics.ktx.FirebaseAnalyticsKtxRegistrar"
-90-->[com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:12:17-126
-91                android:value="com.google.firebase.components.ComponentRegistrar" />
-91-->[com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:13:17-82
-92            <meta-data
-92-->[com.google.firebase:firebase-common-ktx:20.1.1] /Users/doodi/.gradle/caches/transforms-3/49285ef5ef1651796da7b32f4aac1a76/transformed/jetified-firebase-common-ktx-20.1.1/AndroidManifest.xml:15:13-17:85
-93                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonKtxRegistrar"
-93-->[com.google.firebase:firebase-common-ktx:20.1.1] /Users/doodi/.gradle/caches/transforms-3/49285ef5ef1651796da7b32f4aac1a76/transformed/jetified-firebase-common-ktx-20.1.1/AndroidManifest.xml:16:17-113
-94                android:value="com.google.firebase.components.ComponentRegistrar" />
-94-->[com.google.firebase:firebase-common-ktx:20.1.1] /Users/doodi/.gradle/caches/transforms-3/49285ef5ef1651796da7b32f4aac1a76/transformed/jetified-firebase-common-ktx-20.1.1/AndroidManifest.xml:17:17-82
-95            <meta-data
-95-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:67:13-69:85
-96                android:name="com.google.firebase.components:com.google.firebase.auth.FirebaseAuthRegistrar"
-96-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:68:17-109
-97                android:value="com.google.firebase.components.ComponentRegistrar" />
-97-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:69:17-82
-98            <meta-data
-98-->[com.google.firebase:firebase-firestore:24.2.2] /Users/doodi/.gradle/caches/transforms-3/63a55b2d265d667c75a69a4a5e2e28ed/transformed/jetified-firebase-firestore-24.2.2/AndroidManifest.xml:20:13-22:85
-99                android:name="com.google.firebase.components:com.google.firebase.firestore.FirestoreRegistrar"
-99-->[com.google.firebase:firebase-firestore:24.2.2] /Users/doodi/.gradle/caches/transforms-3/63a55b2d265d667c75a69a4a5e2e28ed/transformed/jetified-firebase-firestore-24.2.2/AndroidManifest.xml:21:17-111
-100                android:value="com.google.firebase.components.ComponentRegistrar" />
-100-->[com.google.firebase:firebase-firestore:24.2.2] /Users/doodi/.gradle/caches/transforms-3/63a55b2d265d667c75a69a4a5e2e28ed/transformed/jetified-firebase-firestore-24.2.2/AndroidManifest.xml:22:17-82
-101            <meta-data
-101-->[com.google.firebase:firebase-storage:20.0.1] /Users/doodi/.gradle/caches/transforms-3/86a11d39ab15d59b759e912472a7593e/transformed/jetified-firebase-storage-20.0.1/AndroidManifest.xml:33:13-35:85
-102                android:name="com.google.firebase.components:com.google.firebase.storage.StorageRegistrar"
-102-->[com.google.firebase:firebase-storage:20.0.1] /Users/doodi/.gradle/caches/transforms-3/86a11d39ab15d59b759e912472a7593e/transformed/jetified-firebase-storage-20.0.1/AndroidManifest.xml:34:17-107
-103                android:value="com.google.firebase.components.ComponentRegistrar" />
-103-->[com.google.firebase:firebase-storage:20.0.1] /Users/doodi/.gradle/caches/transforms-3/86a11d39ab15d59b759e912472a7593e/transformed/jetified-firebase-storage-20.0.1/AndroidManifest.xml:35:17-82
-104            <meta-data
-104-->[com.google.firebase:firebase-database:20.0.5] /Users/doodi/.gradle/caches/transforms-3/f87e0f62127006dc791c32fcca28ed88/transformed/jetified-firebase-database-20.0.5/AndroidManifest.xml:32:13-34:85
-105                android:name="com.google.firebase.components:com.google.firebase.database.DatabaseRegistrar"
-105-->[com.google.firebase:firebase-database:20.0.5] /Users/doodi/.gradle/caches/transforms-3/f87e0f62127006dc791c32fcca28ed88/transformed/jetified-firebase-database-20.0.5/AndroidManifest.xml:33:17-109
-106                android:value="com.google.firebase.components.ComponentRegistrar" />
-106-->[com.google.firebase:firebase-database:20.0.5] /Users/doodi/.gradle/caches/transforms-3/f87e0f62127006dc791c32fcca28ed88/transformed/jetified-firebase-database-20.0.5/AndroidManifest.xml:34:17-82
-107            <meta-data
-107-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:31:13-33:85
-108                android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar"
-108-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:32:17-139
-109                android:value="com.google.firebase.components.ComponentRegistrar" />
-109-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:33:17-82
-110            <meta-data
-110-->[com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:18:13-20:85
-111                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
-111-->[com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:19:17-127
-112                android:value="com.google.firebase.components.ComponentRegistrar" />
-112-->[com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:20:17-82
-113        </service>
-114
-115        <provider
-115-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-18:20
-116            android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"
-116-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-82
-117            android:authorities="com.example.awn.flutter.image_provider"
-117-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:12:13-74
-118            android:exported="false"
-118-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-37
-119            android:grantUriPermissions="true" >
-119-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:14:13-47
-120            <meta-data
-120-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-17:75
-121                android:name="android.support.FILE_PROVIDER_PATHS"
-121-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:16:17-67
-122                android:resource="@xml/flutter_image_picker_file_paths" />
-122-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:17:17-72
-123        </provider>
-124
-125        <uses-library
-125-->[androidx.window:window:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/542a859793ec57d6a4d40865c7efc6d9/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:25:9-27:40
-126            android:name="androidx.window.extensions"
-126-->[androidx.window:window:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/542a859793ec57d6a4d40865c7efc6d9/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:26:13-54
-127            android:required="false" />
-127-->[androidx.window:window:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/542a859793ec57d6a4d40865c7efc6d9/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:27:13-37
-128        <uses-library
-128-->[androidx.window:window:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/542a859793ec57d6a4d40865c7efc6d9/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:28:9-30:40
-129            android:name="androidx.window.sidecar"
-129-->[androidx.window:window:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/542a859793ec57d6a4d40865c7efc6d9/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:29:13-51
-130            android:required="false" />
-130-->[androidx.window:window:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/542a859793ec57d6a4d40865c7efc6d9/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:30:13-37
-131
-132        <activity
-132-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:27:9-44:20
-133            android:name="com.google.firebase.auth.internal.GenericIdpActivity"
-133-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:28:13-80
-134            android:excludeFromRecents="true"
-134-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:29:13-46
-135            android:exported="true"
-135-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:30:13-36
-136            android:launchMode="singleTask"
-136-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:31:13-44
-137            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
-137-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:32:13-72
-138            <intent-filter>
-138-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:33:13-43:29
-139                <action android:name="android.intent.action.VIEW" />
-139-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:34:17-69
-139-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:34:25-66
-140
-141                <category android:name="android.intent.category.DEFAULT" />
-141-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:36:17-76
-141-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:36:27-73
-142                <category android:name="android.intent.category.BROWSABLE" />
-142-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:37:17-78
-142-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:37:27-75
-143
-144                <data
-144-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-44
-145                    android:host="firebase.auth"
-146                    android:path="/"
-147                    android:scheme="genericidp" />
-148            </intent-filter>
-149        </activity>
-150        <activity
-150-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:45:9-62:20
-151            android:name="com.google.firebase.auth.internal.RecaptchaActivity"
-151-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:46:13-79
-152            android:excludeFromRecents="true"
-152-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:47:13-46
-153            android:exported="true"
-153-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:48:13-36
-154            android:launchMode="singleTask"
-154-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:49:13-44
-155            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
-155-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:50:13-72
-156            <intent-filter>
-156-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:51:13-61:29
-157                <action android:name="android.intent.action.VIEW" />
-157-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:34:17-69
-157-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:34:25-66
-158
-159                <category android:name="android.intent.category.DEFAULT" />
-159-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:36:17-76
-159-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:36:27-73
-160                <category android:name="android.intent.category.BROWSABLE" />
-160-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:37:17-78
-160-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:37:27-75
-161
-162                <data
-162-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-44
-163                    android:host="firebase.auth"
-164                    android:path="/"
-165                    android:scheme="recaptcha" />
-166            </intent-filter>
-167        </activity>
-168
-169        <provider
-169-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:26:9-31:39
-170            android:name="com.google.firebase.provider.FirebaseInitProvider"
-170-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:27:13-77
-171            android:authorities="com.example.awn.firebaseinitprovider"
-171-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:28:13-72
-172            android:directBootAware="true"
-172-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:29:13-43
-173            android:exported="false"
-173-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:30:13-37
-174            android:initOrder="100" />
-174-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:31:13-36
-175
-176        <activity
-176-->[com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:20:9-22:45
-177            android:name="com.google.android.gms.common.api.GoogleApiActivity"
-177-->[com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:20:19-85
-178            android:exported="false"
-178-->[com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:22:19-43
-179            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-179-->[com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:21:19-78
-180
-181        <receiver
-181-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:29:9-33:20
-182            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
-182-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:30:13-85
-183            android:enabled="true"
-183-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:31:13-35
-184            android:exported="false" >
-184-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:32:13-37
-185        </receiver>
-186
-187        <service
-187-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:35:9-38:40
-188            android:name="com.google.android.gms.measurement.AppMeasurementService"
-188-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:36:13-84
-189            android:enabled="true"
-189-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:37:13-35
-190            android:exported="false" />
-190-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:38:13-37
-191        <service
-191-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:39:9-43:72
-192            android:name="com.google.android.gms.measurement.AppMeasurementJobService"
-192-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:40:13-87
-193            android:enabled="true"
-193-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:41:13-35
+16    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+16-->[:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-77
+16-->[:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:22-74
+17    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+17-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-80
+17-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:9:22-77
+18
+19    <queries>
+19-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-17:15
+20        <intent>
+20-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:12:9-16:18
+21            <action android:name="android.intent.action.GET_CONTENT" />
+21-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-72
+21-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:13:21-69
+22
+23            <data android:mimeType="*/*" />
+23-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-44
+23-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:15:19-41
+24        </intent>
+25        <!-- Needs to be explicitly declared on Android R+ -->
+26        <package android:name="com.google.android.apps.maps" />
+26-->[com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:33:9-64
+26-->[com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:33:18-61
+27    </queries>
+28
+29    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+29-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:24:5-79
+29-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:24:22-76
+30    <uses-permission android:name="android.permission.WAKE_LOCK" />
+30-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:24:5-68
+30-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:24:22-65
+31    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+31-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:25:5-79
+31-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:25:22-76
+32
+33    <uses-feature
+33-->[com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:26:5-28:35
+34        android:glEsVersion="0x00020000"
+34-->[com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:27:9-41
+35        android:required="true" />
+35-->[com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:28:9-32
+36
+37    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
+37-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:26:5-110
+37-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:26:22-107
+38
+39    <application
+40        android:name="android.app.Application"
+41        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+41-->[androidx.core:core:1.8.0] /Users/doodi/.gradle/caches/transforms-3/0ce731f8c62e88af9af421907435d7da/transformed/core-1.8.0/AndroidManifest.xml:24:18-86
+42        android:debuggable="true"
+43        android:icon="@mipmap/ic_launcher"
+44        android:label="awn" >
+45        <activity
+46            android:name="com.example.awn.MainActivity"
+47            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+48            android:exported="true"
+49            android:hardwareAccelerated="true"
+50            android:launchMode="singleTop"
+51            android:theme="@style/LaunchTheme"
+52            android:windowSoftInputMode="adjustResize" >
+53
+54            <!--
+55                 Specifies an Android theme to apply to this Activity as soon as
+56                 the Android process has started. This theme is visible to the user
+57                 while the Flutter UI initializes. After that, this theme continues
+58                 to determine the Window background behind the Flutter UI.
+59            -->
+60            <meta-data
+61                android:name="io.flutter.embedding.android.NormalTheme"
+62                android:resource="@style/NormalTheme" />
+63
+64            <intent-filter>
+65                <action android:name="android.intent.action.MAIN" />
+66
+67                <category android:name="android.intent.category.LAUNCHER" />
+68            </intent-filter>
+69        </activity>
+70        <!--
+71             Don't delete the meta-data below.
+72             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
+73        -->
+74        <meta-data
+75            android:name="flutterEmbedding"
+76            android:value="2" />
+77
+78        <service
+78-->[:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
+79            android:name="com.google.firebase.components.ComponentDiscoveryService"
+79-->[:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:10:18-89
+80            android:directBootAware="true"
+80-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:35:13-43
+81            android:exported="false" >
+81-->[com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:10:13-37
+82            <meta-data
+82-->[:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
+83                android:name="com.google.firebase.components:io.flutter.plugins.firebase.database.FlutterFirebaseAppRegistrar"
+83-->[:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-127
+84                android:value="com.google.firebase.components.ComponentRegistrar" />
+84-->[:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
+85            <meta-data
+85-->[:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
+86                android:name="com.google.firebase.components:io.flutter.plugins.firebase.firestore.FlutterFirebaseFirestoreRegistrar"
+86-->[:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-134
+87                android:value="com.google.firebase.components.ComponentRegistrar" />
+87-->[:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
+88            <meta-data
+88-->[:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
+89                android:name="com.google.firebase.components:io.flutter.plugins.firebase.auth.FlutterFirebaseAuthRegistrar"
+89-->[:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-124
+90                android:value="com.google.firebase.components.ComponentRegistrar" />
+90-->[:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
+91            <meta-data
+91-->[:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
+92                android:name="com.google.firebase.components:io.flutter.plugins.firebase.storage.FlutterFirebaseAppRegistrar"
+92-->[:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-126
+93                android:value="com.google.firebase.components.ComponentRegistrar" />
+93-->[:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
+94            <meta-data
+94-->[:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
+95                android:name="com.google.firebase.components:io.flutter.plugins.firebase.core.FlutterFirebaseCoreRegistrar"
+95-->[:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-124
+96                android:value="com.google.firebase.components.ComponentRegistrar" />
+96-->[:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
+97            <meta-data
+97-->[com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:11:13-13:85
+98                android:name="com.google.firebase.components:com.google.firebase.analytics.ktx.FirebaseAnalyticsKtxRegistrar"
+98-->[com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:12:17-126
+99                android:value="com.google.firebase.components.ComponentRegistrar" />
+99-->[com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:13:17-82
+100            <meta-data
+100-->[com.google.firebase:firebase-common-ktx:20.1.1] /Users/doodi/.gradle/caches/transforms-3/49285ef5ef1651796da7b32f4aac1a76/transformed/jetified-firebase-common-ktx-20.1.1/AndroidManifest.xml:15:13-17:85
+101                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonKtxRegistrar"
+101-->[com.google.firebase:firebase-common-ktx:20.1.1] /Users/doodi/.gradle/caches/transforms-3/49285ef5ef1651796da7b32f4aac1a76/transformed/jetified-firebase-common-ktx-20.1.1/AndroidManifest.xml:16:17-113
+102                android:value="com.google.firebase.components.ComponentRegistrar" />
+102-->[com.google.firebase:firebase-common-ktx:20.1.1] /Users/doodi/.gradle/caches/transforms-3/49285ef5ef1651796da7b32f4aac1a76/transformed/jetified-firebase-common-ktx-20.1.1/AndroidManifest.xml:17:17-82
+103            <meta-data
+103-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:67:13-69:85
+104                android:name="com.google.firebase.components:com.google.firebase.auth.FirebaseAuthRegistrar"
+104-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:68:17-109
+105                android:value="com.google.firebase.components.ComponentRegistrar" />
+105-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:69:17-82
+106            <meta-data
+106-->[com.google.firebase:firebase-firestore:24.2.2] /Users/doodi/.gradle/caches/transforms-3/63a55b2d265d667c75a69a4a5e2e28ed/transformed/jetified-firebase-firestore-24.2.2/AndroidManifest.xml:20:13-22:85
+107                android:name="com.google.firebase.components:com.google.firebase.firestore.FirestoreRegistrar"
+107-->[com.google.firebase:firebase-firestore:24.2.2] /Users/doodi/.gradle/caches/transforms-3/63a55b2d265d667c75a69a4a5e2e28ed/transformed/jetified-firebase-firestore-24.2.2/AndroidManifest.xml:21:17-111
+108                android:value="com.google.firebase.components.ComponentRegistrar" />
+108-->[com.google.firebase:firebase-firestore:24.2.2] /Users/doodi/.gradle/caches/transforms-3/63a55b2d265d667c75a69a4a5e2e28ed/transformed/jetified-firebase-firestore-24.2.2/AndroidManifest.xml:22:17-82
+109            <meta-data
+109-->[com.google.firebase:firebase-storage:20.0.1] /Users/doodi/.gradle/caches/transforms-3/86a11d39ab15d59b759e912472a7593e/transformed/jetified-firebase-storage-20.0.1/AndroidManifest.xml:33:13-35:85
+110                android:name="com.google.firebase.components:com.google.firebase.storage.StorageRegistrar"
+110-->[com.google.firebase:firebase-storage:20.0.1] /Users/doodi/.gradle/caches/transforms-3/86a11d39ab15d59b759e912472a7593e/transformed/jetified-firebase-storage-20.0.1/AndroidManifest.xml:34:17-107
+111                android:value="com.google.firebase.components.ComponentRegistrar" />
+111-->[com.google.firebase:firebase-storage:20.0.1] /Users/doodi/.gradle/caches/transforms-3/86a11d39ab15d59b759e912472a7593e/transformed/jetified-firebase-storage-20.0.1/AndroidManifest.xml:35:17-82
+112            <meta-data
+112-->[com.google.firebase:firebase-database:20.0.5] /Users/doodi/.gradle/caches/transforms-3/f87e0f62127006dc791c32fcca28ed88/transformed/jetified-firebase-database-20.0.5/AndroidManifest.xml:32:13-34:85
+113                android:name="com.google.firebase.components:com.google.firebase.database.DatabaseRegistrar"
+113-->[com.google.firebase:firebase-database:20.0.5] /Users/doodi/.gradle/caches/transforms-3/f87e0f62127006dc791c32fcca28ed88/transformed/jetified-firebase-database-20.0.5/AndroidManifest.xml:33:17-109
+114                android:value="com.google.firebase.components.ComponentRegistrar" />
+114-->[com.google.firebase:firebase-database:20.0.5] /Users/doodi/.gradle/caches/transforms-3/f87e0f62127006dc791c32fcca28ed88/transformed/jetified-firebase-database-20.0.5/AndroidManifest.xml:34:17-82
+115            <meta-data
+115-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:31:13-33:85
+116                android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar"
+116-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:32:17-139
+117                android:value="com.google.firebase.components.ComponentRegistrar" />
+117-->[com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:33:17-82
+118            <meta-data
+118-->[com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:18:13-20:85
+119                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
+119-->[com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:19:17-127
+120                android:value="com.google.firebase.components.ComponentRegistrar" />
+120-->[com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:20:17-82
+121        </service>
+122        <service
+122-->[:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:12:9-16:56
+123            android:name="com.baseflow.geolocator.GeolocatorLocationService"
+123-->[:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-77
+124            android:enabled="true"
+124-->[:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:14:13-35
+125            android:exported="false"
+125-->[:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-37
+126            android:foregroundServiceType="location" />
+126-->[:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:16:13-53
+127
+128        <provider
+128-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-18:20
+129            android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"
+129-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-82
+130            android:authorities="com.example.awn.flutter.image_provider"
+130-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:12:13-74
+131            android:exported="false"
+131-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-37
+132            android:grantUriPermissions="true" >
+132-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:14:13-47
+133            <meta-data
+133-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-17:75
+134                android:name="android.support.FILE_PROVIDER_PATHS"
+134-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:16:17-67
+135                android:resource="@xml/flutter_image_picker_file_paths" />
+135-->[:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:17:17-72
+136        </provider>
+137
+138        <uses-library
+138-->[androidx.window:window:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/542a859793ec57d6a4d40865c7efc6d9/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:25:9-27:40
+139            android:name="androidx.window.extensions"
+139-->[androidx.window:window:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/542a859793ec57d6a4d40865c7efc6d9/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:26:13-54
+140            android:required="false" />
+140-->[androidx.window:window:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/542a859793ec57d6a4d40865c7efc6d9/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:27:13-37
+141        <uses-library
+141-->[androidx.window:window:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/542a859793ec57d6a4d40865c7efc6d9/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:28:9-30:40
+142            android:name="androidx.window.sidecar"
+142-->[androidx.window:window:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/542a859793ec57d6a4d40865c7efc6d9/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:29:13-51
+143            android:required="false" />
+143-->[androidx.window:window:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/542a859793ec57d6a4d40865c7efc6d9/transformed/jetified-window-1.0.0-beta04/AndroidManifest.xml:30:13-37
+144
+145        <activity
+145-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:27:9-44:20
+146            android:name="com.google.firebase.auth.internal.GenericIdpActivity"
+146-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:28:13-80
+147            android:excludeFromRecents="true"
+147-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:29:13-46
+148            android:exported="true"
+148-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:30:13-36
+149            android:launchMode="singleTask"
+149-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:31:13-44
+150            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+150-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:32:13-72
+151            <intent-filter>
+151-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:33:13-43:29
+152                <action android:name="android.intent.action.VIEW" />
+152-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:34:17-69
+152-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:34:25-66
+153
+154                <category android:name="android.intent.category.DEFAULT" />
+154-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:36:17-76
+154-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:36:27-73
+155                <category android:name="android.intent.category.BROWSABLE" />
+155-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:37:17-78
+155-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:37:27-75
+156
+157                <data
+157-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-44
+158                    android:host="firebase.auth"
+159                    android:path="/"
+160                    android:scheme="genericidp" />
+161            </intent-filter>
+162        </activity>
+163        <activity
+163-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:45:9-62:20
+164            android:name="com.google.firebase.auth.internal.RecaptchaActivity"
+164-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:46:13-79
+165            android:excludeFromRecents="true"
+165-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:47:13-46
+166            android:exported="true"
+166-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:48:13-36
+167            android:launchMode="singleTask"
+167-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:49:13-44
+168            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+168-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:50:13-72
+169            <intent-filter>
+169-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:51:13-61:29
+170                <action android:name="android.intent.action.VIEW" />
+170-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:34:17-69
+170-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:34:25-66
+171
+172                <category android:name="android.intent.category.DEFAULT" />
+172-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:36:17-76
+172-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:36:27-73
+173                <category android:name="android.intent.category.BROWSABLE" />
+173-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:37:17-78
+173-->[com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/caches/transforms-3/6b415a3bc2b441250bf51af87084b635/transformed/jetified-firebase-auth-21.0.7/AndroidManifest.xml:37:27-75
+174
+175                <data
+175-->[:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-44
+176                    android:host="firebase.auth"
+177                    android:path="/"
+178                    android:scheme="recaptcha" />
+179            </intent-filter>
+180        </activity>
+181
+182        <provider
+182-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:26:9-31:39
+183            android:name="com.google.firebase.provider.FirebaseInitProvider"
+183-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:27:13-77
+184            android:authorities="com.example.awn.firebaseinitprovider"
+184-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:28:13-72
+185            android:directBootAware="true"
+185-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:29:13-43
+186            android:exported="false"
+186-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:30:13-37
+187            android:initOrder="100" /> <!-- Needs to be explicitly declared on P+ -->
+187-->[com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:31:13-36
+188        <uses-library
+188-->[com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:39:9-41:40
+189            android:name="org.apache.http.legacy"
+189-->[com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:40:13-50
+190            android:required="false" />
+190-->[com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:41:13-37
+191
+192        <activity
+192-->[com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:20:9-22:45
+193            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+193-->[com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:20:19-85
 194            android:exported="false"
-194-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:42:13-37
-195            android:permission="android.permission.BIND_JOB_SERVICE" />
-195-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:43:13-69
+194-->[com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:22:19-43
+195            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+195-->[com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:21:19-78
 196
-197        <meta-data
-197-->[com.google.android.gms:play-services-basement:18.0.0] /Users/doodi/.gradle/caches/transforms-3/19a0dfd4021b70333b258b23187eb758/transformed/jetified-play-services-basement-18.0.0/AndroidManifest.xml:21:9-23:69
-198            android:name="com.google.android.gms.version"
-198-->[com.google.android.gms:play-services-basement:18.0.0] /Users/doodi/.gradle/caches/transforms-3/19a0dfd4021b70333b258b23187eb758/transformed/jetified-play-services-basement-18.0.0/AndroidManifest.xml:22:13-58
-199            android:value="@integer/google_play_services_version" />
-199-->[com.google.android.gms:play-services-basement:18.0.0] /Users/doodi/.gradle/caches/transforms-3/19a0dfd4021b70333b258b23187eb758/transformed/jetified-play-services-basement-18.0.0/AndroidManifest.xml:23:13-66
-200    </application>
-201
-202</manifest>
+197        <receiver
+197-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:29:9-33:20
+198            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
+198-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:30:13-85
+199            android:enabled="true"
+199-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:31:13-35
+200            android:exported="false" >
+200-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:32:13-37
+201        </receiver>
+202
+203        <service
+203-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:35:9-38:40
+204            android:name="com.google.android.gms.measurement.AppMeasurementService"
+204-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:36:13-84
+205            android:enabled="true"
+205-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:37:13-35
+206            android:exported="false" />
+206-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:38:13-37
+207        <service
+207-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:39:9-43:72
+208            android:name="com.google.android.gms.measurement.AppMeasurementJobService"
+208-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:40:13-87
+209            android:enabled="true"
+209-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:41:13-35
+210            android:exported="false"
+210-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:42:13-37
+211            android:permission="android.permission.BIND_JOB_SERVICE" />
+211-->[com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:43:13-69
+212
+213        <meta-data
+213-->[com.google.android.gms:play-services-basement:18.0.0] /Users/doodi/.gradle/caches/transforms-3/19a0dfd4021b70333b258b23187eb758/transformed/jetified-play-services-basement-18.0.0/AndroidManifest.xml:21:9-23:69
+214            android:name="com.google.android.gms.version"
+214-->[com.google.android.gms:play-services-basement:18.0.0] /Users/doodi/.gradle/caches/transforms-3/19a0dfd4021b70333b258b23187eb758/transformed/jetified-play-services-basement-18.0.0/AndroidManifest.xml:22:13-58
+215            android:value="@integer/google_play_services_version" />
+215-->[com.google.android.gms:play-services-basement:18.0.0] /Users/doodi/.gradle/caches/transforms-3/19a0dfd4021b70333b258b23187eb758/transformed/jetified-play-services-basement-18.0.0/AndroidManifest.xml:23:13-66
+216    </application>
+217
+218</manifest>

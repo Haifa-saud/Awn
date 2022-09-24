@@ -1,42 +1,26 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:awn/Utils.dart';
-//import 'package:awn/login.dart';
+import 'package:awn/login.dart';
+import 'firebase_storage_services.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'firebase_options.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:path/path.dart' as Path;
-//import 'forgotPassword.dart';
-import 'main.dart';
-import 'package:email_validator/email_validator.dart';
-import 'my-globals.dart' as globals;
-
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'firebase_options.dart';
+import 'package:intl/intl.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'main.dart';
+import 'package:email_validator/email_validator.dart';
+import 'theme.dart';
+import 'myGlobal.dart' as globals;
 
 class register extends StatefulWidget {
-  final Function() onClickedSignIn;
+  // final Function() onClickedSignIn;
   const register({
     Key? key,
-    required this.onClickedSignIn,
+    // required this.onClickedSignIn,
   }) : super(key: key);
 
   @override
@@ -48,64 +32,30 @@ TextEditingController passwordController = TextEditingController();
 TextEditingController cofirmPasswordController = TextEditingController();
 TextEditingController nameController = TextEditingController();
 TextEditingController numberController = TextEditingController();
-String group = "Gender";
-String group1 = "Role";
+TextEditingController bioController = TextEditingController();
+
+String group = "Female";
+String group1 = "Special Need User";
 bool blind = false;
 bool mute = false;
 bool deaf = false;
 bool physical = false;
 bool other = false;
+PlatformFile pickedFile = new PlatformFile(name: '', size: 0);
+String label = "click to upload disability certificate";
+bool upload = false;
+String filePath = "Pick file";
+File? fileDB;
+//Wedd's change
+String password = "";
+String confirm_password = "";
 
 class _registerState extends State<register> {
-
-   Future<void> addImage() async {
-    await Permission.photos.request();
-    var permissionStatus = await Permission.photos.status;
-    if (permissionStatus.isGranted) {
-      XFile? img = await ImagePicker().pickImage(source: ImageSource.gallery);
-      setState(() {
-        File image = File(img!.path);
-        print('Image path $image');
-        // imagePath = image.toString();
-        // imageDB = image;
-        editImg = 'Update Image';
-        
-      });
-    }
-  }
-
-  late PlatformFile pickedFile;
-  var editImg = '';
-
-  //add this method to a buttton
-  Future selectFile() async { 
-    final result = await FilePicker.platform.pickFiles();
-    if (result == null) return;
-    setState(() {
-      pickedFile = result.files.first;
-    });
-  }
-
-  //add this method to the submit buttton
-  Future uploadFile() async {
-    final path = 'User/${pickedFile.name}';
-    final file = File(pickedFile.path!);
-    final ref = FirebaseStorage.instance.ref().child(path);
-    UploadTask uploadTask = ref.putFile(file);
-
-    String filePath = Path.basename(file.path);
-    TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
-    filePath = await (await uploadTask).ref.getDownloadURL();
-
-    CollectionReference posts = FirebaseFirestore.instance.collection('users');
-
-    DocumentReference docReference = await posts.add({'file': filePath});
-  }
-
   @override
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _passwordVisible = false;
+  @override
   void dispose() {
     emailController.text = "";
     passwordController.text = "";
@@ -136,7 +86,6 @@ class _registerState extends State<register> {
   }
 
   String getDate() {
-    // ignore: unnecessary_null_comparison
     if (selectedDate == null) {
       return 'select date';
     } else {
@@ -144,6 +93,8 @@ class _registerState extends State<register> {
       return DateFormat('MMM d, yyyy').format(selectedDate);
     }
   }
+
+  final Storage storage = Storage();
 
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -154,29 +105,50 @@ class _registerState extends State<register> {
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
-          //hexStringToColor("#00dacf"),
-          //hexStringToColor("#fcfffd"),
           Colors.cyanAccent.shade100,
-
-          // hexStringToColor("#fcfffd"),
-          //hexStringToColor("#fcfffd"),
-          //hexStringToColor("#fcfffd"),
           Colors.white54,
           Colors.white54,
-          //hexStringToColor("#fcfffd"),
-          //hexStringToColor("#283466")
           Colors.blue.shade200
         ], begin: Alignment.topRight, end: Alignment.bottomLeft)),
-        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         padding: const EdgeInsets.only(left: 40, right: 40),
         child: ListView(
           children: [
+            SizedBox(
+              height: height * 0.05,
+            ),
+            FutureBuilder(
+                future: storage.downloadURL('logo.png'),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.hasData) {
+                    return Center(
+                      child: Image.network(
+                        snapshot.data!,
+                        fit: BoxFit.cover,
+                        width: 100,
+                        height: 100,
+                      ),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting ||
+                      !snapshot.hasData) {
+                    return CircularProgressIndicator(
+                      color: Colors.grey.shade200,
+                    );
+                  }
+                  return Container();
+                }),
+            SizedBox(
+              height: height * 0.02,
+            ),
             Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
+                  const Center(
                     child: Text(
                       "Register",
                       style: TextStyle(
@@ -186,34 +158,21 @@ class _registerState extends State<register> {
                     ),
                   ),
                   SizedBox(
-                    height: height * 0.01,
+                    height: height * 0.02,
                   ),
                   TextFormField(
                     controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: "Enter Email",
-                      hintText: "Email",
-                      contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400)),
-                      errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                      focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                    ),
+                    decoration:
+                        theme.inputfield("Email", "example@example.example"),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      value != null && value.length < 8
-                          ? 'Enter a valid email'
-                          : null;
+                    validator: (email) {
+                      if(email == null){
+                        return "Enter an Email";
+                      } else if (!EmailValidator.validate(email)) {
+                        return "Enter a valid email";
+                      } else {
+                        return null;
+                      }
                     },
                   ),
                   SizedBox(
@@ -221,41 +180,27 @@ class _registerState extends State<register> {
                   ),
                   TextFormField(
                     controller: nameController,
-                    decoration: InputDecoration(
-                      labelText: "Enter your first and last name",
-                      hintText: "",
-                      contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400)),
-                      errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                      focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                    ),
+                    decoration: theme.inputfield("Name", "Sara Ahmad"),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      value != null && value.length < 2
-                          ? 'Enter a valid name'
-                          : null;
+                      if(value == null){
+                        return "Enter an Email";
+                      } else if (value.length < 2) {
+                        return "Enter a valid name";
+                      } else {
+                        return null;
+                      }
                     },
                   ),
                   SizedBox(
                     height: height * 0.01,
                   ),
                   Container(
-                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                    margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                     child: Column(
                       children: [
                         Row(
-                          children: [
+                          children: const [
                             Text(
                               "Gender:",
                             ),
@@ -267,13 +212,15 @@ class _registerState extends State<register> {
                               value: "Female",
                               groupValue: group,
                               onChanged: (T) {
-                                print(T);
                                 setState(() {
                                   group = T!;
                                 });
                               },
                             ),
-                            Text("Female"),
+                            const Text("Female",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal)),
                             Radio(
                               value: "Male",
                               groupValue: group,
@@ -284,216 +231,331 @@ class _registerState extends State<register> {
                                 });
                               },
                             ),
-                            Text("Male"),
+                            const Text("Male",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal)),
                           ],
                         ),
                         Row(
-                          children: [
+                          children: const [
                             Text("Register As:"),
                           ],
                         ),
+                        Row(children: [
+                          Radio(
+                            value: "Special Need User",
+                            groupValue: group1,
+                            onChanged: (T) {
+                              print(T);
+                              setState(() {
+                                group1 = T!;
+                              });
+                            },
+                          ),
+                          const Text("Special Needs User",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.normal)),
+                        ]),
                         Row(
                           children: [
-                            Radio(
-                              value: "Special Needs User",
-                              groupValue: group1,
-                              onChanged: (T) {
-                                print(T);
-                                setState(() {
-                                  group1 = T!;
-                                });
-                              },
-                            ),
-                            Text("Special Needs User"),
                             Radio(
                               value: "Volunteer",
                               groupValue: group1,
                               onChanged: (T) {
-                                print(T);
                                 setState(() {
                                   group1 = T!;
                                 });
                               },
                             ),
-                            Text("Volunteer"),
+                            const Text("Volunteer",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal)),
                           ],
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        if (group1.isNotEmpty && group1 == "Volunteer") {
-                          return Card(
-                              color: Color.fromARGB(255, 243, 241, 241),
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: TextField(
-                                  maxLines: 5, //or null
-                                  decoration: InputDecoration.collapsed(
-                                      hintText:
-                                          "Enter your bio here. \n(talk briefly about yourself! )"),
-                                ),
-                              ));
-                        }
-
+                    child: LayoutBuilder(builder: (context, constraints) {
+                      if (group1 == "Volunteer") {
+                        return Container(
+                          padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                          child: TextFormField(
+                            keyboardType: TextInputType.multiline,
+                            maxLines: 4,
+                            maxLength: 300,
+                            textAlign: TextAlign.left,
+                            controller: bioController,
+                            decoration: InputDecoration(
+                              hintText:
+                                  "Enter your bio here.\n(talk briefly about yourself! )",
+                              labelText: 'Bio',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                  borderSide:
+                                      BorderSide(color: Colors.grey.shade400)),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                                borderSide: const BorderSide(
+                                    color: Colors.blue, width: 2),
+                              ),
+                            ),
+                          ),
+                        );
+                      } else if (group1 == 'Special Need User') {
                         return Column(
                           children: [
-                            TextFormField(
-                              controller: nameController,
-                              decoration: InputDecoration(
-                                labelText: "Enter your first and last name",
-                                hintText: "",
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    borderSide: BorderSide(
-                                        color: Colors.grey.shade400)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 2.0)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 2.0)),
+                            /* Text(
+                              "Click to upload your disability certificate:",
+                            ),
+                            Container(
+                              margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.grey.shade500,
+                                    backgroundColor: Colors.white,
+                                    padding:
+                                        EdgeInsets.fromLTRB(14, 10, 14, 10),
+                                    side: BorderSide(
+                                        color: Colors.grey.shade400, width: 1)),
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(40, 0, 40, 0),
+                                  child: Text(
+                                    filePath,
+                                    style: TextStyle(
+                                      fontSize: 15, /*color: Colors.white*/
+                                    ),
+                                  ),
+                                ),
+                                onPressed: selectFile,
+
+                                /*() {
+                                 //After successful login we will redirect to profile page. Let's create profile page now
+                                },*/
+                                // Navigator.pushReplacement(
+                                // context,
+                                // MaterialPageRoute(
+                                //  builder: (context) => ProfilePage()));
                               ),
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                value != null && value.length < 2
-                                    ? 'Enter a valid name'
-                                    : null;
-                              },
+                            ),*/
+                            SizedBox(
+                              height: height * 0.01,
                             ),
                             Row(
-                              children: <Widget>[
-                                Checkbox(
+                              children: const <Widget>[
+                                Text(
+                                  "Select imparity/ imparities: ",
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: height * 0.01,
+                            ),
+
+                            //Wedd's change
+                            // each row must have a check box and a text
+                            Row(children: [
+                              SizedBox(
+                                height: 24.0,
+                                width: 35.0,
+                                child: Checkbox(
                                     value: blind,
                                     onChanged: (bool? value) {
                                       setState(() {
                                         blind = value!;
                                       });
                                     }),
-                                Text("Visually Impaired"),
-                                Checkbox(
+                              ),
+                              const Text("Visually Impaired",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal)),
+                            ]),
+
+                            Row(children: [
+                              SizedBox(
+                                height: 24.0,
+                                width: 35.0,
+                                child: Checkbox(
                                     value: mute,
                                     onChanged: (bool? value) {
                                       setState(() {
                                         mute = value!;
                                       });
                                     }),
-                                Text("Vocally Impaired"),
-                                Checkbox(
+                              ),
+                              const Text("Vocally Impaired",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal)),
+                            ]),
+
+                            Row(children: [
+                              SizedBox(
+                                height: 24.0,
+                                width: 35.0,
+                                child: Checkbox(
                                     value: deaf,
                                     onChanged: (bool? value) {
                                       setState(() {
                                         deaf = value!;
                                       });
                                     }),
-                                Text("hearing Impaired"),
-                                Checkbox(
-                                    value: physical,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        physical = value!;
-                                      });
-                                    }),
-                                Text("physically Impaired"),
-                                Checkbox(
-                                    value: other,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        other = value!;
-                                      });
-                                    }),
-                                Text("other"),
+                              ),
+                              const Text("Hearing Impaired",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal)),
+                            ]),
+
+                            Row(
+                              children: [
+                                SizedBox(
+                                  height: 24.0,
+                                  width: 35.0,
+                                  child: Checkbox(
+                                      value: physical,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          physical = value!;
+                                        });
+                                      }),
+                                ),
+                                const Text("Physically Impaired",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.normal)),
+                              ],
+                            ),
+                            Row(
+                              children: <Widget>[
+                                SizedBox(
+                                  height: 24.0,
+                                  width: 35.0,
+                                  child: Checkbox(
+                                      value: other,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          other = value!;
+                                        });
+                                      }),
+                                ),
+                                const Text("other",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.normal)),
                               ],
                             ),
                           ],
                         );
-                      },
-                    ),
+                      } else {
+                        return const Text('');
+                      }
+                    }),
                   ),
                   SizedBox(
                     height: height * 0.01,
                   ),
                   // WEDD START FROM HERE
+                  //DOB
                   Container(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
-
+                    // padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+                    margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                     //
                     //padding: const EdgeInsets.symmetric(horizontal: 15),
                     //  margin: EdgeInsets.only(bottom: 10, top: 20),
                     // width: 150,
-                    child: Row(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text("Select your date of birth:     "),
-                        ElevatedButton(
-                          onPressed: () {
-                            _selectDate(context);
-                            showDate = false;
-                          },
-                          style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.grey.shade500,
-                              backgroundColor: Colors.white,
-                              padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
-                              side: BorderSide(
-                                  color: Colors.grey.shade400, width: 1)),
-                          child: const Text('Date of Birth'),
+                        const Text(
+                          "Date of Birth:",
+                          textAlign: TextAlign.left, //style:TextStyle(re)
+                        ),
+                        SizedBox(
+                          height: height * 0.01,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                _selectDate(context);
+                                showDate = false;
+                                globals.bDay = getDate();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.grey.shade500,
+                                  backgroundColor: Colors.white,
+                                  padding:
+                                      const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                                  side: BorderSide(
+                                      color: Colors.grey.shade400, width: 1)),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(40, 0, 40, 0),
+                                child: Text(
+                                  getDate(),
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight:
+                                        FontWeight.bold, /*color: Colors.white*/
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         showDate
                             ? Container(
-                                margin: EdgeInsets.only(left: 5),
+                                margin: const EdgeInsets.only(left: 5),
                                 child: Text(getDate()))
                             : const SizedBox(),
                       ],
                     ),
                   ),
                   //END HERE
+                  //Phone number
                   TextFormField(
                     controller: numberController,
-                    decoration: InputDecoration(
-                      labelText: "Enter your phone number",
-                      hintText: "0555555555",
-                      contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400)),
-                      errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                      focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                    maxLength: 10,
+                    decoration: theme.inputfield(
+                        "enter your phone number", "0555555555"),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
+                    //wedd's chnges
                     validator: (value) {
-                      value != null && value.length < 10
-                          ? 'Enter a valid number'
-                          : null;
+                      // if (value != null && value.length < 10)
+                      //   return "Enter a valid number";
+                      // else
+                      //   return null;
+
+                      //Wedd's changes
+                      if (value == null || value.isEmpty) {
+                        return "Please enter a phone number";
+                      } else if (value.length != 10) {
+                        return "Please enter a valid phone number";
+                      }
                     },
                   ),
                   SizedBox(
                     height: height * 0.01,
                   ),
+                  //Password
                   TextFormField(
                     controller: passwordController,
                     obscureText: !_passwordVisible,
                     decoration: InputDecoration(
-                      labelText: "Enter Password",
-                      hintText: "Password",
+                      labelText: "Password",
+                      //Wedd's change
+                      hintText:
+                          "must have upper case, digit, more than 8 digits",
+                      hintStyle: const TextStyle(fontSize: 10.0,),
                       suffixIcon: IconButton(
                         icon: Icon(
                           // Based on passwordVisible state choose the icon
@@ -509,27 +571,59 @@ class _registerState extends State<register> {
                           });
                         },
                       ),
-                      contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                      contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey)),
+                          borderSide: const BorderSide(color: Colors.grey)),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
                           borderSide: BorderSide(color: Colors.grey.shade400)),
                       errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
                           borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
+                              const BorderSide(color: Colors.red, width: 2.0)),
                       focusedErrorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
                           borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
+                              const BorderSide(color: Colors.red, width: 2.0)),
                     ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      value != null && value.length < 8
-                          ? 'Enter a valid password'
-                          : null;
+                      //خليت اللي يسبب ايرور كومنت عشان ماقدرت اسوي رن
+                      //Wedd's change
+                      password = value.toString() ;
+
+                      RegExp Upper = RegExp(r"(?=.*[A-Z])");
+                      RegExp digit = RegExp(r"(?=.*[0-9])");
+                      if (value == null || value.isEmpty){
+                        return "please enter a password";
+                      } else if (value.length < 7) {
+                        return "password should at least be 8 digits"; //ود موجودة ؟
+                      }  else if (!Upper.hasMatch(value)) {
+                      return "password should contain an Upper case";
+                      }  else if (!digit.hasMatch(value)) {
+                        return "password should contain a number";
+                      } else {
+                        return null;
+                      }
+                      // شكرا !!!!
+                      // RegExp Upper = RegExp(r'^(?=.*?[A-Z])');
+                      // RegExp digit = RegExp(r'^(?=.*?[0-9])');
+
+                      // if (value == null || value.isEmpty || value.length < 8) {
+                      //   return 'Please enter a password min 8';
+                      // }
+                      // // else if (value.length < 8) {
+                      // //   return 'Password must be at least 8 digits ';
+                      // // } else if (!Upper.hasMatch(value)) {
+                      // //   return 'Password should contain an upper case';
+                      // // } else if (!digit.hasMatch(value)) {
+                      // //   return 'Password should contain a number';
+                      // // }
+                      // else {
+                      //   return null;
+                      // }
+
                     },
                   ),
                   SizedBox(
@@ -539,8 +633,8 @@ class _registerState extends State<register> {
                     controller: cofirmPasswordController,
                     obscureText: !_passwordVisible,
                     decoration: InputDecoration(
-                      labelText: "Enter Password",
-                      hintText: "Password",
+                      labelText: "Confirm Password",
+                      hintText: "Confirm Password",
                       suffixIcon: IconButton(
                         icon: Icon(
                           // Based on passwordVisible state choose the icon
@@ -556,27 +650,33 @@ class _registerState extends State<register> {
                           });
                         },
                       ),
-                      contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                      contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey)),
+                          borderSide: const BorderSide(color: Colors.grey)),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
                           borderSide: BorderSide(color: Colors.grey.shade400)),
                       errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
                           borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
+                              const BorderSide(color: Colors.red, width: 2.0)),
                       focusedErrorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
                           borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
+                              const BorderSide(color: Colors.red, width: 2.0)),
                     ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      value != null && value.length < 8
-                          ? 'Enter a valid password'
-                          : null;
+                      confirm_password = value.toString();
+                      //Wedd's change
+                      if (value == null || value.isEmpty) {
+                        return "please confirm password";
+                      } else if(confirm_password != password){
+                        return "Password not match";
+                      }else{
+                        return null;
+                      }
                     },
                   ),
                   SizedBox(
@@ -586,15 +686,15 @@ class _registerState extends State<register> {
                     height: height * 0.01,
                   ),
                   Container(
-                    margin: EdgeInsets.fromLTRB(70, 0, 50, 10),
+                    margin: const EdgeInsets.fromLTRB(50, 0, 50, 10),
                     decoration: BoxDecoration(
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                             color: Colors.black26,
                             offset: Offset(0, 4),
                             blurRadius: 5.0)
                       ],
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         stops: [0.0, 1.0],
@@ -613,32 +713,43 @@ class _registerState extends State<register> {
                               borderRadius: BorderRadius.circular(30.0),
                             ),
                           ),
-                          minimumSize: MaterialStateProperty.all(Size(50, 50)),
+                          minimumSize:
+                              MaterialStateProperty.all(const Size(50, 50)),
                           backgroundColor:
                               MaterialStateProperty.all(Colors.transparent),
                           shadowColor:
                               MaterialStateProperty.all(Colors.transparent),
                         ),
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
+                        child: const Padding(
+                          padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
                           child: Text(
                             'Register',
                             style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           ),
                         ),
                         onPressed: () {
+
+                          if (_formKey.currentState!.validate()) {
+                             
+                             ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Please fill the empty blanks')),
+                              );
+                              }
+
                           if (cofirmPasswordController.text.isEmpty ||
                               cofirmPasswordController.text !=
                                   passwordController.text) {
                             Utils.showSnackBar(
                                 "confirm password does not match");
                             return;
+                          } else {
+                            signUp();
                           }
-                          signUp();
                         }
+
                         // Navigator.pushReplacement(
                         // context,
                         // MaterialPageRoute(
@@ -646,13 +757,21 @@ class _registerState extends State<register> {
                         ),
                   ),
                   Container(
-                    margin: EdgeInsets.fromLTRB(50, 10, 50, 10),
+                    margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                     //child: Text('Don\'t have an account? Create'),
                     child: Text.rich(TextSpan(children: [
-                      TextSpan(text: "Don\'t have an account? "),
+                      const TextSpan(
+                        text: "Already have an account? ",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 95, 94, 94)),
+                      ),
                       TextSpan(
                         recognizer: TapGestureRecognizer()
-                          ..onTap = widget.onClickedSignIn,
+                          ..onTap = () {
+                            Navigator.pushNamed(context, "/login");
+                          },
                         text: 'Log In',
 
                         // Navigator.push(
@@ -663,7 +782,8 @@ class _registerState extends State<register> {
 
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).accentColor),
+                            color: Theme.of(context).accentColor,
+                            decoration: TextDecoration.underline),
                       ),
                     ])),
                   ),
@@ -676,6 +796,24 @@ class _registerState extends State<register> {
     );
   }
 
+  Future selectFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    upload = true;
+    if (result == null) {
+      upload = false;
+      return;
+    }
+    setState(() {
+      pickedFile = result.files.first;
+      fileDB = File(pickedFile.path!);
+
+      // final path = 'User/${pickedFile.name}'; //خليه جالسه اجرب
+      // final file = File(pickedFile.path!);
+      // final ref = FirebaseStorage.instance.ref().child(path);
+      // UploadTask uploadTask = ref.putFile(file);
+    });
+  }
+
   Future signUp() async {
     final isValid = _formKey.currentState!.validate();
     if (!isValid) return;
@@ -684,9 +822,26 @@ class _registerState extends State<register> {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+      UserHelper.saveUser(user);
     } on FirebaseAuthException catch (e) {
       print(e);
-      Utils.showSnackBar(e.message);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('e.message'),
+          backgroundColor: Colors.red.shade400,
+          margin: const EdgeInsets.fromLTRB(6, 0, 3, 0),
+          behavior: SnackBarBehavior.floating,
+          action: SnackBarAction(
+            label: 'Dismiss',
+            disabledTextColor: Colors.white,
+            textColor: Colors.white,
+            onPressed: () {
+              //Do whatever you want
+            },
+          ),
+        ),
+      );
+      // Utils.showSnackBar(e.message);
     }
   }
 }
@@ -695,18 +850,78 @@ class UserHelper {
   static FirebaseFirestore db = FirebaseFirestore.instance;
   static saveUser(User? user) async {
     //PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    Map<String, dynamic> userData = {
-      "Email": emailController.text,
-      "Type": group1,
-      "Disability": "user.disability",
-      "gender": group,
-      "name": nameController.text,
-      "phone number": numberController.text,
-      "DOB": globals.bDay ,
-    };
-    final userRef = db.collection("users").doc(user!.uid);
+    /*blind = false;
+bool mute = false;
+bool deaf = false;
+bool physical = false;
+bool other = false;*/
+    String email = emailController.text;
+    String name = nameController.text;
+    String number = numberController.text;
+    String age = globals.bDay;
+    String disability = "";
+    String bio = bioController.text;
+    final user = FirebaseAuth.instance.currentUser!;
+    String userId = user.uid;
+    if (blind == true && blind != null) disability += " blind,";
+    if (mute == true && mute != null) disability += " mute,";
+    if (deaf == true && deaf != null) disability += " deaf,";
+    if (physical == true && physical != null) disability += " physical,";
+    if (other == true && other != null) disability += " other,";
+    final userRef = db.collection("users").doc(user.uid);
+    //final volRef = db.collection("volunteers").doc(user!.uid);
+
+    Map<String, dynamic> userData;
+    // if (group1 == "Volunteer") {
     if (!((await userRef.get()).exists)) {
-      await userRef.set(userData);
+      await userRef.set({
+        "Email": email,
+        "Type": group1,
+        "bio": bio,
+        "gender": group,
+        "name": name,
+        "phone number": number,
+        "DOB": age,
+        "Disability": disability,
+        "id": userId,
+      });
     }
+    // } else if (group1 == "Special Need User") {
+    // if (result.files.first != null){
+    // var len = pickedFile? ?? '0';
+    //   if (fileDB == null) {
+    //     File file = fileDB!;
+    //     //String filePath = Path.basename(file.path);
+
+    //     final path = 'User/${pickedFile.name}';
+    //     // String pickedPath = pickedFile.path == '' ? '' : pickedFile.path;
+    //     // final file = File(pickedFile!.path!);
+    //     // if (result.files.first != null){
+    //     final ref = FirebaseStorage.instance.ref().child(filePath);
+    //     UploadTask uploadTask = ref.putFile(file);
+    //     final user = FirebaseAuth.instance.currentUser!;
+    //     String userId = user.uid;
+    //     // String filePath = Path.basename(file.path);
+    //     TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+    //     filePath = await (await uploadTask).ref.getDownloadURL();
+    //     if (!((await userRef.get()).exists)) {
+    //       await userRef.set({
+    //         "Email": email,
+    //         "id": userId,
+    //         "Type": group1,
+    //         "Disability": disability,
+    //         "gender": group,
+    //         "name": name,
+    //         "phone number": number,
+    //         "DOB": age,
+    //         //"file": filePath,
+    //       });
+    //     }
+    //     // final userRef = db.collection("users").doc(user!.uid);
+    //     // if (!((await userRef.get()).exists)) {
+    //     //   await userRef.set(userData);
+    //     // }
+    //   }
+    // }
   }
 }

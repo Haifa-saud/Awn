@@ -1,4 +1,4 @@
-//import 'package:awn/map.dart';
+import 'package:awn/map.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -128,6 +128,7 @@ class _MyStatefulWidgetState extends State<addFile> {
   }
 
   late PlatformFile pickedFile;
+
   Future selectFile() async {
     final result = await FilePicker.platform.pickFiles();
     if (result == null) return;

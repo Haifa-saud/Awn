@@ -1,160 +1,91 @@
-import 'dart:async';
 
+import 'package:awn/DataBaseService.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_user_profile/pages/edit_description.dart';
-import 'package:flutter_user_profile/pages/edit_email.dart';
-import 'package:flutter_user_profile/pages/edit_name.dart';
-import 'package:flutter_user_profile/pages/edit_phone.dart';
-import '../user/user.dart';
-import '../user/user_data.dart';
+import 'package:provider/provider.dart';
+import 'package:awn/login.dart';
 
-// This class handles the Page to dispaly the user's info on the "Edit Profile" Screen
+
+
+
+// // This class handles the Page to dispaly the user's info on the "Edit Profile" Screen
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key? key}) : super(key: key);
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late String uid ;
+  String name = "";
+  String bday = "";
+  String email = "";
+  String phone = "";
+  String gender = "";
+  //String dis = "";
+
+
   @override
   Widget build(BuildContext context) {
-    final user = UserData.myUser;
+    //final user = Provider.of<MyUser>{context};
+    //final uid = user.uid ;
+    DatabaseServices databaseServices = DatabaseServices(uid: uid);
 
     return Scaffold(
-      body: Column(
-        children: [
-          AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            toolbarHeight: 10,
-          ),
-          Center(
-              child: Padding(
-                  padding: EdgeInsets.only(bottom: 20),
-                  child: Text(
-                    'Edit Profile',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w700,
-                      color: Color.fromRGBO(64, 105, 225, 1),
-                    ),
-                  ))),
-         
-          buildUserInfoDisplay(user.name, 'Name', EditNameFormPage()),
-          buildUserInfoDisplay(user.phone, 'Phone', EditPhoneFormPage()),
-          buildUserInfoDisplay(user.email, 'Email', EditEmailFormPage()),
-          Expanded(
-            child: buildAbout(user),
-            flex: 4,
-          )
-        ],
-      ),
-    );
-  }
-
-  // Widget builds the display item with the proper formatting to display the user's info
-  Widget buildUserInfoDisplay(String getValue, String title, Widget editPage) =>
-      Padding(
-          padding: EdgeInsets.only(bottom: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey,
-                ),
+       appBar: AppBar(
+          title: const Text('Profile', textAlign: TextAlign.center),
+          leading: IconButton(
+            icon: const Icon(Icons.close, color: Colors.white),
+            onPressed: () => showDialog<String>(
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                content: const Text('Discard the changes you made?'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Keep editing'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      //clearForm();
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    },
+                    child: const Text('Discard'),
+                  ),
+                ],
               ),
-              SizedBox(
-                height: 1,
-              ),
-              Container(
-                  width: 350,
-                  height: 40,
-                  decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                    color: Colors.grey,
-                    width: 1,
-                  ))),
-                  child: Row(children: [
-                    Expanded(
-                        child: TextButton(
-                            onPressed: () {
-                              navigateSecondPage(editPage);
-                            },
-                            child: Text(
-                              getValue,
-                              style: TextStyle(fontSize: 16, height: 1.4),
-                            ))),
-                    Icon(
-                      Icons.keyboard_arrow_right,
-                      color: Colors.grey,
-                      size: 40.0,
-                    )
-                  ]))
-            ],
-          ));
-
-  // Widget builds the About Me Section
-  Widget buildAbout(User user) => Padding(
-      padding: EdgeInsets.only(bottom: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Tell Us About Yourself',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey,
             ),
           ),
-          const SizedBox(height: 1),
-          Container(
-              width: 350,
-              height: 200,
-              decoration: BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(
-                color: Colors.grey,
-                width: 1,
-              ))),
-              child: Row(children: [
-                Expanded(
-                    child: TextButton(
-                        onPressed: () {
-                          navigateSecondPage(EditDescriptionFormPage());
-                        },
-                        child: Padding(
-                            padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-                            child: Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  user.aboutMeDescription,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    height: 1.4,
-                                  ),
-                                ))))),
-                Icon(
-                  Icons.keyboard_arrow_right,
-                  color: Colors.grey,
-                  size: 40.0,
-                )
-              ]))
-        ],
-      ));
+        ),
+  
+                
+      body: Center(
+        child: Column (
+          children: [
+            Text(name),
+            Text(bday),
+            Text(email),
+            Text(phone),
+            Text(gender),
+            //Text(dis),
 
-  // Refrshes the Page after updating user info.
-  FutureOr onGoBack(dynamic value) {
-    setState(() {});
+            ElevatedButton(
+              onPressed: () async{
+                dynamic Info = await databaseServices.getCurrentUserData();
+                if(Info != null){
+                   bday = Info[0];
+                   //dis = Info[1];
+                   email = Info[2];
+                   gender = Info[5];
+                   name = Info[7];
+                   phone = Info[8];
+                }
+                }, child: Text('Show info'),
+                ),
+              ]
+            ),
+        )
+    );
   }
-
-  // Handles navigation and prompts refresh.
-  void navigateSecondPage(Widget editForm) {
-    Route route = MaterialPageRoute(builder: (context) => editForm);
-    Navigator.push(context, route).then(onGoBack);
-  }
+  
 }

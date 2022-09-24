@@ -1,16 +1,18 @@
 -- Merging decision tree log ---
 application
 INJECTED from /Users/doodi/Desktop/444_Awn/awn/android/app/src/main/AndroidManifest.xml:3:4-33:19
-MERGED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
-MERGED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
 MERGED from [:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
 MERGED from [:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
-MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
-MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
 MERGED from [:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
 MERGED from [:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
+MERGED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
+MERGED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
+MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
+MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
 MERGED from [:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
 MERGED from [:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-15:19
+MERGED from [:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-17:19
+MERGED from [:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-17:19
 MERGED from [:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-19:19
 MERGED from [:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-19:19
 MERGED from [com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:7:5-15:19
@@ -29,16 +31,20 @@ MERGED from [com.google.firebase:firebase-storage:20.0.1] /Users/doodi/.gradle/c
 MERGED from [com.google.firebase:firebase-storage:20.0.1] /Users/doodi/.gradle/caches/transforms-3/86a11d39ab15d59b759e912472a7593e/transformed/jetified-firebase-storage-20.0.1/AndroidManifest.xml:29:5-37:19
 MERGED from [com.google.firebase:firebase-database:20.0.5] /Users/doodi/.gradle/caches/transforms-3/f87e0f62127006dc791c32fcca28ed88/transformed/jetified-firebase-database-20.0.5/AndroidManifest.xml:28:5-36:19
 MERGED from [com.google.firebase:firebase-database:20.0.5] /Users/doodi/.gradle/caches/transforms-3/f87e0f62127006dc791c32fcca28ed88/transformed/jetified-firebase-database-20.0.5/AndroidManifest.xml:28:5-36:19
-MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/doodi/.gradle/caches/transforms-3/89ba8e05a34cf734bca3914f66f9a9fb/transformed/jetified-firebase-auth-interop-20.0.0/AndroidManifest.xml:7:5-8:19
-MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/doodi/.gradle/caches/transforms-3/89ba8e05a34cf734bca3914f66f9a9fb/transformed/jetified-firebase-auth-interop-20.0.0/AndroidManifest.xml:7:5-8:19
 MERGED from [com.google.firebase:firebase-appcheck-interop:16.0.0] /Users/doodi/.gradle/caches/transforms-3/035af362cba75ba70d871140ede1df7a/transformed/jetified-firebase-appcheck-interop-16.0.0/AndroidManifest.xml:24:5-20
 MERGED from [com.google.firebase:firebase-appcheck-interop:16.0.0] /Users/doodi/.gradle/caches/transforms-3/035af362cba75ba70d871140ede1df7a/transformed/jetified-firebase-appcheck-interop-16.0.0/AndroidManifest.xml:24:5-20
+MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/doodi/.gradle/caches/transforms-3/89ba8e05a34cf734bca3914f66f9a9fb/transformed/jetified-firebase-auth-interop-20.0.0/AndroidManifest.xml:7:5-8:19
+MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/doodi/.gradle/caches/transforms-3/89ba8e05a34cf734bca3914f66f9a9fb/transformed/jetified-firebase-auth-interop-20.0.0/AndroidManifest.xml:7:5-8:19
 MERGED from [com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:27:5-35:19
 MERGED from [com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:27:5-35:19
 MERGED from [com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:14:5-22:19
 MERGED from [com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:14:5-22:19
 MERGED from [com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:25:5-38:19
 MERGED from [com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:25:5-38:19
+MERGED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:36:5-42:19
+MERGED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:36:5-42:19
+MERGED from [com.google.android.gms:play-services-location:20.0.0] /Users/doodi/.gradle/caches/transforms-3/810504e8b528784b61c94315be685396/transformed/jetified-play-services-location-20.0.0/AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-location:20.0.0] /Users/doodi/.gradle/caches/transforms-3/810504e8b528784b61c94315be685396/transformed/jetified-play-services-location-20.0.0/AndroidManifest.xml:7:5-20
 MERGED from [com.google.android.gms:play-services-safetynet:17.0.0] /Users/doodi/.gradle/caches/transforms-3/6fc382fce3370b231ba05fbc8b124f61/transformed/jetified-play-services-safetynet-17.0.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.gms:play-services-safetynet:17.0.0] /Users/doodi/.gradle/caches/transforms-3/6fc382fce3370b231ba05fbc8b124f61/transformed/jetified-play-services-safetynet-17.0.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:19:5-23:19
@@ -75,16 +81,19 @@ INJECTED from /Users/doodi/Desktop/444_Awn/awn/android/app/src/main/AndroidManif
 INJECTED from /Users/doodi/Desktop/444_Awn/awn/android/app/src/main/AndroidManifest.xml:1:1-34:12
 INJECTED from /Users/doodi/Desktop/444_Awn/awn/android/app/src/main/AndroidManifest.xml:1:1-34:12
 MERGED from /Users/doodi/Desktop/444_Awn/awn/android/app/src/main/AndroidManifest.xml:1:1-34:12
-MERGED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-17:12
 MERGED from [:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-17:12
-MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-17:12
 MERGED from [:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-17:12
+MERGED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-17:12
+MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-17:12
 MERGED from [:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-17:12
-MERGED from [:permission_handler_android] /Users/doodi/Desktop/444_Awn/awn/build/permission_handler_android/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
+MERGED from [:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-19:12
 MERGED from [:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-19:12
+MERGED from [:google_maps_flutter_android] /Users/doodi/Desktop/444_Awn/awn/build/google_maps_flutter_android/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-21:12
 MERGED from [:flutter_plugin_android_lifecycle] /Users/doodi/Desktop/444_Awn/awn/build/flutter_plugin_android_lifecycle/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:path_provider_android] /Users/doodi/Desktop/444_Awn/awn/build/path_provider_android/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
+MERGED from [:permission_handler_android] /Users/doodi/Desktop/444_Awn/awn/build/permission_handler_android/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
+MERGED from [:geocoding] /Users/doodi/Desktop/444_Awn/awn/build/geocoding/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:2:1-17:12
 MERGED from [com.google.firebase:firebase-common-ktx:20.1.1] /Users/doodi/.gradle/caches/transforms-3/49285ef5ef1651796da7b32f4aac1a76/transformed/jetified-firebase-common-ktx-20.1.1/AndroidManifest.xml:2:1-21:12
 MERGED from [androidx.window:window-java:1.0.0-beta04] /Users/doodi/.gradle/caches/transforms-3/e1f5bf00836c889852a9a2014464d260/transformed/jetified-window-java-1.0.0-beta04/AndroidManifest.xml:17:1-23:12
@@ -94,14 +103,16 @@ MERGED from [com.google.firebase:firebase-auth:21.0.7] /Users/doodi/.gradle/cach
 MERGED from [com.google.firebase:firebase-firestore:24.2.2] /Users/doodi/.gradle/caches/transforms-3/63a55b2d265d667c75a69a4a5e2e28ed/transformed/jetified-firebase-firestore-24.2.2/AndroidManifest.xml:2:1-26:12
 MERGED from [com.google.firebase:firebase-storage:20.0.1] /Users/doodi/.gradle/caches/transforms-3/86a11d39ab15d59b759e912472a7593e/transformed/jetified-firebase-storage-20.0.1/AndroidManifest.xml:15:1-39:12
 MERGED from [com.google.firebase:firebase-database:20.0.5] /Users/doodi/.gradle/caches/transforms-3/f87e0f62127006dc791c32fcca28ed88/transformed/jetified-firebase-database-20.0.5/AndroidManifest.xml:15:1-38:12
-MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/doodi/.gradle/caches/transforms-3/89ba8e05a34cf734bca3914f66f9a9fb/transformed/jetified-firebase-auth-interop-20.0.0/AndroidManifest.xml:2:1-10:12
 MERGED from [com.google.firebase:firebase-appcheck-interop:16.0.0] /Users/doodi/.gradle/caches/transforms-3/035af362cba75ba70d871140ede1df7a/transformed/jetified-firebase-appcheck-interop-16.0.0/AndroidManifest.xml:15:1-26:12
+MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/doodi/.gradle/caches/transforms-3/89ba8e05a34cf734bca3914f66f9a9fb/transformed/jetified-firebase-auth-interop-20.0.0/AndroidManifest.xml:2:1-10:12
 MERGED from [com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:17:1-37:12
 MERGED from [com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:2:1-24:12
 MERGED from [com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:15:1-40:12
+MERGED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:17:1-44:12
+MERGED from [com.google.android.gms:play-services-location:20.0.0] /Users/doodi/.gradle/caches/transforms-3/810504e8b528784b61c94315be685396/transformed/jetified-play-services-location-20.0.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.google.firebase:firebase-database-collection:18.0.1] /Users/doodi/.gradle/caches/transforms-3/7c741d4936f86c00542d609dae4f68c7/transformed/jetified-firebase-database-collection-18.0.1/AndroidManifest.xml:2:1-9:12
 MERGED from [com.google.android.gms:play-services-auth-api-phone:17.4.0] /Users/doodi/.gradle/caches/transforms-3/08805e656a3219301851cd042d382e7e/transformed/jetified-play-services-auth-api-phone-17.4.0/AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.gms:play-services-safetynet:17.0.0] /Users/doodi/.gradle/caches/transforms-3/6fc382fce3370b231ba05fbc8b124f61/transformed/jetified-play-services-safetynet-17.0.0/AndroidManifest.xml:17:1-24:12
-MERGED from [com.google.firebase:firebase-database-collection:18.0.1] /Users/doodi/.gradle/caches/transforms-3/7c741d4936f86c00542d609dae4f68c7/transformed/jetified-firebase-database-collection-18.0.1/AndroidManifest.xml:2:1-9:12
 MERGED from [com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:16:1-24:12
 MERGED from [com.google.firebase:firebase-installations-interop:17.0.1] /Users/doodi/.gradle/caches/transforms-3/53f88ef33f6d54ef275764f6e0476e9c/transformed/jetified-firebase-installations-interop-17.0.1/AndroidManifest.xml:15:1-23:12
 MERGED from [com.google.android.gms:play-services-tasks:18.0.1] /Users/doodi/.gradle/caches/transforms-3/0eca67a449d06f1154e3d0c5a54f4038/transformed/jetified-play-services-tasks-18.0.1/AndroidManifest.xml:2:1-6:12
@@ -125,14 +136,14 @@ MERGED from [androidx.core:core:1.8.0] /Users/doodi/.gradle/caches/transforms-3/
 MERGED from [androidx.exifinterface:exifinterface:1.3.3] /Users/doodi/.gradle/caches/transforms-3/fae8300db20a09e485ca3ced7347472e/transformed/exifinterface-1.3.3/AndroidManifest.xml:17:1-24:12
 MERGED from [com.google.firebase:firebase-components:17.0.0] /Users/doodi/.gradle/caches/transforms-3/e87eddeaa90c28dfb4f9f67d59604665/transformed/jetified-firebase-components-17.0.0/AndroidManifest.xml:15:1-23:12
 MERGED from [androidx.tracing:tracing:1.0.0] /Users/doodi/.gradle/caches/transforms-3/b3aaa08a3f58058a7d57a5e78cb8e348/transformed/jetified-tracing-1.0.0/AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/doodi/.gradle/caches/transforms-3/92bbcff336b1c071492380cf1ca47662/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.lifecycle:lifecycle-runtime:2.3.1] /Users/doodi/.gradle/caches/transforms-3/827059b5dbdd36f4518b82e011631b76/transformed/lifecycle-runtime-2.3.1/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/doodi/.gradle/caches/transforms-3/cfaa035a43a363ad38f5365ab0b90d5a/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:17:1-27:12
-MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/doodi/.gradle/caches/transforms-3/0874b2ce249aebd6be8581da2886a270/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/doodi/.gradle/caches/transforms-3/92bbcff336b1c071492380cf1ca47662/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.savedstate:savedstate:1.0.0] /Users/doodi/.gradle/caches/transforms-3/f28fbf2b5cc15d00b9e189721d0a19db/transformed/jetified-savedstate-1.0.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] /Users/doodi/.gradle/caches/transforms-3/8f6ed0e432a96c9946ce1998221ef429/transformed/lifecycle-livedata-2.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] /Users/doodi/.gradle/caches/transforms-3/1dfcd597f157c8506cb9f4f998efecca/transformed/lifecycle-livedata-core-2.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.arch.core:core-runtime:2.1.0] /Users/doodi/.gradle/caches/transforms-3/9633f98cacc600c55cd8e13ad9ef85d0/transformed/core-runtime-2.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/doodi/.gradle/caches/transforms-3/0874b2ce249aebd6be8581da2886a270/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] /Users/doodi/.gradle/caches/transforms-3/4347c219bb49b5517c0901825a211a72/transformed/lifecycle-viewmodel-2.1.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.documentfile:documentfile:1.0.0] /Users/doodi/.gradle/caches/transforms-3/1c4db09a62f016ff3190ccf02b09b30c/transformed/documentfile-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.print:print:1.0.0] /Users/doodi/.gradle/caches/transforms-3/b056f379bb23e7c9af0bc16467b47b5b/transformed/print-1.0.0/AndroidManifest.xml:17:1-22:12
@@ -160,26 +171,32 @@ uses-sdk
 INJECTED from /Users/doodi/Desktop/444_Awn/awn/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/doodi/Desktop/444_Awn/awn/android/app/src/main/AndroidManifest.xml
 INJECTED from /Users/doodi/Desktop/444_Awn/awn/android/app/src/main/AndroidManifest.xml
-MERGED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
-MERGED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
-MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
-MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
-MERGED from [:permission_handler_android] /Users/doodi/Desktop/444_Awn/awn/build/permission_handler_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
-MERGED from [:permission_handler_android] /Users/doodi/Desktop/444_Awn/awn/build/permission_handler_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:google_maps_flutter_android] /Users/doodi/Desktop/444_Awn/awn/build/google_maps_flutter_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:google_maps_flutter_android] /Users/doodi/Desktop/444_Awn/awn/build/google_maps_flutter_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:image_picker_android] /Users/doodi/Desktop/444_Awn/awn/build/image_picker_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:flutter_plugin_android_lifecycle] /Users/doodi/Desktop/444_Awn/awn/build/flutter_plugin_android_lifecycle/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:flutter_plugin_android_lifecycle] /Users/doodi/Desktop/444_Awn/awn/build/flutter_plugin_android_lifecycle/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:path_provider_android] /Users/doodi/Desktop/444_Awn/awn/build/path_provider_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:path_provider_android] /Users/doodi/Desktop/444_Awn/awn/build/path_provider_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:permission_handler_android] /Users/doodi/Desktop/444_Awn/awn/build/permission_handler_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:permission_handler_android] /Users/doodi/Desktop/444_Awn/awn/build/permission_handler_android/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:geocoding] /Users/doodi/Desktop/444_Awn/awn/build/geocoding/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:geocoding] /Users/doodi/Desktop/444_Awn/awn/build/geocoding/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.firebase:firebase-common-ktx:20.1.1] /Users/doodi/.gradle/caches/transforms-3/49285ef5ef1651796da7b32f4aac1a76/transformed/jetified-firebase-common-ktx-20.1.1/AndroidManifest.xml:6:5-8:41
@@ -198,22 +215,26 @@ MERGED from [com.google.firebase:firebase-storage:20.0.1] /Users/doodi/.gradle/c
 MERGED from [com.google.firebase:firebase-storage:20.0.1] /Users/doodi/.gradle/caches/transforms-3/86a11d39ab15d59b759e912472a7593e/transformed/jetified-firebase-storage-20.0.1/AndroidManifest.xml:20:5-22:41
 MERGED from [com.google.firebase:firebase-database:20.0.5] /Users/doodi/.gradle/caches/transforms-3/f87e0f62127006dc791c32fcca28ed88/transformed/jetified-firebase-database-20.0.5/AndroidManifest.xml:19:5-21:41
 MERGED from [com.google.firebase:firebase-database:20.0.5] /Users/doodi/.gradle/caches/transforms-3/f87e0f62127006dc791c32fcca28ed88/transformed/jetified-firebase-database-20.0.5/AndroidManifest.xml:19:5-21:41
-MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/doodi/.gradle/caches/transforms-3/89ba8e05a34cf734bca3914f66f9a9fb/transformed/jetified-firebase-auth-interop-20.0.0/AndroidManifest.xml:5:5-44
-MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/doodi/.gradle/caches/transforms-3/89ba8e05a34cf734bca3914f66f9a9fb/transformed/jetified-firebase-auth-interop-20.0.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.firebase:firebase-appcheck-interop:16.0.0] /Users/doodi/.gradle/caches/transforms-3/035af362cba75ba70d871140ede1df7a/transformed/jetified-firebase-appcheck-interop-16.0.0/AndroidManifest.xml:19:5-21:41
 MERGED from [com.google.firebase:firebase-appcheck-interop:16.0.0] /Users/doodi/.gradle/caches/transforms-3/035af362cba75ba70d871140ede1df7a/transformed/jetified-firebase-appcheck-interop-16.0.0/AndroidManifest.xml:19:5-21:41
+MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/doodi/.gradle/caches/transforms-3/89ba8e05a34cf734bca3914f66f9a9fb/transformed/jetified-firebase-auth-interop-20.0.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.firebase:firebase-auth-interop:20.0.0] /Users/doodi/.gradle/caches/transforms-3/89ba8e05a34cf734bca3914f66f9a9fb/transformed/jetified-firebase-auth-interop-20.0.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:20:5-44
 MERGED from [com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:20:5-44
 MERGED from [com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:6:5-8:41
 MERGED from [com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:6:5-8:41
 MERGED from [com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:20:5-22:41
 MERGED from [com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-location:20.0.0] /Users/doodi/.gradle/caches/transforms-3/810504e8b528784b61c94315be685396/transformed/jetified-play-services-location-20.0.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-location:20.0.0] /Users/doodi/.gradle/caches/transforms-3/810504e8b528784b61c94315be685396/transformed/jetified-play-services-location-20.0.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.firebase:firebase-database-collection:18.0.1] /Users/doodi/.gradle/caches/transforms-3/7c741d4936f86c00542d609dae4f68c7/transformed/jetified-firebase-database-collection-18.0.1/AndroidManifest.xml:5:5-7:41
+MERGED from [com.google.firebase:firebase-database-collection:18.0.1] /Users/doodi/.gradle/caches/transforms-3/7c741d4936f86c00542d609dae4f68c7/transformed/jetified-firebase-database-collection-18.0.1/AndroidManifest.xml:5:5-7:41
 MERGED from [com.google.android.gms:play-services-auth-api-phone:17.4.0] /Users/doodi/.gradle/caches/transforms-3/08805e656a3219301851cd042d382e7e/transformed/jetified-play-services-auth-api-phone-17.4.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.android.gms:play-services-auth-api-phone:17.4.0] /Users/doodi/.gradle/caches/transforms-3/08805e656a3219301851cd042d382e7e/transformed/jetified-play-services-auth-api-phone-17.4.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.android.gms:play-services-safetynet:17.0.0] /Users/doodi/.gradle/caches/transforms-3/6fc382fce3370b231ba05fbc8b124f61/transformed/jetified-play-services-safetynet-17.0.0/AndroidManifest.xml:20:5-44
 MERGED from [com.google.android.gms:play-services-safetynet:17.0.0] /Users/doodi/.gradle/caches/transforms-3/6fc382fce3370b231ba05fbc8b124f61/transformed/jetified-play-services-safetynet-17.0.0/AndroidManifest.xml:20:5-44
-MERGED from [com.google.firebase:firebase-database-collection:18.0.1] /Users/doodi/.gradle/caches/transforms-3/7c741d4936f86c00542d609dae4f68c7/transformed/jetified-firebase-database-collection-18.0.1/AndroidManifest.xml:5:5-7:41
-MERGED from [com.google.firebase:firebase-database-collection:18.0.1] /Users/doodi/.gradle/caches/transforms-3/7c741d4936f86c00542d609dae4f68c7/transformed/jetified-firebase-database-collection-18.0.1/AndroidManifest.xml:5:5-7:41
 MERGED from [com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:18:5-43
 MERGED from [com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:18:5-43
 MERGED from [com.google.firebase:firebase-installations-interop:17.0.1] /Users/doodi/.gradle/caches/transforms-3/53f88ef33f6d54ef275764f6e0476e9c/transformed/jetified-firebase-installations-interop-17.0.1/AndroidManifest.xml:19:5-21:41
@@ -260,14 +281,12 @@ MERGED from [com.google.firebase:firebase-components:17.0.0] /Users/doodi/.gradl
 MERGED from [com.google.firebase:firebase-components:17.0.0] /Users/doodi/.gradle/caches/transforms-3/e87eddeaa90c28dfb4f9f67d59604665/transformed/jetified-firebase-components-17.0.0/AndroidManifest.xml:19:5-21:41
 MERGED from [androidx.tracing:tracing:1.0.0] /Users/doodi/.gradle/caches/transforms-3/b3aaa08a3f58058a7d57a5e78cb8e348/transformed/jetified-tracing-1.0.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.tracing:tracing:1.0.0] /Users/doodi/.gradle/caches/transforms-3/b3aaa08a3f58058a7d57a5e78cb8e348/transformed/jetified-tracing-1.0.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/doodi/.gradle/caches/transforms-3/92bbcff336b1c071492380cf1ca47662/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/doodi/.gradle/caches/transforms-3/92bbcff336b1c071492380cf1ca47662/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.lifecycle:lifecycle-runtime:2.3.1] /Users/doodi/.gradle/caches/transforms-3/827059b5dbdd36f4518b82e011631b76/transformed/lifecycle-runtime-2.3.1/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.lifecycle:lifecycle-runtime:2.3.1] /Users/doodi/.gradle/caches/transforms-3/827059b5dbdd36f4518b82e011631b76/transformed/lifecycle-runtime-2.3.1/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/doodi/.gradle/caches/transforms-3/cfaa035a43a363ad38f5365ab0b90d5a/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/doodi/.gradle/caches/transforms-3/cfaa035a43a363ad38f5365ab0b90d5a/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/doodi/.gradle/caches/transforms-3/0874b2ce249aebd6be8581da2886a270/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/doodi/.gradle/caches/transforms-3/0874b2ce249aebd6be8581da2886a270/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/doodi/.gradle/caches/transforms-3/92bbcff336b1c071492380cf1ca47662/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/doodi/.gradle/caches/transforms-3/92bbcff336b1c071492380cf1ca47662/transformed/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.savedstate:savedstate:1.0.0] /Users/doodi/.gradle/caches/transforms-3/f28fbf2b5cc15d00b9e189721d0a19db/transformed/jetified-savedstate-1.0.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.savedstate:savedstate:1.0.0] /Users/doodi/.gradle/caches/transforms-3/f28fbf2b5cc15d00b9e189721d0a19db/transformed/jetified-savedstate-1.0.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] /Users/doodi/.gradle/caches/transforms-3/8f6ed0e432a96c9946ce1998221ef429/transformed/lifecycle-livedata-2.0.0/AndroidManifest.xml:20:5-44
@@ -276,6 +295,8 @@ MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] /Users/doodi/.gra
 MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] /Users/doodi/.gradle/caches/transforms-3/1dfcd597f157c8506cb9f4f998efecca/transformed/lifecycle-livedata-core-2.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.arch.core:core-runtime:2.1.0] /Users/doodi/.gradle/caches/transforms-3/9633f98cacc600c55cd8e13ad9ef85d0/transformed/core-runtime-2.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.arch.core:core-runtime:2.1.0] /Users/doodi/.gradle/caches/transforms-3/9633f98cacc600c55cd8e13ad9ef85d0/transformed/core-runtime-2.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/doodi/.gradle/caches/transforms-3/0874b2ce249aebd6be8581da2886a270/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/doodi/.gradle/caches/transforms-3/0874b2ce249aebd6be8581da2886a270/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] /Users/doodi/.gradle/caches/transforms-3/4347c219bb49b5517c0901825a211a72/transformed/lifecycle-viewmodel-2.1.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] /Users/doodi/.gradle/caches/transforms-3/4347c219bb49b5517c0901825a211a72/transformed/lifecycle-viewmodel-2.1.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.documentfile:documentfile:1.0.0] /Users/doodi/.gradle/caches/transforms-3/1c4db09a62f016ff3190ccf02b09b30c/transformed/documentfile-1.0.0/AndroidManifest.xml:20:5-44
@@ -310,6 +331,8 @@ MERGED from [com.google.android.gms:play-services-measurement-api:21.1.0] /Users
 MERGED from [com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:22:5-67
 MERGED from [com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:11:5-67
 MERGED from [com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:11:5-67
+MERGED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:24:5-67
+MERGED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:24:5-67
 MERGED from [com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:23:5-67
 MERGED from [com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:23:5-67
 MERGED from [com.google.android.gms:play-services-measurement-impl:21.1.0] /Users/doodi/.gradle/caches/transforms-3/13fd0414cf916edd8dfec758ee675ce0/transformed/jetified-play-services-measurement-impl-21.1.0/AndroidManifest.xml:23:5-67
@@ -319,13 +342,13 @@ MERGED from [com.google.android.gms:play-services-measurement-sdk-api:21.1.0] /U
 	android:name
 		ADDED from /Users/doodi/Desktop/444_Awn/awn/android/app/src/debug/AndroidManifest.xml:7:22-64
 service#com.google.firebase.components.ComponentDiscoveryService
-ADDED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
-MERGED from [:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
-MERGED from [:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
-MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
-MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
+ADDED from [:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
 MERGED from [:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
 MERGED from [:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
+MERGED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
+MERGED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
+MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
+MERGED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
 MERGED from [:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
 MERGED from [:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-14:19
 MERGED from [com.google.firebase:firebase-analytics-ktx:21.1.0] /Users/doodi/.gradle/caches/transforms-3/9fd726b845eb5bbf68dcaf3839913513/transformed/jetified-firebase-analytics-ktx-21.1.0/AndroidManifest.xml:8:9-14:19
@@ -353,43 +376,59 @@ MERGED from [com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/ca
 	android:directBootAware
 		ADDED from [com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:35:13-43
 	android:name
-		ADDED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:10:18-89
-meta-data#com.google.firebase.components:io.flutter.plugins.firebase.auth.FlutterFirebaseAuthRegistrar
-ADDED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
-	android:value
-		ADDED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
-	android:name
-		ADDED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-124
+		ADDED from [:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:10:18-89
 meta-data#com.google.firebase.components:io.flutter.plugins.firebase.database.FlutterFirebaseAppRegistrar
 ADDED from [:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
 	android:value
 		ADDED from [:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
 	android:name
 		ADDED from [:firebase_database] /Users/doodi/Desktop/444_Awn/awn/build/firebase_database/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-127
-meta-data#com.google.firebase.components:io.flutter.plugins.firebase.storage.FlutterFirebaseAppRegistrar
-ADDED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
-	android:value
-		ADDED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
-	android:name
-		ADDED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-126
 meta-data#com.google.firebase.components:io.flutter.plugins.firebase.firestore.FlutterFirebaseFirestoreRegistrar
 ADDED from [:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
 	android:value
 		ADDED from [:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
 	android:name
 		ADDED from [:cloud_firestore] /Users/doodi/Desktop/444_Awn/awn/build/cloud_firestore/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-134
+meta-data#com.google.firebase.components:io.flutter.plugins.firebase.auth.FlutterFirebaseAuthRegistrar
+ADDED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
+	android:value
+		ADDED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
+	android:name
+		ADDED from [:firebase_auth] /Users/doodi/Desktop/444_Awn/awn/build/firebase_auth/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-124
+meta-data#com.google.firebase.components:io.flutter.plugins.firebase.storage.FlutterFirebaseAppRegistrar
+ADDED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
+	android:value
+		ADDED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
+	android:name
+		ADDED from [:firebase_storage] /Users/doodi/Desktop/444_Awn/awn/build/firebase_storage/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-126
 meta-data#com.google.firebase.components:io.flutter.plugins.firebase.core.FlutterFirebaseCoreRegistrar
 ADDED from [:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-13:85
 	android:value
 		ADDED from [:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:13:17-82
 	android:name
 		ADDED from [:firebase_core] /Users/doodi/Desktop/444_Awn/awn/build/firebase_core/intermediates/merged_manifest/debug/AndroidManifest.xml:12:17-124
+uses-permission#android.permission.FOREGROUND_SERVICE
+ADDED from [:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-77
+	android:name
+		ADDED from [:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:9:22-74
+service#com.baseflow.geolocator.GeolocatorLocationService
+ADDED from [:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:12:9-16:56
+	android:enabled
+		ADDED from [:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:14:13-35
+	android:exported
+		ADDED from [:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-37
+	android:foregroundServiceType
+		ADDED from [:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:16:13-53
+	android:name
+		ADDED from [:geolocator_android] /Users/doodi/Desktop/444_Awn/awn/build/geolocator_android/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-77
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
 ADDED from [:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-80
 	android:name
 		ADDED from [:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:9:22-77
 queries
 ADDED from [:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-17:15
+MERGED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:30:5-34:15
+MERGED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:30:5-34:15
 intent#action:name:android.intent.action.GET_CONTENT+data:mimeType:*/*
 ADDED from [:file_picker] /Users/doodi/Desktop/444_Awn/awn/build/file_picker/intermediates/merged_manifest/debug/AndroidManifest.xml:12:9-16:18
 action#android.intent.action.GET_CONTENT
@@ -452,6 +491,8 @@ MERGED from [com.google.android.gms:play-services-measurement-api:21.1.0] /Users
 MERGED from [com.google.android.gms:play-services-measurement-api:21.1.0] /Users/doodi/.gradle/caches/transforms-3/3f68d25dd4925dfb059f2837d77f3d20/transformed/jetified-play-services-measurement-api-21.1.0/AndroidManifest.xml:23:5-79
 MERGED from [com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:10:5-79
 MERGED from [com.google.firebase:firebase-installations:17.0.1] /Users/doodi/.gradle/caches/transforms-3/d697f3efc8c8ea9d972258c27b5b196d/transformed/jetified-firebase-installations-17.0.1/AndroidManifest.xml:10:5-79
+MERGED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:23:5-79
+MERGED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:23:5-79
 MERGED from [com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:24:5-79
 MERGED from [com.google.android.gms:play-services-measurement:21.1.0] /Users/doodi/.gradle/caches/transforms-3/c730355fcd9dd711b4fabee0c70bb768/transformed/jetified-play-services-measurement-21.1.0/AndroidManifest.xml:24:5-79
 MERGED from [com.google.android.gms:play-services-measurement-impl:21.1.0] /Users/doodi/.gradle/caches/transforms-3/13fd0414cf916edd8dfec758ee675ce0/transformed/jetified-play-services-measurement-impl-21.1.0/AndroidManifest.xml:24:5-79
@@ -570,6 +611,22 @@ ADDED from [com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/cac
 		ADDED from [com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:31:13-36
 	android:name
 		ADDED from [com.google.firebase:firebase-common:20.1.1] /Users/doodi/.gradle/caches/transforms-3/fccaa6a289edc53f66333a729d5bb147/transformed/jetified-firebase-common-20.1.1/AndroidManifest.xml:27:13-77
+uses-feature#0x00020000
+ADDED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:26:5-28:35
+	android:glEsVersion
+		ADDED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:27:9-41
+	android:required
+		ADDED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:28:9-32
+package#com.google.android.apps.maps
+ADDED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:33:9-64
+	android:name
+		ADDED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:33:18-61
+uses-library#org.apache.http.legacy
+ADDED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:39:9-41:40
+	android:required
+		ADDED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:41:13-37
+	android:name
+		ADDED from [com.google.android.gms:play-services-maps:18.0.2] /Users/doodi/.gradle/caches/transforms-3/95f836bc5966badd1250ea9af0d4d03d/transformed/jetified-play-services-maps-18.0.2/AndroidManifest.xml:40:13-50
 activity#com.google.android.gms.common.api.GoogleApiActivity
 ADDED from [com.google.android.gms:play-services-base:18.0.1] /Users/doodi/.gradle/caches/transforms-3/19fea4fb28dedd992824e13cc158e7a1/transformed/jetified-play-services-base-18.0.1/AndroidManifest.xml:20:9-22:45
 	android:exported

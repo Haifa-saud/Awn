@@ -50,6 +50,11 @@ dependencies:
   firebase_auth: ^3.8.0
   image_picker: ^0.8.5+3
   email_validator: ^2.1.17
+  geolocator: ^9.0.1
+  google_maps_flutter: ^2.2.0
+  geocoding: ^2.0.5
+  get_state_manager: ^3.13.0
+  google_maps_controller: ^1.2.0
   
 
 dev_dependencies:
