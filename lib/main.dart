@@ -1,8 +1,7 @@
 import 'package:awn/homePage.dart';
 import 'package:awn/login.dart';
 import 'package:awn/register.dart';
-import 'package:awn/services/registerNotification.dart';
-import 'package:awn/volunteerPage.dart';
+import 'package:awn/services/sendNotification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,18 +13,23 @@ import 'services/myGlobal.dart' as globals;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-
-  var time = DateTime.now().second.toString();
-  await Workmanager()
-      .registerPeriodicTask(time, 'firstTask', frequency: Duration(minutes: 1));
-
-  runApp(const MyApp());
+  FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    if (user == null) {
+      runApp(MyApp(false));
+    } else {
+      runApp(MyApp(true));
+    }
+  });
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  bool auth = false;
+  MyApp([this.auth = false]);
+  @override
+  State<MyApp> createState() => _MyApp();
+}
 
+class _MyApp extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -38,6 +42,7 @@ class MyApp extends StatelessWidget {
       },
       debugShowCheckedModeBanner: false,
       title: 'Home Page',
+      navigatorKey: GlobalContextService.navigatorKey,
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFfcfffe),
         appBarTheme: const AppBarTheme(
@@ -92,7 +97,20 @@ class MyApp extends StatelessWidget {
           contentTextStyle: TextStyle(fontSize: 16),
         ),
       ),
-      home: const login(),
+      home: widget.auth
+          ? homePage(
+              userType: null,
+            )
+          : login(),
     );
   }
+  // void onDidReceiveNotificationResponse(
+  //   int id, String title, String body, String payload) async {
+  // // display a dialog with the notification details, tap ok to go to another page
+  //  Navigator.pushNamed(context, '/volunteerPage');
+// }
+}
+
+class GlobalContextService {
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 }

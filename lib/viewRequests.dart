@@ -48,12 +48,12 @@ class _AddRequestState extends State<viewRequests> {
                         ) {
                           if (snapshot.hasError) {
                             print('line 48');
-                            return Text('Something went wrong');
+                            return const Text('Something went wrong');
                           }
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             print('line 51');
-                            return CircularProgressIndicator();
+                            return const CircularProgressIndicator();
                           }
                           final data = snapshot.requireData;
                           print('line 55');
@@ -67,7 +67,7 @@ class _AddRequestState extends State<viewRequests> {
                                   //title
                                   Padding(
                                     padding:
-                                        EdgeInsets.fromLTRB(10, 0, 290, 15),
+                                        const EdgeInsets.fromLTRB(10, 0, 290, 15),
                                     child: Text(
                                       ' ${data.docs[index]['title']}',
                                       textAlign: TextAlign.left,
@@ -75,24 +75,24 @@ class _AddRequestState extends State<viewRequests> {
                                   ),
                                   //date and time
                                   Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
+                                    padding: const EdgeInsets.fromLTRB(20, 0, 18, 12),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.calendar_today,
+                                        const Icon(Icons.calendar_today,
                                             size: 20, color: Colors.red),
                                         Text(' ${data.docs[index]['date_dmy']}',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontSize: 17,
                                                 fontWeight: FontWeight.w500)),
                                         Padding(
-                                          padding: EdgeInsets.only(left: 40),
+                                          padding: const EdgeInsets.only(left: 40),
                                           child: Row(
                                             children: [
-                                              Icon(Icons.schedule,
+                                              const Icon(Icons.schedule,
                                                   size: 20, color: Colors.red),
                                               Text(
                                                   ' ${data.docs[index]['time']}',
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       fontSize: 17,
                                                       fontWeight:
                                                           FontWeight.w500)),
@@ -104,14 +104,14 @@ class _AddRequestState extends State<viewRequests> {
                                   ),
                                   //duration
                                   Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
+                                    padding: const EdgeInsets.fromLTRB(20, 0, 0, 12),
                                     child: Row(
                                       children: [
                                         // Icon(Icons.schedule,
                                         //     size: 20, color: Colors.red),
                                         Text(
                                             'Duration: ${data.docs[index]['duration']}',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontSize: 17,
                                                 fontWeight: FontWeight.w500)),
                                       ],
@@ -119,7 +119,7 @@ class _AddRequestState extends State<viewRequests> {
                                   ),
                                   //description
                                   Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
+                                    padding: const EdgeInsets.fromLTRB(20, 0, 18, 12),
                                     child: Row(
                                       children: [
                                         // Icon(Icons.description,
@@ -129,7 +129,7 @@ class _AddRequestState extends State<viewRequests> {
                                               'Description: ${data.docs[index]['description']}',
                                               //   overflow:
                                               //   TextOverflow.ellipsis,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   fontSize: 17,
                                                   fontWeight: FontWeight.w500)),
                                         ),
@@ -138,7 +138,7 @@ class _AddRequestState extends State<viewRequests> {
                                   ),
                                   //location
                                   Padding(
-                                      padding: EdgeInsets.all(10),
+                                      padding: const EdgeInsets.all(10),
                                       child: ElevatedButton(
                                           onPressed: () {
                                             // String dataId =
@@ -161,25 +161,25 @@ class _AddRequestState extends State<viewRequests> {
                                               foregroundColor:
                                                   Colors.grey.shade500,
                                               backgroundColor: Colors.white,
-                                              padding: EdgeInsets.fromLTRB(
+                                              padding: const EdgeInsets.fromLTRB(
                                                   14, 20, 14, 20),
                                               side: BorderSide(
                                                   color: Colors.grey.shade400,
                                                   width: 2)),
-                                          child: Text('Location',
+                                          child: const Text('Location',
                                               style: TextStyle(
                                                   color: Colors.black)))),
 
                                   //buttons
                                   Padding(
-                                    padding: EdgeInsets.all(20),
+                                    padding: const EdgeInsets.all(20),
                                     // width: 150,
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
                                         Container(
-                                          margin: EdgeInsets.symmetric(
+                                          margin: const EdgeInsets.symmetric(
                                               horizontal: 5),
                                           width: 100,
                                           child: ElevatedButton(
@@ -194,7 +194,7 @@ class _AddRequestState extends State<viewRequests> {
                                               textStyle:
                                                   const TextStyle(fontSize: 17),
                                             ),
-                                            child: Text('Accept'),
+                                            child: const Text('Accept'),
                                           ),
                                         ),
                                         Container(
@@ -211,7 +211,7 @@ class _AddRequestState extends State<viewRequests> {
                                                 textStyle: const TextStyle(
                                                     fontSize: 17),
                                               ),
-                                              child: Text('Deny')),
+                                              child: const Text('Deny')),
                                         ),
                                       ],
                                     ),
@@ -224,6 +224,7 @@ class _AddRequestState extends State<viewRequests> {
                       )))
             ],
           )),
+    
     );
   }
 }
@@ -247,10 +248,10 @@ class _MapsPageState extends State<MapsPage> {
     Set<Marker> getMarker() {
       return <Marker>[
         Marker(
-            markerId: MarkerId(''),
+            markerId: const MarkerId(''),
             position: LatLng(widget.latitude, widget.longitude),
             icon: BitmapDescriptor.defaultMarker,
-            infoWindow: InfoWindow(title: 'Special need location'))
+            infoWindow: const InfoWindow(title: 'Special need location'))
       ].toSet();
     }
 

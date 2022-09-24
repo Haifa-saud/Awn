@@ -1,6 +1,7 @@
 import 'package:awn/services/Utils.dart';
 import 'package:awn/register.dart';
 import 'package:awn/services/firebase_storage_services.dart';
+import 'package:awn/services/sendNotification.dart';
 import 'package:awn/services/usersModel.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,11 +9,14 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:workmanager/workmanager.dart';
 import 'forgotPassword.dart';
 import 'services/myGlobal.dart' as globals;
 
 class login extends StatefulWidget {
-  const login({Key? key,}) : super(key: key);
+  const login({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _loginState createState() => _loginState();
@@ -70,25 +74,23 @@ class _loginState extends State<login> {
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
-              Colors.cyanAccent.shade100,
-              Colors.white54,
-              Colors.white54,
-              Colors.blue.shade200
-            ], 
-            begin: Alignment.topRight, end: Alignment.bottomLeft)
-          ),
+          Colors.cyanAccent.shade100,
+          Colors.white54,
+          Colors.white54,
+          Colors.blue.shade200
+        ], begin: Alignment.topRight, end: Alignment.bottomLeft)),
         margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         padding: const EdgeInsets.only(left: 40, right: 40),
         child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: height * 0.2,
-                  ),
+            key: _formKey,
+            child: ListView(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: height * 0.2,
+                    ),
                     FutureBuilder(
                         future: storage.downloadURL('logo.png'),
                         builder: (BuildContext context,
@@ -209,7 +211,8 @@ class _loginState extends State<login> {
                             });
                           },
                         ),
-                        contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(20, 10, 20, 10),
                         focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(100.0),
                             borderSide: const BorderSide(color: Colors.grey)),
@@ -219,12 +222,12 @@ class _loginState extends State<login> {
                                 BorderSide(color: Colors.grey.shade400)),
                         errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(100.0),
-                            borderSide:
-                                const BorderSide(color: Colors.red, width: 2.0)),
+                            borderSide: const BorderSide(
+                                color: Colors.red, width: 2.0)),
                         focusedErrorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(100.0),
-                            borderSide:
-                                const BorderSide(color: Colors.red, width: 2.0)),
+                            borderSide: const BorderSide(
+                                color: Colors.red, width: 2.0)),
                       ),
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       validator: (value) {
@@ -329,20 +332,28 @@ class _loginState extends State<login> {
                                   VolunteerId = '';
                                   emailController.clear();
                                   passwordController.clear();
-                                  Navigator.pushNamed(context, '/volunteerPage');
+                                  Navigator.pushNamed(
+                                      context, '/volunteerPage');
+                                  await Workmanager().initialize(
+                                      callbackDispatcher,
+                                      isInDebugMode: true);
+
+                                  var time = DateTime.now().second.toString();
+                                  await Workmanager().registerPeriodicTask(
+                                      time, 'firstTask',
+                                      frequency: const Duration(minutes: 1));
                                 } else {
                                   VolunteerId = '';
                                   emailController.clear();
                                   passwordController.clear();
                                   Navigator.pushNamed(context, '/homePage');
                                 }
-                              }catch (e) {
+                              } catch (e) {
                                 print(e.toString());
                               }
                             }
                             // Utils.showSnackBar("wrong email//password");
-                          }
-                      ),
+                          }),
                     ),
                     Container(
                       margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),

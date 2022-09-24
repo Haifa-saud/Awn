@@ -16,7 +16,10 @@
     <application
         android:label="awn"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+
+
+        >
            
     <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
         <intent-filter>
@@ -28,8 +31,7 @@
 
         <activity
             android:name=".MainActivity"
-                        android:icon="@mipmap/ic_launcher"
-
+            android:icon="@mipmap/ic_launcher"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"

@@ -1,5 +1,7 @@
-// import 'dart:js_util';
+import 'package:awn/addRequest.dart';
+import 'package:awn/homePage.dart';
 import 'package:awn/map.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:regexed_validator/regexed_validator.dart';
+import 'login.dart';
 import 'services/firebase_options.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -39,9 +42,41 @@ class _MyStatefulWidgetState extends State<addPost> {
   var selectedCategory;
 
   var editImg = '';
+  int index = 1;
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _onItemTapped(int index) async {
+      if (index == 0) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const homePage(userType: 'Volunteer')),
+        );
+      } else if (index == 1) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const addPost()),
+        );
+      } else if (index == 2) {
+        // if (widget.userType == 'Special Need User') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const addRequest()),
+        );
+        // } else if (widget.userType == 'Volunteer') {
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(builder: (context) => const viewRequests()),
+        //   );
+        // }
+      } else if (index == 3) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const login()));
+        FirebaseAuth.instance.signOut();
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add a Place', textAlign: TextAlign.center),
@@ -326,6 +361,44 @@ class _MyStatefulWidgetState extends State<addPost> {
           ]),
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        showSelectedLabels: true,
+        selectedItemColor: Colors.blue,
+        // currentIndex: 0,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            //index 0
+            icon: Icon(Icons.home, color: Colors.grey.shade700),
+            activeIcon: Icon(Icons.home, color: Colors.blue.shade700),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            //index 1
+            icon: Icon(Icons.add, color: Colors.grey.shade700),
+            activeIcon: Icon(Icons.add, color: Colors.blue.shade700),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            //index 2
+            icon: Icon(Icons.handshake, color: Colors.grey.shade700),
+            activeIcon: Icon(Icons.handshake, color: Colors.blue.shade700),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            //index 3
+            icon: Icon(Icons.logout, color: Colors.grey.shade700),
+            activeIcon: Icon(Icons.logout, color: Colors.blue.shade700),
+            label: '',
+          )
+        ],
+        onTap: (int index) {
+          // setState(() {
+          //   this.index = index;
+          // });
+          _onItemTapped(index);
+        },
+        currentIndex: index,
+      ),
     );
   }
 
@@ -373,6 +446,7 @@ class _MyStatefulWidgetState extends State<addPost> {
       'Website': websiteController.text,
       'Phone number': numberController.text,
       'description': descriptionController.text,
+      'userId': FirebaseAuth.instance.currentUser!.uid,
     });
     dataId = docReference.id;
     print("Document written with ID: ${docReference.id}");

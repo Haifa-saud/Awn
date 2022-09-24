@@ -1,6 +1,8 @@
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:awn/addPost.dart';
 import 'package:awn/addRequest.dart';
 import 'package:awn/login.dart';
+import 'package:awn/services/sendNotification.dart';
 import 'package:awn/services/usersModel.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:workmanager/workmanager.dart';
 import 'services/firebase_options.dart';
 import 'package:awn/map.dart';
 import 'package:path/path.dart' as Path;
@@ -62,13 +65,23 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
           return doc.data() as Map<String, dynamic>;
         },
       );
-  final ScrollController _controller = ScrollController();
 
   @override
   void initState() {
-    userData = readUserData();
+    // Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+
+    // var time = DateTime.now().second.toString();
+    // Workmanager().registerPeriodicTask(time, 'firstTask',
+    //     frequency: const Duration(minutes: 1));
     super.initState();
   }
+
+  final iconList = <IconData>[
+    Icons.home,
+    Icons.add,
+    Icons.handshake,
+    Icons.logout,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +92,15 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
       if (index == 0) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const addPost()),
+          MaterialPageRoute(
+              builder: (context) => homePage(userType: widget.userType)),
         );
       } else if (index == 1) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const addPost()),
+        );
+      } else if (index == 2) {
         if (widget.userType == 'Special Need User') {
           Navigator.push(
             context,
@@ -93,7 +112,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
             MaterialPageRoute(builder: (context) => const viewRequests()),
           );
         }
-      } else if (index == 2) {
+      } else if (index == 3) {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const login()));
         FirebaseAuth.instance.signOut();
@@ -101,206 +120,192 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     }
 
     return Scaffold(
-      // extendBodyBehindAppBar: true,
-      // appBar:
-      // AppBar(
-      //   backgroundColor: const Color(0xFFfcfffe),
-      //   foregroundColor: Colors.black,
-      //   automaticallyImplyLeading: false,
-      //   // elevation: 5,
-      //   scrolledUnderElevation: 1,
-      //   toolbarHeight: 250,
-      //   title: Column(children: [
-      //     const Text(
-      //       textAlign: TextAlign.left,
-      //       "Awn",
-      //       style: TextStyle(
-      //         fontSize: 20,
-      //         fontWeight: FontWeight.normal,
-      //       ),
-      //     ),
-      //     Text(
-      //       "Hello, ", // + userData['name'],
-      //       style: const TextStyle(
-      //         fontSize: 20,
-      //         fontWeight: FontWeight.normal,
-      //       ),
-      //     ), // The search area here
-      //     Container(
-      //       width: double.infinity,
-      //       height: 50,
-      //       decoration: BoxDecoration(
-      //         color: Colors.white,
-      //         borderRadius: BorderRadius.circular(100),
-      //         boxShadow: const [
-      //           BoxShadow(
-      //               blurRadius: 15, color: Colors.black45, spreadRadius: -8)
-      //         ],
-      //       ),
-      //       child: Center(
-      //         child: TextField(
-      //           decoration: InputDecoration(
-      //               enabledBorder: const OutlineInputBorder(
-      //                   borderSide: BorderSide(color: Colors.transparent)),
-      //               suffixIcon: IconButton(
-      //                 icon: const Icon(Icons.search),
-      //                 onPressed: () {
-      //                   /* Clear the search field */
-      //                 },
-      //               ),
-      //               hintText: 'Search...',
-      //               border: InputBorder.none),
-      //         ),
-      //       ),
-      //     ),
-      //   ]),
-      //   // actions: <Widget>[
-      //   //   IconButton(
-      //   //     icon: const Icon(Icons.notifications),
-      //   //     tooltip: 'My Notification',
-      //   //     onPressed: () {},
-      //   //   ),
-      //   // ],
-      // ),
+      body: FutureBuilder<Map<String, dynamic>>(
+          future: readUserData(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              userData = snapshot.data as Map<String, dynamic>;
+              var userName = userData['name'];
+              print(userName);
+              print("hello" + userData['name']);
 
-      body: NestedScrollView(
-          controller: _controller,
-          // slivers: [
-          headerSliverBuilder: (context, isOk) {
-            return <Widget>[
-              SliverAppBar.large(
-                collapsedHeight: 150,
-                expandedHeight: 250,
-                backgroundColor: const Color(0xFFfcfffe),
-                foregroundColor: Colors.black,
-                automaticallyImplyLeading: false,
-                scrolledUnderElevation: 1,
-                // toolbarHeight: 50,
-                title: Column(children: [
-                  const Text(
-                    textAlign: TextAlign.left,
-                    "Awn",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.normal,
-                    ),
+              return Scaffold(
+                  appBar: AppBar(
+                    centerTitle: false,
+                    backgroundColor: const Color(0xFFfcfffe),
+                    foregroundColor: Colors.black,
+                    automaticallyImplyLeading: false,
+                    scrolledUnderElevation: 1,
+                    toolbarHeight: 160,
+                    title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            textAlign: TextAlign.left,
+                            "Awn",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+
+                          Text(
+                            "Hello, " + userData['name'],
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ), // The search area here
+
+                          // Container(
+                          //   width: double.infinity,
+                          //   height: 50,
+                          //   decoration: BoxDecoration(
+                          //     color: Colors.white,
+                          //     borderRadius: BorderRadius.circular(100),
+                          //     boxShadow: const [
+                          //       BoxShadow(
+                          //           blurRadius: 15, color: Colors.black45, spreadRadius: -8)
+                          //     ],
+                          //   ),
+                          //   child: Center(
+                          //     child: TextField(
+                          //       decoration: InputDecoration(
+                          //           enabledBorder: const OutlineInputBorder(
+                          //               borderSide: BorderSide(color: Colors.transparent)),
+                          //           suffixIcon: IconButton(
+                          //             icon: const Icon(Icons.search),
+                          //             onPressed: () {
+                          //               /* Clear the search field */
+                          //             },
+                          //           ),
+                          //           hintText: 'Search...',
+                          //           border: InputBorder.none),
+                          //     ),
+                          //   ),
+                          // ),
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            child: Text("Category",
+                                style: TextStyle(fontSize: 10)),
+                          ),
+                          ButtonsTabBar(
+                              controller: _tabController,
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  stops: [0.0, 1.0],
+                                  colors: [
+                                    Colors.blue,
+                                    Color(0xFF39d6ce),
+                                  ],
+                                ),
+                              ),
+                              radius: 30,
+                              borderColor: Colors.white,
+                              buttonMargin:
+                                  const EdgeInsets.fromLTRB(6, 8, 6, 1),
+                              contentPadding:
+                                  const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                              unselectedBackgroundColor: Colors.white,
+                              labelStyle: const TextStyle(
+                                  color: Colors.white, fontSize: 15),
+                              tabs: const [
+                                Tab(text: "All"),
+                                Tab(text: "Education"),
+                                Tab(text: 'Entertainment'),
+                                Tab(text: 'Transportation'),
+                                Tab(text: 'government'),
+                                Tab(text: 'Other')
+                              ]),
+                        ]),
                   ),
-                  // Text(
-                  //   "Hello, ", // + userData['name'],
-                  //   style: const TextStyle(
-                  //     fontSize: 20,
-                  //     fontWeight: FontWeight.normal,
-                  //   ),
-                  // ), // The search area here
-                  // Container(
-                  //   width: double.infinity,
-                  //   height: 50,
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.white,
-                  //     borderRadius: BorderRadius.circular(100),
-                  //     boxShadow: const [
-                  //       BoxShadow(
-                  //           blurRadius: 15, color: Colors.black45, spreadRadius: -8)
-                  //     ],
-                  //   ),
-                  //   child: Center(
-                  //     child: TextField(
-                  //       decoration: InputDecoration(
-                  //           enabledBorder: const OutlineInputBorder(
-                  //               borderSide: BorderSide(color: Colors.transparent)),
-                  //           suffixIcon: IconButton(
-                  //             icon: const Icon(Icons.search),
-                  //             onPressed: () {
-                  //               /* Clear the search field */
-                  //             },
-                  //           ),
-                  //           hintText: 'Search...',
-                  //           border: InputBorder.none),
-                  //     ),
-                  //   ),
-                  // ),
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    child: Text("Category", style: TextStyle(fontSize: 10)),
-                  ),
-                  ButtonsTabBar(
-                      controller: _tabController,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          stops: [0.0, 1.0],
-                          colors: [
-                            Colors.blue,
-                            Color(0xFF39d6ce),
-                          ],
-                        ),
-                      ),
-                      radius: 30,
-                      borderColor: Colors.white,
-                      buttonMargin: const EdgeInsets.all(4),
-                      contentPadding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                      unselectedBackgroundColor: Colors.white,
-                      labelStyle: TextStyle(color: Colors.white, fontSize: 15),
-                      tabs: const [
-                        Tab(text: "All"),
-                        Tab(text: "Education"),
-                        Tab(text: 'Entertainment'),
-                        Tab(text: 'Transportation'),
-                        Tab(text: 'government'),
-                        Tab(text: 'Other')
+                  body: SingleChildScrollView(
+                    // controller: _controller,
+                    child: Container(
+                      width: double.maxFinite,
+                      height: MediaQuery.of(context).size.height,
+                      child: TabBarView(controller: _tabController, children: [
+                        placesList(posts),
+                        placesList(education),
+                        placesList(entertainment),
+                        placesList(transportation),
+                        placesList(government),
+                        placesList(other),
                       ]),
-                ]),
-              ),
-            ];
-          },
-          body: SingleChildScrollView(
-            child: Container(
-              width: double.maxFinite,
-              height: MediaQuery.of(context).size.height,
-              child: TabBarView(controller: _tabController, children: [
-                placesList(posts),
-                placesList(education),
-                placesList(entertainment),
-                placesList(transportation),
-                placesList(government),
-                placesList(other),
-                // placesList(education),
-              ]),
-            ),
-          )),
-      // FutureBuilder<Map<String, dynamic>>(
-      //     future: readUserData(),
-      //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-      //       if (snapshot.hasData) {
-      //         userData = snapshot.data as Map<String, dynamic>;
-      //         var userName = userData['name'];
-      //         print(userName);
-      //         print("hello" + userData['name']);
+                    ),
+                  ));
+            } else {
+              return const Text('');
+            }
+          }),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   showSelectedLabels: true,
+      //   selectedItemColor: Colors.blue,
+      //   // currentIndex: 0,
+      //   items: <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(
+      //       //index 0
+      //       icon: Icon(Icons.home, color: Colors.grey.shade700),
+      //       activeIcon: Icon(Icons.home, color: Colors.blue.shade700),
+      //       label: '',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       //index 1
+      //       icon: Icon(Icons.add, color: Colors.grey.shade700),
+      //       activeIcon: Icon(Icons.add, color: Colors.blue.shade700),
+      //       label: '',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       //index 2
+      //       icon: Icon(Icons.handshake, color: Colors.grey.shade700),
+      //       activeIcon: Icon(Icons.handshake, color: Colors.blue.shade700),
+      //       label: '',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       //index 3
+      //       icon: Icon(Icons.logout, color: Colors.grey.shade700),
+      //       activeIcon: Icon(Icons.logout, color: Colors.blue.shade700),
+      //       label: '',
+      //     )
+      //   ],
+      //   currentIndex: _selectedIndex,
+      //   onTap: _onItemTapped,
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            //index 0
-            icon: Icon(Icons.add, color: Colors.grey.shade700),
-            activeIcon: Icon(Icons.add, color: Colors.grey.shade700),
-            label: 'Add Post',
-          ),
-          BottomNavigationBarItem(
-            //index 1
-            icon: Icon(Icons.handshake, color: Colors.grey.shade700),
-            activeIcon: Icon(Icons.handshake, color: Colors.grey.shade700),
-            label: 'Awn Request',
-          ),
-          BottomNavigationBarItem(
-            //index 2
-            icon: Icon(Icons.logout, color: Colors.grey.shade700),
-            activeIcon: Icon(Icons.logout, color: Colors.grey.shade700),
-            label: 'Logout',
-          )
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {},
+      ),
+      bottomNavigationBar: AnimatedBottomNavigationBar.builder(
+        tabBuilder: (int index, bool isActive) {
+          final color = isActive ? Colors.blue : Colors.grey;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                iconList[index],
+                size: 24,
+                color: color,
+              ),
+            ],
+          );
+        },
+        activeIndex: _selectedIndex,
+        itemCount: 4,
+        gapLocation: GapLocation.center,
+        notchSmoothness: NotchSmoothness.smoothEdge,
+        onTap: (index) {
+          setState() {
+            _selectedIndex = index;
+          }
+
+          _onItemTapped(index);
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
@@ -326,13 +331,12 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                         return const Center(child: CircularProgressIndicator());
                       }
                       if (!snapshot.hasData) {
-                        return const Text('No available posts');
+                        return const Center(child: Text('No available posts'));
                       } else {
                         final data = snapshot.requireData;
                         return SizedBox(
                             height: double.infinity,
                             child: ListView.builder(
-                              controller: _controller,
                               itemCount: data.size,
                               itemBuilder: (context, index) {
                                 bool phone =
@@ -557,3 +561,165 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     ));
   }
 }
+
+//  return Scaffold(
+//       body: FutureBuilder<Map<String, dynamic>>(
+//           future: readUserData(),
+//           builder: (BuildContext context, AsyncSnapshot snapshot) {
+//             if (snapshot.hasData) {
+//               userData = snapshot.data as Map<String, dynamic>;
+//               var userName = userData['name'];
+//               print(userName);
+//               print("hello" + userData['name']);
+//               return 
+//               NestedScrollView(
+//                   controller: _controller,
+//                   headerSliverBuilder: (context, isOk) {
+//                     return <Widget>[
+//                       SliverAppBar.large(
+//                         // titleSpacing: 0,
+//                         centerTitle: false,
+//                         collapsedHeight: 100,
+//                         expandedHeight: 200,
+//                         backgroundColor: const Color(0xFFfcfffe),
+//                         foregroundColor: Colors.black,
+//                         automaticallyImplyLeading: false,
+//                         scrolledUnderElevation: 1,
+//                         toolbarHeight: 80,
+//                         title: SingleChildScrollView(
+//                           // padding: EdgeInsets.all(0),
+//                           child: Container(
+//                             height: 200,
+//                             child: Column(
+//                                 mainAxisAlignment: MainAxisAlignment.start,
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 children: [
+//                                   Text(
+//                                     textAlign: TextAlign.left,
+//                                     "Awn",
+//                                     style: TextStyle(
+//                                       fontSize: 20,
+//                                       fontWeight: FontWeight.normal,
+//                                     ),
+//                                   ),
+//                                   Text(
+//                                     "Hello, " + userData['name'],
+//                                     style: const TextStyle(
+//                                       fontSize: 20,
+//                                       fontWeight: FontWeight.normal,
+//                                     ),
+//                                   ), // The search area here
+//                                   // Container(
+//                                   //   width: double.infinity,
+//                                   //   height: 50,
+//                                   //   decoration: BoxDecoration(
+//                                   //     color: Colors.white,
+//                                   //     borderRadius: BorderRadius.circular(100),
+//                                   //     boxShadow: const [
+//                                   //       BoxShadow(
+//                                   //           blurRadius: 15, color: Colors.black45, spreadRadius: -8)
+//                                   //     ],
+//                                   //   ),
+//                                   //   child: Center(
+//                                   //     child: TextField(
+//                                   //       decoration: InputDecoration(
+//                                   //           enabledBorder: const OutlineInputBorder(
+//                                   //               borderSide: BorderSide(color: Colors.transparent)),
+//                                   //           suffixIcon: IconButton(
+//                                   //             icon: const Icon(Icons.search),
+//                                   //             onPressed: () {
+//                                   //               /* Clear the search field */
+//                                   //             },
+//                                   //           ),
+//                                   //           hintText: 'Search...',
+//                                   //           border: InputBorder.none),
+//                                   //     ),
+//                                   //   ),
+//                                   // ),
+//                                   const Padding(
+//                                     padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+//                                     child: Text("Category",
+//                                         style: TextStyle(fontSize: 10)),
+//                                   ),
+//                                   ButtonsTabBar(
+//                                       controller: _tabController,
+//                                       decoration: const BoxDecoration(
+//                                         gradient: LinearGradient(
+//                                           begin: Alignment.topLeft,
+//                                           end: Alignment.bottomRight,
+//                                           stops: [0.0, 1.0],
+//                                           colors: [
+//                                             Colors.blue,
+//                                             Color(0xFF39d6ce),
+//                                           ],
+//                                         ),
+//                                       ),
+//                                       radius: 30,
+//                                       borderColor: Colors.white,
+//                                       buttonMargin: const EdgeInsets.all(4),
+//                                       contentPadding: const EdgeInsets.fromLTRB(
+//                                           15, 10, 15, 10),
+//                                       unselectedBackgroundColor: Colors.white,
+//                                       labelStyle: TextStyle(
+//                                           color: Colors.white, fontSize: 15),
+//                                       tabs: const [
+//                                         Tab(text: "All"),
+//                                         Tab(text: "Education"),
+//                                         Tab(text: 'Entertainment'),
+//                                         Tab(text: 'Transportation'),
+//                                         Tab(text: 'government'),
+//                                         Tab(text: 'Other')
+//                                       ]),
+//                                 ]),
+//                           ),
+//                         ),
+//                       ),
+//                     ];
+//                   },
+//                   body: SingleChildScrollView(
+//                     controller: _controller,
+//                     child: Container(
+//                       width: double.maxFinite,
+//                       height: MediaQuery.of(context).size.height,
+//                       child: TabBarView(controller: _tabController, children: [
+//                         placesList(posts),
+//                         placesList(education),
+//                         placesList(entertainment),
+//                         placesList(transportation),
+//                         placesList(government),
+//                         placesList(other),
+//                         // placesList(education),
+//                       ]),
+//                     ),
+//                   ));
+//             } else {
+//               return Text('');
+//             }
+//           }),
+//       bottomNavigationBar: BottomNavigationBar(
+//         items: <BottomNavigationBarItem>[
+//           BottomNavigationBarItem(
+//             //index 0
+//             icon: Icon(Icons.add, color: Colors.grey.shade700),
+//             activeIcon: Icon(Icons.add, color: Colors.grey.shade700),
+//             label: 'Add Post',
+//           ),
+//           BottomNavigationBarItem(
+//             //index 1
+//             icon: Icon(Icons.handshake, color: Colors.grey.shade700),
+//             activeIcon: Icon(Icons.handshake, color: Colors.grey.shade700),
+//             label: 'Awn Request',
+//           ),
+//           BottomNavigationBarItem(
+//             //index 2
+//             icon: Icon(Icons.logout, color: Colors.grey.shade700),
+//             activeIcon: Icon(Icons.logout, color: Colors.grey.shade700),
+//             label: 'Logout',
+//           )
+//         ],
+//         currentIndex: _selectedIndex,
+//         onTap: _onItemTapped,
+//       ),
+//       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+//     );
+ 
