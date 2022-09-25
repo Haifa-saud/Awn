@@ -42,10 +42,10 @@ bool deaf = false;
 bool physical = false;
 bool other = false;
 PlatformFile pickedFile = new PlatformFile(name: '', size: 0);
-String label = "click to upload disability certificate";
-bool upload = false;
-String filePath = "Pick file";
-File? fileDB;
+// String label = "click to upload disability certificate";
+// bool upload = false;
+// String filePath = "Pick file";
+// File? fileDB;
 //Wedd's change
 String password = "";
 String confirm_password = "";
@@ -734,20 +734,25 @@ class _registerState extends State<register> {
 
                           if (_formKey.currentState!.validate()) {
                              
-                             ScaffoldMessenger.of(context).showSnackBar(
+                          //    ScaffoldMessenger.of(context).showSnackBar(
+                          //     const SnackBar(content: Text('Please fill the empty blanks')),
+                          //     );
+                          //     }
+
+                          // if (cofirmPasswordController.text.isEmpty ||
+                          //     cofirmPasswordController.text !=
+                          //         passwordController.text) {
+                          //   Utils.showSnackBar(
+                          //       "confirm password does not match");
+                          //   return;
+                          // } else {
+                            signUp();
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Please fill the empty blanks')),
                               );
-                              }
-
-                          if (cofirmPasswordController.text.isEmpty ||
-                              cofirmPasswordController.text !=
-                                  passwordController.text) {
-                            Utils.showSnackBar(
-                                "confirm password does not match");
-                            return;
-                          } else {
-                            signUp();
                           }
+                          
                         }
 
                         // Navigator.pushReplacement(
@@ -796,23 +801,23 @@ class _registerState extends State<register> {
     );
   }
 
-  Future selectFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    upload = true;
-    if (result == null) {
-      upload = false;
-      return;
-    }
-    setState(() {
-      pickedFile = result.files.first;
-      fileDB = File(pickedFile.path!);
+  // Future selectFile() async {
+  //   final result = await FilePicker.platform.pickFiles();
+  //   upload = true;
+  //   if (result == null) {
+  //     upload = false;
+  //     return;
+  //   }
+  //   setState(() {
+  //     pickedFile = result.files.first;
+  //     fileDB = File(pickedFile.path!);
 
-      // final path = 'User/${pickedFile.name}'; //خليه جالسه اجرب
-      // final file = File(pickedFile.path!);
-      // final ref = FirebaseStorage.instance.ref().child(path);
-      // UploadTask uploadTask = ref.putFile(file);
-    });
-  }
+  //     // final path = 'User/${pickedFile.name}'; //خليه جالسه اجرب
+  //     // final file = File(pickedFile.path!);
+  //     // final ref = FirebaseStorage.instance.ref().child(path);
+  //     // UploadTask uploadTask = ref.putFile(file);
+  //   });
+  // }
 
   Future signUp() async {
     final isValid = _formKey.currentState!.validate();
@@ -861,7 +866,7 @@ bool other = false;*/
     String age = globals.bDay;
     String disability = "";
     String bio = bioController.text;
-    final user = FirebaseAuth.instance.currentUser!;
+    final user = FirebaseAuth.instance.currentUser()!;
     String userId = user.uid;
     if (blind == true && blind != null) disability += " blind,";
     if (mute == true && mute != null) disability += " mute,";

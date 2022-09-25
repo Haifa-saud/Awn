@@ -16,8 +16,8 @@ class homePage extends StatefulWidget {
   MyHomePage createState() => MyHomePage();
 }
 
-final user = FirebaseAuth.instance.currentUser!;
-String userId = user.uid;
+  final user = FirebaseAuth.instance.currentUser;
+  //String userId = user.uid;
 //final String userType = session.getUserType();
 
 class MyHomePage extends State<homePage> {
@@ -35,27 +35,6 @@ class MyHomePage extends State<homePage> {
   @override
   Widget build(BuildContext context) {
     Future<void> _onItemTapped(int index) async {
-      // if (userType == 'Volunteer') {
-      //   if (index == 0) {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => const addPost()),
-      //     );
-      //   } /*else if (index == 1) {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => addRequest()),
-      //     );
-      //   }*/
-      //   else if (index == 1) {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => const viewRequests()),
-      //     );
-      //   } else if (index == 2) {
-      //     FirebaseAuth.instance.signOut();
-      //   }
-      // } else {
       if (index == 0) {
         Navigator.push(
           context,
@@ -98,6 +77,7 @@ class MyHomePage extends State<homePage> {
           ),
         ),
       ),
+
       body: Container(
           padding: const EdgeInsets.symmetric(vertical: 0),
           child: Column(
@@ -355,9 +335,12 @@ class MyHomePage extends State<homePage> {
                             );
                           }
                         },
-                      )))
+                      )
+                      )
+                      )
             ],
-          )),
+          )
+          ),
 
       //if(_selectedIndex ==0){
 
@@ -433,8 +416,6 @@ class MyHomePage extends State<homePage> {
 
   int _selectedIndex = 0;
 
-  static final userCollection = FirebaseFirestore.instance.collection('users');
-
   /*static getUsersList() async {
     final firebaseUser = FirebaseAuth.instance.currentUser;
     try {
@@ -449,7 +430,7 @@ class MyHomePage extends State<homePage> {
       return "null";
     }
   }*/
-
+  static final userCollection = FirebaseFirestore.instance.collection('users');
   static getUsersList0() {
     final users = FirebaseFirestore.instance
         .collection("users")

@@ -55,6 +55,9 @@ dependencies:
   geocoding: ^2.0.5
   get_state_manager: ^3.13.0
   google_maps_controller: ^1.2.0
+  get: ^4.6.5
+  json_serializable: ^6.4.0
+  json_annotation: ^4.7.0
   
 
 dev_dependencies:

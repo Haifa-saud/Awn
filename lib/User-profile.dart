@@ -1,9 +1,14 @@
 
-import 'package:awn/DataBaseService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:awn/login.dart';
+
+import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:get/route_manager.dart';
 
 
 
@@ -14,74 +19,138 @@ class ProfilePage extends StatefulWidget {
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
+  
+
+  
+
 
 class _ProfilePageState extends State<ProfilePage> {
-  late String uid ;
-  String name = "";
-  String bday = "";
-  String email = "";
-  String phone = "";
-  String gender = "";
-  //String dis = "";
 
+  Stream<QuerySnapshot> getuserInfo(BuildContext context) async* {
+    final user = FirebaseAuth.instance.currentUser;
+    String userId = user.uid;
+    
+    yield* FirebaseFirestore.instance
+        .collection('users')
+        .where('id', isEqualTo: userId)
+        .snapshots();
+  }
 
   @override
   Widget build(BuildContext context) {
     //final user = Provider.of<MyUser>{context};
     //final uid = user.uid ;
-    DatabaseServices databaseServices = DatabaseServices(uid: uid);
+    // DatabaseServices databaseServices = DatabaseServices(uid: uid);
 
     return Scaffold(
-       appBar: AppBar(
-          title: const Text('Profile', textAlign: TextAlign.center),
-          leading: IconButton(
-            icon: const Icon(Icons.close, color: Colors.white),
-            onPressed: () => showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                content: const Text('Discard the changes you made?'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Keep editing'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      //clearForm();
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                    },
-                    child: const Text('Discard'),
-                  ),
-                ],
-              ),
-            ),
-          ),
+      //  return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profile'),
+        leading: IconButton(
+          icon: const Icon(Icons.navigate_before, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
         ),
+      ),
   
                 
       body: Center(
-        child: Column (
+        child: 
+        Column (
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(name),
-            Text(bday),
-            Text(email),
-            Text(phone),
-            Text(gender),
-            //Text(dis),
-
-            ElevatedButton(
-              onPressed: () async{
-                dynamic Info = await databaseServices.getCurrentUserData();
-                if(Info != null){
-                   bday = Info[0];
-                   //dis = Info[1];
-                   email = Info[2];
-                   gender = Info[5];
-                   name = Info[7];
-                   phone = Info[8];
-                }
-                }, child: Text('Show info'),
-                ),
+            Visibility(
+                  visible: true,
+                  child: Expanded(
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: StreamBuilder<QuerySnapshot>(
+                            stream: getuserInfo(context),
+                            builder: (
+                              BuildContext context,
+                              AsyncSnapshot<QuerySnapshot> snapshot,
+                            ) {
+                              if (snapshot.hasError) {
+                                return Text('Something went wrong');
+                              }
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Text('Loading');
+                              }
+                              final data = snapshot.requireData;
+                              return ListView.builder(
+                                itemCount: data.size,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                      child: Column(
+                                    children: [
+                                      //name
+                                      Padding(
+                                          padding: EdgeInsets.fromLTRB(
+                                              10, 0, 20, 15),
+                                          child: Row(children: [
+                                            Text('Name: ' +  ' ${data.docs[index]['name']}',
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ])),
+                                      //date of birth
+                                      Padding(
+                                        padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
+                                        child: Row( children: [
+                                            Text('Date of birth: ' + ' ${data.docs[index]['DOB']}',
+                                               textAlign: TextAlign.left,
+                                            ),
+                                          ], ), ),
+                                      //gender
+                                      Padding(
+                                          padding: EdgeInsets.fromLTRB(
+                                              10, 0, 20, 15),
+                                          child: Row(children: [
+                                            Text('Gender: ' +  ' ${data.docs[index]['gender']}',
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ])),
+                                      //Emial
+                                      Padding(
+                                          padding: EdgeInsets.fromLTRB(
+                                              10, 0, 20, 15),
+                                          child: Row(children: [
+                                            Text('Email: ' +  ' ${data.docs[index]['Email']}',
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ])),
+                                      //phone
+                                      Padding(
+                                          padding: EdgeInsets.fromLTRB(
+                                              10, 0, 20, 15),
+                                          child: Row(children: [
+                                            Text('Phone number: ' +  ' ${data.docs[index]['phone number']}',
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ])),
+                                      //bio
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(20, 0, 18, 12),
+                                        child: Row(
+                                          children: [
+                                            Flexible(
+                                              child: Text(
+                                                  'BIO : ${data.docs[index]['bio']}',
+                                                  style: TextStyle(
+                                                      fontSize: 17,
+                                                      fontWeight:
+                                                          FontWeight.w500)),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ));
+                                },
+                              );
+                            },
+                          ))
+                        )),
               ]
             ),
         )

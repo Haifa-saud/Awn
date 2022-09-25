@@ -1,6 +1,6 @@
 import 'package:awn/Utils.dart';
 import 'package:awn/register.dart';
-import 'firebase_storage_services.dart';
+import 'package:awn/firebase_storage_services.dart';
 import 'package:awn/userModel.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -366,9 +366,7 @@ class _loginState extends State<login> {
                                   emailController.clear();
                                   passwordController.clear();
                                   Navigator.pushNamed(
-                                      context, 
-                                      //'/volunteerPage'
-                                     '/ProfilePage' );
+                                      context, '/volunteerPage');
                                 } else {
                                   OwnerId = '';
                                   emailController.clear();
@@ -404,7 +402,7 @@ class _loginState extends State<login> {
                         TextSpan(
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              Navigator.pushNamed(context, "/register" );
+                              Navigator.pushNamed(context, "/register");
                             },
                           text: 'Create',
 

@@ -16,7 +16,7 @@ class volunteerPage extends StatefulWidget {
   MyHomePage createState() => MyHomePage();
 }
 
-final user = FirebaseAuth.instance.currentUser!;
+final user = FirebaseAuth.instance.currentUser()!;
 String userId = user.uid;
 //final String userType = session.getUserType();
 

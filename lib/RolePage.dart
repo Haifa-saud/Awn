@@ -27,7 +27,7 @@ class _RoleState extends State<Role> {
   static final userCollection = FirebaseFirestore.instance.collection('users');
 
   static getUsersList() async {
-    final firebaseUser = FirebaseAuth.instance.currentUser;
+    final firebaseUser = FirebaseAuth.instance.currentUser();
     try {
       DocumentSnapshot ds = await userCollection.doc(firebaseUser!.uid).get();
       userType = ds.get('Type');
