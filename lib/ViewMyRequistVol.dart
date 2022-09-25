@@ -8,13 +8,13 @@ import 'package:get/route_manager.dart';
 import 'mapsPage.dart';
 import 'package:intl/intl.dart';
 
-class ViewMyRequistSN extends StatefulWidget {
+class ViewMyRequistVol extends StatefulWidget {
   @override
-  const ViewMyRequistSN({Key? key}) : super(key: key);
-  State<ViewMyRequistSN> createState() => _ViewMyRequistState();
+  const ViewMyRequistVol({Key? key}) : super(key: key);
+  State<ViewMyRequistVol> createState() => _ViewMyRequistState();
 }
 
-class _ViewMyRequistState extends State<ViewMyRequistSN> {
+class _ViewMyRequistState extends State<ViewMyRequistVol> {
   // getData() async {
   //   //print("test3");
   //   final now = DateTime.now();
@@ -51,7 +51,7 @@ class _ViewMyRequistState extends State<ViewMyRequistSN> {
     //     .snapshots();
     yield* FirebaseFirestore.instance
         .collection('requests')
-        .where('userID', isEqualTo: userId)
+        .where('VolID', isEqualTo: userId)
         .where('date_ymd', isLessThanOrEqualTo: today)
         .orderBy('date_ymd')
         .snapshots();
@@ -70,7 +70,7 @@ class _ViewMyRequistState extends State<ViewMyRequistSN> {
 
     yield* FirebaseFirestore.instance
         .collection('requests')
-        .where('userID', isEqualTo: userId)
+        .where('VolID', isEqualTo: userId)
         .where('date_ymd', isGreaterThan: today)
         .orderBy('date_ymd')
         .snapshots();

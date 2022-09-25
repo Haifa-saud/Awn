@@ -396,8 +396,8 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     //  print(userId);
 
     CollectionReference requests = FirebaseFirestore.instance
-        .collection("userData")
-        .doc(userId)
+        // .collection("userData")
+        // .doc(userId)
         .collection('requests');
     DocumentReference docReference = await requests.add({
       'title': titleController.text,
@@ -409,8 +409,12 @@ class AwnRequestFormState extends State<AwnRequestForm> {
       'latitude': '',
       'longitude': '',
       'status': 'Pending',
+      'docId': '',
+      'userID': userId,
+      'VolID': ''
     });
     String dataId = docReference.id;
+    requests.doc(dataId).update({'docId': dataId});
     Navigator.push(
         context,
         MaterialPageRoute(

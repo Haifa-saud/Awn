@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'ViewMyRequistSN.dart';
+import 'ViewMyRequistVol.dart';
 import 'firebase_options.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,8 +22,16 @@ class viewRequests extends StatefulWidget {
 }
 
 class _AddRequestState extends State<viewRequests> {
+  // final Stream<QuerySnapshot> requests = FirebaseFirestore.instance
+  //     .collection('userData')
+  //     .doc('hHnGktKAq9R5rLsMhOL8uBDhhYy1')
+  //     .collection('requests')
+  //     .where('status', isEqualTo: "Pending")
+  //     .orderBy("date_ymd")
+  //     .snapshots();
   final Stream<QuerySnapshot> requests = FirebaseFirestore.instance
       .collection('requests')
+      .where('status', isEqualTo: 'Pending')
       .orderBy("date_ymd")
       .snapshots();
   @override
@@ -46,7 +56,22 @@ class _AddRequestState extends State<viewRequests> {
                         builder: (context) => ViewMyRequistSN(),
                       ));
                 },
-                child: Text("past req"),
+                child: Text("past req special need"),
+                style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.grey.shade500,
+                    backgroundColor: Colors.white,
+                    padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
+                    side: BorderSide(color: Colors.grey.shade400, width: 2)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewMyRequistVol(),
+                      ));
+                },
+                child: Text("past req volenteer"),
                 style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.grey.shade500,
                     backgroundColor: Colors.white,
@@ -63,7 +88,7 @@ class _AddRequestState extends State<viewRequests> {
                           AsyncSnapshot<QuerySnapshot> snapshot,
                         ) {
                           if (snapshot.hasError) {
-                            return Text('Something went wring');
+                            return Text('Something went wrong');
                           }
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -196,7 +221,13 @@ class _AddRequestState extends State<viewRequests> {
                                               horizontal: 5),
                                           width: 100,
                                           child: ElevatedButton(
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              String docId =
+                                                  data.docs[index]['docId'];
+
+                                              updateDB(docId);
+                                              Confermation();
+                                            },
                                             style: ElevatedButton.styleFrom(
                                               foregroundColor: Colors.white,
                                               backgroundColor:
@@ -239,6 +270,36 @@ class _AddRequestState extends State<viewRequests> {
           )),
     );
   }
+
+  void Confermation() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Awn request has been accepted"),
+      ),
+    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => MyHomePage()),
+    // );
+
+    // Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+}
+
+Future<void> updateDB(docId) async {
+  final user = FirebaseAuth.instance.currentUser!;
+  String userId = user.uid;
+//String docId=
+  final postID = FirebaseFirestore.instance
+      // .collection('userData')
+      // .doc(userId)
+      .collection('requests')
+      .doc(docId);
+
+  postID.update({
+    'status': 'Approved',
+    'VolID': userId,
+  });
 }
 
 class MapsPage extends StatefulWidget {
