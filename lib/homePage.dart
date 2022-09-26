@@ -67,15 +67,25 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
           return doc.data() as Map<String, dynamic>;
         },
       );
-
+  late final LocalNotification service;
   @override
   void initState() {
-    // Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-
-    // var time = DateTime.now().second.toString();
-    // Workmanager().registerPeriodicTask(time, 'firstTask',
-    //     frequency: const Duration(minutes: 1));
+    service = LocalNotification();
+    service.intialize();
+    listenToNotification();
     super.initState();
+  }
+
+  void listenToNotification() =>
+      service.onNotificationClick.stream.listen(onNoticationListener);
+
+  void onNoticationListener(String? payload) {
+    if (payload != null && payload.isNotEmpty) {
+      print('payload $payload');
+
+      Navigator.push(
+          context, MaterialPageRoute(builder: ((context) => viewRequests())));
+    }
   }
 
   final iconList = <IconData>[
@@ -117,10 +127,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
       } else if (index == 3) {
         Workmanager().cancelAll();
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => login(
-                    /*userId: FirebaseAuth.instance.currentUser!.uid*/)));
+            context, MaterialPageRoute(builder: (context) => login()));
         FirebaseAuth.instance.signOut();
       }
     }
@@ -567,165 +574,3 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     ));
   }
 }
-
-//  return Scaffold(
-//       body: FutureBuilder<Map<String, dynamic>>(
-//           future: readUserData(),
-//           builder: (BuildContext context, AsyncSnapshot snapshot) {
-//             if (snapshot.hasData) {
-//               userData = snapshot.data as Map<String, dynamic>;
-//               var userName = userData['name'];
-//               print(userName);
-//               print("hello" + userData['name']);
-//               return 
-//               NestedScrollView(
-//                   controller: _controller,
-//                   headerSliverBuilder: (context, isOk) {
-//                     return <Widget>[
-//                       SliverAppBar.large(
-//                         // titleSpacing: 0,
-//                         centerTitle: false,
-//                         collapsedHeight: 100,
-//                         expandedHeight: 200,
-//                         backgroundColor: const Color(0xFFfcfffe),
-//                         foregroundColor: Colors.black,
-//                         automaticallyImplyLeading: false,
-//                         scrolledUnderElevation: 1,
-//                         toolbarHeight: 80,
-//                         title: SingleChildScrollView(
-//                           // padding: EdgeInsets.all(0),
-//                           child: Container(
-//                             height: 200,
-//                             child: Column(
-//                                 mainAxisAlignment: MainAxisAlignment.start,
-//                                 crossAxisAlignment: CrossAxisAlignment.start,
-//                                 children: [
-//                                   Text(
-//                                     textAlign: TextAlign.left,
-//                                     "Awn",
-//                                     style: TextStyle(
-//                                       fontSize: 20,
-//                                       fontWeight: FontWeight.normal,
-//                                     ),
-//                                   ),
-//                                   Text(
-//                                     "Hello, " + userData['name'],
-//                                     style: const TextStyle(
-//                                       fontSize: 20,
-//                                       fontWeight: FontWeight.normal,
-//                                     ),
-//                                   ), // The search area here
-//                                   // Container(
-//                                   //   width: double.infinity,
-//                                   //   height: 50,
-//                                   //   decoration: BoxDecoration(
-//                                   //     color: Colors.white,
-//                                   //     borderRadius: BorderRadius.circular(100),
-//                                   //     boxShadow: const [
-//                                   //       BoxShadow(
-//                                   //           blurRadius: 15, color: Colors.black45, spreadRadius: -8)
-//                                   //     ],
-//                                   //   ),
-//                                   //   child: Center(
-//                                   //     child: TextField(
-//                                   //       decoration: InputDecoration(
-//                                   //           enabledBorder: const OutlineInputBorder(
-//                                   //               borderSide: BorderSide(color: Colors.transparent)),
-//                                   //           suffixIcon: IconButton(
-//                                   //             icon: const Icon(Icons.search),
-//                                   //             onPressed: () {
-//                                   //               /* Clear the search field */
-//                                   //             },
-//                                   //           ),
-//                                   //           hintText: 'Search...',
-//                                   //           border: InputBorder.none),
-//                                   //     ),
-//                                   //   ),
-//                                   // ),
-//                                   const Padding(
-//                                     padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-//                                     child: Text("Category",
-//                                         style: TextStyle(fontSize: 10)),
-//                                   ),
-//                                   ButtonsTabBar(
-//                                       controller: _tabController,
-//                                       decoration: const BoxDecoration(
-//                                         gradient: LinearGradient(
-//                                           begin: Alignment.topLeft,
-//                                           end: Alignment.bottomRight,
-//                                           stops: [0.0, 1.0],
-//                                           colors: [
-//                                             Colors.blue,
-//                                             Color(0xFF39d6ce),
-//                                           ],
-//                                         ),
-//                                       ),
-//                                       radius: 30,
-//                                       borderColor: Colors.white,
-//                                       buttonMargin: const EdgeInsets.all(4),
-//                                       contentPadding: const EdgeInsets.fromLTRB(
-//                                           15, 10, 15, 10),
-//                                       unselectedBackgroundColor: Colors.white,
-//                                       labelStyle: TextStyle(
-//                                           color: Colors.white, fontSize: 15),
-//                                       tabs: const [
-//                                         Tab(text: "All"),
-//                                         Tab(text: "Education"),
-//                                         Tab(text: 'Entertainment'),
-//                                         Tab(text: 'Transportation'),
-//                                         Tab(text: 'government'),
-//                                         Tab(text: 'Other')
-//                                       ]),
-//                                 ]),
-//                           ),
-//                         ),
-//                       ),
-//                     ];
-//                   },
-//                   body: SingleChildScrollView(
-//                     controller: _controller,
-//                     child: Container(
-//                       width: double.maxFinite,
-//                       height: MediaQuery.of(context).size.height,
-//                       child: TabBarView(controller: _tabController, children: [
-//                         placesList(posts),
-//                         placesList(education),
-//                         placesList(entertainment),
-//                         placesList(transportation),
-//                         placesList(government),
-//                         placesList(other),
-//                         // placesList(education),
-//                       ]),
-//                     ),
-//                   ));
-//             } else {
-//               return Text('');
-//             }
-//           }),
-//       bottomNavigationBar: BottomNavigationBar(
-//         items: <BottomNavigationBarItem>[
-//           BottomNavigationBarItem(
-//             //index 0
-//             icon: Icon(Icons.add, color: Colors.grey.shade700),
-//             activeIcon: Icon(Icons.add, color: Colors.grey.shade700),
-//             label: 'Add Post',
-//           ),
-//           BottomNavigationBarItem(
-//             //index 1
-//             icon: Icon(Icons.handshake, color: Colors.grey.shade700),
-//             activeIcon: Icon(Icons.handshake, color: Colors.grey.shade700),
-//             label: 'Awn Request',
-//           ),
-//           BottomNavigationBarItem(
-//             //index 2
-//             icon: Icon(Icons.logout, color: Colors.grey.shade700),
-//             activeIcon: Icon(Icons.logout, color: Colors.grey.shade700),
-//             label: 'Logout',
-//           )
-//         ],
-//         currentIndex: _selectedIndex,
-//         onTap: _onItemTapped,
-//       ),
-//       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-//     );
- 

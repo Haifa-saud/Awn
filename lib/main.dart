@@ -11,6 +11,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:workmanager/workmanager.dart';
 import 'services/firebase_options.dart';
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -18,12 +19,21 @@ Future<void> main() async {
       FlutterLocalNotificationsPlugin();
   var notificationAppLaunchDetails =
       await notification.getNotificationAppLaunchDetails();
+          // listenToNotification();
+
+  if (notificationAppLaunchDetails!.didNotificationLaunchApp) {
+    print('view request true');
+    runApp(MyApp(true, true));
+  } else {
+    print('view request false');
+    runApp(MyApp(true, false));
+  }
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
       Workmanager().cancelAll();
       runApp(MyApp(false));
     } else {
-      if (notificationAppLaunchDetails!.didNotificationLaunchApp) {
+      if (notificationAppLaunchDetails.didNotificationLaunchApp) {
         print('view request true');
         runApp(MyApp(true, true));
       } else {
@@ -48,13 +58,13 @@ class _MyApp extends State<MyApp> {
     return MaterialApp(
       routes: {
         '/homePage': (ctx) => const homePage(userType: 'Special Need User'),
-        '/volunteerPage': (ctx) =>
-            const homePage(userType: 'Volunteer'), //const volunteerPage(),
+        '/volunteerPage': (ctx) => const homePage(userType: 'Volunteer'),
         "/register": (ctx) => const register(),
         "/login": (ctx) => const login(),
       },
       debugShowCheckedModeBanner: false,
       title: 'Home Page',
+      navigatorKey: GlobalContextService.navigatorKey,
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFfcfffe),
         appBarTheme: const AppBarTheme(
@@ -119,3 +129,8 @@ class _MyApp extends State<MyApp> {
     );
   }
 }
+
+class GlobalContextService {
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+}
+
