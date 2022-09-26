@@ -1,9 +1,11 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:awn/FirstPage.dart';
 import 'package:awn/addPost.dart';
 import 'package:awn/addRequest.dart';
 import 'package:awn/login.dart';
 import 'package:awn/services/sendNotification.dart';
 import 'package:awn/services/usersModel.dart';
+import 'package:awn/userProfile.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -114,7 +116,10 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
         }
       } else if (index == 3) {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const login()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => login(
+                    /*userId: FirebaseAuth.instance.currentUser!.uid*/)));
         FirebaseAuth.instance.signOut();
       }
     }

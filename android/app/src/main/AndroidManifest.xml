@@ -16,18 +16,15 @@
     <application
         android:label="awn"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
-
-
-        >
+        android:icon="@mipmap/ic_launcher">
            
-    <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
-        <intent-filter>
-            <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-        </intent-filter>
-    </receiver>
-    <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />  
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />  
 
         <activity
             android:name=".MainActivity"

@@ -71,6 +71,8 @@ dependencies:
   animated_bottom_navigation_bar: ^1.1.0
   circular_reveal_animation: ^2.0.1
   auto_size_text: ^3.0.0
+  get_state_manager: ^3.13.0
+
   
 dev_dependencies:
   flutter_test:

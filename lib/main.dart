@@ -2,29 +2,39 @@ import 'package:awn/homePage.dart';
 import 'package:awn/login.dart';
 import 'package:awn/register.dart';
 import 'package:awn/services/sendNotification.dart';
+import 'package:awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:workmanager/workmanager.dart';
 import 'services/firebase_options.dart';
-import 'services/myGlobal.dart' as globals;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FlutterLocalNotificationsPlugin notification =
+      FlutterLocalNotificationsPlugin();
+  var notificationAppLaunchDetails =
+      await notification.getNotificationAppLaunchDetails();
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
       runApp(MyApp(false));
     } else {
-      runApp(MyApp(true));
+      if (notificationAppLaunchDetails!.didNotificationLaunchApp) {
+        runApp(MyApp(true, true));
+      } else {
+        runApp(MyApp(true));
+      }
     }
   });
 }
 
 class MyApp extends StatefulWidget {
   bool auth = false;
-  MyApp([this.auth = false]);
+  bool notification = false;
+  MyApp([this.auth = false, this.notification = false]);
   @override
   State<MyApp> createState() => _MyApp();
 }
@@ -98,9 +108,11 @@ class _MyApp extends State<MyApp> {
         ),
       ),
       home: widget.auth
-          ? homePage(
-              userType: null,
-            )
+          ? (widget.notification
+              ? viewRequests()
+              : homePage(
+                  userType: null,
+                ))
           : login(),
     );
   }
