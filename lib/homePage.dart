@@ -115,6 +115,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
           );
         }
       } else if (index == 3) {
+        Workmanager().cancelAll();
         Navigator.push(
             context,
             MaterialPageRoute(

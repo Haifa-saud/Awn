@@ -20,20 +20,23 @@ Future<void> main() async {
       await notification.getNotificationAppLaunchDetails();
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
+      Workmanager().cancelAll();
       runApp(MyApp(false));
     } else {
       if (notificationAppLaunchDetails!.didNotificationLaunchApp) {
+        print('view request true');
         runApp(MyApp(true, true));
       } else {
-        runApp(MyApp(true));
+        print('view request false');
+        runApp(MyApp(true, false));
       }
     }
   });
 }
 
 class MyApp extends StatefulWidget {
-  bool auth = false;
-  bool notification = false;
+  bool auth;
+  bool notification;
   MyApp([this.auth = false, this.notification = false]);
   @override
   State<MyApp> createState() => _MyApp();
@@ -52,7 +55,6 @@ class _MyApp extends State<MyApp> {
       },
       debugShowCheckedModeBanner: false,
       title: 'Home Page',
-      navigatorKey: GlobalContextService.navigatorKey,
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFfcfffe),
         appBarTheme: const AppBarTheme(
@@ -109,20 +111,11 @@ class _MyApp extends State<MyApp> {
       ),
       home: widget.auth
           ? (widget.notification
-              ? viewRequests()
-              : homePage(
-                  userType: null,
+              ? const viewRequests()
+              : const homePage(
+                  userType: 'Volunteer',
                 ))
           : login(),
     );
   }
-  // void onDidReceiveNotificationResponse(
-  //   int id, String title, String body, String payload) async {
-  // // display a dialog with the notification details, tap ok to go to another page
-  //  Navigator.pushNamed(context, '/volunteerPage');
-// }
-}
-
-class GlobalContextService {
-  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 }
