@@ -1,11 +1,8 @@
 import 'dart:math';
-import 'package:awn/homePage.dart';
 import 'package:awn/main.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:awn/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:workmanager/workmanager.dart';
@@ -27,7 +24,7 @@ void callbackDispatcher() {
         print('payload $payload');
 
         Navigator.push(GlobalContextService.navigatorKey.currentState!.context,
-            MaterialPageRoute(builder: ((context) => viewRequests())));
+            MaterialPageRoute(builder: ((context) => viewRequests(payload))));
       }
     }
 
@@ -48,8 +45,7 @@ void callbackDispatcher() {
               id: notificationID,
               title: 'Someone Needs Awn!',
               body: 'New Awn request: ${doc.data()["description"]}',
-              // platformChannelSpecifics,
-              payload: doc.id);
+              payload: doc.data()["docId"]);
           await doc.reference.update({
             'notificationStatus': 'sent',
           });
@@ -79,7 +75,7 @@ class NotificationService {
   final _localNotifications = FlutterLocalNotificationsPlugin();
   Future<void> initializePlatformNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        const AndroidInitializationSettings('ic_launcher');
+         AndroidInitializationSettings('ic_launcher');
 
     const InitializationSettings initializationSettings =
         InitializationSettings(
@@ -125,6 +121,7 @@ class NotificationService {
   void selectNotification(String? payload) {
     if (payload != null && payload.isNotEmpty) {
       behaviorSubject.add(payload);
+      print(payload);
     }
   }
 }

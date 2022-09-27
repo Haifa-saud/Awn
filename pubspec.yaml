@@ -73,6 +73,7 @@ dependencies:
   auto_size_text: ^3.0.0
   get_state_manager: ^3.13.0
   rxdart: ^0.26.0
+  scrollable_positioned_list: ^0.3.4
 
   
 dev_dependencies:

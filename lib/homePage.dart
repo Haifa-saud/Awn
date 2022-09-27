@@ -66,31 +66,29 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
           print(doc.data() as Map<String, dynamic>);
           return doc.data() as Map<String, dynamic>;
         },
-      );  
-      
-      late final NotificationService notificationService;
+      );
+
+  late final NotificationService notificationService;
   @override
   void initState() {
-        notificationService = NotificationService();
+    notificationService = NotificationService();
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
     super.initState();
   }
 
-    void listenToNotificationStream() =>
+  void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => viewRequests(/*payload: payload*/)));
+        print(payload);
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => viewRequests(payload)));
       });
-
 
   final iconList = <IconData>[
     Icons.home,
-    Icons.add,
+    Icons.volume_up,
     Icons.handshake,
-    Icons.logout,
+    Icons.person,
   ];
 
   @override
@@ -137,8 +135,6 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
             if (snapshot.hasData) {
               userData = snapshot.data as Map<String, dynamic>;
               var userName = userData['name'];
-              print(userName);
-              print("hello" + userData['name']);
 
               return Scaffold(
                   appBar: AppBar(
@@ -167,7 +163,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                               fontSize: 20,
                               fontWeight: FontWeight.normal,
                             ),
-                          ), // The search area here
+                          ),
 
                           // Container(
                           //   width: double.infinity,
@@ -214,13 +210,18 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                                   ],
                                 ),
                               ),
+                              unselectedDecoration: BoxDecoration(
+                                color: Colors.white,
+                                border:
+                                    Border.all(color: Colors.blue, width: 5),
+                              ),
                               radius: 30,
-                              borderColor: Colors.white,
+                              // borderColor: Colors.blue,
                               buttonMargin:
                                   const EdgeInsets.fromLTRB(6, 8, 6, 1),
                               contentPadding:
                                   const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                              unselectedBackgroundColor: Colors.white,
+                              // unselectedBackgroundColor: Colors.white,
                               labelStyle: const TextStyle(
                                   color: Colors.white, fontSize: 15),
                               tabs: const [
@@ -252,55 +253,25 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
               return const Text('');
             }
           }),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   showSelectedLabels: true,
-      //   selectedItemColor: Colors.blue,
-      //   // currentIndex: 0,
-      //   items: <BottomNavigationBarItem>[
-      //     BottomNavigationBarItem(
-      //       //index 0
-      //       icon: Icon(Icons.home, color: Colors.grey.shade700),
-      //       activeIcon: Icon(Icons.home, color: Colors.blue.shade700),
-      //       label: '',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       //index 1
-      //       icon: Icon(Icons.add, color: Colors.grey.shade700),
-      //       activeIcon: Icon(Icons.add, color: Colors.blue.shade700),
-      //       label: '',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       //index 2
-      //       icon: Icon(Icons.handshake, color: Colors.grey.shade700),
-      //       activeIcon: Icon(Icons.handshake, color: Colors.blue.shade700),
-      //       label: '',
-      //     ),
-      //     BottomNavigationBarItem(
-      //       //index 3
-      //       icon: Icon(Icons.logout, color: Colors.grey.shade700),
-      //       activeIcon: Icon(Icons.logout, color: Colors.blue.shade700),
-      //       label: '',
-      //     )
-      //   ],
-      //   currentIndex: _selectedIndex,
-      //   onTap: _onItemTapped,
-      // ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {},
       ),
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
+        splashColor: Colors.blue,
+        splashRadius: 1,
+        splashSpeedInMilliseconds: 100,
         tabBuilder: (int index, bool isActive) {
           final color = isActive ? Colors.blue : Colors.grey;
+          final size = isActive ? 35.0 : 26.0;
+
           return Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 iconList[index],
-                size: 24,
+                size: size,
                 color: color,
               ),
             ],
@@ -345,7 +316,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                         return const Center(child: Text('No available posts'));
                       } else {
                         final data = snapshot.requireData;
-                        return SizedBox(
+                        return Container(
                             height: double.infinity,
                             child: ListView.builder(
                               itemCount: data.size,
@@ -394,15 +365,6 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceEvenly,
                                           children: [
-                                            const Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  1, 0, 4, 4),
-                                              child: Text(
-                                                  'Welcome', // ${userName}',
-                                                  textAlign: TextAlign.left,
-                                                  style:
-                                                      TextStyle(fontSize: 14)),
-                                            ),
                                             Padding(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
