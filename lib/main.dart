@@ -19,13 +19,10 @@ Future<void> main() async {
       FlutterLocalNotificationsPlugin();
   var notificationAppLaunchDetails =
       await notification.getNotificationAppLaunchDetails();
-          // listenToNotification();
 
   if (notificationAppLaunchDetails!.didNotificationLaunchApp) {
-    print('view request true');
     runApp(MyApp(true, true));
   } else {
-    print('view request false');
     runApp(MyApp(true, false));
   }
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
@@ -34,10 +31,8 @@ Future<void> main() async {
       runApp(MyApp(false));
     } else {
       if (notificationAppLaunchDetails.didNotificationLaunchApp) {
-        print('view request true');
         runApp(MyApp(true, true));
       } else {
-        print('view request false');
         runApp(MyApp(true, false));
       }
     }

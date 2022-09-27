@@ -61,7 +61,7 @@ dependencies:
   email_validator: ^2.1.17
   get: ^4.6.5
   regexed_validator: ^2.0.0+1
-  flutter_local_notifications: ^10.0.0
+  flutter_local_notifications: ^9.7.0
   firebase_messaging: ^13.0.2
   firebase_analytics: ^8.0.2
   flutter_scroll_to_top: ^2.2.4
@@ -72,6 +72,7 @@ dependencies:
   circular_reveal_animation: ^2.0.1
   auto_size_text: ^3.0.0
   get_state_manager: ^3.13.0
+  rxdart: ^0.26.0
 
   
 dev_dependencies:

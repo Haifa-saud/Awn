@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:awn/main.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +19,10 @@ void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     await Firebase.initializeApp();
 
-    late final LocalNotification service = LocalNotification();
+    final NotificationService notificationService = NotificationService();
+    notificationService.initializePlatformNotifications();
 
-    void onNoticationListener(String? payload) async{
+    void onNoticationListener(String? payload) async {
       if (payload != null && payload.isNotEmpty) {
         print('payload $payload');
 
@@ -29,10 +31,6 @@ void callbackDispatcher() {
       }
     }
 
-    void listenToNotification() =>
-        service.onNotificationClick.stream.listen(onNoticationListener);
-
-    listenToNotification();
     bool success = false;
     for (int i = 0; i < 15; i++) {
       final requests = await FirebaseFirestore.instance
@@ -46,21 +44,25 @@ void callbackDispatcher() {
           int notificationID = Random().nextInt(100);
           requests.add(doc.data()["description"]);
           print('${doc.data()["description"]}');
-          service.showNotification(
+          notificationService.showLocalNotification(
               id: notificationID,
               title: 'Someone Needs Awn!',
-              body: 'New Awn request: ${doc.data()["description"]}');
-          // platformChannelSpecifics,
-          // payload: doc.id);
+              body: 'New Awn request: ${doc.data()["description"]}',
+              // platformChannelSpecifics,
+              payload: doc.id);
           await doc.reference.update({
             'notificationStatus': 'sent',
           });
         }
-        print("pending requests: ${requests.join(", ")}");
+        if (kDebugMode) {
+          print("pending requests: ${requests.join(", ")}");
+        }
+        // ignore: unused_local_variable
         var test =
-            await Future.delayed(Duration(milliseconds: 60000), () async {
-          // Do something
-          print("test2");
+            await Future.delayed(const Duration(milliseconds: 60000), () async {
+          if (kDebugMode) {
+            print("test2");
+          }
         });
       });
       success = true;
@@ -70,65 +72,59 @@ void callbackDispatcher() {
   });
 }
 
-void onDidReceiveLocalNotification(
-    int id, String? title, String? body, String? payload) {
-  print('id $id');
-}
+class NotificationService {
+  NotificationService();
+  final BehaviorSubject<String> behaviorSubject = BehaviorSubject();
 
-class LocalNotification {
-  LocalNotification();
-
-  final FlutterLocalNotificationsPlugin notification =
-      FlutterLocalNotificationsPlugin();
-
-  final BehaviorSubject<String?> onNotificationClick = BehaviorSubject();
-
-  Future<void> intialize() async {
-    AndroidInitializationSettings initializationSettingsAndroid =
+  final _localNotifications = FlutterLocalNotificationsPlugin();
+  Future<void> initializePlatformNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
         const AndroidInitializationSettings('ic_launcher');
-    final InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-    await notification.initialize(initializationSettings,
-        // onSelectNotification: onSelectNotification,
 
-        // onDidReceiveBackgroundNotificationResponse:
-        //     onDidReceiveBackgroundNotificationResponse,
-        onDidReceiveNotificationResponse: onSelectNotification);
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+    );
+
+    await _localNotifications.initialize(
+      initializationSettings,
+      onSelectNotification: selectNotification,
+    );
   }
 
   Future<NotificationDetails> _notificationDetails() async {
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('1', 'awn requests',
+    AndroidNotificationDetails androidPlatformChannelSpecifics =
+        const AndroidNotificationDetails('1', 'awn requests',
             channelDescription: 'awn requests added',
             importance: Importance.max,
             priority: Priority.high,
             playSound: true);
 
-    return const NotificationDetails(android: androidNotificationDetails);
+    NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    return platformChannelSpecifics;
   }
 
-  // var platformChannelSpecifics =
-  //     const NotificationDetails(android: androidNotificationDetails);
-
-  Future<void> showNotification({
+  Future<void> showLocalNotification({
     required int id,
     required String title,
     required String body,
+    required String payload,
   }) async {
-    final details = await _notificationDetails();
-    await notification.show(id, title, body, details);
+    final platformChannelSpecifics = await _notificationDetails();
+    await _localNotifications.show(
+      id,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: payload,
+    );
   }
 
-  void onDidReceiveLocalNotification(
-      int id, String? title, String? body, String? payload) {
-    print('id $id');
-  }
-
-  void onSelectNotification(NotificationResponse notificationResponse) {
-    final String? payload = notificationResponse.payload;
-    print('payload $payload');
+  void selectNotification(String? payload) {
     if (payload != null && payload.isNotEmpty) {
-      onNotificationClick.add(payload);
+      behaviorSubject.add(payload);
     }
   }
 }

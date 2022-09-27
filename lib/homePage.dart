@@ -66,27 +66,25 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
           print(doc.data() as Map<String, dynamic>);
           return doc.data() as Map<String, dynamic>;
         },
-      );
-  late final LocalNotification service;
+      );  
+      
+      late final NotificationService notificationService;
   @override
   void initState() {
-    service = LocalNotification();
-    service.intialize();
-    listenToNotification();
+        notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
     super.initState();
   }
 
-  void listenToNotification() =>
-      service.onNotificationClick.stream.listen(onNoticationListener);
+    void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => viewRequests(/*payload: payload*/)));
+      });
 
-  void onNoticationListener(String? payload) {
-    if (payload != null && payload.isNotEmpty) {
-      print('payload $payload');
-
-      Navigator.push(
-          context, MaterialPageRoute(builder: ((context) => viewRequests())));
-    }
-  }
 
   final iconList = <IconData>[
     Icons.home,
