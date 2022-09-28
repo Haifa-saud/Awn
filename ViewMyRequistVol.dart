@@ -264,7 +264,7 @@ class _ViewMyRequistState extends State<ViewMyRequistVol>
                         ),
                         //location
                         Padding(
-                            padding: EdgeInsets.all(5),
+                            padding: EdgeInsets.only(left: 10),
                             child: ElevatedButton(
                                 onPressed: () {
                                   // String dataId =
@@ -285,7 +285,6 @@ class _ViewMyRequistState extends State<ViewMyRequistVol>
                                 style: ElevatedButton.styleFrom(
                                     foregroundColor: Colors.white,
                                     backgroundColor: Colors.white,
-                                    padding: EdgeInsets.all(10),
                                     side: BorderSide(
                                         color: Colors.white, width: 2)),
                                 child: Row(
@@ -293,7 +292,10 @@ class _ViewMyRequistState extends State<ViewMyRequistVol>
                                     Icon(Icons.location_pin,
                                         size: 20, color: Colors.red),
                                     Text('Location',
-                                        style: TextStyle(color: Colors.black))
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w500))
                                   ],
                                 ))),
                       ],
@@ -424,7 +426,7 @@ class _ViewMyRequistState extends State<ViewMyRequistVol>
                         ),
                         //location
                         Padding(
-                            padding: EdgeInsets.all(5),
+                            padding: EdgeInsets.only(left: 10),
                             child: ElevatedButton(
                                 onPressed: () {
                                   // String dataId =
@@ -445,7 +447,7 @@ class _ViewMyRequistState extends State<ViewMyRequistVol>
                                 style: ElevatedButton.styleFrom(
                                     foregroundColor: Colors.white,
                                     backgroundColor: Colors.white,
-                                    padding: EdgeInsets.all(10),
+                                    // padding: EdgeInsets.all(10),
                                     side: BorderSide(
                                         color: Colors.white, width: 2)),
                                 child: Row(
@@ -453,7 +455,10 @@ class _ViewMyRequistState extends State<ViewMyRequistVol>
                                     Icon(Icons.location_pin,
                                         size: 20, color: Colors.red),
                                     Text('Location',
-                                        style: TextStyle(color: Colors.black))
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w500))
                                   ],
                                 ))),
                       ],

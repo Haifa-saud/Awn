@@ -250,21 +250,32 @@ class _AddRequestState extends State<viewRequests> {
                                                           },
                                                           style: ElevatedButton.styleFrom(
                                                               foregroundColor:
-                                                                  Colors.grey
-                                                                      .shade500,
+                                                                  Colors.white,
                                                               backgroundColor:
                                                                   Colors.white,
-                                                              padding: EdgeInsets.fromLTRB(
-                                                                  14, 20, 14, 20),
                                                               side: BorderSide(
                                                                   color: Colors
-                                                                      .grey
-                                                                      .shade400,
+                                                                      .white,
                                                                   width: 2)),
-                                                          child: Text('Location',
-                                                              style: TextStyle(
+                                                          child: Row(
+                                                            children: [
+                                                              Icon(
+                                                                  Icons
+                                                                      .location_pin,
+                                                                  size: 20,
                                                                   color: Colors
-                                                                      .black)))),
+                                                                      .red),
+                                                              Text('Location',
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontSize:
+                                                                          17,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500))
+                                                            ],
+                                                          ))),
                                                 ),
                                                 //buttoms
                                                 Visibility(
