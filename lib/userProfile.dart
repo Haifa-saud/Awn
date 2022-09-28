@@ -1,4 +1,6 @@
+import 'package:awn/addPost.dart';
 import 'package:awn/login.dart';
+import 'package:awn/services/appWidgets.dart';
 import 'package:awn/userInfo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,25 +8,28 @@ import 'package:flutter/material.dart';
 import 'package:workmanager/workmanager.dart';
 
 class userProfile extends StatefulWidget {
-  const userProfile({
-    Key? key,
-  }) : super(key: key);
+  final String userType;
+  const userProfile({Key? key, required this.userType}) : super(key: key);
   @override
   UserProfileState createState() => UserProfileState();
 }
 
 class UserProfileState extends State<userProfile> {
+  // Future<Map<String, dynamic>> readUserData() => FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(FirebaseAuth.instance.currentUser!.uid)
+  //         .get()
+  //         .then(
+  //       (DocumentSnapshot doc) {
+  //         print(doc.data() as Map<String, dynamic>);
+  //         return doc.data() as Map<String, dynamic>;
+  //       },
+  //     );
+  // var userData
+  // var userData = snapshot.data as Map<String, dynamic>;
+  //       var userName = userData['name'];
+  int _selectedIndex = 3;
   var userId = FirebaseAuth.instance.currentUser!.uid;
-  Future<Map<String, dynamic>> readUserData() => FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .get()
-          .then(
-        (DocumentSnapshot doc) {
-          print(doc.data() as Map<String, dynamic>);
-          return doc.data() as Map<String, dynamic>;
-        },
-      );
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +48,10 @@ class UserProfileState extends State<userProfile> {
             bottom: Radius.circular(70),
           ),
         ),
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         child: SizedBox(
-            // height: 50, //height of button
-            // width: 50,
             child: Column(children: [
           Spacer(),
           // My Info button
@@ -382,6 +386,23 @@ class UserProfileState extends State<userProfile> {
           ),
           const Spacer(),
         ])),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => addPost(userType: widget.userType)));
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomNavBar(
+        onPress: (int value) => setState(() {
+          _selectedIndex = value;
+        }),
+        userType: widget.userType,
+        currentI: 3,
       ),
     );
   }

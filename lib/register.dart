@@ -14,6 +14,7 @@ import 'dart:io';
 import 'package:email_validator/email_validator.dart';
 import 'services/theme.dart';
 import 'services/myGlobal.dart' as globals;
+import 'package:awn/services/appWidgets.dart';
 
 class register extends StatefulWidget {
   const register({
@@ -48,8 +49,20 @@ String password = "";
 String confirm_password = "";
 
 class _registerState extends State<register> {
-  Stream<QuerySnapshot> DisabilityType =
-      FirebaseFirestore.instance.collection('UserDisabilityType').snapshots();
+  // Future<Map<String, dynamic>> readUserData() => FirebaseFirestore.instance
+  //         .collection('usUserDisabilityTypeers')
+  //         .doc()
+  //         .get()
+  //         .then(
+  //           (DocumentSnapshot doc) {
+  //         print(doc.data() as Map<String, dynamic>);
+  //         return doc.data() as Map<String, dynamic>;
+  //       },
+  //     );
+  // Stream<QuerySnapshot> DisabilityType =
+  //     FirebaseFirestore.instance.collection('UserDisabilityType').snapshots();
+  CollectionReference DisabilityType =
+      FirebaseFirestore.instance.collection('UserDisabilityType');
   var selectedDisabilityType;
 
   @override
@@ -135,7 +148,8 @@ class _registerState extends State<register> {
                   }
                   if (snapshot.connectionState == ConnectionState.waiting ||
                       !snapshot.hasData) {
-                    return Center(child: CircularProgressIndicator(
+                    return Center(
+                        child: CircularProgressIndicator(
                       color: Colors.grey.shade200,
                     ));
                   }
@@ -350,134 +364,134 @@ class _registerState extends State<register> {
                             SizedBox(
                               height: height * 0.01,
                             ),
-                //             Container(
-                // padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                // child: StreamBuilder<QuerySnapshot>(
-                //     stream: DisabilityType.snapshots(),
-                //     builder: (context, snapshot) {
-                //       if (!snapshot.hasData) {
-                //         return Text("Loading");
-                //       } else {
-                //         return DropdownButtonFormField(
-                //           isDense: true,
-                //           onChanged: (value) {
-                //             setState(() {
-                //               selectedDisabilityType = value;
-                //             });
-                //           },
-                //           validator: (value) => value == null
-                //               ? 'Please select a category.'
-                //               : null,
-                //           hint: const Text('Category (required)*'),
-                //           items: snapshot.data!.docs
-                //               .map((DocumentSnapshot document) {
-                //             return DropdownMenuItem<String>(
-                //               value: ((document.data() as Map)['category']),
-                //               child: Text((document.data() as Map)['category']),
-                //             );
-                //           }).toList(),
-                //           value: DisabilityType,
-                //           isExpanded: false,
-                //         );
-                //       }
-                //     })),
 
                             //Wedd's change
                             // each row must have a check box and a text
-                            // StreatBuilder<QuerySnapshot>(
-                            // ),
-                            Row(children: [
-                              SizedBox(
-                                height: 24.0,
-                                width: 35.0,
-                                child: Checkbox(
-                                    value: blind,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        blind = value!;
-                                      });
-                                    }),
-                              ),
-                              const Text("Visually Impaired",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal)),
-                            ]),
 
-                            Row(children: [
-                              SizedBox(
-                                height: 24.0,
-                                width: 35.0,
-                                child: Checkbox(
-                                    value: mute,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        mute = value!;
-                                      });
-                                    }),
-                              ),
-                              const Text("Vocally Impaired",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal)),
-                            ]),
+                            StreamBuilder<QuerySnapshot>(
+                                stream: DisabilityType.snapshots(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Text("Loading");
+                                  } else {
+                                    return Column(
+                                      children: snapshot.data!.docs
+                                          .map((DocumentSnapshot document) {
+                                        bool isChecked = ((document.data()
+                                            as Map)['Checked']);
+                                        return DropdownMenuItem<String>(
+                                            child: CheckboxListTile(
+                                                value: (document.data()
+                                                        as Map)['Checked'],
+                                                title: Text(
+                                                    (document.data()
+                                                        as Map)['Type'],
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.normal)),
+                                                onChanged: (bool? newValue) {
+                                                  setState(() {
+                                                    String typeId = (document.data() as Map)['Type'].replaceAll(' ', '');
+                                                    DisabilityType.doc(typeId).update({'Checked':newValue});
+                                                  });
+                                                }));
+                                      }).toList(),
+                                    );
+                                  }
+                                }),
 
-                            Row(children: [
-                              SizedBox(
-                                height: 24.0,
-                                width: 35.0,
-                                child: Checkbox(
-                                    value: deaf,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        deaf = value!;
-                                      });
-                                    }),
-                              ),
-                              const Text("Hearing Impaired",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal)),
-                            ]),
+                            //   Row(children: [
+                            //     SizedBox(
+                            //       height: 24.0,
+                            //       width: 35.0,
+                            //       child: Checkbox(
+                            //           value: blind,
+                            //           onChanged: (bool? value) {
+                            //             setState(() {
+                            //               blind = value!;
+                            //             });
+                            //           }),
+                            //     ),
+                            //     const Text("Visually Impaired",
+                            //         style: TextStyle(
+                            //             fontSize: 18,
+                            //             fontWeight: FontWeight.normal)),
+                            //   ]),
+                            //   Row(children: [
+                            //     SizedBox(
+                            //       height: 24.0,
+                            //       width: 35.0,
+                            //       child: Checkbox(
+                            //           value: mute,
+                            //           onChanged: (bool? value) {
+                            //             setState(() {
+                            //               mute = value!;
+                            //             });
+                            //           }),
+                            //     ),
+                            //     const Text("Vocally Impaired",
+                            //         style: TextStyle(
+                            //             fontSize: 18,
+                            //             fontWeight: FontWeight.normal)),
+                            //   ]),
 
-                            Row(
-                              children: [
-                                SizedBox(
-                                  height: 24.0,
-                                  width: 35.0,
-                                  child: Checkbox(
-                                      value: physical,
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          physical = value!;
-                                        });
-                                      }),
-                                ),
-                                const Text("Physically Impaired",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.normal)),
-                              ],
-                            ),
-                            Row(
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 24.0,
-                                  width: 35.0,
-                                  child: Checkbox(
-                                      value: other,
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          other = value!;
-                                        });
-                                      }),
-                                ),
-                                const Text("other",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.normal)),
-                              ],
-                            ),
+                            //   Row(children: [
+                            //     SizedBox(
+                            //       height: 24.0,
+                            //       width: 35.0,
+                            //       child: Checkbox(
+                            //           value: deaf,
+                            //           onChanged: (bool? value) {
+                            //             setState(() {
+                            //               deaf = value!;
+                            //             });
+                            //           }),
+                            //     ),
+                            //     const Text("Hearing Impaired",
+                            //         style: TextStyle(
+                            //             fontSize: 18,
+                            //             fontWeight: FontWeight.normal)),
+                            //   ]),
+
+                            //   Row(
+                            //     children: [
+                            //       SizedBox(
+                            //         height: 24.0,
+                            //         width: 35.0,
+                            //         child: Checkbox(
+                            //             value: physical,
+                            //             onChanged: (bool? value) {
+                            //               setState(() {
+                            //                 physical = value!;
+                            //               });
+                            //             }),
+                            //       ),
+                            //       const Text("Physically Impaired",
+                            //           style: TextStyle(
+                            //               fontSize: 18,
+                            //               fontWeight: FontWeight.normal)),
+                            //     ],
+                            //   ),
+                            //   Row(
+                            //     children: <Widget>[
+                            //       SizedBox(
+                            //         height: 24.0,
+                            //         width: 35.0,
+                            //         child: Checkbox(
+                            //             value: other,
+                            //             onChanged: (bool? value) {
+                            //               setState(() {
+                            //                 other = value!;
+                            //               });
+                            //             }),
+                            //       ),
+                            //       const Text("other",
+                            //           style: TextStyle(
+                            //               fontSize: 18,
+                            //               fontWeight: FontWeight.normal)),
+                            //     ],
+                            //   ),
                           ],
                         );
                       } else {
@@ -619,7 +633,7 @@ class _registerState extends State<register> {
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
                       // Wedd's Code for password
-                      password = value.toString() ;
+                      password = value.toString();
                       // RegExp Upper = RegExp(r"(?=.*[A-Z])");
                       // RegExp digit = RegExp(r"(?=.*[0-9])");
                       // if (value == null || value.isEmpty){
@@ -633,7 +647,6 @@ class _registerState extends State<register> {
                       // } else {
                       //   return null;
                       // }
-
 
                       if (value == null || value.isEmpty || value.length < 8) {
                         return 'Please enter a password min 8';
@@ -697,9 +710,9 @@ class _registerState extends State<register> {
                       //Wedd's change
                       if (value == null || value.isEmpty) {
                         return "please confirm password";
-                      } else if(confirm_password != password){
+                      } else if (confirm_password != password) {
                         return "Password not match";
-                      }else{
+                      } else {
                         return null;
                       }
                     },
@@ -766,7 +779,7 @@ class _registerState extends State<register> {
                           //     const SnackBar(content: Text('Please fill the empty blanks')),
                           //     );
                           // }
-                          
+
                           if (cofirmPasswordController.text.isEmpty ||
                               cofirmPasswordController.text !=
                                   passwordController.text) {
@@ -776,10 +789,7 @@ class _registerState extends State<register> {
                           } else {
                             signUp();
                           }
-                        }
-
-                        
-                        ),
+                        }),
                   ),
                   Container(
                     margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),

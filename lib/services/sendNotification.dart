@@ -28,7 +28,7 @@ void callbackDispatcher() {
             GlobalContextService.navigatorKey.currentState!.context,
             MaterialPageRoute(
                 builder: ((context) =>
-                    viewNotificationRequest(reqID: payload))));
+                    viewRequests(userType: 'Volunteer', reqID: payload))));
       }
     }
 

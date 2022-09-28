@@ -2,9 +2,7 @@ import 'package:awn/homePage.dart';
 import 'package:awn/login.dart';
 import 'package:awn/notificationRequest.dart';
 import 'package:awn/register.dart';
-import 'package:awn/services/sendNotification.dart';
 import 'package:awn/viewRequests.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,7 +19,8 @@ Future<void> main() async {
       await notification.getNotificationAppLaunchDetails();
 
   if (notificationAppLaunchDetails!.didNotificationLaunchApp) {
-    runApp(MyApp(true, true));
+    var Payload = notificationAppLaunchDetails.payload;
+    runApp(MyApp(true, true, Payload!));
   } else {
     runApp(MyApp(true, false));
   }
@@ -31,7 +30,8 @@ Future<void> main() async {
       runApp(MyApp(false));
     } else {
       if (notificationAppLaunchDetails.didNotificationLaunchApp) {
-        runApp(MyApp(true, true));
+        var Payload = notificationAppLaunchDetails.payload;
+        runApp(MyApp(true, true, Payload!));
       } else {
         runApp(MyApp(true, false));
       }
@@ -64,19 +64,41 @@ class _MyApp extends State<MyApp> {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFfcfffe),
         appBarTheme: const AppBarTheme(
+          titleTextStyle: TextStyle(
+              wordSpacing: 3,
+              letterSpacing: 1,
+              color: Colors.black,
+              fontSize: 22,
+              fontWeight: FontWeight.w700),
+          scrolledUnderElevation: 1,
+          centerTitle: false,
           elevation: 0,
-          color: Color(0xFF39d6ce), // Colors.transparent,
-          foregroundColor: Colors.white,
+          color: Colors.white, // Colors.transparent,
+          foregroundColor: Colors.black,
         ),
         textTheme: const TextTheme(
           headline6: TextStyle(
-              fontSize: 22.0, color: Colors.black), //header at the app bar
+              wordSpacing: 3,
+              letterSpacing: 1,
+              fontSize: 22.0,
+              color: Colors.black), //header at the app bar
           bodyText2: TextStyle(
-              fontSize: 20.0, fontWeight: FontWeight.bold), //the body text
-          subtitle1: TextStyle(fontSize: 19.0), //the text field label
-          subtitle2: TextStyle(fontSize: 120.0), //the text field
+              wordSpacing: 3,
+              letterSpacing: 1,
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold), //the body text
+          subtitle1: TextStyle(
+              wordSpacing: 3,
+              letterSpacing: 1,
+              fontSize: 19.0), //the text field label
+          subtitle2: TextStyle(
+              wordSpacing: 3,
+              letterSpacing: 1,
+              fontSize: 120.0), //the text field
 
           button: TextStyle(
+              wordSpacing: 3,
+              letterSpacing: 1,
               fontSize: 15,
               fontWeight: FontWeight.w400,
               decoration: TextDecoration.underline), //the button text
@@ -117,7 +139,7 @@ class _MyApp extends State<MyApp> {
       ),
       home: widget.auth
           ? (widget.notification
-              ? const viewRequests()
+              ? viewRequests(userType: 'Volunteer', reqID: widget.payload)
               : const homePage(
                   userType: 'Volunteer',
                 ))

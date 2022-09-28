@@ -1,6 +1,8 @@
 import 'package:awn/addRequest.dart';
 import 'package:awn/homePage.dart';
 import 'package:awn/map.dart';
+import 'package:awn/services/appWidgets.dart';
+import 'package:awn/services/firebase_storage_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -18,8 +20,11 @@ import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'main.dart';
 
+//
+//! bottom bar done
 class addPost extends StatefulWidget {
-  const addPost({Key? key}) : super(key: key);
+  final String userType;
+  const addPost({Key? key, required this.userType}) : super(key: key);
 
   @override
   State<addPost> createState() => _MyStatefulWidgetState();
@@ -42,43 +47,41 @@ class _MyStatefulWidgetState extends State<addPost> {
   var selectedCategory;
 
   var editImg = '';
-  int index = 1;
+  int _selectedIndex = 2;
+  final Storage storage = Storage();
 
   @override
   Widget build(BuildContext context) {
-    Future<void> _onItemTapped(int index) async {
-      if (index == 0) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const homePage(userType: 'Volunteer')),
-        );
-      } else if (index == 1) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const addPost()),
-        );
-      } else if (index == 2) {
-        // if (widget.userType == 'Special Need User') {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const addRequest()),
-        );
-        // } else if (widget.userType == 'Volunteer') {
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(builder: (context) => const viewRequests()),
-        //   );
-        // }
-      } else if (index == 3) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const login()));
-        FirebaseAuth.instance.signOut();
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
+        actions: <Widget>[
+          Padding(
+              padding: const EdgeInsets.fromLTRB(0, 2, 8, 0),
+              child: FutureBuilder(
+                  future: storage.downloadURL('logo.png'),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done &&
+                        snapshot.hasData) {
+                      return Center(
+                        child: Image.network(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
+                          width: 40,
+                          height: 40,
+                        ),
+                      );
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting ||
+                        !snapshot.hasData) {
+                      return CircularProgressIndicator(
+                        color: Colors.grey.shade200,
+                      );
+                    }
+                    return Container();
+                  }))
+        ],
         title: const Text('Add a Place', textAlign: TextAlign.center),
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
@@ -359,43 +362,22 @@ class _MyStatefulWidgetState extends State<addPost> {
           ]),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: true,
-        selectedItemColor: Colors.blue,
-        // currentIndex: 0,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            //index 0
-            icon: Icon(Icons.home, color: Colors.grey.shade700),
-            activeIcon: Icon(Icons.home, color: Colors.blue.shade700),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            //index 1
-            icon: Icon(Icons.add, color: Colors.grey.shade700),
-            activeIcon: Icon(Icons.add, color: Colors.blue.shade700),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            //index 2
-            icon: Icon(Icons.handshake, color: Colors.grey.shade700),
-            activeIcon: Icon(Icons.handshake, color: Colors.blue.shade700),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            //index 3
-            icon: Icon(Icons.logout, color: Colors.grey.shade700),
-            activeIcon: Icon(Icons.logout, color: Colors.blue.shade700),
-            label: '',
-          )
-        ],
-        onTap: (int index) {
-          // setState(() {
-          //   this.index = index;
-          // });
-          _onItemTapped(index);
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => addPost(userType: widget.userType)));
         },
-        currentIndex: index,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomNavBar(
+        onPress: (int value) => setState(() {
+          _selectedIndex = value;
+        }),
+        userType: widget.userType,
+        currentI: -1,
       ),
     );
   }

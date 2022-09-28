@@ -3,7 +3,10 @@ import 'package:awn/TextToSpeech.dart';
 import 'package:awn/addPost.dart';
 import 'package:awn/addRequest.dart';
 import 'package:awn/login.dart';
+import 'package:awn/mapsPage.dart';
 import 'package:awn/notificationRequest.dart';
+import 'package:awn/services/appWidgets.dart';
+import 'package:awn/services/firebase_storage_services.dart';
 import 'package:awn/services/sendNotification.dart';
 import 'package:awn/services/usersModel.dart';
 import 'package:awn/userProfile.dart';
@@ -85,51 +88,14 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => viewNotificationRequest(reqID: payload)));
+                builder: (context) =>
+                    viewRequests(userType: widget.userType, reqID: payload)));
       });
-
-  final iconList = <IconData>[
-    Icons.home,
-    Icons.volume_up,
-    Icons.handshake,
-    Icons.person,
-  ];
+  final Storage storage = Storage();
 
   @override
   Widget build(BuildContext context) {
-    print(widget.userType);
     TabController _tabController = TabController(length: 6, vsync: this);
-
-    Future<void> _onItemTapped(int index) async {
-      if (index == 0) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => homePage(userType: widget.userType)),
-        );
-      } else if (index == 1) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const Tts()),
-        );
-      } else if (index == 2) {
-        if (widget.userType == 'Special Need User') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const addRequest()),
-          );
-        } else if (widget.userType == 'Volunteer') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const viewRequests()),
-          );
-        }
-      } else if (index == 3) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => userProfile()));
-        // FirebaseAuth.instance.signOut();
-      }
-    }
 
     return Scaffold(
       body: FutureBuilder<Map<String, dynamic>>(
@@ -137,12 +103,40 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
               userData = snapshot.data as Map<String, dynamic>;
-              var userName = userData['name'];
-
               return Scaffold(
                   appBar: AppBar(
+                    // actions: <Widget>[
+                    //   Padding(
+                    //       padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                    //       child: FutureBuilder(
+                    //           future: storage.downloadURL('logo.png'),
+                    //           builder: (BuildContext context,
+                    //               AsyncSnapshot<String> snapshot) {
+                    //             if (snapshot.connectionState ==
+                    //                     ConnectionState.done &&
+                    //                 snapshot.hasData) {
+                    //               return Center(
+                    //                 child: Image.network(
+                    //                   snapshot.data!,
+                    //                   fit: BoxFit.cover,
+                    //                   width: 40,
+                    //                   height: 40,
+                    //                 ),
+                    //               );
+                    //             }
+                    //             if (snapshot.connectionState ==
+                    //                     ConnectionState.waiting ||
+                    //                 !snapshot.hasData) {
+                    //               return CircularProgressIndicator(
+                    //                 color: Colors.grey.shade200,
+                    //               );
+                    //             }
+                    //             return Container();
+                    //           }))
+                    // ],
+
                     centerTitle: false,
-                    backgroundColor: const Color(0xFFfcfffe),
+                    backgroundColor: Colors.white, //(0xFFfcfffe),
                     foregroundColor: Colors.black,
                     automaticallyImplyLeading: false,
                     scrolledUnderElevation: 1,
@@ -151,21 +145,22 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            // textAlign: TextAlign.left,
-                            "Awn",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
+                          const Padding(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 6),
+                              child: Text(
+                                "Awn",
+                                style: TextStyle(
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              )),
 
                           Text(
                             "Hello, " + userData['name'],
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.normal,
-                            ),
+                            // style: const TextStyle(
+                            //   fontSize: 22,
+                            //   fontWeight: FontWeight.normal,
+                            // ),
                           ),
 
                           // Container(
@@ -196,9 +191,12 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                           //   ),
                           // ),
                           const Padding(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            padding: EdgeInsets.fromLTRB(0, 12, 0, 4),
                             child: Text("Category",
-                                style: TextStyle(fontSize: 10)),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                )),
                           ),
                           ButtonsTabBar(
                               controller: _tabController,
@@ -258,41 +256,21 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
           }),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {},
-      ),
-      bottomNavigationBar: AnimatedBottomNavigationBar.builder(
-        splashColor: Colors.blue,
-        splashRadius: 1,
-        splashSpeedInMilliseconds: 100,
-        tabBuilder: (int index, bool isActive) {
-          final color = isActive ? Colors.blue : Colors.grey;
-          final size = isActive ? 35.0 : 26.0;
-
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                iconList[index],
-                size: size,
-                color: color,
-              ),
-            ],
-          );
-        },
-        activeIndex: _selectedIndex,
-        itemCount: 4,
-        gapLocation: GapLocation.center,
-        notchSmoothness: NotchSmoothness.smoothEdge,
-        onTap: (index) {
-          setState() {
-            _selectedIndex = index;
-          }
-
-          _onItemTapped(index);
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => addPost(userType: widget.userType)));
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomNavBar(
+        onPress: (int value) => setState(() {
+          _selectedIndex = value;
+        }),
+        userType: widget.userType,
+        currentI: 0,
+      ),
     );
   }
 
@@ -535,50 +513,5 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                     })))
       ],
     ));
-  }
-}
-
-class MapsPage extends StatefulWidget {
-  final double latitude;
-  final double longitude;
-  @override
-  const MapsPage({Key? key, required this.latitude, required this.longitude})
-      : super(key: key);
-  State<MapsPage> createState() => _MapsPageState();
-}
-
-class _MapsPageState extends State<MapsPage> {
-  late GoogleMapController myController;
-
-  Widget build(BuildContext context) {
-    Set<Marker> getMarker() {
-      return <Marker>{
-        Marker(
-            markerId: const MarkerId(''),
-            position: LatLng(widget.latitude, widget.longitude),
-            icon: BitmapDescriptor.defaultMarker,
-            infoWindow: const InfoWindow(title: 'Special need location'))
-      };
-    }
-
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Awn Request Location'),
-          leading: IconButton(
-            icon: const Icon(Icons.navigate_before, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
-        body: GoogleMap(
-          markers: getMarker(),
-          mapType: MapType.normal,
-          initialCameraPosition: CameraPosition(
-            target: LatLng(widget.latitude, widget.longitude),
-            zoom: 14.0,
-          ),
-          onMapCreated: (GoogleMapController controller) {
-            myController = controller;
-          },
-        ));
   }
 }

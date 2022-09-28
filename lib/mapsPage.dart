@@ -32,7 +32,7 @@ class _MapsPageState extends State<MapsPage> {
         appBar: AppBar(
           title: const Text('Awn Request Location'),
           leading: IconButton(
-            icon: const Icon(Icons.navigate_before, color: Colors.white),
+            icon: const Icon(Icons.navigate_before, color: Colors.black),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),

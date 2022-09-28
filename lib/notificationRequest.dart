@@ -1,3 +1,4 @@
+import 'package:awn/mapsPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,17 +16,41 @@ class viewNotificationRequest extends StatefulWidget {
 class _ViewRequestState extends State<viewNotificationRequest> {
   late var ID = widget.reqID;
 
-  @override
-  void initState() {
-    // ID = widget.reqID;
-    super.initState();
+  // @override
+  // void initState() {
+  //   showAlert(context);
+  //   super.initState();
+  // }
+
+  void showAlert(BuildContext context) {
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text("Someone Needs Help!"),
+              content: const Text('New Awn Request: \n'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Approve'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                  child: const Text('Discard'),
+                ),
+              ],
+            ));
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.reqID != '') {
+      Future.delayed(Duration.zero, () => showAlert(context));
+    }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('View Awn Requests'),
+        title: const Text('Someone Needs Help!'),
         automaticallyImplyLeading: false,
       ),
       body: Padding(
@@ -194,8 +219,9 @@ class _ViewRequestState extends State<viewNotificationRequest> {
                                               onPressed: () {
                                                 String docId =
                                                     data.docs[index]['docId'];
-
                                                 updateDB(docId);
+                                                Navigator.pushNamed(
+                                                    context, '/volunteerPage');
                                                 Confirmation();
                                               },
                                               style: ElevatedButton.styleFrom(
@@ -254,60 +280,10 @@ class _ViewRequestState extends State<viewNotificationRequest> {
 Future<void> updateDB(docId) async {
   final user = FirebaseAuth.instance.currentUser!;
   String userId = user.uid;
-//String docId=
-  final postID = FirebaseFirestore.instance
-      // .collection('userData')
-      // .doc(userId)
-      .collection('requests')
-      .doc(docId);
+  final postID = FirebaseFirestore.instance.collection('requests').doc(docId);
 
   postID.update({
     'status': 'Approved',
     'VolID': userId,
   });
-}
-
-class MapsPage extends StatefulWidget {
-  final double latitude;
-  final double longitude;
-  @override
-  const MapsPage({Key? key, required this.latitude, required this.longitude})
-      : super(key: key);
-  State<MapsPage> createState() => _MapsPageState();
-}
-
-class _MapsPageState extends State<MapsPage> {
-  late GoogleMapController myController;
-
-  Widget build(BuildContext context) {
-    Set<Marker> getMarker() {
-      return <Marker>{
-        Marker(
-            markerId: const MarkerId(''),
-            position: LatLng(widget.latitude, widget.longitude),
-            icon: BitmapDescriptor.defaultMarker,
-            infoWindow: const InfoWindow(title: 'Special need location'))
-      };
-    }
-
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Awn Request Location'),
-          leading: IconButton(
-            icon: const Icon(Icons.navigate_before, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
-        body: GoogleMap(
-          markers: getMarker(),
-          mapType: MapType.normal,
-          initialCameraPosition: CameraPosition(
-            target: LatLng(widget.latitude, widget.longitude),
-            zoom: 14.0,
-          ),
-          onMapCreated: (GoogleMapController controller) {
-            myController = controller;
-          },
-        ));
-  }
 }

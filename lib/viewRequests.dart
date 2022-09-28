@@ -1,3 +1,6 @@
+import 'package:awn/addPost.dart';
+import 'package:awn/mapsPage.dart';
+import 'package:awn/services/appWidgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,7 +19,10 @@ import 'package:intl/intl.dart';
 import 'main.dart';
 
 class viewRequests extends StatefulWidget {
-  const viewRequests({Key? key}) : super(key: key);
+  final String userType;
+  final String reqID;
+  const viewRequests({Key? key, required this.userType, required this.reqID})
+      : super(key: key);
 
   @override
   State<viewRequests> createState() => _AddRequestState();
@@ -33,15 +39,207 @@ class _AddRequestState extends State<viewRequests> {
       .where('status', isEqualTo: 'Pending')
       .orderBy("date_ymd")
       .snapshots();
+
+  int _selectedIndex = 2;
+
+  Future<void> showAlert(BuildContext context) async {
+    var data;
+    double latitude = 0, longitude = 0;
+    await FirebaseFirestore.instance
+        .collection('requests')
+        .doc(widget.reqID)
+        .get()
+        .then((doc) {
+      data = doc.data();
+      latitude = double.parse('${data['latitude']}');
+      longitude = double.parse('${data['longitude']}');
+    });
+    bool invalid = (data['status'] != 'Pending') ? true : false;
+    String title = invalid ? 'Sorry' : "Someone Needs Help!";
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              content: FutureBuilder(
+                  future: getLocationAsString(latitude, longitude),
+                  builder: (context, snap) {
+                    if (snap.hasData) {
+                      var reqLoc = snap.data;
+                      if (invalid) {
+                        return Container(
+                            height: 100,
+                            child: const Center(
+                                child: Text(
+                                    'The request has been approved/expired')));
+                      } else {
+                        return Container(
+                            width: 450,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                //title
+                                const Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
+                                    child: Text(
+                                      'New Awn Request: ',
+                                      style: TextStyle(
+                                        fontSize: 19,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    )),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                                  child: Container(
+                                    width: 280,
+                                    child: Text(
+                                      '${data['title']}',
+                                    ),
+                                  ),
+                                ),
+                                //date and time
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.calendar_today,
+                                          size: 20, color: Colors.red),
+                                      Text(' ${data['date_dmy']}',
+                                          style: const TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w500)),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 15),
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons.schedule,
+                                                size: 20, color: Colors.red),
+                                            Text(' ${data['time']}',
+                                                style: const TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight:
+                                                        FontWeight.w500)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                //duration
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                                  child: Row(
+                                    children: [
+                                      Text('Duration: ${data['duration']}',
+                                          style: const TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w500)),
+                                    ],
+                                  ),
+                                ),
+                                //description
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                                  child: Row(
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                            'Description: ${data['description']}',
+                                            style: const TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w500)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                // location
+                                Padding(
+                                  padding: const EdgeInsets.all(0),
+                                  child: Row(children: [
+                                    const Icon(Icons.location_pin,
+                                        size: 20, color: Colors.red),
+                                    ElevatedButton(
+                                        onPressed: () {
+                                          (Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => MapsPage(
+                                                    latitude: latitude,
+                                                    longitude: longitude),
+                                              )));
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          foregroundColor: Colors.grey.shade500,
+                                          backgroundColor: Colors.white,
+                                          padding: const EdgeInsets.fromLTRB(
+                                              1, 0, 1, 0),
+                                        ),
+                                        child: Container(
+                                            width: 255,
+                                            child: Text(reqLoc!,
+                                                style: const TextStyle(
+                                                    color: Colors.black))))
+                                  ]),
+                                ),
+                              ],
+                            ));
+                      }
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  }),
+              actions: <Widget>[
+                ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.red.shade300,
+                      padding: const EdgeInsets.fromLTRB(17, 10, 17, 10),
+                      textStyle: const TextStyle(fontSize: 17),
+                    ),
+                    child: const Text('Discard')),
+                Visibility(
+                  visible: !(invalid),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      String docId = data['docId'];
+                      updateDB(docId);
+                      Confermation();
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.green.shade400,
+                      padding: const EdgeInsets.fromLTRB(17, 10, 17, 10),
+                      textStyle: const TextStyle(fontSize: 17),
+                    ),
+                    child: const Text('Accept'),
+                  ),
+                ),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (widget.reqID != '') {
+      Future.delayed(Duration.zero, () => showAlert(context));
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('View Awn Requests'),
-        leading: IconButton(
-          icon: const Icon(Icons.navigate_before, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 0),
@@ -301,6 +499,23 @@ class _AddRequestState extends State<viewRequests> {
                       )))
             ],
           )),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => addPost(userType: widget.userType)));
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomNavBar(
+        onPress: (int value) => setState(() {
+          _selectedIndex = value;
+        }),
+        userType: widget.userType,
+        currentI: 2,
+      ),
     );
   }
 
@@ -333,52 +548,4 @@ Future<void> updateDB(docId) async {
     'status': 'Approved',
     'VolID': userId,
   });
-}
-
-class MapsPage extends StatefulWidget {
-  final double latitude;
-  final double longitude;
-  @override
-  const MapsPage({Key? key, required this.latitude, required this.longitude})
-      : super(key: key);
-  State<MapsPage> createState() => _MapsPageState();
-}
-
-class _MapsPageState extends State<MapsPage> {
-  late GoogleMapController myController;
-  /*getMarkerData() async {
-    FirebaseFirestore.instance.collection('requests').;
-  }*/
-
-  Widget build(BuildContext context) {
-    Set<Marker> getMarker() {
-      return <Marker>[
-        Marker(
-            markerId: const MarkerId(''),
-            position: LatLng(widget.latitude, widget.longitude),
-            icon: BitmapDescriptor.defaultMarker,
-            infoWindow: const InfoWindow(title: 'Special need location'))
-      ].toSet();
-    }
-
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Awn Request Location'),
-          leading: IconButton(
-            icon: const Icon(Icons.navigate_before, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
-        body: GoogleMap(
-          markers: getMarker(),
-          mapType: MapType.normal,
-          initialCameraPosition: CameraPosition(
-            target: LatLng(widget.latitude, widget.longitude),
-            zoom: 14.0,
-          ),
-          onMapCreated: (GoogleMapController controller) {
-            myController = controller;
-          },
-        ));
-  }
 }
