@@ -112,7 +112,8 @@ class UserFirstPage extends State<firstPage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        //Navigator.of(ctx).pop();
+                        // FirebaseUser user = await FirebaseAuth.instance.currentUser();
+                        // user.delete();
                       },
                       child: Container(
                         color: Color.fromARGB(255, 164, 20, 20),

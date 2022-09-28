@@ -1,8 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
-
-import 'package:awn/Utils.dart';
-import 'package:awn/login.dart';
-import 'firebase_storage_services.dart';
+import 'package:awn444/Utils.dart';
+import 'package:awn444/login.dart';
+import 'package:awn444/firebase_storage_services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,14 +12,12 @@ import 'package:intl/intl.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:email_validator/email_validator.dart';
-import 'theme.dart';
+// import 'theme.dart';
 import 'myGlobal.dart' as globals;
 
 class register extends StatefulWidget {
-  // final Function() onClickedSignIn;
   const register({
     Key? key,
-    // required this.onClickedSignIn,
   }) : super(key: key);
 
   @override
@@ -34,23 +31,27 @@ TextEditingController nameController = TextEditingController();
 TextEditingController numberController = TextEditingController();
 TextEditingController bioController = TextEditingController();
 
-String group = "Female";
-String group1 = "Special Need User";
+String group = "gender";
+String group1 = "role";
 bool blind = false;
 bool mute = false;
 bool deaf = false;
 bool physical = false;
 bool other = false;
 PlatformFile pickedFile = new PlatformFile(name: '', size: 0);
-// String label = "click to upload disability certificate";
-// bool upload = false;
-// String filePath = "Pick file";
-// File? fileDB;
+String label = "click to upload disability certificate";
+bool upload = false;
+String filePath = "Pick file";
+File? fileDB;
 //Wedd's change
 String password = "";
 String confirm_password = "";
 
 class _registerState extends State<register> {
+  Stream<QuerySnapshot<Map<String, dynamic>>> DisabilityType =
+      FirebaseFirestore.instance.collection('UserDisabilityType').snapshots();
+  var selectedDisabilityType;
+
   @override
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -134,9 +135,10 @@ class _registerState extends State<register> {
                   }
                   if (snapshot.connectionState == ConnectionState.waiting ||
                       !snapshot.hasData) {
-                    return CircularProgressIndicator(
+                    return Center(
+                        child: CircularProgressIndicator(
                       color: Colors.grey.shade200,
-                    );
+                    ));
                   }
                   return Container();
                 }),
@@ -162,13 +164,11 @@ class _registerState extends State<register> {
                   ),
                   TextFormField(
                     controller: emailController,
-                    decoration:
-                        theme.inputfield("Email", "example@example.example"),
+                    // decoration:
+                    //     theme.inputfield("Email", "example@example.example"),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (email) {
-                      if(email == null){
-                        return "Enter an Email";
-                      } else if (!EmailValidator.validate(email)) {
+                      if (email != null && !EmailValidator.validate(email)) {
                         return "Enter a valid email";
                       } else {
                         return null;
@@ -180,12 +180,10 @@ class _registerState extends State<register> {
                   ),
                   TextFormField(
                     controller: nameController,
-                    decoration: theme.inputfield("Name", "Sara Ahmad"),
+                    // decoration: theme.inputfield("Name", "Sara Ahmad"),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      if(value == null){
-                        return "Enter an Email";
-                      } else if (value.length < 2) {
+                      if (value != null && value.length < 2) {
                         return "Enter a valid name";
                       } else {
                         return null;
@@ -354,8 +352,65 @@ class _registerState extends State<register> {
                               height: height * 0.01,
                             ),
 
+                            //             Container(
+                            // padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                            // child: StreamBuilder<QuerySnapshot>(
+                            //     stream: DisabilityType.snapshots(),
+                            //     builder: (context, snapshot) {
+                            //       if (!snapshot.hasData) {
+                            //         return Text("Loading");
+                            //       } else {
+                            //         return DropdownButtonFormField(
+                            //           isDense: true,
+                            //           onChanged: (value) {
+                            //             setState(() {
+                            //               selectedDisabilityType = value;
+                            //             });
+                            //           },
+                            //           validator: (value) => value == null
+                            //               ? 'Please select a category.'
+                            //               : null,
+                            //           hint: const Text('Category (required)*'),
+                            //           items: snapshot.data!.docs
+                            //               .map((DocumentSnapshot document) {
+                            //             return DropdownMenuItem<String>(
+                            //               value: ((document.data() as Map)['category']),
+                            //               child: Text((document.data() as Map)['category']),
+                            //             );
+                            //           }).toList(),
+                            //           value: DisabilityType,
+                            //           isExpanded: false,
+                            //         );
+                            //       }
+                            //     })),
+
                             //Wedd's change
                             // each row must have a check box and a text
+                            StreamBuilder<QuerySnapshot>(
+                                stream: DisabilityType.snapshots(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Text("Loading");
+                                  } else {
+                                    return Column(
+                                      children: snapshot.data!.docs
+                                          .map((DocumentSnapshot document) {
+                                        return DropdownMenuItem<String>(
+                                            child: CheckboxListTile(
+                                                value: ((document.data()
+                                                    as Map)['Type']),
+                                                onChanged: (newValue) {
+                                                  setState(() {
+                                                    (document.data()
+                                                            as Map)['Type'] =
+                                                        newValue;
+                                                  });
+                                                }));
+                                      }).toList(),
+                                    );
+                                  }
+                                }),
+
                             Row(children: [
                               SizedBox(
                                 height: 24.0,
@@ -525,9 +580,9 @@ class _registerState extends State<register> {
                       FilteringTextInputFormatter.digitsOnly
                     ],
                     maxLength: 10,
-                    decoration: theme.inputfield(
-                        "enter your phone number", "0555555555"),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    // decoration: theme.inputfield(
+                    //     "enter your phone number", "0555555555"),
+                    // autovalidateMode: AutovalidateMode.onUserInteraction,
                     //wedd's chnges
                     validator: (value) {
                       // if (value != null && value.length < 10)
@@ -536,7 +591,7 @@ class _registerState extends State<register> {
                       //   return null;
 
                       //Wedd's changes
-                      if (value == null || value.isEmpty) {
+                      if (value == null) {
                         return "Please enter a phone number";
                       } else if (value.length != 10) {
                         return "Please enter a valid phone number";
@@ -555,14 +610,13 @@ class _registerState extends State<register> {
                       //Wedd's change
                       hintText:
                           "must have upper case, digit, more than 8 digits",
-                      hintStyle: const TextStyle(fontSize: 10.0,),
                       suffixIcon: IconButton(
                         icon: Icon(
                           // Based on passwordVisible state choose the icon
                           _passwordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: Theme.of(context).primaryColorDark,
+                          // color: Theme.of(context).primaryColorDark,
                         ),
                         onPressed: () {
                           // Update the state i.e. toogle the state of passwordVisible variable
@@ -589,41 +643,35 @@ class _registerState extends State<register> {
                     ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      //خليت اللي يسبب ايرور كومنت عشان ماقدرت اسوي رن
-                      //Wedd's change
-                      password = value.toString() ;
-
-                      RegExp Upper = RegExp(r"(?=.*[A-Z])");
-                      RegExp digit = RegExp(r"(?=.*[0-9])");
-                      if (value == null || value.isEmpty){
-                        return "please enter a password";
-                      } else if (value.length < 7) {
-                        return "password should at least be 8 digits"; //ود موجودة ؟
-                      }  else if (!Upper.hasMatch(value)) {
-                      return "password should contain an Upper case";
-                      }  else if (!digit.hasMatch(value)) {
-                        return "password should contain a number";
-                      } else {
-                        return null;
-                      }
-                      // شكرا !!!!
-                      // RegExp Upper = RegExp(r'^(?=.*?[A-Z])');
-                      // RegExp digit = RegExp(r'^(?=.*?[0-9])');
-
-                      // if (value == null || value.isEmpty || value.length < 8) {
-                      //   return 'Please enter a password min 8';
-                      // }
-                      // // else if (value.length < 8) {
-                      // //   return 'Password must be at least 8 digits ';
-                      // // } else if (!Upper.hasMatch(value)) {
-                      // //   return 'Password should contain an upper case';
-                      // // } else if (!digit.hasMatch(value)) {
-                      // //   return 'Password should contain a number';
-                      // // }
-                      // else {
+                      // Wedd's Code for password
+                      password = value.toString();
+                      // RegExp Upper = RegExp(r"(?=.*[A-Z])");
+                      // RegExp digit = RegExp(r"(?=.*[0-9])");
+                      // if (value == null || value.isEmpty){
+                      //   return "please enter a password";
+                      // } else if (value.length < 7) {
+                      //   return "password should at least be 8 digits"; //ود موجودة ؟
+                      // }  else if (!Upper.hasMatch(value)) {
+                      // return "password should contain an Upper case";
+                      // }  else if (!digit.hasMatch(value)) {
+                      //   return "password should contain a number";
+                      // } else {
                       //   return null;
                       // }
 
+                      if (value == null || value.isEmpty || value.length < 8) {
+                        return 'Please enter a password min 8';
+                      }
+                      // else if (value.length < 8) {
+                      //   return 'Password must be at least 8 digits ';
+                      // } else if (!Upper.hasMatch(value)) {
+                      //   return 'Password should contain an upper case';
+                      // } else if (!digit.hasMatch(value)) {
+                      //   return 'Password should contain a number';
+                      // }
+                      else {
+                        return null;
+                      }
                     },
                   ),
                   SizedBox(
@@ -634,14 +682,14 @@ class _registerState extends State<register> {
                     obscureText: !_passwordVisible,
                     decoration: InputDecoration(
                       labelText: "Confirm Password",
-                      hintText: "Confirm Password",
+                      hintText: "Password",
                       suffixIcon: IconButton(
                         icon: Icon(
                           // Based on passwordVisible state choose the icon
                           _passwordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: Theme.of(context).primaryColorDark,
+                          // color: Theme.of(context).primaryColorDark,
                         ),
                         onPressed: () {
                           // Update the state i.e. toogle the state of passwordVisible variable
@@ -668,13 +716,14 @@ class _registerState extends State<register> {
                     ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
+                      //Wedd's change
                       confirm_password = value.toString();
                       //Wedd's change
                       if (value == null || value.isEmpty) {
                         return "please confirm password";
-                      } else if(confirm_password != password){
+                      } else if (confirm_password != password) {
                         return "Password not match";
-                      }else{
+                      } else {
                         return null;
                       }
                     },
@@ -731,35 +780,27 @@ class _registerState extends State<register> {
                           ),
                         ),
                         onPressed: () {
-
-                          if (_formKey.currentState!.validate()) {
-                             
+                          // if (_formKey.currentState!.validate()) {
                           //    ScaffoldMessenger.of(context).showSnackBar(
+                          //     const SnackBar(content: Text('Welcom To Awn')),
+                          //     );
+                          //   signUp();
+                          // }else{
+                          //   ScaffoldMessenger.of(context).showSnackBar(
                           //     const SnackBar(content: Text('Please fill the empty blanks')),
                           //     );
-                          //     }
+                          // }
 
-                          // if (cofirmPasswordController.text.isEmpty ||
-                          //     cofirmPasswordController.text !=
-                          //         passwordController.text) {
-                          //   Utils.showSnackBar(
-                          //       "confirm password does not match");
-                          //   return;
-                          // } else {
+                          if (cofirmPasswordController.text.isEmpty ||
+                              cofirmPasswordController.text !=
+                                  passwordController.text) {
+                            Utils.showSnackBar(
+                                "confirm password does not match");
+                            return;
+                          } else {
                             signUp();
-                          }else{
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Please fill the empty blanks')),
-                              );
                           }
-                          
-                        }
-
-                        // Navigator.pushReplacement(
-                        // context,
-                        // MaterialPageRoute(
-                        //  builder: (context) => ProfilePage()));
-                        ),
+                        }),
                   ),
                   Container(
                     margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -787,7 +828,7 @@ class _registerState extends State<register> {
 
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).accentColor,
+                            // color: Theme.of(context).accentColor,
                             decoration: TextDecoration.underline),
                       ),
                     ])),
@@ -801,23 +842,23 @@ class _registerState extends State<register> {
     );
   }
 
-  // Future selectFile() async {
-  //   final result = await FilePicker.platform.pickFiles();
-  //   upload = true;
-  //   if (result == null) {
-  //     upload = false;
-  //     return;
-  //   }
-  //   setState(() {
-  //     pickedFile = result.files.first;
-  //     fileDB = File(pickedFile.path!);
+  Future selectFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    upload = true;
+    if (result == null) {
+      upload = false;
+      return;
+    }
+    setState(() {
+      pickedFile = result.files.first;
+      fileDB = File(pickedFile.path!);
 
-  //     // final path = 'User/${pickedFile.name}'; //خليه جالسه اجرب
-  //     // final file = File(pickedFile.path!);
-  //     // final ref = FirebaseStorage.instance.ref().child(path);
-  //     // UploadTask uploadTask = ref.putFile(file);
-  //   });
-  // }
+      // final path = 'User/${pickedFile.name}'; //خليه جالسه اجرب
+      // final file = File(pickedFile.path!);
+      // final ref = FirebaseStorage.instance.ref().child(path);
+      // UploadTask uploadTask = ref.putFile(file);
+    });
+  }
 
   Future signUp() async {
     final isValid = _formKey.currentState!.validate();
@@ -866,13 +907,13 @@ bool other = false;*/
     String age = globals.bDay;
     String disability = "";
     String bio = bioController.text;
-    final user = FirebaseAuth.instance.currentUser()!;
+    final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
-    if (blind == true && blind != null) disability += " blind,";
-    if (mute == true && mute != null) disability += " mute,";
-    if (deaf == true && deaf != null) disability += " deaf,";
-    if (physical == true && physical != null) disability += " physical,";
-    if (other == true && other != null) disability += " other,";
+    if (blind == true && blind != null) disability += " Blind,";
+    if (mute == true && mute != null) disability += " Mute,";
+    if (deaf == true && deaf != null) disability += " Deaf,";
+    if (physical == true && physical != null) disability += " Physical,";
+    if (other == true && other != null) disability += " Other,";
     final userRef = db.collection("users").doc(user.uid);
     //final volRef = db.collection("volunteers").doc(user!.uid);
 
