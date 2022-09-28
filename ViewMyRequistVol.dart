@@ -1,3 +1,4 @@
+//after
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,48 @@ import 'package:get/route_manager.dart';
 
 import 'mapsPage.dart';
 import 'package:intl/intl.dart';
+import 'package:buttons_tabbar/buttons_tabbar.dart';
+
+String getuid() {
+  final user = FirebaseAuth.instance.currentUser!;
+  String userId = user.uid;
+  return userId;
+}
+
+Stream<QuerySnapshot> getPrevRequets(BuildContext context) async* {
+  final user = FirebaseAuth.instance.currentUser!;
+  String userId = user.uid;
+  final now = DateTime.now();
+
+  final today = DateFormat('yyyy-MM-dd HH: ss').format(now);
+
+  // print(today);
+  // final today = DateFormat('yyyy/MM/dd').format(now);
+  //   final Stream<QuerySnapshot> requests = FirebaseFirestore.instance
+  //       .collection('requests')
+  //       .orderBy("date_ymd")
+  //       .snapshots();
+  // }
+  //using user data
+  // yield* FirebaseFirestore.instance
+  //     .collection("userData")
+  //     .doc(userId)
+  //     .collection('requests')
+  //     .where('date_ymd', isLessThanOrEqualTo: today)
+  //     .orderBy('date_ymd')
+  //     .snapshots();
+  yield* FirebaseFirestore.instance
+      .collection('requests')
+      .where('userID', isEqualTo: userId)
+      .where('date_ymd', isLessThanOrEqualTo: today)
+      .orderBy('date_ymd')
+      .snapshots();
+}
+
+String getTime() {
+  final now = DateTime.now();
+  return DateFormat('yyyy-MM-dd HH: ss').format(now);
+}
 
 class ViewMyRequistVol extends StatefulWidget {
   @override
@@ -14,49 +57,8 @@ class ViewMyRequistVol extends StatefulWidget {
   State<ViewMyRequistVol> createState() => _ViewMyRequistState();
 }
 
-class _ViewMyRequistState extends State<ViewMyRequistVol> {
-  // getData() async {
-  //   //print("test3");
-  //   final now = DateTime.now();
-  //   final today = DateFormat('yyyy/MM/dd').format(now);
-  //   print(now);
-  //   print(today);
-  //   CollectionReference prevRequests =
-  //       FirebaseFirestore.instance.collection('requests');
-  //   await prevRequests.where('date_ymd', isLessThan: today).get().then((value) {
-  //     value.docs.forEach((element) {
-  //       print('${element.data()}');
-  //       print("======================================");
-  //     });
-  //   });
-  // }
-
-  Stream<QuerySnapshot> getPrevRequets(BuildContext context) async* {
-    final user = FirebaseAuth.instance.currentUser!;
-    String userId = user.uid;
-    final now = DateTime.now();
-    final today = DateFormat('yyyy-MM-dd HH: ss').format(now);
-    //   final Stream<QuerySnapshot> requests = FirebaseFirestore.instance
-    //       .collection('requests')
-    //       .orderBy("date_ymd")
-    //       .snapshots();
-    // }
-    //using user data
-    // yield* FirebaseFirestore.instance
-    //     .collection("userData")
-    //     .doc(userId)
-    //     .collection('requests')
-    //     .where('date_ymd', isLessThanOrEqualTo: today)
-    //     .orderBy('date_ymd')
-    //     .snapshots();
-    yield* FirebaseFirestore.instance
-        .collection('requests')
-        .where('VolID', isEqualTo: userId)
-        .where('date_ymd', isLessThanOrEqualTo: today)
-        .orderBy('date_ymd')
-        .snapshots();
-  }
-
+class _ViewMyRequistState extends State<ViewMyRequistVol>
+    with TickerProviderStateMixin {
   Stream<QuerySnapshot> getUpcomingRequets(BuildContext context) async* {
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
@@ -84,6 +86,7 @@ class _ViewMyRequistState extends State<ViewMyRequistVol> {
   }*/
 
   Widget build(BuildContext context) {
+    TabController _tabController = TabController(length: 2, vsync: this);
     return Scaffold(
       appBar: AppBar(
         title: const Text('View Awn Requests'),
@@ -92,474 +95,382 @@ class _ViewMyRequistState extends State<ViewMyRequistVol> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 0),
+      body: SingleChildScrollView(
+          //  padding: const EdgeInsets.symmetric(vertical: 0),
           child: Column(
-            children: <Widget>[
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                //prev buttom
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  width: 100,
-                  decoration: BoxDecoration(
-                    boxShadow: const [
-                      BoxShadow(
-                          color: Colors.black26,
-                          offset: Offset(0, 4),
-                          blurRadius: 5.0)
-                    ],
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      stops: [0.0, 1.0],
-                      colors: [
-                        Colors.blue,
-                        Color(0xFF39d6ce),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      textStyle: const TextStyle(
-                        fontSize: 18,
+        children: <Widget>[
+          Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ButtonsTabBar(
+                    controller: _tabController,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        stops: [0.0, 1.0],
+                        colors: [
+                          Colors.blue,
+                          Color(0xFF39d6ce),
+                        ],
                       ),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        showUpcoming = false;
-                        showPrev = true;
-                      });
-                    },
-                    child: const Text('Previous'),
-                  ),
-                ),
-                //upcoming buttom
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  width: 100,
-                  decoration: BoxDecoration(
-                    boxShadow: const [
-                      BoxShadow(
-                          color: Colors.black26,
-                          offset: Offset(0, 4),
-                          blurRadius: 5.0)
-                    ],
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      stops: [0.0, 1.0],
-                      colors: [
-                        Colors.blue,
-                        Color(0xFF39d6ce),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      textStyle: const TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        showPrev = false;
-                        showUpcoming = true;
-                      });
-                    },
-                    child: const Text('Upcoming'),
-                  ),
-                ),
+                    radius: 30,
+                    borderColor: Colors.white,
+                    buttonMargin: const EdgeInsets.fromLTRB(6, 8, 6, 1),
+                    contentPadding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                    unselectedBackgroundColor: Colors.white,
+                    labelStyle:
+                        const TextStyle(color: Colors.white, fontSize: 15),
+                    tabs: const [
+                      Tab(text: "Previous"),
+                      Tab(text: "Upcoming"),
+                    ]),
               ]),
-              //show prev
-              Visibility(
-                  visible: showPrev,
-                  child: Expanded(
-                      child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: StreamBuilder<QuerySnapshot>(
-                            stream: getPrevRequets(context),
-                            builder: (
-                              BuildContext context,
-                              AsyncSnapshot<QuerySnapshot> snapshot,
-                            ) {
-                              if (snapshot.hasError) {
-                                return Text('Something went wrong');
-                              }
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Text('Loading');
-                              }
-                              final data = snapshot.requireData;
-                              return ListView.builder(
-                                itemCount: data.size,
-                                itemBuilder: (context, index) {
-                                  return Card(
-                                      child: Column(
-                                    children: [
-                                      //title
-                                      Padding(
-                                          padding: EdgeInsets.fromLTRB(
-                                              10, 0, 20, 15),
-                                          child: Row(children: [
-                                            Text(
-                                              ' ${data.docs[index]['title']}',
-                                              textAlign: TextAlign.left,
-                                            ),
-                                          ])),
-                                      //date and time
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 18, 12),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.calendar_today,
-                                                size: 20, color: Colors.red),
-                                            Text(
-                                                ' ${data.docs[index]['date_dmy']}',
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
-                                            Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 40),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.schedule,
-                                                      size: 20,
-                                                      color: Colors.red),
-                                                  Text(
-                                                      ' ${data.docs[index]['time']}',
-                                                      style: TextStyle(
-                                                          fontSize: 17,
-                                                          fontWeight:
-                                                              FontWeight.w500)),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      //duration
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                        child: Row(
-                                          children: [
-                                            // Icon(Icons.schedule,
-                                            //     size: 20, color: Colors.red),
-                                            Text(
-                                                'Duration: ${data.docs[index]['duration']}',
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
-                                          ],
-                                        ),
-                                      ),
-                                      //description
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 18, 12),
-                                        child: Row(
-                                          children: [
-                                            // Icon(Icons.description,
-                                            //     size: 20, color: Colors.red),
-                                            Flexible(
-                                              child: Text(
-                                                  'Description: ${data.docs[index]['description']}',
-                                                  //   overflow:
-                                                  //   TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      //location
-                                      Padding(
-                                          padding: EdgeInsets.all(5),
-                                          child: ElevatedButton(
-                                              onPressed: () {
-                                                // String dataId =
-                                                //  docReference.id;
-                                                double latitude = double.parse(
-                                                    data.docs[index]
-                                                        ['latitude']);
-                                                double longitude = double.parse(
-                                                    data.docs[index]
-                                                        ['longitude']);
-
-                                                (Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          MapsPage(
-                                                              latitude:
-                                                                  latitude,
-                                                              longitude:
-                                                                  longitude),
-                                                    )));
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                  foregroundColor: Colors.white,
-                                                  backgroundColor: Colors.white,
-                                                  padding: EdgeInsets.all(10),
-                                                  side: BorderSide(
-                                                      color: Colors.white,
-                                                      width: 2)),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.location_pin,
-                                                      size: 20,
-                                                      color: Colors.red),
-                                                  Text('Location',
-                                                      style: TextStyle(
-                                                          color: Colors.black))
-                                                ],
-                                              ))),
-                                      //show status
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 18, 12),
-                                        child: Row(
-                                          children: [
-                                            Text('Status: ',
-                                                //   overflow:
-                                                //   TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
-                                            Padding(
-                                              padding: EdgeInsets.all(10),
-                                              child: Text(
-                                                  getStatus(
-                                                      data.docs[index]
-                                                          ['status'],
-                                                      data.docs[index]
-                                                          ['docId']),
-                                                  style: TextStyle(
-                                                      background: Paint()
-                                                        ..strokeWidth = 20.0
-                                                        ..color = getColor(
-                                                            data.docs[index]
-                                                                ['status'])
-                                                        ..style =
-                                                            PaintingStyle.stroke
-                                                        ..strokeJoin =
-                                                            StrokeJoin.round,
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ));
-                                },
-                              );
-                            },
-                          )))),
-              //show upcoming
-              Visibility(
-                  visible: showUpcoming,
-                  child: Expanded(
-                      child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: StreamBuilder<QuerySnapshot>(
-                            stream: getUpcomingRequets(context),
-                            builder: (
-                              BuildContext context,
-                              AsyncSnapshot<QuerySnapshot> snapshot,
-                            ) {
-                              if (snapshot.hasError) {
-                                return Text('Something went wrong');
-                              }
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Text('Loading');
-                              }
-                              final data = snapshot.requireData;
-                              return ListView.builder(
-                                itemCount: data.size,
-                                itemBuilder: (context, index) {
-                                  return Card(
-                                      child: Column(
-                                    children: [
-                                      //title
-                                      Padding(
-                                          padding: EdgeInsets.fromLTRB(
-                                              10, 0, 20, 15),
-                                          child: Row(children: [
-                                            Text(
-                                              ' ${data.docs[index]['title']}',
-                                              textAlign: TextAlign.left,
-                                            ),
-                                          ])),
-                                      //date and time
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 18, 12),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.calendar_today,
-                                                size: 20, color: Colors.red),
-                                            Text(
-                                                ' ${data.docs[index]['date_dmy']}',
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
-                                            Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 40),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.schedule,
-                                                      size: 20,
-                                                      color: Colors.red),
-                                                  Text(
-                                                      ' ${data.docs[index]['time']}',
-                                                      style: TextStyle(
-                                                          fontSize: 17,
-                                                          fontWeight:
-                                                              FontWeight.w500)),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      //duration
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                        child: Row(
-                                          children: [
-                                            // Icon(Icons.schedule,
-                                            //     size: 20, color: Colors.red),
-                                            Text(
-                                                'Duration: ${data.docs[index]['duration']}',
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
-                                          ],
-                                        ),
-                                      ),
-                                      //description
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 18, 12),
-                                        child: Row(
-                                          children: [
-                                            // Icon(Icons.description,
-                                            //     size: 20, color: Colors.red),
-                                            Flexible(
-                                              child: Text(
-                                                  'Description: ${data.docs[index]['description']}',
-                                                  //   overflow:
-                                                  //   TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      //location
-                                      Padding(
-                                          padding: EdgeInsets.all(5),
-                                          child: ElevatedButton(
-                                              onPressed: () {
-                                                // String dataId =
-                                                //  docReference.id;
-                                                double latitude = double.parse(
-                                                    data.docs[index]
-                                                        ['latitude']);
-                                                double longitude = double.parse(
-                                                    data.docs[index]
-                                                        ['longitude']);
-
-                                                (Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          MapsPage(
-                                                              latitude:
-                                                                  latitude,
-                                                              longitude:
-                                                                  longitude),
-                                                    )));
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                  foregroundColor: Colors.white,
-                                                  backgroundColor: Colors.white,
-                                                  padding: EdgeInsets.all(10),
-                                                  side: BorderSide(
-                                                      color: Colors.white,
-                                                      width: 2)),
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.location_pin,
-                                                      size: 20,
-                                                      color: Colors.red),
-                                                  Text('Location',
-                                                      style: TextStyle(
-                                                          color: Colors.black))
-                                                ],
-                                              ))),
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 18, 12),
-                                        child: Row(
-                                          children: [
-                                            Text('Status: ',
-                                                //   overflow:
-                                                //   TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
-                                            Padding(
-                                              padding: EdgeInsets.all(10),
-                                              child: Text(
-                                                  '${data.docs[index]['status']}',
-                                                  //   overflow:
-                                                  //   TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      background: Paint()
-                                                        ..strokeWidth = 20.0
-                                                        ..color = getColor(
-                                                            data.docs[index]
-                                                                ['status'])
-                                                        ..style =
-                                                            PaintingStyle.stroke
-                                                        ..strokeJoin =
-                                                            StrokeJoin.round,
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ));
-                                },
-                              );
-                            },
-                          ))))
-            ],
-          )),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: []),
+          Container(
+            width: double.maxFinite,
+            height: MediaQuery.of(context).size.height,
+            child: TabBarView(controller: _tabController, children: [
+              showPrevList(getPrevRequets(context)),
+              showUpcomingList(getUpcomingRequets(context))
+            ]),
+          ),
+        ],
+      )),
     );
+  }
+
+  Widget showUpcomingList(Stream<QuerySnapshot> list) {
+    final user = FirebaseAuth.instance.currentUser!;
+    String userId = user.uid;
+    final now = DateTime.now();
+
+    final today = DateFormat('yyyy-MM-dd HH: ss').format(now);
+    final Stream<QuerySnapshot> ulist = FirebaseFirestore.instance
+        .collection('requests')
+        .where('VolID', isEqualTo: userId)
+        .where('date_ymd', isGreaterThan: today)
+        .orderBy('date_ymd')
+        .snapshots();
+
+    return Expanded(
+        child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: ulist,
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<QuerySnapshot> snapshot,
+              ) {
+                if (snapshot.hasError) {
+                  return Text('Something went wrong');
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Text('Loading');
+                }
+                final data = snapshot.requireData;
+                return ListView.builder(
+                  itemCount: data.size,
+                  itemBuilder: (context, index) {
+                    return Card(
+                        child: Column(
+                      children: [
+                        //title
+                        Padding(
+                            padding: EdgeInsets.fromLTRB(10, 0, 0, 15),
+                            child: Row(children: [
+                              Text(
+                                ' ${data.docs[index]['title']}',
+                                textAlign: TextAlign.left,
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(left: 60),
+                                padding: EdgeInsets.all(10),
+                                child: Text('${data.docs[index]['status']}',
+                                    //   overflow:
+                                    //   TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        background: Paint()
+                                          ..strokeWidth = 20.0
+                                          ..color = getColor(
+                                              data.docs[index]['status'])
+                                          ..style = PaintingStyle.stroke
+                                          ..strokeJoin = StrokeJoin.round,
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500)),
+                              )
+                            ])),
+                        //date and time
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
+                          child: Row(
+                            children: [
+                              Icon(Icons.calendar_today,
+                                  size: 20, color: Colors.red),
+                              Text(' ${data.docs[index]['date_dmy']}',
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w500)),
+                              Padding(
+                                padding: EdgeInsets.only(left: 40),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.schedule,
+                                        size: 20, color: Colors.red),
+                                    Text(' ${data.docs[index]['time']}',
+                                        style: TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w500)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        //duration
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
+                          child: Row(
+                            children: [
+                              // Icon(Icons.schedule,
+                              //     size: 20, color: Colors.red),
+                              Text('Duration: ${data.docs[index]['duration']}',
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                        ),
+                        //description
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
+                          child: Row(
+                            children: [
+                              // Icon(Icons.description,
+                              //     size: 20, color: Colors.red),
+                              Flexible(
+                                child: Text(
+                                    'Description: ${data.docs[index]['description']}',
+                                    //   overflow:
+                                    //   TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500)),
+                              ),
+                            ],
+                          ),
+                        ),
+                        //location
+                        Padding(
+                            padding: EdgeInsets.all(5),
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  // String dataId =
+                                  //  docReference.id;
+                                  double latitude = double.parse(
+                                      data.docs[index]['latitude']);
+                                  double longitude = double.parse(
+                                      data.docs[index]['longitude']);
+
+                                  (Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => MapsPage(
+                                            latitude: latitude,
+                                            longitude: longitude),
+                                      )));
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors.white,
+                                    padding: EdgeInsets.all(10),
+                                    side: BorderSide(
+                                        color: Colors.white, width: 2)),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.location_pin,
+                                        size: 20, color: Colors.red),
+                                    Text('Location',
+                                        style: TextStyle(color: Colors.black))
+                                  ],
+                                ))),
+                      ],
+                    ));
+                  },
+                );
+              },
+            )));
+  }
+
+  Widget showPrevList(Stream<QuerySnapshot> list) {
+    final user = FirebaseAuth.instance.currentUser!;
+    String userId = user.uid;
+    final now = DateTime.now();
+
+    final today = DateFormat('yyyy-MM-dd HH: ss').format(now);
+    final Stream<QuerySnapshot> Plist = FirebaseFirestore.instance
+        .collection('requests')
+        .where('VolID', isEqualTo: userId)
+        .where('date_ymd', isLessThanOrEqualTo: today)
+        .orderBy('date_ymd')
+        .snapshots();
+
+    return Expanded(
+        child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: Plist,
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<QuerySnapshot> snapshot,
+              ) {
+                if (snapshot.hasError) {
+                  return Text('Something went wrong');
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Text('Loading');
+                }
+                final data = snapshot.requireData;
+                return ListView.builder(
+                  itemCount: data.size,
+                  itemBuilder: (context, index) {
+                    return Card(
+                        child: Column(
+                      children: [
+                        //title
+                        Padding(
+                            padding: EdgeInsets.fromLTRB(10, 0, 0, 15),
+                            child: Row(children: [
+                              Text(getStatus(data.docs[index]['status'],
+                                  data.docs[index]['docId'])),
+                              Container(
+                                margin: EdgeInsets.only(left: 60),
+                                padding: EdgeInsets.all(10),
+                                child: Text('${data.docs[index]['status']}',
+                                    //   overflow:
+                                    //   TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        background: Paint()
+                                          ..strokeWidth = 20.0
+                                          ..color = getColor(
+                                              data.docs[index]['status'])
+                                          ..style = PaintingStyle.stroke
+                                          ..strokeJoin = StrokeJoin.round,
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500)),
+                              )
+                            ])),
+                        //date and time
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
+                          child: Row(
+                            children: [
+                              Icon(Icons.calendar_today,
+                                  size: 20, color: Colors.red),
+                              Text(' ${data.docs[index]['date_dmy']}',
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w500)),
+                              Padding(
+                                padding: EdgeInsets.only(left: 40),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.schedule,
+                                        size: 20, color: Colors.red),
+                                    Text(' ${data.docs[index]['time']}',
+                                        style: TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w500)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        //duration
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
+                          child: Row(
+                            children: [
+                              // Icon(Icons.schedule,
+                              //     size: 20, color: Colors.red),
+                              Text('Duration: ${data.docs[index]['duration']}',
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                        ),
+                        //description
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
+                          child: Row(
+                            children: [
+                              // Icon(Icons.description,
+                              //     size: 20, color: Colors.red),
+                              Flexible(
+                                child: Text(
+                                    'Description: ${data.docs[index]['description']}',
+                                    //   overflow:
+                                    //   TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w500)),
+                              ),
+                            ],
+                          ),
+                        ),
+                        //location
+                        Padding(
+                            padding: EdgeInsets.all(5),
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  // String dataId =
+                                  //  docReference.id;
+                                  double latitude = double.parse(
+                                      data.docs[index]['latitude']);
+                                  double longitude = double.parse(
+                                      data.docs[index]['longitude']);
+
+                                  (Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => MapsPage(
+                                            latitude: latitude,
+                                            longitude: longitude),
+                                      )));
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors.white,
+                                    padding: EdgeInsets.all(10),
+                                    side: BorderSide(
+                                        color: Colors.white, width: 2)),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.location_pin,
+                                        size: 20, color: Colors.red),
+                                    Text('Location',
+                                        style: TextStyle(color: Colors.black))
+                                  ],
+                                ))),
+                      ],
+                    ));
+                  },
+                );
+              },
+            )));
+  }
+
+  setShowPrev() {
+    showPrev = true;
+  }
+
+  setShowUpcoming() {
+    showPrev = false;
+    showUpcoming = true;
   }
 }
 

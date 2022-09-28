@@ -342,10 +342,8 @@ class _ViewMyRequistState extends State<ViewMyRequistSN>
                         Padding(
                             padding: EdgeInsets.fromLTRB(10, 0, 0, 15),
                             child: Row(children: [
-                              Text(
-                                ' ${data.docs[index]['title']}',
-                                textAlign: TextAlign.left,
-                              ),
+                              Text(getStatus(data.docs[index]['status'],
+                                  data.docs[index]['docId'])),
                               Container(
                                 margin: EdgeInsets.only(left: 60),
                                 padding: EdgeInsets.all(10),
