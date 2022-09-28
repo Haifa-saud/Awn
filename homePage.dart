@@ -73,10 +73,11 @@ class MyHomePage extends State<homePage> {
             MaterialPageRoute(builder: (context) => viewRequests()),
           );
         } */
+      // else if (index == 2) {
+      //   Navigator.push(
+      //       context, MaterialPageRoute(builder: (context) => const Tts()));
+      // } 
       else if (index == 2) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const Tts()));
-      } else if (index == 3) {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const login()));
 
@@ -421,14 +422,14 @@ class MyHomePage extends State<homePage> {
                 label: 'View Requests',
               ),*/
             //tts
-            BottomNavigationBarItem(
-              //index 2
+            // BottomNavigationBarItem(
+            //   //index 2
 
-              icon: Icon(Icons.speaker_phone, color: Colors.grey.shade700),
-              activeIcon:
-                  Icon(Icons.speaker_phone, color: Colors.grey.shade700),
-              label: 'Tts',
-            ),
+            //   icon: Icon(Icons.speaker_phone, color: Colors.grey.shade700),
+            //   activeIcon:
+            //       Icon(Icons.speaker_phone, color: Colors.grey.shade700),
+            //   label: 'Tts',
+            // ),
             BottomNavigationBarItem(
               //index 3
               icon: Icon(Icons.logout, color: Colors.grey.shade700),

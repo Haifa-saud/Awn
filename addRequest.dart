@@ -74,6 +74,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   DateTime dateTime = DateTime.now();
+  DateTime SelectedDateTime = DateTime.now();
   bool showDate = true;
   bool showTime = true;
   bool showDateTime = false;
@@ -88,7 +89,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
       initialDate: selectedDate,
       // firstDate: DateTime(2000),
       firstDate: DateTime.now(),
-      lastDate: DateTime(2025),
+      lastDate: DateTime(2023),
     );
     if (selected != null && selected != selectedDate) {
       setState(() {
@@ -153,12 +154,25 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     }
   }
 
+  String getDateTimeSelected() {
+    setState(() {
+      SelectedDateTime = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        selectedTime.hour,
+        selectedTime.minute,
+      );
+    });
+    return DateFormat('yyyy-MM-dd HH: ss').format(SelectedDateTime);
+  }
+
   String getDateTime() {
     // ignore: unnecessary_null_comparison
     if (dateTime == null) {
       return 'select date timer';
     } else {
-      return DateFormat('yyyy-MM-dd HH: ss a').format(dateTime);
+      return DateFormat('yyyy-MM-dd HH: ss').format(dateTime);
     }
   }
 
@@ -168,6 +182,29 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     final dt = DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
     final format = DateFormat.jm();
     return format.format(dt);
+  }
+
+  double checkCurrentTime() {
+    DateTime now = DateTime.now();
+    final today = DateFormat('dd/MM/yyyy').format(now);
+    String selectedday = selectedDate.toString();
+    if (selectedDate.isAfter(now)) {
+      return -1;
+    } else {
+      double finalTiemSelected =
+          selectedTime.hour.toDouble() + (selectedTime.minute.toDouble() / 60);
+      TimeOfDay ST = TimeOfDay.now();
+
+      double finalTimeNow = ST.hour.toDouble() + (ST.minute.toDouble() / 60);
+      double _timeDiff = finalTimeNow - finalTiemSelected;
+
+      // String strinf = finalTimeNow.toString() +
+      //     " " +
+      //     finalTimSelected.toString() +
+      //     " " +
+      //     _timeDiff.toString();
+      return _timeDiff;
+    }
   }
 
   @override
@@ -180,7 +217,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
           children: <Widget>[
             Container(
                 child: Text(
-              '*indicates requered fields',
+              '*indicates required fields',
               style: TextStyle(fontSize: 15),
             )),
             /*title*/ Container(
@@ -190,6 +227,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
             Container(
                 padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                 child: TextFormField(
+                  maxLength: 20,
                   controller: titleController,
                   decoration: const InputDecoration(
                     hintText: 'E.g. Help with shopping',
@@ -197,7 +235,8 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   // onChanged: (value) {title = value; },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a title';
+                      double s = checkCurrentTime();
+                      return 'Please enter a title ' + s.toString();
                     }
                     return null;
                   },
@@ -358,6 +397,24 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   ),
                 ),
                 onPressed: () {
+                  if (checkCurrentTime() >= 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Please select an earlier time'),
+                        backgroundColor: Colors.red.shade400,
+                        margin: EdgeInsets.fromLTRB(8, 0, 20, 0),
+                        behavior: SnackBarBehavior.floating,
+                        action: SnackBarAction(
+                          label: 'Dismiss',
+                          disabledTextColor: Colors.white,
+                          textColor: Colors.white,
+                          onPressed: () {
+                            //Do whatever you want
+                          },
+                        ),
+                      ),
+                    );
+                  }
                   if (_formKey.currentState!.validate()) {
                     addToDB();
                   } else {
@@ -401,7 +458,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
         .collection('requests');
     DocumentReference docReference = await requests.add({
       'title': titleController.text,
-      'date_ymd': getDate(),
+      'date_ymd': getDateTimeSelected(), //getDate
       'date_dmy': getDate_formated(),
       'time': getTime(selectedTime),
       'duration': durationController.text,
@@ -411,7 +468,8 @@ class AwnRequestFormState extends State<AwnRequestForm> {
       'status': 'Pending',
       'docId': '',
       'userID': userId,
-      'VolID': ''
+      'VolID': '',
+      'notificationStatus': 'pending'
     });
     String dataId = docReference.id;
     requests.doc(dataId).update({'docId': dataId});
