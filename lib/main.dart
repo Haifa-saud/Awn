@@ -1,5 +1,6 @@
 import 'package:awn/homePage.dart';
 import 'package:awn/login.dart';
+import 'package:awn/notificationRequest.dart';
 import 'package:awn/register.dart';
 import 'package:awn/services/sendNotification.dart';
 import 'package:awn/viewRequests.dart';
@@ -41,7 +42,8 @@ Future<void> main() async {
 class MyApp extends StatefulWidget {
   bool auth;
   bool notification;
-  MyApp([this.auth = false, this.notification = false]);
+  String payload;
+  MyApp([this.auth = false, this.notification = false, this.payload = '']);
   @override
   State<MyApp> createState() => _MyApp();
 }

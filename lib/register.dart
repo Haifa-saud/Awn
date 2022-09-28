@@ -1,5 +1,4 @@
 // ignore_for_file: non_constant_identifier_names
-
 import 'package:awn/services/Utils.dart';
 import 'package:awn/login.dart';
 import 'package:awn/services/firebase_storage_services.dart';
@@ -17,10 +16,8 @@ import 'services/theme.dart';
 import 'services/myGlobal.dart' as globals;
 
 class register extends StatefulWidget {
-  // final Function() onClickedSignIn;
   const register({
     Key? key,
-    // required this.onClickedSignIn,
   }) : super(key: key);
 
   @override
@@ -51,6 +48,10 @@ String password = "";
 String confirm_password = "";
 
 class _registerState extends State<register> {
+  Stream<QuerySnapshot> DisabilityType =
+      FirebaseFirestore.instance.collection('UserDisabilityType').snapshots();
+  var selectedDisabilityType;
+
   @override
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -134,9 +135,9 @@ class _registerState extends State<register> {
                   }
                   if (snapshot.connectionState == ConnectionState.waiting ||
                       !snapshot.hasData) {
-                    return CircularProgressIndicator(
+                    return Center(child: CircularProgressIndicator(
                       color: Colors.grey.shade200,
-                    );
+                    ));
                   }
                   return Container();
                 }),
@@ -349,9 +350,43 @@ class _registerState extends State<register> {
                             SizedBox(
                               height: height * 0.01,
                             ),
+                //             Container(
+                // padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                // child: StreamBuilder<QuerySnapshot>(
+                //     stream: DisabilityType.snapshots(),
+                //     builder: (context, snapshot) {
+                //       if (!snapshot.hasData) {
+                //         return Text("Loading");
+                //       } else {
+                //         return DropdownButtonFormField(
+                //           isDense: true,
+                //           onChanged: (value) {
+                //             setState(() {
+                //               selectedDisabilityType = value;
+                //             });
+                //           },
+                //           validator: (value) => value == null
+                //               ? 'Please select a category.'
+                //               : null,
+                //           hint: const Text('Category (required)*'),
+                //           items: snapshot.data!.docs
+                //               .map((DocumentSnapshot document) {
+                //             return DropdownMenuItem<String>(
+                //               value: ((document.data() as Map)['category']),
+                //               child: Text((document.data() as Map)['category']),
+                //             );
+                //           }).toList(),
+                //           value: DisabilityType,
+                //           isExpanded: false,
+                //         );
+                //       }
+                //     })),
 
                             //Wedd's change
                             // each row must have a check box and a text
+                            // StreatBuilder<QuerySnapshot>(
+
+                            // ),
                             Row(children: [
                               SizedBox(
                                 height: 24.0,
@@ -584,11 +619,11 @@ class _registerState extends State<register> {
                     ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      //خليت اللي يسبب ايرور كومنت عشان ماقدرت اسوي رن
-                      //Wedd's change
-                      // RegExp Upper = RegExp(r'^(?=.*? [A-Z])');
-                      // RegExp digit = RegExp(r'^(?=.*?[0-9])');
-                      // if (value == null){
+                      // Wedd's Code for password
+                      password = value.toString() ;
+                      // RegExp Upper = RegExp(r"(?=.*[A-Z])");
+                      // RegExp digit = RegExp(r"(?=.*[0-9])");
+                      // if (value == null || value.isEmpty){
                       //   return "please enter a password";
                       // } else if (value.length < 7) {
                       //   return "password should at least be 8 digits"; //ود موجودة ؟
@@ -596,13 +631,10 @@ class _registerState extends State<register> {
                       // return "password should contain an Upper case";
                       // }  else if (!digit.hasMatch(value)) {
                       //   return "password should contain a number";
-
                       // } else {
                       //   return null;
                       // }
-                      // شكرا !!!!
-                      // RegExp Upper = RegExp(r'^(?=.*?[A-Z])');
-                      // RegExp digit = RegExp(r'^(?=.*?[0-9])');
+
 
                       if (value == null || value.isEmpty || value.length < 8) {
                         return 'Please enter a password min 8';
@@ -662,9 +694,13 @@ class _registerState extends State<register> {
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
                       //Wedd's change
-                      if (value == null) {
+                      confirm_password = value.toString();
+                      //Wedd's change
+                      if (value == null || value.isEmpty) {
                         return "please confirm password";
-                      } else {
+                      } else if(confirm_password != password){
+                        return "Password not match";
+                      }else{
                         return null;
                       }
                     },
@@ -721,6 +757,17 @@ class _registerState extends State<register> {
                           ),
                         ),
                         onPressed: () {
+                          // if (_formKey.currentState!.validate()) {
+                          //    ScaffoldMessenger.of(context).showSnackBar(
+                          //     const SnackBar(content: Text('Welcom To Awn')),
+                          //     );
+                          //   signUp();
+                          // }else{
+                          //   ScaffoldMessenger.of(context).showSnackBar(
+                          //     const SnackBar(content: Text('Please fill the empty blanks')),
+                          //     );
+                          // }
+                          
                           if (cofirmPasswordController.text.isEmpty ||
                               cofirmPasswordController.text !=
                                   passwordController.text) {
@@ -732,10 +779,7 @@ class _registerState extends State<register> {
                           }
                         }
 
-                        // Navigator.pushReplacement(
-                        // context,
-                        // MaterialPageRoute(
-                        //  builder: (context) => ProfilePage()));
+                        
                         ),
                   ),
                   Container(
@@ -845,11 +889,11 @@ bool other = false;*/
     String bio = bioController.text;
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
-    if (blind == true && blind != null) disability += " blind,";
-    if (mute == true && mute != null) disability += " mute,";
-    if (deaf == true && deaf != null) disability += " deaf,";
-    if (physical == true && physical != null) disability += " physical,";
-    if (other == true && other != null) disability += " other,";
+    if (blind == true && blind != null) disability += " Blind,";
+    if (mute == true && mute != null) disability += " Mute,";
+    if (deaf == true && deaf != null) disability += " Deaf,";
+    if (physical == true && physical != null) disability += " Physical,";
+    if (other == true && other != null) disability += " Other,";
     final userRef = db.collection("users").doc(user.uid);
     //final volRef = db.collection("volunteers").doc(user!.uid);
 

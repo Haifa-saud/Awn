@@ -1,8 +1,9 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
-import 'package:awn/FirstPage.dart';
+import 'package:awn/TextToSpeech.dart';
 import 'package:awn/addPost.dart';
 import 'package:awn/addRequest.dart';
 import 'package:awn/login.dart';
+import 'package:awn/notificationRequest.dart';
 import 'package:awn/services/sendNotification.dart';
 import 'package:awn/services/usersModel.dart';
 import 'package:awn/userProfile.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:workmanager/workmanager.dart';
 import 'services/firebase_options.dart';
 import 'package:awn/map.dart';
@@ -80,8 +82,10 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
         print(payload);
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => viewRequests(payload)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => viewNotificationRequest(reqID: payload)));
       });
 
   final iconList = <IconData>[
@@ -106,7 +110,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
       } else if (index == 1) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const addPost()),
+          MaterialPageRoute(builder: (context) => const Tts()),
         );
       } else if (index == 2) {
         if (widget.userType == 'Special Need User') {
@@ -121,10 +125,9 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
           );
         }
       } else if (index == 3) {
-        Workmanager().cancelAll();
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => login()));
-        FirebaseAuth.instance.signOut();
+            context, MaterialPageRoute(builder: (context) => userProfile()));
+        // FirebaseAuth.instance.signOut();
       }
     }
 
@@ -149,7 +152,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            textAlign: TextAlign.left,
+                            // textAlign: TextAlign.left,
                             "Awn",
                             style: TextStyle(
                               fontSize: 20,
@@ -532,5 +535,50 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                     })))
       ],
     ));
+  }
+}
+
+class MapsPage extends StatefulWidget {
+  final double latitude;
+  final double longitude;
+  @override
+  const MapsPage({Key? key, required this.latitude, required this.longitude})
+      : super(key: key);
+  State<MapsPage> createState() => _MapsPageState();
+}
+
+class _MapsPageState extends State<MapsPage> {
+  late GoogleMapController myController;
+
+  Widget build(BuildContext context) {
+    Set<Marker> getMarker() {
+      return <Marker>{
+        Marker(
+            markerId: const MarkerId(''),
+            position: LatLng(widget.latitude, widget.longitude),
+            icon: BitmapDescriptor.defaultMarker,
+            infoWindow: const InfoWindow(title: 'Special need location'))
+      };
+    }
+
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Awn Request Location'),
+          leading: IconButton(
+            icon: const Icon(Icons.navigate_before, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: GoogleMap(
+          markers: getMarker(),
+          mapType: MapType.normal,
+          initialCameraPosition: CameraPosition(
+            target: LatLng(widget.latitude, widget.longitude),
+            zoom: 14.0,
+          ),
+          onMapCreated: (GoogleMapController controller) {
+            myController = controller;
+          },
+        ));
   }
 }

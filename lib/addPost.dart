@@ -116,7 +116,6 @@ class _MyStatefulWidgetState extends State<addPost> {
               ),
             ),
             /*name*/ Container(
-              // key: dataKey,
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
               child: TextFormField(
                 textAlign: TextAlign.left,
@@ -144,7 +143,6 @@ class _MyStatefulWidgetState extends State<addPost> {
                         return Text("Loading");
                       } else {
                         return DropdownButtonFormField(
-                          // value: shopId,
                           isDense: true,
                           onChanged: (value) {
                             setState(() {

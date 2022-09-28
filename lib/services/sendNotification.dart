@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:awn/main.dart';
+import 'package:awn/notificationRequest.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -23,8 +24,11 @@ void callbackDispatcher() {
       if (payload != null && payload.isNotEmpty) {
         print('payload $payload');
 
-        Navigator.push(GlobalContextService.navigatorKey.currentState!.context,
-            MaterialPageRoute(builder: ((context) => viewRequests(payload))));
+        Navigator.push(
+            GlobalContextService.navigatorKey.currentState!.context,
+            MaterialPageRoute(
+                builder: ((context) =>
+                    viewNotificationRequest(reqID: payload))));
       }
     }
 
@@ -53,7 +57,6 @@ void callbackDispatcher() {
         if (kDebugMode) {
           print("pending requests: ${requests.join(", ")}");
         }
-        // ignore: unused_local_variable
         var test =
             await Future.delayed(const Duration(milliseconds: 60000), () async {
           if (kDebugMode) {
@@ -75,7 +78,7 @@ class NotificationService {
   final _localNotifications = FlutterLocalNotificationsPlugin();
   Future<void> initializePlatformNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-         AndroidInitializationSettings('ic_launcher');
+        AndroidInitializationSettings('ic_launcher');
 
     const InitializationSettings initializationSettings =
         InitializationSettings(

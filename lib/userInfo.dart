@@ -22,7 +22,7 @@ class _InfoPageState extends State<InfoPage> {
           return doc.data() as Map<String, dynamic>;
         },
       );
-
+      
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +37,18 @@ class _InfoPageState extends State<InfoPage> {
           if (snapshot.hasData) {
             userData = snapshot.data as Map<String, dynamic>;
             var userName = userData['name'];
+            bool isVolunteer = false;
+            bool isSpecial = false;
+            if (userData['Type'] == "Volunteer") {
+              isVolunteer = true;
+            } else {
+              isSpecial = true;
+            }
+            String dis = userData['Disability'];
+            dis = dis.substring(0, dis.length - 1);
             print(userName);
             print("hello" + userData['name']);
             return Scaffold(
-//         //  return Scaffold(
                 appBar: AppBar(
                   title: const Text('Profile'),
                   leading: IconButton(
@@ -49,94 +57,194 @@ class _InfoPageState extends State<InfoPage> {
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Visibility(
-                        visible: true,
-                        child: Card(
-                            child: Column(
+                body: SingleChildScrollView(
+                    child: Container(
+                        padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+                        height: 800,
+                        width: 450,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          //textDirection: TextDirection,l,
                           children: [
-                            //name
-                            // Padding(
-                            //     padding:
-                            //         EdgeInsets.fromLTRB(10, 0, 20, 15),
-                            //     child: Row(children: [
-                            //       Text(
-                            //         'Name: ' +
-                            //             ' ${data.docs[index]['name']}',
-                            //         textAlign: TextAlign.left,
-                            //       ),
-                            //     ])),
-                            //date of birth
-                            // Padding(
-                            //   padding:
-                            //       EdgeInsets.fromLTRB(20, 0, 18, 12),
-                            //   child: Row(
-                            //     children: [
-                            //       Text(
-                            //         'Date of birth: ' +
-                            //             ' ${data.docs[index]['DOB']}',
-                            //         textAlign: TextAlign.left,
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
-                            //gender
-                            // Padding(
-                            //     padding:
-                            //         EdgeInsets.fromLTRB(10, 0, 20, 15),
-                            //     child: Row(children: [
-                            //       Text(
-                            //         'Gender: ' +
-                            //             ' ${data.docs[index]['gender']}',
-                            //         textAlign: TextAlign.left,
-                            //       ),
-                            //     ])),
-                            //Emial
-                            // Padding(
-                            //     padding:
-                            //         EdgeInsets.fromLTRB(10, 0, 20, 15),
-                            //     child: Row(children: [
-                            //       Text(
-                            //         'Email: ' +
-                            //             ' ${data.docs[index]['Email']}',
-                            //         textAlign: TextAlign.left,
-                            //       ),
-                            //     ])),
-                            //phone
-                            Padding(
-                                padding: EdgeInsets.fromLTRB(10, 0, 20, 15),
-                                child: Row(children: [
-                                  Text(
-                                    'Phone number: ' + "${userData['name']}",
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ])),
-                            //bio
-                            // Padding(
-                            //   padding:
-                            //       EdgeInsets.fromLTRB(20, 0, 18, 12),
-                            //   child: Row(
-                            //     children: [
-                            //       Flexible(
-                            //         child: Text(
-                            //             'BIO : ${data.docs[index]['bio']}',
-                            //             style: TextStyle(
-                            //                 fontSize: 17,
-                            //                 fontWeight:
-                            //                     FontWeight.w500)),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
+                            SizedBox(
+                              height: 50,
+                            ),
+                            Text(
+                              "Name: ",
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w500, // light
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              userData['name'],
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w300,
+                                  wordSpacing: 3,
+                                  letterSpacing: 1),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            const Text(
+                              "Date of Birth: ",
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w500, // light
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              userData['DOB'],
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w300,
+                                  wordSpacing: 3,
+                                  letterSpacing: 1),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            const Text(
+                              "Gender: ",
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w500,
+                                wordSpacing: 3,
+                                letterSpacing: 1, // light
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              userData['gender'],
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w300,
+                                  wordSpacing: 3,
+                                  letterSpacing: 1),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Text(
+                              "Email: ",
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w500, // light
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              userData['Email'],
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w300,
+                                  wordSpacing: 3,
+                                  letterSpacing: 1),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Text(
+                              "Phone number: ",
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w500, // light
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              userData['phone number'],
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w300,
+                                  wordSpacing: 3,
+                                  letterSpacing: 1),
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Visibility(
+                                visible: isVolunteer,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Bio: ",
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w500, // light
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    //bio
+                                    Text(
+                                      userData['bio'],
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w300,
+                                          wordSpacing: 3,
+                                          letterSpacing: 1),
+                                    ),
+                                  ],
+                                )),
+                            Visibility(
+                                visible: isSpecial,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Disability: ",
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w500, // light
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    //bio
+                                    Text(
+                                      dis,
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w300,
+                                          wordSpacing: 3,
+                                          letterSpacing: 1),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                  ],
+                                )),
                           ],
-                        )),
-                      ),
-                    ],
-                  ),
-                ));
+                        ))));
           } else {
             return const Text('');
           }

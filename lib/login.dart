@@ -60,7 +60,7 @@ class _loginState extends State<login> {
       .snapshots()
       .map((snapshot) =>
           snapshot.docs.map((doc) => usersModel.fromJson(doc.data())).toList());
-  
+
   @override
   Widget build(BuildContext context) {
     //final Storage storage = Storage();
@@ -179,13 +179,6 @@ class _loginState extends State<login> {
                         //     borderSide:
                         //         const BorderSide(color: Colors.red, width: 2.0)),
                       ),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (email) {
-                        if (email != null && !EmailValidator.validate(email))
-                          return "Enter a valid email";
-                        else
-                          return null;
-                      },
                     ),
                     SizedBox(
                       height: height * 0.05,
@@ -229,14 +222,6 @@ class _loginState extends State<login> {
                             borderSide: const BorderSide(
                                 color: Colors.red, width: 2.0)),
                       ),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) {
-                        if (value != null && value.length < 6) {
-                          return "Enter a valid password";
-                        } else {
-                          return null;
-                        }
-                      },
                     ),
                     SizedBox(
                       height: height * 0.01,
@@ -350,6 +335,42 @@ class _loginState extends State<login> {
                                 }
                               } catch (e) {
                                 print(e.toString());
+                                if (emailController.text.isNotEmpty &&
+                                    passwordController.text.isNotEmpty) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content:
+                                        const Text('Invalid email/password'),
+                                    backgroundColor: Colors.red.shade400,
+                                    margin:
+                                        const EdgeInsets.fromLTRB(6, 0, 3, 0),
+                                    behavior: SnackBarBehavior.floating,
+                                    action: SnackBarAction(
+                                      label: 'Dismiss',
+                                      disabledTextColor: Colors.white,
+                                      textColor: Colors.white,
+                                      onPressed: () {},
+                                    ),
+                                  ));
+                                } else if (emailController.text.isEmpty ||
+                                    passwordController.text.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: const Text(
+                                          'Please fill required fields'),
+                                      backgroundColor: Colors.red.shade400,
+                                      margin:
+                                          const EdgeInsets.fromLTRB(6, 0, 3, 0),
+                                      behavior: SnackBarBehavior.floating,
+                                      action: SnackBarAction(
+                                        label: 'Dismiss',
+                                        disabledTextColor: Colors.white,
+                                        textColor: Colors.white,
+                                        onPressed: () {},
+                                      ),
+                                    ),
+                                  );
+                                }
                               }
                             }
                             // Utils.showSnackBar("wrong email//password");
@@ -371,7 +392,7 @@ class _loginState extends State<login> {
                             ..onTap = () {
                               Navigator.pushNamed(context, "/register");
                             },
-                          text: 'Create',
+                          text: 'Register',
 
                           // Navigator.push(
                           //  context,
@@ -414,22 +435,23 @@ class _loginState extends State<login> {
       );
       getUsersList();
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('no such user exists'),
-          backgroundColor: Colors.red.shade400,
-          margin: const EdgeInsets.fromLTRB(6, 0, 3, 0),
-          behavior: SnackBarBehavior.floating,
-          action: SnackBarAction(
-            label: 'Dismiss',
-            disabledTextColor: Colors.white,
-            textColor: Colors.white,
-            onPressed: () {
-              //Do whatever you want
-            },
+      if (emailController.text.isNotEmpty &&
+          passwordController.text.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Invalid email/password'),
+            backgroundColor: Colors.red.shade400,
+            margin: const EdgeInsets.fromLTRB(6, 0, 3, 0),
+            behavior: SnackBarBehavior.floating,
+            action: SnackBarAction(
+              label: 'Dismiss',
+              disabledTextColor: Colors.white,
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
   }
 }
