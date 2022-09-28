@@ -385,7 +385,6 @@ class _registerState extends State<register> {
                             //Wedd's change
                             // each row must have a check box and a text
                             // StreatBuilder<QuerySnapshot>(
-
                             // ),
                             Row(children: [
                               SizedBox(

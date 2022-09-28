@@ -23,13 +23,11 @@ class viewRequests extends StatefulWidget {
 }
 
 class _AddRequestState extends State<viewRequests> {
-  // final Stream<QuerySnapshot> requests = FirebaseFirestore.instance
-  //     .collection('userData')
-  //     .doc('hHnGktKAq9R5rLsMhOL8uBDhhYy1')
-  //     .collection('requests')
-  //     .where('status', isEqualTo: "Pending")
-  //     .orderBy("date_ymd")
-  //     .snapshots();
+  Future<String> getLocationAsString(var lat, var lng) async {
+    List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
+    return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
+  }
+
   final Stream<QuerySnapshot> requests = FirebaseFirestore.instance
       .collection('requests')
       .where('status', isEqualTo: 'Pending')
@@ -57,11 +55,11 @@ class _AddRequestState extends State<viewRequests> {
                   //       builder: (context) => ViewMyRequistSN(),
                   //     ));
                 },
-                child: Text("past req special need"),
+                child: const Text("past req special need"),
                 style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.grey.shade500,
                     backgroundColor: Colors.white,
-                    padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
+                    padding: const EdgeInsets.fromLTRB(14, 20, 14, 20),
                     side: BorderSide(color: Colors.grey.shade400, width: 2)),
               ),
               ElevatedButton(
@@ -72,11 +70,11 @@ class _AddRequestState extends State<viewRequests> {
                   //       builder: (context) => ViewMyRequistVol(),
                   //     ));
                 },
-                child: Text("past req volenteer"),
+                child: const Text("past req volenteer"),
                 style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.grey.shade500,
                     backgroundColor: Colors.white,
-                    padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
+                    padding: const EdgeInsets.fromLTRB(14, 20, 14, 20),
                     side: BorderSide(color: Colors.grey.shade400, width: 2)),
               ),
               Expanded(
@@ -89,209 +87,214 @@ class _AddRequestState extends State<viewRequests> {
                           AsyncSnapshot<QuerySnapshot> snapshot,
                         ) {
                           if (snapshot.hasError) {
-                            return Text('Something went wrong');
+                            return const Text('Something went wrong');
                           }
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return Center(
-                                        child: CircularProgressIndicator());
+                            return const Center(
+                                child: CircularProgressIndicator());
                           }
                           var data = snapshot.requireData;
                           return ListView.builder(
                             itemCount: data.size,
                             itemBuilder: (context, index) {
                               var reqLoc;
-                              // FutureBuilder(
-                              //     future: placemarkFromCoordinates(
-                              //         double.parse(
-                              //             data.docs[index]['latitude']),
-                              //         double.parse(
-                              //             data.docs[index]['longitude'])),
-                              //     builder: (context, snap) {
-                              //       if (snap.hasData) {
-                              //         reqLoc = ;
-                              //       }
-                              //       return Center(
-                              //           child: CircularProgressIndicator());
-                              //     });
-
-                              return Card(
-                                  child: Column(
-                                children: [
-                                  //title
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(10, 0, 20, 15),
-                                    child: Text(
-                                      ' ${data.docs[index]['title']}',
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ),
-                                  //date and time
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.calendar_today,
-                                            size: 20, color: Colors.red),
-                                        Text(' ${data.docs[index]['date_dmy']}',
-                                            style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w500)),
-                                        Padding(
-                                          padding: EdgeInsets.only(left: 40),
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.schedule,
-                                                  size: 20, color: Colors.red),
-                                              Text(
-                                                  ' ${data.docs[index]['time']}',
-                                                  style: TextStyle(
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  //duration
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                    child: Row(
-                                      children: [
-                                        // Icon(Icons.schedule,
-                                        //     size: 20, color: Colors.red),
-                                        Text(
-                                            'Duration: ${data.docs[index]['duration']}',
-                                            style: TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w500)),
-                                      ],
-                                    ),
-                                  ),
-                                  //description
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
-                                    child: Row(
-                                      children: [
-                                        // Icon(Icons.description,
-                                        //     size: 20, color: Colors.red),
-                                        Flexible(
-                                          child: Text(
-                                              'Description: ${data.docs[index]['description']}',
-                                              //
-                                              //   TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.w500)),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  //location
-
-                                  Padding(
-                                      padding: EdgeInsets.all(10),
-                                      child: ElevatedButton(
-                                          onPressed: () {
-                                            // String dataId =
-                                            //  docReference.id;
-                                            double latitude = double.parse(
-                                                data.docs[index]['latitude']);
-                                            double longitude = double.parse(
-                                                data.docs[index]['longitude']);
-
-                                            (Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      MapsPage(
-                                                          latitude: latitude,
-                                                          longitude: longitude),
-                                                )));
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                              foregroundColor:
-                                                  Colors.grey.shade500,
-                                              backgroundColor: Colors.white,
-                                              padding: EdgeInsets.fromLTRB(
-                                                  14, 20, 14, 20),
-                                              side: BorderSide(
-                                                  color: Colors.grey.shade400,
-                                                  width: 2)),
-                                          child: Text('test'
-                                              // placemark[0].street.toString() +
-                                              //     ', ' +
-                                              //     placemark[0]
-                                              //         .subLocality
-                                              //         .toString() +
-                                              //     ', ' +
-                                              //     placemark[0]
-                                              //         .administrativeArea
-                                              //         .toString() +
-                                              //     ', ' +
-                                              //     placemark[0]
-                                              //         .country
-                                              //         .toString(),
-                                              // style: TextStyle(
-                                              //     color: Colors.black)
-                                              ))),
-
-                                  //buttons
-                                  Padding(
-                                    padding: EdgeInsets.all(20),
-                                    // width: 150,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 5),
-                                          width: 100,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              String docId =
-                                                  data.docs[index]['docId'];
-
-                                              updateDB(docId);
-                                              Confermation();
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                              foregroundColor: Colors.white,
-                                              backgroundColor:
-                                                  Colors.green.shade400,
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      17, 13, 17, 13),
-                                              textStyle:
-                                                  const TextStyle(fontSize: 17),
+                              double latitude = double.parse(
+                                  '${data.docs[index]['latitude']}');
+                              double longitude = double.parse(
+                                  '${data.docs[index]['longitude']}');
+                              return FutureBuilder(
+                                  future:
+                                      getLocationAsString(latitude, longitude),
+                                  builder: (context, snap) {
+                                    if (snap.hasData) {
+                                      var reqLoc = snap.data;
+                                      return Card(
+                                          child: Column(
+                                        children: [
+                                          //title
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                10, 0, 20, 15),
+                                            child: Text(
+                                              ' ${data.docs[index]['title']}',
+                                              textAlign: TextAlign.left,
                                             ),
-                                            child: Text('Accept'),
                                           ),
-                                        ),
-                                        Container(
-                                          width: 100,
-                                          child: ElevatedButton(
-                                              onPressed: () {},
-                                              style: ElevatedButton.styleFrom(
-                                                foregroundColor: Colors.white,
-                                                backgroundColor:
-                                                    Colors.red.shade300,
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        17, 13, 17, 13),
-                                                textStyle: const TextStyle(
-                                                    fontSize: 17),
-                                              ),
-                                              child: Text('Deny')),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ));
+                                          //date and time
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                20, 0, 18, 12),
+                                            child: Row(
+                                              children: [
+                                                const Icon(Icons.calendar_today,
+                                                    size: 20,
+                                                    color: Colors.red),
+                                                Text(
+                                                    ' ${data.docs[index]['date_dmy']}',
+                                                    style: const TextStyle(
+                                                        fontSize: 17,
+                                                        fontWeight:
+                                                            FontWeight.w500)),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 40),
+                                                  child: Row(
+                                                    children: [
+                                                      const Icon(Icons.schedule,
+                                                          size: 20,
+                                                          color: Colors.red),
+                                                      Text(
+                                                          ' ${data.docs[index]['time']}',
+                                                          style: const TextStyle(
+                                                              fontSize: 17,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500)),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          //duration
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                20, 0, 0, 12),
+                                            child: Row(
+                                              children: [
+                                                // Icon(Icons.schedule,
+                                                //     size: 20, color: Colors.red),
+                                                Text(
+                                                    'Duration: ${data.docs[index]['duration']}',
+                                                    style: const TextStyle(
+                                                        fontSize: 17,
+                                                        fontWeight:
+                                                            FontWeight.w500)),
+                                              ],
+                                            ),
+                                          ),
+                                          //description
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                20, 0, 18, 12),
+                                            child: Row(
+                                              children: [
+                                                // Icon(Icons.description,
+                                                //     size: 20, color: Colors.red),
+                                                Flexible(
+                                                  child: Text(
+                                                      'Description: ${data.docs[index]['description']}',
+                                                      //
+                                                      //   TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                          fontSize: 17,
+                                                          fontWeight:
+                                                              FontWeight.w500)),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          //location
+                                          Padding(
+                                              padding: const EdgeInsets.all(10),
+                                              child: ElevatedButton(
+                                                  onPressed: () {
+                                                    (Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              MapsPage(
+                                                                  latitude:
+                                                                      latitude,
+                                                                  longitude:
+                                                                      longitude),
+                                                        )));
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                      foregroundColor: Colors
+                                                          .grey.shade500,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          14, 20, 14, 20),
+                                                      side: BorderSide(
+                                                          color: Colors
+                                                              .grey.shade400,
+                                                          width: 2)),
+                                                  child: Text(reqLoc!,
+                                                      style: const TextStyle(
+                                                          color:
+                                                              Colors.black)))),
+                                          //buttons
+                                          Padding(
+                                            padding: const EdgeInsets.all(20),
+                                            // width: 150,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  margin: const EdgeInsets
+                                                      .symmetric(horizontal: 5),
+                                                  width: 100,
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      String docId = data
+                                                          .docs[index]['docId'];
+
+                                                      updateDB(docId);
+                                                      Confermation();
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      backgroundColor:
+                                                          Colors.green.shade400,
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          17, 13, 17, 13),
+                                                      textStyle:
+                                                          const TextStyle(
+                                                              fontSize: 17),
+                                                    ),
+                                                    child: const Text('Accept'),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  width: 100,
+                                                  child: ElevatedButton(
+                                                      onPressed: () {},
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        foregroundColor:
+                                                            Colors.white,
+                                                        backgroundColor:
+                                                            Colors.red.shade300,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .fromLTRB(
+                                                                17, 13, 17, 13),
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                fontSize: 17),
+                                                      ),
+                                                      child:
+                                                          const Text('Deny')),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ));
+                                    } else {
+                                      return const Center(
+                                          child: CircularProgressIndicator());
+                                    }
+                                  });
                             },
                           );
                         },
@@ -303,7 +306,7 @@ class _AddRequestState extends State<viewRequests> {
 
   void Confermation() {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text("Awn request has been accepted"),
       ),
     );
@@ -351,10 +354,10 @@ class _MapsPageState extends State<MapsPage> {
     Set<Marker> getMarker() {
       return <Marker>[
         Marker(
-            markerId: MarkerId(''),
+            markerId: const MarkerId(''),
             position: LatLng(widget.latitude, widget.longitude),
             icon: BitmapDescriptor.defaultMarker,
-            infoWindow: InfoWindow(title: 'Special need location'))
+            infoWindow: const InfoWindow(title: 'Special need location'))
       ].toSet();
     }
 
