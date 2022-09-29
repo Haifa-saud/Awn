@@ -164,7 +164,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
         selectedTime.minute,
       );
     });
-    return DateFormat('yyyy-MM-dd HH: ss').format(SelectedDateTime);
+    return DateFormat('yyyy-MM-dd HH: mm').format(SelectedDateTime);
   }
 
   String getDateTime() {
@@ -172,7 +172,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     if (dateTime == null) {
       return 'select date timer';
     } else {
-      return DateFormat('yyyy-MM-dd HH: ss').format(dateTime);
+      return DateFormat('yyyy-MM-dd HH: mm').format(dateTime);
     }
   }
 
@@ -397,10 +397,31 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   ),
                 ),
                 onPressed: () {
-                  if (checkCurrentTime() >= 0) {
+                  // if (checkCurrentTime() >= 0) {
+                  //   ScaffoldMessenger.of(context).showSnackBar(
+                  //     SnackBar(
+                  //       content: Text('Please select a later time'),
+                  //       backgroundColor: Colors.red.shade400,
+                  //       margin: EdgeInsets.fromLTRB(8, 0, 20, 0),
+                  //       behavior: SnackBarBehavior.floating,
+                  //       action: SnackBarAction(
+                  //         label: 'Dismiss',
+                  //         disabledTextColor: Colors.white,
+                  //         textColor: Colors.white,
+                  //         onPressed: () {
+                  //           //Do whatever you want
+                  //         },
+                  //       ),
+                  //     ),
+                  //   );
+                  // }
+                  if (_formKey.currentState!.validate() &&
+                      checkCurrentTime() < 0) {
+                    addToDB();
+                  } else if (checkCurrentTime() >= 0) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Please select an earlier time'),
+                        content: Text('Please select a later time'),
                         backgroundColor: Colors.red.shade400,
                         margin: EdgeInsets.fromLTRB(8, 0, 20, 0),
                         behavior: SnackBarBehavior.floating,
@@ -414,9 +435,6 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                         ),
                       ),
                     );
-                  }
-                  if (_formKey.currentState!.validate()) {
-                    addToDB();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

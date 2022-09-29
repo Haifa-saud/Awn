@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'ViewMyRequistSN.dart';
@@ -22,19 +23,22 @@ class viewRequests extends StatefulWidget {
 }
 
 class _AddRequestState extends State<viewRequests> {
-  // final Stream<QuerySnapshot> requests = FirebaseFirestore.instance
-  //     .collection('userData')
-  //     .doc('hHnGktKAq9R5rLsMhOL8uBDhhYy1')
-  //     .collection('requests')
-  //     .where('status', isEqualTo: "Pending")
-  //     .orderBy("date_ymd")
-  //     .snapshots();
+  Future<String> getLocationAsString(var lat, var lng) async {
+    List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
+    return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
+  }
 
   // Future numOFReq() async {}
   int numOFReq = 0;
+
+  //final today = DateFormat('yyyy-MM-dd HH: ss').format(DateTime.now());
+
   final Stream<QuerySnapshot> requests = FirebaseFirestore.instance
       .collection('requests')
       .where('status', isEqualTo: 'Pending')
+      .where('date_ymd',
+          isGreaterThanOrEqualTo:
+              DateFormat('yyyy-MM-dd HH: ss').format(DateTime.now()))
       .orderBy("date_ymd")
       .snapshots();
   @override
@@ -98,61 +102,84 @@ class _AddRequestState extends State<viewRequests> {
                             return Text('Loading');
                           }
                           final data = snapshot.requireData;
-                          //   print('line 55');
                           return ListView.builder(
                             itemCount: data.size,
                             itemBuilder: (context, index) {
-                              //   print('line 59');
-                              //  numOfRequests = data.size;
                               numOFReq = data.size;
+                              var reqLoc;
+                              double latitude = double.parse(
+                                  '${data.docs[index]['latitude']}');
+                              double longitude = double.parse(
+                                  '${data.docs[index]['longitude']}');
                               bool description =
                                   data.docs[index]['description'] == ''
                                       ? false
                                       : true;
-                              return Container(
-                                child: Column(children: [
-                                  // Row(
-                                  //   children: [
-                                  //     Text("Number of requests:"),
-                                  //     Text(numOFReq.toString())
-                                  //   ],
-                                  // ),
-                                  Card(
-                                      child: Column(
-                                    children: [
-                                      //title
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(10, 0, 20, 15),
-                                        child: Text(
-                                          ' ${data.docs[index]['title']}',
-                                          textAlign: TextAlign.left,
-                                        ),
-                                      ),
-                                      //date and time
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 18, 12),
-                                        child: Row(
+                              return FutureBuilder(
+                                  future:
+                                      getLocationAsString(latitude, longitude),
+                                  builder: (context, snap) {
+                                    if (snap.hasData) {
+                                      var reqLoc = snap.data;
+                                      return Column(children: [
+                                        Card(
+                                            child: Column(
                                           children: [
-                                            Icon(Icons.calendar_today,
-                                                size: 20, color: Colors.red),
-                                            Text(
-                                                ' ${data.docs[index]['date_dmy']}',
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
+                                            //title
                                             Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 40),
+                                              padding: EdgeInsets.fromLTRB(
+                                                  10, 0, 20, 15),
+                                              child: Text(
+                                                ' ${data.docs[index]['title']}',
+                                                textAlign: TextAlign.left,
+                                              ),
+                                            ),
+                                            //date and time
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  20, 0, 18, 12),
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.schedule,
+                                                  Icon(Icons.calendar_today,
                                                       size: 20,
                                                       color: Colors.red),
                                                   Text(
-                                                      ' ${data.docs[index]['time']}',
+                                                      ' ${data.docs[index]['date_dmy']}',
+                                                      style: TextStyle(
+                                                          fontSize: 17,
+                                                          fontWeight:
+                                                              FontWeight.w500)),
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 40),
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(Icons.schedule,
+                                                            size: 20,
+                                                            color: Colors.red),
+                                                        Text(
+                                                            ' ${data.docs[index]['time']}',
+                                                            style: TextStyle(
+                                                                fontSize: 17,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500)),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            //duration
+                                            Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  20, 0, 0, 12),
+                                              child: Row(
+                                                children: [
+                                                  // Icon(Icons.schedule,
+                                                  //     size: 20, color: Colors.red),
+                                                  Text(
+                                                      'Duration: ${data.docs[index]['duration']}',
                                                       style: TextStyle(
                                                           fontSize: 17,
                                                           fontWeight:
@@ -160,213 +187,195 @@ class _AddRequestState extends State<viewRequests> {
                                                 ],
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                      //duration
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                        child: Row(
-                                          children: [
-                                            // Icon(Icons.schedule,
-                                            //     size: 20, color: Colors.red),
-                                            Text(
-                                                'Duration: ${data.docs[index]['duration']}',
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
-                                          ],
-                                        ),
-                                      ),
-                                      Visibility(
-                                          visible: description,
-                                          child: ExpansionTile(
-                                              title: const Text(
-                                                'View more',
-                                                style: TextStyle(
-                                                  fontSize: 15.0,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                              children: [
-                                                //description
-                                                Visibility(
-                                                    visible: description,
-                                                    child: Padding(
-                                                      padding:
-                                                          EdgeInsets.fromLTRB(
-                                                              20, 0, 18, 12),
-                                                      child: Row(
-                                                        children: [
-                                                          // Icon(Icons.description,
-                                                          //     size: 20, color: Colors.red),
-                                                          Flexible(
-                                                            child: Text(
-                                                                'Description: ${data.docs[index]['description']}',
-                                                                //   overflow:
-                                                                //   TextOverflow.ellipsis,
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        17,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500)),
-                                                          ),
-                                                        ],
+                                            Visibility(
+                                                visible: description,
+                                                child: ExpansionTile(
+                                                    title: const Text(
+                                                      'View more',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.black,
                                                       ),
-                                                    )),
-                                                //location
-                                                Visibility(
-                                                  visible: description,
-                                                  child: Padding(
-                                                      padding:
-                                                          EdgeInsets.all(10),
-                                                      child: ElevatedButton(
-                                                          onPressed: () {
-                                                            // String dataId =
-                                                            //  docReference.id;
-                                                            double latitude =
-                                                                double.parse(data
-                                                                            .docs[
-                                                                        index][
-                                                                    'latitude']);
-                                                            double longitude =
-                                                                double.parse(data
-                                                                            .docs[
-                                                                        index][
-                                                                    'longitude']);
-
-                                                            (Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (context) => MapsPage(
-                                                                      latitude:
-                                                                          latitude,
-                                                                      longitude:
-                                                                          longitude),
-                                                                )));
-                                                          },
-                                                          style: ElevatedButton.styleFrom(
-                                                              foregroundColor:
-                                                                  Colors.white,
-                                                              backgroundColor:
-                                                                  Colors.white,
-                                                              side: BorderSide(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  width: 2)),
-                                                          child: Row(
-                                                            children: [
-                                                              Icon(
-                                                                  Icons
-                                                                      .location_pin,
-                                                                  size: 20,
-                                                                  color: Colors
-                                                                      .red),
-                                                              Text('Location',
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .black,
-                                                                      fontSize:
-                                                                          17,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500))
-                                                            ],
-                                                          ))),
-                                                ),
-                                                //buttoms
-                                                Visibility(
-                                                  visible: description,
-                                                  child: Padding(
-                                                    padding: EdgeInsets.all(20),
-                                                    // width: 150,
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Container(
-                                                          margin: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      5),
-                                                          width: 100,
-                                                          child: ElevatedButton(
-                                                            onPressed: () {
-                                                              String docId =
-                                                                  data.docs[
-                                                                          index]
-                                                                      ['docId'];
-
-                                                              updateDB(docId);
-                                                              Confermation();
-                                                            },
-                                                            style:
-                                                                ElevatedButton
-                                                                    .styleFrom(
-                                                              foregroundColor:
-                                                                  Colors.white,
-                                                              backgroundColor:
-                                                                  Colors.green
-                                                                      .shade400,
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .fromLTRB(
-                                                                      17,
-                                                                      13,
-                                                                      17,
-                                                                      13),
-                                                              textStyle:
-                                                                  const TextStyle(
-                                                                      fontSize:
-                                                                          17),
+                                                    ),
+                                                    children: [
+                                                      //description
+                                                      Visibility(
+                                                          visible: description,
+                                                          child: Padding(
+                                                            padding: EdgeInsets
+                                                                .fromLTRB(20, 0,
+                                                                    18, 12),
+                                                            child: Row(
+                                                              children: [
+                                                                // Icon(Icons.description,
+                                                                //     size: 20, color: Colors.red),
+                                                                Flexible(
+                                                                  child: Text(
+                                                                      'Description: ${data.docs[index]['description']}',
+                                                                      //   overflow:
+                                                                      //   TextOverflow.ellipsis,
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              17,
+                                                                          fontWeight:
+                                                                              FontWeight.w500)),
+                                                                ),
+                                                              ],
                                                             ),
+                                                          )),
+                                                      //location
+                                                      Visibility(
+                                                        visible: description,
+                                                        child: Padding(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    10),
                                                             child:
-                                                                Text('Accept'),
-                                                          ),
-                                                        ),
-                                                        Container(
-                                                          width: 100,
-                                                          child: ElevatedButton(
-                                                              onPressed: () {},
-                                                              style:
-                                                                  ElevatedButton
+                                                                ElevatedButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      // String dataId =
+                                                                      //  docReference.id;
+                                                                      double
+                                                                          latitude =
+                                                                          double.parse(data.docs[index]
+                                                                              [
+                                                                              'latitude']);
+                                                                      double
+                                                                          longitude =
+                                                                          double.parse(data.docs[index]
+                                                                              [
+                                                                              'longitude']);
+
+                                                                      (Navigator.push(
+                                                                          context,
+                                                                          MaterialPageRoute(
+                                                                            builder: (context) =>
+                                                                                MapsPage(latitude: latitude, longitude: longitude),
+                                                                          )));
+                                                                    },
+                                                                    style: ElevatedButton.styleFrom(
+                                                                        foregroundColor:
+                                                                            Colors
+                                                                                .white,
+                                                                        backgroundColor:
+                                                                            Colors
+                                                                                .white,
+                                                                        side: BorderSide(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            width: 2)),
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Icon(
+                                                                            Icons
+                                                                                .location_pin,
+                                                                            size:
+                                                                                20,
+                                                                            color:
+                                                                                Colors.red),
+                                                                        Flexible(
+                                                                            child: Text(reqLoc!,
+                                                                                style: TextStyle(
+                                                                                  color: Colors.grey.shade500,
+                                                                                  fontSize: 17,
+                                                                                )))
+                                                                      ],
+                                                                    ))),
+                                                      ),
+                                                      //buttoms
+                                                      Visibility(
+                                                        visible: description,
+                                                        child: Padding(
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  20),
+                                                          // width: 150,
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Container(
+                                                                margin: EdgeInsets
+                                                                    .symmetric(
+                                                                        horizontal:
+                                                                            5),
+                                                                width: 100,
+                                                                child:
+                                                                    ElevatedButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    String
+                                                                        docId =
+                                                                        data.docs[index]
+                                                                            [
+                                                                            'docId'];
+
+                                                                    updateDB(
+                                                                        docId);
+                                                                    Confermation();
+                                                                  },
+                                                                  style: ElevatedButton
                                                                       .styleFrom(
-                                                                foregroundColor:
-                                                                    Colors
-                                                                        .white,
-                                                                backgroundColor:
-                                                                    Colors.red
-                                                                        .shade300,
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                            .fromLTRB(
-                                                                        17,
-                                                                        13,
-                                                                        17,
-                                                                        13),
-                                                                textStyle:
-                                                                    const TextStyle(
+                                                                    foregroundColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    backgroundColor:
+                                                                        Colors
+                                                                            .green
+                                                                            .shade400,
+                                                                    padding:
+                                                                        const EdgeInsets.fromLTRB(
+                                                                            17,
+                                                                            13,
+                                                                            17,
+                                                                            13),
+                                                                    textStyle: const TextStyle(
                                                                         fontSize:
                                                                             17),
+                                                                  ),
+                                                                  child: Text(
+                                                                      'Accept'),
+                                                                ),
                                                               ),
-                                                              child:
-                                                                  Text('Deny')),
+                                                              // Container(
+                                                              //   width: 100,
+                                                              //   child:
+                                                              //       ElevatedButton(
+                                                              //           onPressed:
+                                                              //               () {},
+                                                              //           style: ElevatedButton
+                                                              //               .styleFrom(
+                                                              //             foregroundColor:
+                                                              //                 Colors.white,
+                                                              //             backgroundColor: Colors
+                                                              //                 .red
+                                                              //                 .shade300,
+                                                              //             padding: const EdgeInsets.fromLTRB(
+                                                              //                 17,
+                                                              //                 13,
+                                                              //                 17,
+                                                              //                 13),
+                                                              //             textStyle:
+                                                              //                 const TextStyle(fontSize: 17),
+                                                              //           ),
+                                                              //           child: Text(
+                                                              //               'Deny')),
+                                                              // ),
+                                                            ],
+                                                          ),
                                                         ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                )
-                                              ])),
-
-                                      //buttons
-                                    ],
-                                  ))
-                                ]),
-                              );
+                                                      )
+                                                    ])),
+                                          ],
+                                        ))
+                                      ]);
+                                    } else {
+                                      return const Center(
+                                          child: CircularProgressIndicator());
+                                    }
+                                  });
                             },
                           );
                         },

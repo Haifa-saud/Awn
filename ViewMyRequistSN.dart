@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/route_manager.dart';
 
 import 'mapsPage.dart';
@@ -142,6 +143,11 @@ class _ViewMyRequistState extends State<ViewMyRequistSN>
   }
 
   Widget showUpcomingList(Stream<QuerySnapshot> list) {
+    Future<String> getLocationAsString(var lat, var lng) async {
+      List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
+      return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
+    }
+
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
     final now = DateTime.now();
@@ -173,132 +179,156 @@ class _ViewMyRequistState extends State<ViewMyRequistSN>
                 return ListView.builder(
                   itemCount: data.size,
                   itemBuilder: (context, index) {
-                    return Card(
-                        child: Column(
-                      children: [
-                        //title
-                        Padding(
-                            padding: EdgeInsets.fromLTRB(10, 0, 0, 15),
-                            child: Row(children: [
-                              Text(
-                                ' ${data.docs[index]['title']}',
-                                textAlign: TextAlign.left,
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(left: 60),
-                                padding: EdgeInsets.all(10),
-                                child: Text('${data.docs[index]['status']}',
-                                    //   overflow:
-                                    //   TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        background: Paint()
-                                          ..strokeWidth = 20.0
-                                          ..color = getColor(
-                                              data.docs[index]['status'])
-                                          ..style = PaintingStyle.stroke
-                                          ..strokeJoin = StrokeJoin.round,
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w500)),
-                              )
-                            ])),
-                        //date and time
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
-                          child: Row(
-                            children: [
-                              Icon(Icons.calendar_today,
-                                  size: 20, color: Colors.red),
-                              Text(' ${data.docs[index]['date_dmy']}',
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500)),
-                              Padding(
-                                padding: EdgeInsets.only(left: 40),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.schedule,
-                                        size: 20, color: Colors.red),
-                                    Text(' ${data.docs[index]['time']}',
-                                        style: TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w500)),
-                                  ],
+                    var reqLoc;
+                    double latitude =
+                        double.parse('${data.docs[index]['latitude']}');
+                    double longitude =
+                        double.parse('${data.docs[index]['longitude']}');
+                    return FutureBuilder(
+                        future: getLocationAsString(latitude, longitude),
+                        builder: (context, snap) {
+                          if (snap.hasData) {
+                            var reqLoc = snap.data;
+                            return Card(
+                                child: Column(
+                              children: [
+                                //title
+                                Padding(
+                                    padding:
+                                        EdgeInsets.fromLTRB(10, 10, 15, 15),
+                                    child: Stack(children: [
+                                      Text(
+                                        ' ${data.docs[index]['title']}',
+                                        textAlign: TextAlign.left,
+                                      ),
+                                      Container(
+                                        alignment: Alignment.topRight,
+                                        margin: EdgeInsets.only(top: 5),
+                                        // padding: EdgeInsets.only(right: 0),
+                                        child: Text(
+                                            '${data.docs[index]['status']}',
+                                            //   overflow:
+                                            //   TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                background: Paint()
+                                                  ..strokeWidth = 20.0
+                                                  ..color = getColor(data
+                                                      .docs[index]['status'])
+                                                  ..style = PaintingStyle.stroke
+                                                  ..strokeJoin =
+                                                      StrokeJoin.round,
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w500)),
+                                      )
+                                    ])),
+                                //date and time
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.calendar_today,
+                                          size: 20, color: Colors.red),
+                                      Text(' ${data.docs[index]['date_dmy']}',
+                                          style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w500)),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 60),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.schedule,
+                                                size: 20, color: Colors.red),
+                                            Text(' ${data.docs[index]['time']}',
+                                                style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight:
+                                                        FontWeight.w500)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        //duration
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
-                          child: Row(
-                            children: [
-                              // Icon(Icons.schedule,
-                              //     size: 20, color: Colors.red),
-                              Text('Duration: ${data.docs[index]['duration']}',
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                        ),
-                        //description
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
-                          child: Row(
-                            children: [
-                              // Icon(Icons.description,
-                              //     size: 20, color: Colors.red),
-                              Flexible(
-                                child: Text(
-                                    'Description: ${data.docs[index]['description']}',
-                                    //   overflow:
-                                    //   TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w500)),
-                              ),
-                            ],
-                          ),
-                        ),
-                        //location
-                        Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  // String dataId =
-                                  //  docReference.id;
-                                  double latitude = double.parse(
-                                      data.docs[index]['latitude']);
-                                  double longitude = double.parse(
-                                      data.docs[index]['longitude']);
+                                //duration
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
+                                  child: Row(
+                                    children: [
+                                      // Icon(Icons.schedule,
+                                      //     size: 20, color: Colors.red),
+                                      Text(
+                                          'Duration: ${data.docs[index]['duration']}',
+                                          style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w500)),
+                                    ],
+                                  ),
+                                ),
+                                //description
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 0, 0, 5),
+                                  child: Row(
+                                    children: [
+                                      // Icon(Icons.description,
+                                      //     size: 20, color: Colors.red),
+                                      Flexible(
+                                        child: Text(
+                                            'Description: ${data.docs[index]['description']}',
+                                            //   overflow:
+                                            //   TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w500)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                //location
+                                Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+                                    child: ElevatedButton(
+                                        onPressed: () {
+                                          // String dataId =
+                                          //  docReference.id;
+                                          double latitude = double.parse(
+                                              data.docs[index]['latitude']);
+                                          double longitude = double.parse(
+                                              data.docs[index]['longitude']);
 
-                                  (Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => MapsPage(
-                                            latitude: latitude,
-                                            longitude: longitude),
-                                      )));
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.white,
-                                    side: BorderSide(
-                                        color: Colors.white, width: 2)),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.location_pin,
-                                        size: 20, color: Colors.red),
-                                    Text('Location',
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w500))
-                                  ],
-                                ))),
-                      ],
-                    ));
+                                          (Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => MapsPage(
+                                                    latitude: latitude,
+                                                    longitude: longitude),
+                                              )));
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            foregroundColor: Colors.white,
+                                            backgroundColor: Colors.white,
+                                            side: BorderSide(
+                                                color: Colors.white, width: 2)),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.location_pin,
+                                                size: 20, color: Colors.red),
+                                            Flexible(
+                                                child: Text(reqLoc!,
+                                                    style: TextStyle(
+                                                      color:
+                                                          Colors.grey.shade500,
+                                                      fontSize: 17,
+                                                    )))
+                                          ],
+                                        ))),
+                              ],
+                            ));
+                          } else {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                        });
                   },
                 );
               },
@@ -306,6 +336,11 @@ class _ViewMyRequistState extends State<ViewMyRequistSN>
   }
 
   Widget showPrevList(Stream<QuerySnapshot> list) {
+    Future<String> getLocationAsString(var lat, var lng) async {
+      List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
+      return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
+    }
+
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
     final now = DateTime.now();
@@ -337,132 +372,158 @@ class _ViewMyRequistState extends State<ViewMyRequistSN>
                 return ListView.builder(
                   itemCount: data.size,
                   itemBuilder: (context, index) {
-                    return Card(
-                        child: Column(
-                      children: [
-                        //title
-                        Padding(
-                            padding: EdgeInsets.fromLTRB(10, 0, 0, 15),
-                            child: Row(children: [
-                              Text(getStatus(data.docs[index]['status'],
-                                  data.docs[index]['docId'])),
-                              Container(
-                                margin: EdgeInsets.only(left: 60),
-                                padding: EdgeInsets.all(10),
-                                child: Text('${data.docs[index]['status']}',
-                                    //   overflow:
-                                    //   TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        background: Paint()
-                                          ..strokeWidth = 20.0
-                                          ..color = getColor(
-                                              data.docs[index]['status'])
-                                          ..style = PaintingStyle.stroke
-                                          ..strokeJoin = StrokeJoin.round,
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w500)),
-                              )
-                            ])),
-                        //date and time
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
-                          child: Row(
-                            children: [
-                              Icon(Icons.calendar_today,
-                                  size: 20, color: Colors.red),
-                              Text(' ${data.docs[index]['date_dmy']}',
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500)),
-                              Padding(
-                                padding: EdgeInsets.only(left: 40),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.schedule,
-                                        size: 20, color: Colors.red),
-                                    Text(' ${data.docs[index]['time']}',
-                                        style: TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w500)),
-                                  ],
+                    var reqLoc;
+                    double latitude =
+                        double.parse('${data.docs[index]['latitude']}');
+                    double longitude =
+                        double.parse('${data.docs[index]['longitude']}');
+                    return FutureBuilder(
+                        future: getLocationAsString(latitude, longitude),
+                        builder: (context, snap) {
+                          if (snap.hasData) {
+                            var reqLoc = snap.data;
+                            return Card(
+                                child: Column(
+                              children: [
+                                //title
+                                Padding(
+                                    padding:
+                                        EdgeInsets.fromLTRB(10, 10, 15, 15),
+                                    child: Stack(children: [
+                                      Text(
+                                        ' ${data.docs[index]['title']}',
+                                        textAlign: TextAlign.left,
+                                      ),
+                                      Container(
+                                        alignment: Alignment.topRight,
+                                        margin: EdgeInsets.only(top: 5),
+                                        // padding: EdgeInsets.only(right: 0),
+                                        child: Text(
+                                            getStatus(
+                                                data.docs[index]['status'],
+                                                data.docs[index]['docId']),
+                                            //   overflow:
+                                            //   TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                background: Paint()
+                                                  ..strokeWidth = 20.0
+                                                  ..color = getColor(data
+                                                      .docs[index]['status'])
+                                                  ..style = PaintingStyle.stroke
+                                                  ..strokeJoin =
+                                                      StrokeJoin.round,
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w500)),
+                                      )
+                                    ])),
+                                //date and time
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 15, 0, 12),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.calendar_today,
+                                          size: 20, color: Colors.red),
+                                      Text(' ${data.docs[index]['date_dmy']}',
+                                          style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w500)),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 60),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.schedule,
+                                                size: 20, color: Colors.red),
+                                            Text(' ${data.docs[index]['time']}',
+                                                style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight:
+                                                        FontWeight.w500)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        //duration
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
-                          child: Row(
-                            children: [
-                              // Icon(Icons.schedule,
-                              //     size: 20, color: Colors.red),
-                              Text('Duration: ${data.docs[index]['duration']}',
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                        ),
-                        //description
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(20, 0, 18, 12),
-                          child: Row(
-                            children: [
-                              // Icon(Icons.description,
-                              //     size: 20, color: Colors.red),
-                              Flexible(
-                                child: Text(
-                                    'Description: ${data.docs[index]['description']}',
-                                    //   overflow:
-                                    //   TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w500)),
-                              ),
-                            ],
-                          ),
-                        ),
-                        //location
-                        Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  // String dataId =
-                                  //  docReference.id;
-                                  double latitude = double.parse(
-                                      data.docs[index]['latitude']);
-                                  double longitude = double.parse(
-                                      data.docs[index]['longitude']);
+                                //duration
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 0, 0, 12),
+                                  child: Row(
+                                    children: [
+                                      // Icon(Icons.schedule,
+                                      //     size: 20, color: Colors.red),
+                                      Text(
+                                          'Duration: ${data.docs[index]['duration']}',
+                                          style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w500)),
+                                    ],
+                                  ),
+                                ),
+                                //description
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 0, 18, 5),
+                                  child: Row(
+                                    children: [
+                                      // Icon(Icons.description,
+                                      //     size: 20, color: Colors.red),
+                                      Flexible(
+                                        child: Text(
+                                            'Description: ${data.docs[index]['description']}',
+                                            //   overflow:
+                                            //   TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w500)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                //location
+                                Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+                                    child: ElevatedButton(
+                                        onPressed: () {
+                                          // String dataId =
+                                          //  docReference.id;
+                                          double latitude = double.parse(
+                                              data.docs[index]['latitude']);
+                                          double longitude = double.parse(
+                                              data.docs[index]['longitude']);
 
-                                  (Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => MapsPage(
-                                            latitude: latitude,
-                                            longitude: longitude),
-                                      )));
-                                },
-                                style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Colors.white,
-                                    side: BorderSide(
-                                        color: Colors.white, width: 2)),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.location_pin,
-                                        size: 20, color: Colors.red),
-                                    Text(
-                                      'Location',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w500),
-                                    )
-                                  ],
-                                ))),
-                      ],
-                    ));
+                                          (Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => MapsPage(
+                                                    latitude: latitude,
+                                                    longitude: longitude),
+                                              )));
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            foregroundColor: Colors.white,
+                                            backgroundColor: Colors.white,
+                                            side: BorderSide(
+                                                color: Colors.white, width: 2)),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.location_pin,
+                                                size: 20, color: Colors.red),
+                                            Flexible(
+                                                child: Text(reqLoc!,
+                                                    style: TextStyle(
+                                                      color:
+                                                          Colors.grey.shade500,
+                                                      fontSize: 17,
+                                                    )))
+                                          ],
+                                        ))),
+                              ],
+                            ));
+                          } else {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                        });
                   },
                 );
               },
