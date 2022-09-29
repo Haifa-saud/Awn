@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 //import 'package:get/get_state_manager/get_state_manager.dart';
@@ -15,39 +14,19 @@ class _TtsState extends State<Tts> {
   final FlutterTts flutterTts = FlutterTts();
   final TextEditingController textEditingController = TextEditingController();
   ScrollController _scrollController = ScrollController();
+  bool flag = false;
+  String waitMessage = "";
 
   speak(String text) async {
     await flutterTts.setLanguage("en-US");
-    await flutterTts.setPitch(0.5);
+    await flutterTts.setPitch(1);
     await flutterTts.speak(text);
+    setState(() {
+      flag = false;
+    });
   }
 
   Widget build(BuildContext context) {
-    Future<void> _onItemTapped(int index) async {
-      if (index == 0) {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const addPost()),
-        // );
-      } else if (index == 1) {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const addRequest()),
-        // );
-      } /* else if (index == 1) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => viewRequests()),
-          );
-        } */
-      else if (index == 2) {
-        // Navigator.push(
-        //     context, MaterialPageRoute(builder: (context) => const login()));
-
-        // FirebaseAuth.instance.signOut();
-      }
-    }
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -71,10 +50,21 @@ class _TtsState extends State<Tts> {
           child: Column(children: [
             Expanded(
                 child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 20),
+              padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
               alignment: Alignment.center,
-              margin: EdgeInsets.fromLTRB(30, 100, 30, 0),
+              margin: const EdgeInsets.fromLTRB(30, 50, 30, 0),
               child: Column(children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 50, 0),
+                    child: const Text(
+                      "*please write in english",
+                      style: TextStyle(
+                          fontSize: 13, fontWeight: FontWeight.normal),
+                    ),
+                  ),
+                ),
                 Scrollbar(
                     controller: _scrollController,
                     thumbVisibility: true,
@@ -94,7 +84,7 @@ class _TtsState extends State<Tts> {
                                   BorderSide(color: Colors.grey.shade400)),
                         ))),
                 Container(
-                    margin: EdgeInsets.fromLTRB(50, 10, 50, 0),
+                    margin: const EdgeInsets.fromLTRB(50, 20, 50, 0),
                     decoration: BoxDecoration(
                       boxShadow: const [
                         BoxShadow(
@@ -102,7 +92,7 @@ class _TtsState extends State<Tts> {
                             offset: Offset(0, 4),
                             blurRadius: 5.0)
                       ],
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         stops: [0.0, 1.0],
@@ -113,21 +103,47 @@ class _TtsState extends State<Tts> {
                       ),
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: ElevatedButton(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(30, 10, 20, 10),
-                        child: Text(
-                          'Text to speech',
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 250, 249, 249)),
+                    child: ElevatedButton.icon(
+                        style: ButtonStyle(
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                          ),
+                          minimumSize:
+                              MaterialStateProperty.all(const Size(50, 50)),
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                          shadowColor:
+                              MaterialStateProperty.all(Colors.transparent),
                         ),
-                      ),
-                      onPressed: () => speak(textEditingController.text),
-                    ))
+                        icon: const Icon(
+                          Icons.speaker_phone,
+                        ),
+                        label: const Padding(
+                          padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                          child: Text(
+                            'Text to speech',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (textEditingController.text.isNotEmpty &&
+                                textEditingController.text.length > 150) {
+                              flag = true;
+                            }
+                          });
+                          speak(textEditingController.text);
+                        })),
+                flag ? const CircularProgressIndicator() : const Text(""),
               ]),
-            )),
+            ))
           ])),
       bottomNavigationBar:
           Container(child: LayoutBuilder(builder: (context, constraints) {
@@ -151,7 +167,8 @@ class _TtsState extends State<Tts> {
               //index 1
 
               icon: Icon(Icons.speaker_phone, color: Colors.grey.shade700),
-              activeIcon: Icon(Icons.handshake, color: Colors.grey.shade700),
+              activeIcon:
+                  Icon(Icons.speaker_phone, color: Colors.grey.shade700),
               label: 'Tts',
             ),
             /*BottomNavigationBarItem(
@@ -168,7 +185,7 @@ class _TtsState extends State<Tts> {
             )
           ],
           currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
+          //onTap: _onItemTapped,
         );
       })),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
