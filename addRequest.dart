@@ -234,9 +234,11 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   ),
                   // onChanged: (value) {title = value; },
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      double s = checkCurrentTime();
-                      return 'Please enter a title ' + s.toString();
+                    if (value == null ||
+                        value.isEmpty ||
+                        (value.trim()).isEmpty) {
+                      // double s = checkCurrentTime();
+                      return 'Please enter a title '; //s.toString()
                     }
                     return null;
                   },
@@ -325,7 +327,9 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                 ),
                 // onChanged: (value) {duration = value;},
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null ||
+                      value.isEmpty ||
+                      (value.trim()).isEmpty) {
                     return 'Please enter the duration';
                   }
                 },
@@ -362,7 +366,9 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   description = value;
                 },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null ||
+                      value.isEmpty ||
+                      (value.trim()).isEmpty) {
                     return 'Please provide a description';
                   }
                 },
