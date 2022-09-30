@@ -108,163 +108,165 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
             if (snapshot.hasData) {
               userData = snapshot.data as Map<String, dynamic>;
               return Scaffold(
-                  appBar: AppBar(
-                    actions: <Widget>[
-                      Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                          child: FutureBuilder(
-                              future: storage.downloadURL('logo.png'),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<String> snapshot) {
-                                if (snapshot.connectionState ==
-                                        ConnectionState.done &&
-                                    snapshot.hasData) {
-                                  return Center(
-                                    child: Image.network(
-                                      snapshot.data!,
-                                      fit: BoxFit.cover,
-                                      width: 40,
-                                      height: 40,
-                                    ),
-                                  );
-                                }
-                                if (snapshot.connectionState ==
-                                        ConnectionState.waiting ||
-                                    !snapshot.hasData) {
-                                  return CircularProgressIndicator(
-                                    color: Colors.blue,
-                                  );
-                                }
-                                return Container();
-                              }))
-                    ],
+                appBar: AppBar(
+                  actions: <Widget>[
+                    Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                        child: FutureBuilder(
+                            future: storage.downloadURL('logo.png'),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<String> snapshot) {
+                              if (snapshot.connectionState ==
+                                      ConnectionState.done &&
+                                  snapshot.hasData) {
+                                return Center(
+                                  child: Image.network(
+                                    snapshot.data!,
+                                    fit: BoxFit.cover,
+                                    width: 40,
+                                    height: 40,
+                                  ),
+                                );
+                              }
+                              if (snapshot.connectionState ==
+                                      ConnectionState.waiting ||
+                                  !snapshot.hasData) {
+                                return CircularProgressIndicator(
+                                  color: Colors.blue,
+                                );
+                              }
+                              return Container();
+                            }))
+                  ],
 
-                    centerTitle: false,
-                    backgroundColor: Colors.white, //(0xFFfcfffe),
-                    foregroundColor: Colors.black,
-                    automaticallyImplyLeading: false,
-                    scrolledUnderElevation: 1,
-                    toolbarHeight: 80,
-                    title: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
-                            child: Text(
-                              "Hello, " + userData['name'],
-                            ),
+                  centerTitle: false,
+                  backgroundColor: Colors.white, //(0xFFfcfffe),
+                  foregroundColor: Colors.black,
+                  automaticallyImplyLeading: false,
+                  scrolledUnderElevation: 1,
+                  toolbarHeight: 80,
+                  title: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
+                          child: Text(
+                            "Hello, " + userData['name'],
                           ),
+                        ),
 
-                          // Container(
-                          //   width: double.infinity,
-                          //   height: 50,
-                          //   decoration: BoxDecoration(
-                          //     color: Colors.white,
-                          //     borderRadius: BorderRadius.circular(100),
-                          //     boxShadow: const [
-                          //       BoxShadow(
-                          //           blurRadius: 15, color: Colors.black45, spreadRadius: -8)
-                          //     ],
-                          //   ),
-                          //   child: Center(
-                          //     child: TextField(
-                          //       decoration: InputDecoration(
-                          //           enabledBorder: const OutlineInputBorder(
-                          //               borderSide: BorderSide(color: Colors.transparent)),
-                          //           suffixIcon: IconButton(
-                          //             icon: const Icon(Icons.search),
-                          //             onPressed: () {
-                          //               /* Clear the search field */
-                          //             },
-                          //           ),
-                          //           hintText: 'Search...',
-                          //           border: InputBorder.none),
-                          //     ),
-                          //   ),
-                          // ),
-                        ]),
-                  ),
-                  body: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                      child: Column(children: [
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ButtonsTabBar(
-                                  controller: _tabController,
-                                  decoration: const BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      stops: [0.0, 1.0],
-                                      colors: [
-                                        Colors.blue,
-                                        Color(0xFF39d6ce),
-                                      ],
-                                    ),
-                                  ),
-                                  unselectedDecoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border.all(
-                                        color: Colors.blue, width: 5),
-                                  ),
-                                  radius: 30,
-                                  // borderColor: Colors.blue,
-                                  buttonMargin:
-                                      const EdgeInsets.fromLTRB(6, 4, 6, 4),
-                                  contentPadding:
-                                      const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                                  // unselectedBackgroundColor: Colors.white,
-                                  labelStyle: const TextStyle(
-                                      color: Colors.white, fontSize: 15),
-                                  tabs: const [
-                                    Tab(text: "All"),
-                                    Tab(text: "Education"),
-                                    Tab(text: 'Entertainment'),
-                                    Tab(text: 'Transportation'),
-                                    Tab(text: 'government'),
-                                    Tab(text: 'Other')
-                                  ]),
-                            ]),
-                        Expanded(
-                          child: Container(
-                            width: double.maxFinite,
-                            height: MediaQuery.of(context).size.height,
-                            child: TabBarView(
+                        // Container(
+                        //   width: double.infinity,
+                        //   height: 50,
+                        //   decoration: BoxDecoration(
+                        //     color: Colors.white,
+                        //     borderRadius: BorderRadius.circular(100),
+                        //     boxShadow: const [
+                        //       BoxShadow(
+                        //           blurRadius: 15, color: Colors.black45, spreadRadius: -8)
+                        //     ],
+                        //   ),
+                        //   child: Center(
+                        //     child: TextField(
+                        //       decoration: InputDecoration(
+                        //           enabledBorder: const OutlineInputBorder(
+                        //               borderSide: BorderSide(color: Colors.transparent)),
+                        //           suffixIcon: IconButton(
+                        //             icon: const Icon(Icons.search),
+                        //             onPressed: () {
+                        //               /* Clear the search field */
+                        //             },
+                        //           ),
+                        //           hintText: 'Search...',
+                        //           border: InputBorder.none),
+                        //     ),
+                        //   ),
+                        // ),
+                      ]),
+                ),
+                body: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    child: Column(children: [
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ButtonsTabBar(
                                 controller: _tabController,
-                                children: [
-                                  placesList(posts),
-                                  placesList(education),
-                                  placesList(entertainment),
-                                  placesList(transportation),
-                                  placesList(government),
-                                  placesList(other),
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    stops: [0.0, 1.0],
+                                    colors: [
+                                      Colors.blue,
+                                      Color(0xFF39d6ce),
+                                    ],
+                                  ),
+                                ),
+                                unselectedDecoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border:
+                                      Border.all(color: Colors.blue, width: 5),
+                                ),
+                                radius: 30,
+                                // borderColor: Colors.blue,
+                                buttonMargin:
+                                    const EdgeInsets.fromLTRB(6, 4, 6, 4),
+                                contentPadding:
+                                    const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                                // unselectedBackgroundColor: Colors.white,
+                                labelStyle: const TextStyle(
+                                    color: Colors.white, fontSize: 15),
+                                tabs: const [
+                                  Tab(text: "All"),
+                                  Tab(text: "Education"),
+                                  Tab(text: 'Entertainment'),
+                                  Tab(text: 'Transportation'),
+                                  Tab(text: 'government'),
+                                  Tab(text: 'Other')
                                 ]),
-                          ),
-                        )
-                      ])));
+                          ]),
+                      Expanded(
+                        child: Container(
+                          width: double.maxFinite,
+                          height: MediaQuery.of(context).size.height,
+                          child:
+                              TabBarView(controller: _tabController, children: [
+                            placesList(posts),
+                            placesList(education),
+                            placesList(entertainment),
+                            placesList(transportation),
+                            placesList(government),
+                            placesList(other),
+                          ]),
+                        ),
+                      )
+                    ])),
+                floatingActionButton: FloatingActionButton(
+                  child: const Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                addPost(userType: userData['Type'])));
+                  },
+                ),
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.endDocked,
+                bottomNavigationBar: BottomNavBar(
+                  onPress: (int value) => setState(() {
+                    _selectedIndex = value;
+                  }),
+                  userType: userData['Type'],
+                  currentI: 0,
+                ),
+              );
             } else {
               return const Text('');
             }
           }),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => addPost(userType: userData['Type'])));
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      bottomNavigationBar: BottomNavBar(
-        onPress: (int value) => setState(() {
-          _selectedIndex = value;
-        }),
-        userType: userData['Type'],
-        currentI: 0,
-      ),
     );
   }
 
@@ -297,9 +299,6 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                           } else {
                             final data = snapshot.requireData;
                             return
-                                // Container(
-                                //     // height: double.infinity,
-                                //     child:
                                 ListView.builder(
                               shrinkWrap: true,
                               itemCount: data.size,

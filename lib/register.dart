@@ -69,7 +69,7 @@ class _registerState extends State<register> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _passwordVisible = false;
-  @override
+  // @override
   void clearForm() {
     group = "Female";
     group1 = "Special Need User";
@@ -545,7 +545,7 @@ class _registerState extends State<register> {
                   SizedBox(
                     height: height * 0.01,
                   ),
-                 
+
                   //Password
                   TextFormField(
                     controller: passwordController,
@@ -673,10 +673,10 @@ class _registerState extends State<register> {
                       }
                     },
                   ),
-                   SizedBox(
+                  SizedBox(
                     height: 10,
                   ),
-                   Text("Should contain Capital, digit, long than 7",
+                  Text("Should contain Capital, digit, long than 7",
                       style: TextStyle(
                           fontSize: 15, fontWeight: FontWeight.normal)),
                   SizedBox(
@@ -732,11 +732,10 @@ class _registerState extends State<register> {
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Welcom To Awn')),
-                            );
-                            clearForm();
                             signUp();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Welcome To Awn')),
+                            );
                           } else {
                             // ScaffoldMessenger.of(context).showSnackBar(
                             //   const SnackBar(
@@ -824,6 +823,7 @@ class _registerState extends State<register> {
         password: passwordController.text.trim(),
       );
       UserHelper.saveUser(user);
+      clearForm();
     } on FirebaseAuthException catch (e) {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(

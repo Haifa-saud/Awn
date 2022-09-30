@@ -62,84 +62,6 @@ class UserProfileState extends State<userProfile>
               return Scaffold(
                   appBar: AppBar(
                     actions: <Widget>[
-                      // Padding(
-                      //     padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                      //     child: FutureBuilder(
-                      //         future: _signOut(),
-                      //         builder: (BuildContext context,
-                      //             AsyncSnapshot snapshot) {
-                      //           if (snapshot.connectionState ==
-                      //                   ConnectionState.done &&
-                      //               snapshot.hasData) {
-                      //             return Padding(
-                      //                 padding: const EdgeInsets.fromLTRB(
-                      //                     10, 10, 12, 10),
-                      //                 child: IconButton(
-                      //                   icon: Icon(Icons.logout_rounded),
-                      //                   iconSize: 25,
-                      //                   color:
-                      //                       Color.fromARGB(255, 149, 204, 250),
-                      //                   onPressed: () {
-                      //                     showDialog(
-                      //                       context: context,
-                      //                       builder: (ctx) => AlertDialog(
-                      //                         title: const Text(
-                      //                           "Logout",
-                      //                           textAlign: TextAlign.center,
-                      //                         ),
-                      //                         content: const Text(
-                      //                           "Are You Sure You want to log out of your account ?",
-                      //                           textAlign: TextAlign.center,
-                      //                         ),
-                      //                         actions: <Widget>[
-                      //                           //log in cancle button
-                      //                           TextButton(
-                      //                             onPressed: () {
-                      //                               Navigator.of(ctx).pop();
-                      //                             },
-                      //                             child: Container(
-                      //                               padding:
-                      //                                   const EdgeInsets.all(
-                      //                                       14),
-                      //                               child: const Text("Cancel"),
-                      //                             ),
-                      //                           ),
-                      //                           //log in ok button
-                      //                           TextButton(
-                      //                             onPressed: () async {
-                      //                               await _signOut();
-                      //                             },
-                      //                             child: Container(
-                      //                               //color: Color.fromARGB(255, 164, 20, 20),
-                      //                               padding:
-                      //                                   const EdgeInsets.all(
-                      //                                       14),
-                      //                               child: const Text("Log out",
-                      //                                   style: TextStyle(
-                      //                                       color:
-                      //                                           Color.fromARGB(
-                      //                                               255,
-                      //                                               164,
-                      //                                               10,
-                      //                                               10))),
-                      //                             ),
-                      //                           ),
-                      //                         ],
-                      //                       ),
-                      //                     );
-                      //                   },
-                      //                 ));
-                      //           }
-                      //           if (snapshot.connectionState ==
-                      //                   ConnectionState.waiting ||
-                      //               !snapshot.hasData) {
-                      //             return CircularProgressIndicator(
-                      //               color: Colors.blue,
-                      //             );
-                      //           }
-                      //           return Container();
-                      //         })),
-
                       Padding(
                           padding: const EdgeInsets.fromLTRB(10, 10, 12, 10),
                           child: IconButton(
@@ -298,7 +220,7 @@ class UserProfileState extends State<userProfile>
           _selectedIndex = value;
         }),
         userType: widget.userType,
-        currentI: 3,
+        currentI: 2,
       ),
     );
   } // end of class
@@ -342,7 +264,7 @@ class UserProfileState extends State<userProfile>
 
   Widget buildTextField(String labelText, String placeholder) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 10, 30, 20),
+      padding: const EdgeInsets.fromLTRB(30, 12, 30, 22),
       child: TextField(
         enabled: false,
         maxLength: 180,
@@ -425,13 +347,15 @@ class UserProfileState extends State<userProfile>
                       ],
                     ),
                   ),
-                  radius: 30,
+                  radius: 5,
                   borderColor: Colors.white,
                   buttonMargin: const EdgeInsets.fromLTRB(6, 8, 6, 1),
-                  contentPadding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                  contentPadding: const EdgeInsets.fromLTRB(60, 8, 60, 8),
                   unselectedBackgroundColor: Colors.white,
+                  unselectedLabelStyle:
+                      const TextStyle(color: Colors.grey, fontSize: 16),
                   labelStyle:
-                      const TextStyle(color: Colors.white, fontSize: 15),
+                      const TextStyle(color: Colors.white, fontSize: 16),
                   tabs: const [
                     Tab(text: "Previous"),
                     Tab(text: "Upcoming"),
@@ -499,12 +423,12 @@ class UserProfileState extends State<userProfile>
                             if (snap.hasData) {
                               var reqLoc = snap.data;
                               return Container(
-                                  margin: EdgeInsets.fromLTRB(5, 12, 5, 0),
+                                  margin: EdgeInsets.fromLTRB(8, 12, 8, 0),
                                   decoration: BoxDecoration(
                                       //color: Colors.white,
                                       boxShadow: const [
                                         BoxShadow(
-                                            blurRadius: 32,
+                                            blurRadius: 39,
                                             color: Colors.black45,
                                             spreadRadius: -8)
                                       ],

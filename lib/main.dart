@@ -132,7 +132,7 @@ class _MyApp extends State<MyApp> {
                   borderRadius: BorderRadius.circular(30.0))),
         ),
         snackBarTheme: const SnackBarThemeData(
-          backgroundColor: Color(0xFF39d6ce),
+          backgroundColor: Colors.blue, //Color(0xFF39d6ce),
           actionTextColor: Colors.black,
           behavior: SnackBarBehavior.floating,
           elevation: 1,

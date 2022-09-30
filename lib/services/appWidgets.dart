@@ -100,7 +100,7 @@ class BottomNavBar extends StatelessWidget {
       splashRadius: 1,
       splashSpeedInMilliseconds: 100,
       tabBuilder: (int index, bool isActive) {
-        final color = isActive ? const Color(0xFF06283D) : Colors.grey;
+        final color = isActive ? Color(0xFF39d6ce) : Colors.grey;
         final size = isActive ? 35.0 : 26.0;
         return Column(
           mainAxisSize: MainAxisSize.min,

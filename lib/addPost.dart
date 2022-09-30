@@ -20,7 +20,7 @@ import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'main.dart';
 
-//
+
 //! bottom bar done
 class addPost extends StatefulWidget {
   final String userType;
@@ -39,7 +39,6 @@ TextEditingController websiteController = TextEditingController();
 class _MyStatefulWidgetState extends State<addPost> {
   final _formKey = GlobalKey<FormState>();
 
-  GlobalKey<ScaffoldState> _scaffoldStateKey = GlobalKey();
 
   CollectionReference category =
       FirebaseFirestore.instance.collection('postCategory');
