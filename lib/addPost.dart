@@ -20,7 +20,6 @@ import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'main.dart';
 
-
 //! bottom bar done
 class addPost extends StatefulWidget {
   final String userType;
@@ -38,7 +37,6 @@ TextEditingController websiteController = TextEditingController();
 
 class _MyStatefulWidgetState extends State<addPost> {
   final _formKey = GlobalKey<FormState>();
-
 
   CollectionReference category =
       FirebaseFirestore.instance.collection('postCategory');
@@ -362,7 +360,26 @@ class _MyStatefulWidgetState extends State<addPost> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+        child: Container(
+          width: 60,
+          height: 60,
+          child: const Icon(
+            Icons.add,
+            size: 40,
+          ),
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              stops: [0.0, 1.0],
+              colors: [
+                Colors.blue,
+                Color(0xFF39d6ce),
+              ],
+            ),
+          ),
+        ),
         onPressed: () {
           Navigator.push(
               context,

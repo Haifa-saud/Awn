@@ -47,8 +47,8 @@ class UserProfileState extends State<userProfile>
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         Workmanager().cancelAll();
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => login()));
-        Future.delayed(Duration(seconds: 1),
+            context, MaterialPageRoute(builder: (context) => const login()));
+        Future.delayed(const Duration(seconds: 1),
             () async => await FirebaseAuth.instance.signOut());
       });
     }
@@ -59,15 +59,17 @@ class UserProfileState extends State<userProfile>
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
               userData = snapshot.data as Map<String, dynamic>;
+              var isVolunteer = userData[Type] == "Volunteer " ? true : false;
               return Scaffold(
                   appBar: AppBar(
                     actions: <Widget>[
                       Padding(
                           padding: const EdgeInsets.fromLTRB(10, 10, 12, 10),
                           child: IconButton(
-                            icon: Icon(Icons.logout_rounded),
+                            icon: const Icon(Icons.logout_rounded),
                             iconSize: 25,
-                            color: Color.fromARGB(255, 149, 204, 250),
+                            color: const Color(
+                                0xFF39d6ce), //Color.fromARGB(255, 149, 204, 250),
                             onPressed: () {
                               showDialog(
                                 context: context,
@@ -189,6 +191,7 @@ class UserProfileState extends State<userProfile>
                               )
                             ]),
                         Expanded(
+                          flex: 2,
                           child: Container(
                             width: double.maxFinite,
                             height: MediaQuery.of(context).size.height,
@@ -196,7 +199,7 @@ class UserProfileState extends State<userProfile>
                                 controller: _tabController,
                                 children: [
                                   myInfo(userData),
-                                  MyRequestsV(),
+                                  isVolunteer ? MyRequestsV() : MyRequestsSN(),
                                 ]),
                           ),
                         )
@@ -206,7 +209,26 @@ class UserProfileState extends State<userProfile>
             }
           }),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+        child: Container(
+          width: 60,
+          height: 60,
+          child: const Icon(
+            Icons.add,
+            size: 40,
+          ),
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              stops: [0.0, 1.0],
+              colors: [
+                Colors.blue,
+                Color(0xFF39d6ce),
+              ],
+            ),
+          ),
+        ),
         onPressed: () {
           Navigator.push(
               context,
@@ -220,7 +242,7 @@ class UserProfileState extends State<userProfile>
           _selectedIndex = value;
         }),
         userType: widget.userType,
-        currentI: 2,
+        currentI: widget.userType == 'Volunteer' ? 2 : 3,
       ),
     );
   } // end of class
@@ -294,37 +316,6 @@ class UserProfileState extends State<userProfile>
   bool showPrev = false;
   bool showUpcoming = false;
 
-  Stream<QuerySnapshot> getPrevRequets(BuildContext context) async* {
-    final user = FirebaseAuth.instance.currentUser!;
-    String userId = user.uid;
-    final now = DateTime.now();
-    final today = DateFormat('yyyy-MM-dd HH: ss').format(now);
-    yield* FirebaseFirestore.instance
-        .collection('requests')
-        .where('userID', isEqualTo: userId)
-        .where('date_ymd', isLessThanOrEqualTo: today)
-        .orderBy('date_ymd')
-        .snapshots();
-  }
-
-  String getTime() {
-    final now = DateTime.now();
-    return DateFormat('yyyy-MM-dd HH: ss').format(now);
-  }
-
-  Stream<QuerySnapshot> getUpcomingRequets(BuildContext context) async* {
-    final user = FirebaseAuth.instance.currentUser!;
-    String userId = user.uid;
-    final now = DateTime.now();
-    final today = DateFormat('yyyy-MM-dd HH: ss').format(now);
-    yield* FirebaseFirestore.instance
-        .collection('requests')
-        .where('userID', isEqualTo: userId)
-        .where('date_ymd', isGreaterThan: today)
-        .orderBy('date_ymd')
-        .snapshots();
-  }
-
   Widget MyRequestsV() {
     TabController _tabController = TabController(length: 2, vsync: this);
     return SingleChildScrollView(
@@ -366,15 +357,91 @@ class UserProfileState extends State<userProfile>
           width: double.maxFinite,
           height: MediaQuery.of(context).size.height,
           child: TabBarView(controller: _tabController, children: [
-            showPrevList(getPrevRequets(context)),
-            showUpcomingList(getUpcomingRequets(context))
+            showPrevList(getPrevRequests(context, 'VolID'), 'VolID'),
+            showUpcomingList(getUpcomingRequests(context, 'VolID'), 'VolID')
           ]),
         ),
       ],
     ));
   }
 
-  Widget showUpcomingList(Stream<QuerySnapshot> list) {
+  Widget MyRequestsSN() {
+    TabController _tabController = TabController(length: 2, vsync: this);
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ButtonsTabBar(
+                    controller: _tabController,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        stops: [0.0, 1.0],
+                        colors: [
+                          Colors.blue,
+                          Color(0xFF39d6ce),
+                        ],
+                      ),
+                    ),
+                    radius: 5,
+                    borderColor: Colors.white,
+                    buttonMargin: const EdgeInsets.fromLTRB(6, 8, 6, 1),
+                    contentPadding: const EdgeInsets.fromLTRB(60, 8, 60, 8),
+                    unselectedBackgroundColor: Colors.white,
+                    labelStyle:
+                        const TextStyle(color: Colors.white, fontSize: 15),
+                    tabs: const [
+                      Tab(text: "Previous"),
+                      Tab(text: "Upcoming"),
+                    ]),
+              ]),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: []),
+          Container(
+            width: double.maxFinite,
+            height: MediaQuery.of(context).size.height,
+            child: TabBarView(controller: _tabController, children: [
+              showPrevList(getPrevRequests(context, 'userID'), 'userID'),
+              showUpcomingList(getUpcomingRequests(context, 'userID'), 'userID')
+            ]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Stream<QuerySnapshot> getPrevRequests(
+      BuildContext context, String userType) async* {
+    final user = FirebaseAuth.instance.currentUser!;
+    String userId = user.uid;
+    final now = DateTime.now();
+    final today = DateFormat('yyyy-MM-dd HH: ss').format(now);
+    yield* FirebaseFirestore.instance
+        .collection('requests')
+        .where(userType, isEqualTo: userId)
+        .where('date_ymd', isLessThanOrEqualTo: today)
+        .orderBy('date_ymd')
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getUpcomingRequests(
+      BuildContext context, String userType) async* {
+    final user = FirebaseAuth.instance.currentUser!;
+    String userId = user.uid;
+    final now = DateTime.now();
+    final today = DateFormat('yyyy-MM-dd HH: ss').format(now);
+    yield* FirebaseFirestore.instance
+        .collection('requests')
+        .where(userType, isEqualTo: userId)
+        .where('date_ymd', isGreaterThan: today)
+        .orderBy('date_ymd')
+        .snapshots();
+  }
+
+  Widget showUpcomingList(Stream<QuerySnapshot> list, String userType) {
     Future<String> getLocationAsString(var lat, var lng) async {
       List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
       return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
@@ -387,13 +454,14 @@ class UserProfileState extends State<userProfile>
     final today = DateFormat('yyyy-MM-dd HH: ss').format(now);
     final Stream<QuerySnapshot> ulist = FirebaseFirestore.instance
         .collection('requests')
-        .where('VolID', isEqualTo: userId)
+        .where(userType, isEqualTo: userId)
         .where('date_ymd', isGreaterThan: today)
         .orderBy('date_ymd')
         .snapshots();
 
     return Column(children: [
       Expanded(
+          flex: 2,
           child: Container(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: StreamBuilder<QuerySnapshot>(
@@ -403,10 +471,21 @@ class UserProfileState extends State<userProfile>
                   AsyncSnapshot<QuerySnapshot> snapshot,
                 ) {
                   if (snapshot.hasError) {
-                    return Text('Something went wrong');
+                    return const Text('Something went wrong');
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text('Loading');
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                    return const Padding(
+                        padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+                        child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Text(
+                                'There is no upcoming requests currently.',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 17))));
                   }
                   final data = snapshot.requireData;
                   return ListView.builder(
@@ -423,7 +502,8 @@ class UserProfileState extends State<userProfile>
                             if (snap.hasData) {
                               var reqLoc = snap.data;
                               return Container(
-                                  margin: EdgeInsets.fromLTRB(8, 12, 8, 0),
+                                  margin:
+                                      const EdgeInsets.fromLTRB(8, 12, 8, 0),
                                   decoration: BoxDecoration(
                                       //color: Colors.white,
                                       boxShadow: const [
@@ -434,155 +514,206 @@ class UserProfileState extends State<userProfile>
                                       ],
                                       borderRadius: BorderRadius.circular(15)),
                                   child: Card(
-                                      child: Column(
-                                    children: [
-                                      //title
-                                      Padding(
-                                          padding: EdgeInsets.fromLTRB(
-                                              10, 10, 15, 15),
-                                          child: Stack(children: [
-                                            Text(
-                                              ' ${data.docs[index]['title']}',
-                                              textAlign: TextAlign.left,
-                                            ),
-                                            Container(
-                                              alignment: Alignment.topRight,
-                                              margin: EdgeInsets.only(top: 5),
-                                              // padding: EdgeInsets.only(right: 0),
-                                              child: Text(
-                                                  '${data.docs[index]['status']}',
-                                                  //   overflow:
-                                                  //   TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      background: Paint()
-                                                        ..strokeWidth = 20.0
-                                                        ..color = getColor(
-                                                            data.docs[index]
-                                                                ['status'])
-                                                        ..style =
-                                                            PaintingStyle.stroke
-                                                        ..strokeJoin =
-                                                            StrokeJoin.round,
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
-                                            )
-                                          ])),
-                                      //date and time
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                        child: Row(
+                                      child: Container(
+                                          // width: 200,
+                                          // height: 400,
+                                          child: Row(children: [
+                                    RotatedBox(
+                                        quarterTurns: 3,
+                                        child: Container(
+                                          // height: double.infinity,
+                                          child: Text(
+                                              getStatus(
+                                                  data.docs[index]['status'],
+                                                  data.docs[index]['docId']),
+                                              style: TextStyle(
+                                                  color: Colors.green.shade300,
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.w500,
+                                                  letterSpacing: 5)),
+                                        )),
+                                    Expanded(
+                                        flex: 2,
+                                        child: Column(
                                           children: [
-                                            Icon(Icons.calendar_today,
-                                                size: 20, color: Colors.red),
-                                            Text(
-                                                ' ${data.docs[index]['date_dmy']}',
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
+                                            //title
+                                            Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        10, 10, 15, 15),
+                                                child: Stack(children: [
+                                                  Text(
+                                                    ' ${data.docs[index]['title']}',
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                  Container(
+                                                    alignment:
+                                                        Alignment.topRight,
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            top: 5),
+                                                    // padding: EdgeInsets.only(right: 0),
+                                                    child: Text(
+                                                        '${data.docs[index]['status']}',
+                                                        //   overflow:
+                                                        //   TextOverflow.ellipsis,
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            background: Paint()
+                                                              ..strokeWidth =
+                                                                  20.0
+                                                              ..color = getColor(
+                                                                  data.docs[
+                                                                          index]
+                                                                      [
+                                                                      'status'])
+                                                              ..style =
+                                                                  PaintingStyle
+                                                                      .stroke
+                                                              ..strokeJoin =
+                                                                  StrokeJoin
+                                                                      .round,
+                                                            fontSize: 17,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500)),
+                                                  )
+                                                ])),
+                                            //date and time
                                             Padding(
                                               padding:
-                                                  EdgeInsets.only(left: 60),
+                                                  const EdgeInsets.fromLTRB(
+                                                      20, 0, 0, 12),
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.schedule,
+                                                  const Icon(
+                                                      Icons.calendar_today,
                                                       size: 20,
                                                       color: Colors.red),
                                                   Text(
-                                                      ' ${data.docs[index]['time']}',
-                                                      style: TextStyle(
+                                                      ' ${data.docs[index]['date_dmy']}',
+                                                      style: const TextStyle(
+                                                          fontSize: 17,
+                                                          fontWeight:
+                                                              FontWeight.w500)),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 60),
+                                                    child: Row(
+                                                      children: [
+                                                        const Icon(
+                                                            Icons.schedule,
+                                                            size: 20,
+                                                            color: Colors.red),
+                                                        Text(
+                                                            ' ${data.docs[index]['time']}',
+                                                            style: const TextStyle(
+                                                                fontSize: 17,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500)),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            //duration
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      20, 0, 0, 12),
+                                              child: Row(
+                                                children: [
+                                                  // Icon(Icons.schedule,
+                                                  //     size: 20, color: Colors.red),
+                                                  Text(
+                                                      'Duration: ${data.docs[index]['duration']}',
+                                                      style: const TextStyle(
                                                           fontSize: 17,
                                                           fontWeight:
                                                               FontWeight.w500)),
                                                 ],
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                      //duration
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 0, 12),
-                                        child: Row(
-                                          children: [
-                                            // Icon(Icons.schedule,
-                                            //     size: 20, color: Colors.red),
-                                            Text(
-                                                'Duration: ${data.docs[index]['duration']}',
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
-                                          ],
-                                        ),
-                                      ),
-                                      //description
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 0, 5),
-                                        child: Row(
-                                          children: [
-                                            Flexible(
-                                              child: Text(
-                                                  'Description: ${data.docs[index]['description']}',
-                                                  style: TextStyle(
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      //location
-                                      Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 0, 0, 20),
-                                          child: ElevatedButton(
-                                              onPressed: () {
-                                                double latitude = double.parse(
-                                                    data.docs[index]
-                                                        ['latitude']);
-                                                double longitude = double.parse(
-                                                    data.docs[index]
-                                                        ['longitude']);
-
-                                                (Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          MapsPage(
-                                                              latitude:
-                                                                  latitude,
-                                                              longitude:
-                                                                  longitude),
-                                                    )));
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                  foregroundColor: Colors.white,
-                                                  backgroundColor: Colors.white,
-                                                  side: BorderSide(
-                                                      color: Colors.white,
-                                                      width: 2)),
+                                            //description
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      20, 0, 0, 5),
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.location_pin,
-                                                      size: 20,
-                                                      color: Colors.red),
                                                   Flexible(
-                                                      child: Text(reqLoc!,
-                                                          style: TextStyle(
-                                                            color: Colors
-                                                                .grey.shade500,
+                                                    child: Text(
+                                                        'Description: ${data.docs[index]['description']}',
+                                                        style: const TextStyle(
                                                             fontSize: 17,
-                                                          )))
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500)),
+                                                  ),
                                                 ],
-                                              ))),
-                                    ],
-                                  )));
+                                              ),
+                                            ),
+                                            //location
+                                            Padding(
+                                                padding:
+                                                    const EdgeInsets
+                                                        .fromLTRB(0, 0, 0, 20),
+                                                child: ElevatedButton(
+                                                    onPressed: () {
+                                                      double latitude =
+                                                          double.parse(
+                                                              data.docs[index]
+                                                                  ['latitude']);
+                                                      double longitude =
+                                                          double.parse(data
+                                                                  .docs[index]
+                                                              ['longitude']);
+
+                                                      (Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                MapsPage(
+                                                                    latitude:
+                                                                        latitude,
+                                                                    longitude:
+                                                                        longitude),
+                                                          )));
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                            foregroundColor:
+                                                                Colors.white,
+                                                            backgroundColor:
+                                                                Colors.white,
+                                                            side:
+                                                                const BorderSide(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    width: 2)),
+                                                    child: Row(
+                                                      children: [
+                                                        const Icon(
+                                                            Icons.location_pin,
+                                                            size: 20,
+                                                            color: Colors.red),
+                                                        Flexible(
+                                                            child: Text(reqLoc!,
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .grey
+                                                                      .shade500,
+                                                                  fontSize: 17,
+                                                                )))
+                                                      ],
+                                                    ))),
+                                          ],
+                                        ))
+                                  ]))));
                             } else {
                               return const Center(
                                   child: CircularProgressIndicator());
@@ -595,7 +726,7 @@ class UserProfileState extends State<userProfile>
     ]);
   }
 
-  Widget showPrevList(Stream<QuerySnapshot> list) {
+  Widget showPrevList(Stream<QuerySnapshot> list, String userType) {
     Future<String> getLocationAsString(var lat, var lng) async {
       List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
       return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
@@ -615,6 +746,7 @@ class UserProfileState extends State<userProfile>
 
     return Column(children: [
       Expanded(
+          flex: 2,
           child: Container(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: StreamBuilder<QuerySnapshot>(
@@ -624,10 +756,21 @@ class UserProfileState extends State<userProfile>
                   AsyncSnapshot<QuerySnapshot> snapshot,
                 ) {
                   if (snapshot.hasError) {
-                    return Text('Something went wrong');
+                    return const Text('Something went wrong');
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Text('Loading');
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                    return const Padding(
+                        padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+                        child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Text(
+                                'There is no previous requests currently.',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 17))));
                   }
                   final data = snapshot.requireData;
                   return ListView.builder(
@@ -644,7 +787,8 @@ class UserProfileState extends State<userProfile>
                             if (snap.hasData) {
                               var reqLoc = snap.data;
                               return Container(
-                                  margin: EdgeInsets.fromLTRB(5, 12, 5, 0),
+                                  margin:
+                                      const EdgeInsets.fromLTRB(5, 12, 5, 0),
                                   decoration: BoxDecoration(
                                       //color: Colors.white,
                                       boxShadow: const [
@@ -659,7 +803,7 @@ class UserProfileState extends State<userProfile>
                                     children: [
                                       //title
                                       Padding(
-                                          padding: EdgeInsets.fromLTRB(
+                                          padding: const EdgeInsets.fromLTRB(
                                               10, 10, 15, 15),
                                           child: Stack(children: [
                                             Text(
@@ -668,16 +812,14 @@ class UserProfileState extends State<userProfile>
                                             ),
                                             Container(
                                               alignment: Alignment.topRight,
-                                              margin: EdgeInsets.only(top: 5),
-                                              // padding: EdgeInsets.only(right: 0),
+                                              margin:
+                                                  const EdgeInsets.only(top: 5),
                                               child: Text(
                                                   getStatus(
                                                       data.docs[index]
                                                           ['status'],
                                                       data.docs[index]
                                                           ['docId']),
-                                                  //   overflow:
-                                                  //   TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                       color: Colors.white,
                                                       background: Paint()
@@ -696,29 +838,29 @@ class UserProfileState extends State<userProfile>
                                           ])),
                                       //date and time
                                       Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 15, 0, 12),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            20, 15, 0, 12),
                                         child: Row(
                                           children: [
-                                            Icon(Icons.calendar_today,
+                                            const Icon(Icons.calendar_today,
                                                 size: 20, color: Colors.red),
                                             Text(
                                                 ' ${data.docs[index]['date_dmy']}',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontSize: 17,
                                                     fontWeight:
                                                         FontWeight.w500)),
                                             Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 60),
+                                              padding: const EdgeInsets.only(
+                                                  left: 60),
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.schedule,
+                                                  const Icon(Icons.schedule,
                                                       size: 20,
                                                       color: Colors.red),
                                                   Text(
                                                       ' ${data.docs[index]['time']}',
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                           fontSize: 17,
                                                           fontWeight:
                                                               FontWeight.w500)),
@@ -730,15 +872,13 @@ class UserProfileState extends State<userProfile>
                                       ),
                                       //duration
                                       Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 0, 12),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            20, 0, 0, 12),
                                         child: Row(
                                           children: [
-                                            // Icon(Icons.schedule,
-                                            //     size: 20, color: Colors.red),
                                             Text(
                                                 'Duration: ${data.docs[index]['duration']}',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontSize: 17,
                                                     fontWeight:
                                                         FontWeight.w500)),
@@ -747,18 +887,14 @@ class UserProfileState extends State<userProfile>
                                       ),
                                       //description
                                       Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 0, 18, 5),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            20, 0, 18, 5),
                                         child: Row(
                                           children: [
-                                            // Icon(Icons.description,
-                                            //     size: 20, color: Colors.red),
                                             Flexible(
                                               child: Text(
                                                   'Description: ${data.docs[index]['description']}',
-                                                  //   overflow:
-                                                  //   TextOverflow.ellipsis,
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       fontSize: 17,
                                                       fontWeight:
                                                           FontWeight.w500)),
@@ -768,12 +904,10 @@ class UserProfileState extends State<userProfile>
                                       ),
                                       //location
                                       Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 0, 0, 20),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 0, 0, 20),
                                           child: ElevatedButton(
                                               onPressed: () {
-                                                // String dataId =
-                                                //  docReference.id;
                                                 double latitude = double.parse(
                                                     data.docs[index]
                                                         ['latitude']);
@@ -795,12 +929,12 @@ class UserProfileState extends State<userProfile>
                                               style: ElevatedButton.styleFrom(
                                                   foregroundColor: Colors.white,
                                                   backgroundColor: Colors.white,
-                                                  side: BorderSide(
+                                                  side: const BorderSide(
                                                       color: Colors.white,
                                                       width: 2)),
                                               child: Row(
                                                 children: [
-                                                  Icon(Icons.location_pin,
+                                                  const Icon(Icons.location_pin,
                                                       size: 20,
                                                       color: Colors.red),
                                                   Flexible(
@@ -826,38 +960,35 @@ class UserProfileState extends State<userProfile>
     ]);
   }
 
-  setShowPrev() {
-    showPrev = true;
+  String getTime() {
+    final now = DateTime.now();
+    return DateFormat('yyyy-MM-dd HH: ss').format(now);
   }
 
-  setShowUpcoming() {
-    showPrev = false;
-    showUpcoming = true;
+  Color getColor(String stat) {
+    if (stat == 'Approved')
+      return Colors.green.shade300;
+    else if (stat == 'Pending')
+      return Colors.orange.shade300;
+    else if (stat == 'Expired')
+      return Colors.red.shade300;
+    else
+      return Colors.white;
   }
-}
 
-Color getColor(String stat) {
-  if (stat == 'Approved')
-    return Colors.green.shade300;
-  else if (stat == 'Pending')
-    return Colors.orange.shade300;
-  else if (stat == 'Expired')
-    return Colors.red.shade300;
-  else
-    return Colors.white;
-}
+  String getStatus(String stat, String docId) {
+    if (stat == 'Pending') {
+      final user = FirebaseAuth.instance.currentUser!;
+      String userId = user.uid;
 
-String getStatus(String stat, String docId) {
-  if (stat == 'Pending') {
-    final user = FirebaseAuth.instance.currentUser!;
-    String userId = user.uid;
+      final postID =
+          FirebaseFirestore.instance.collection('requests').doc(docId);
 
-    final postID = FirebaseFirestore.instance.collection('requests').doc(docId);
-
-    postID.update({
-      'status': 'Expired',
-    });
-    return 'Expired';
-  } else
-    return stat;
+      postID.update({
+        'status': 'Expired',
+      });
+      return 'Expired';
+    } else
+      return stat;
+  }
 }

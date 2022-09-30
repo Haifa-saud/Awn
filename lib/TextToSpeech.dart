@@ -231,7 +231,26 @@ class _TtsState extends State<Tts> {
         //       ))
         //     ])),
         floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
+          child: Container(
+            width: 60,
+            height: 60,
+            child: const Icon(
+              Icons.add,
+              size: 40,
+            ),
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [0.0, 1.0],
+                colors: [
+                  Colors.blue,
+                  Color(0xFF39d6ce),
+                ],
+              ),
+            ),
+          ),
           onPressed: () {
             Navigator.push(
                 context,
@@ -239,7 +258,7 @@ class _TtsState extends State<Tts> {
                     builder: (context) => addPost(userType: widget.userType)));
           },
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         bottomNavigationBar: BottomNavBar(
           onPress: (int value) => setState(() {
             _selectedIndex = value;

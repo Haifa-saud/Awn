@@ -140,8 +140,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                   ],
 
                   centerTitle: false,
-                  backgroundColor: Colors.white, //(0xFFfcfffe),
-                  foregroundColor: Colors.black,
+                  backgroundColor: Colors.white, //(0xFFfcfffe)
                   automaticallyImplyLeading: false,
                   scrolledUnderElevation: 1,
                   toolbarHeight: 80,
@@ -244,7 +243,26 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                       )
                     ])),
                 floatingActionButton: FloatingActionButton(
-                  child: const Icon(Icons.add),
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    child: const Icon(
+                      Icons.add,
+                      size: 40,
+                    ),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        stops: [0.0, 1.0],
+                        colors: [
+                          Colors.blue,
+                          Color(0xFF39d6ce),
+                        ],
+                      ),
+                    ),
+                  ),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -298,8 +316,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                                 child: Text('No available posts'));
                           } else {
                             final data = snapshot.requireData;
-                            return
-                                ListView.builder(
+                            return ListView.builder(
                               shrinkWrap: true,
                               itemCount: data.size,
                               itemBuilder: (context, index) {

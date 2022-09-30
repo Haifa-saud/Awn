@@ -263,9 +263,7 @@ class _AddRequestState extends State<viewRequests> {
                     }
                     if (snapshot.connectionState == ConnectionState.waiting ||
                         !snapshot.hasData) {
-                      return CircularProgressIndicator(
-                        color: Colors.grey.shade200,
-                      );
+                      return const CircularProgressIndicator();
                     }
                     return Container();
                   }))
@@ -587,7 +585,26 @@ class _AddRequestState extends State<viewRequests> {
             ],
           )),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+        child: Container(
+          width: 60,
+          height: 60,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              stops: [0.0, 1.0],
+              colors: [
+                Colors.blue,
+                Color(0xFF39d6ce),
+              ],
+            ),
+          ),
+          child: const Icon(
+            Icons.add,
+            size: 40,
+          ),
+        ),
         onPressed: () {
           Navigator.push(
               context,
