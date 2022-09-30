@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:awn/main.dart';
-import 'package:awn/notificationRequest.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';

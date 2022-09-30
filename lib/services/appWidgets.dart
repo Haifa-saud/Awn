@@ -16,11 +16,17 @@ class BottomNavBar extends StatelessWidget {
   }) : super(key: key);
   final Function(int) onPress;
   final int currentI;
-  final userType;
+  var userType = 'Volunteer';
 
-  final iconList = <IconData>[
+  final iconSNU = <IconData>[
     Icons.home,
     Icons.volume_up,
+    Icons.handshake,
+    Icons.person,
+  ];
+
+  final iconVol = <IconData>[
+    Icons.home,
     Icons.handshake,
     Icons.person,
   ];
@@ -29,37 +35,62 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var iconList = userType == 'Volunteer'
+        ? <IconData>[
+            Icons.home,
+            Icons.handshake,
+            Icons.person,
+          ]
+        : <IconData>[
+            Icons.home,
+            Icons.volume_up,
+            Icons.handshake,
+            Icons.person,
+          ];
+
     Future<void> _onItemTapped(int index) async {
-      if (index == 0) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => homePage(userType: userType)),
-        );
-      } else if (index == 1) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Tts(userType: userType)),
-        );
-      } else if (index == 2) {
-        if (userType == 'Special Need User') {
+      if (userType == 'Special Need User') {
+        if (index == 0) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const homePage()),
+          );
+        } else if (index == 1) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Tts(userType: userType)),
+          );
+        } else if (index == 2) {
           Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => addRequest(userType: userType)),
           );
-        } else if (userType == 'Volunteer') {
+        } else if (index == 3) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => userProfile(userType: userType)));
+        }
+      } else if (userType == 'Volunteer') {
+        if (index == 0) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const homePage()),
+          );
+        } else if (index == 1) {
           Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) =>
                     viewRequests(userType: userType, reqID: '')),
           );
+        } else if (index == 2) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => userProfile(userType: userType)));
         }
-      } else if (index == 3) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => userProfile(userType: userType)));
       }
     }
 
@@ -69,7 +100,7 @@ class BottomNavBar extends StatelessWidget {
       splashRadius: 1,
       splashSpeedInMilliseconds: 100,
       tabBuilder: (int index, bool isActive) {
-        final color = isActive ? Colors.blue : Colors.grey;
+        final color = isActive ? const Color(0xFF06283D) : Colors.grey;
         final size = isActive ? 35.0 : 26.0;
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -84,8 +115,8 @@ class BottomNavBar extends StatelessWidget {
         );
       },
       activeIndex: currentI,
-      itemCount: 4,
-      gapLocation: GapLocation.center,
+      itemCount: userType == 'Volunteer' ? 3 : 4,
+      gapLocation: GapLocation.end,
       notchSmoothness: NotchSmoothness.smoothEdge,
       onTap: (index) {
         _onItemTapped(index);

@@ -34,6 +34,16 @@ class _AddRequestState extends State<viewRequests> {
     return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
   }
 
+  @override
+  void initState() {
+    if (widget.reqID != '') {
+      // Future.delayed(Duration.zero, () =>
+      showAlert(this.context);
+      //  );
+    }
+    super.initState();
+  }
+
   final Stream<QuerySnapshot> requests = FirebaseFirestore.instance
       .collection('requests')
       .where('status', isEqualTo: 'Pending')
@@ -85,15 +95,6 @@ class _AddRequestState extends State<viewRequests> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 //title
-                                const Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
-                                    child: Text(
-                                      'New Awn Request: ',
-                                      style: TextStyle(
-                                        fontSize: 19,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    )),
                                 Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(0, 0, 0, 10),
@@ -101,6 +102,7 @@ class _AddRequestState extends State<viewRequests> {
                                     width: 280,
                                     child: Text(
                                       '${data['title']}',
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
                                 ),
@@ -233,9 +235,6 @@ class _AddRequestState extends State<viewRequests> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.reqID != '') {
-      Future.delayed(Duration.zero, () => showAlert(context));
-    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('View Awn Requests'),
@@ -508,7 +507,7 @@ class _AddRequestState extends State<viewRequests> {
                   builder: (context) => addPost(userType: widget.userType)));
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BottomNavBar(
         onPress: (int value) => setState(() {
           _selectedIndex = value;

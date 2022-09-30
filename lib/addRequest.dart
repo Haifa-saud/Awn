@@ -13,7 +13,7 @@ import 'package:intl/intl.dart';
 import 'main.dart';
 import 'package:awn/map.dart';
 
-//! bottom bar done 
+//! bottom bar done
 class addRequest extends StatefulWidget {
   final String userType;
   const addRequest({Key? key, required this.userType}) : super(key: key);
@@ -72,7 +72,7 @@ class _AddRequestState extends State<addRequest> {
                   builder: (context) => addPost(userType: widget.userType)));
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BottomNavBar(
         onPress: (int value) => setState(() {
           _selectedIndex = value;

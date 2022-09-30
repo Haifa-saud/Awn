@@ -321,7 +321,7 @@ class _loginState extends State<login> {
                                       context, '/volunteerPage');
                                   await Workmanager().initialize(
                                       callbackDispatcher,
-                                      isInDebugMode: true);
+                                      isInDebugMode: false);
 
                                   var time = DateTime.now().second.toString();
                                   await Workmanager().registerPeriodicTask(

@@ -1,6 +1,5 @@
 import 'package:awn/homePage.dart';
 import 'package:awn/login.dart';
-import 'package:awn/notificationRequest.dart';
 import 'package:awn/register.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -53,8 +52,8 @@ class _MyApp extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
-        '/homePage': (ctx) => const homePage(userType: 'Special Need User'),
-        '/volunteerPage': (ctx) => const homePage(userType: 'Volunteer'),
+        '/homePage': (ctx) => const homePage(),
+        '/volunteerPage': (ctx) => const homePage(),
         "/register": (ctx) => const register(),
         "/login": (ctx) => const login(),
       },
@@ -67,7 +66,7 @@ class _MyApp extends State<MyApp> {
           titleTextStyle: TextStyle(
               wordSpacing: 3,
               letterSpacing: 1,
-              color: Colors.black,
+              color: const Color(0xFF06283D),
               fontSize: 22,
               fontWeight: FontWeight.w700),
           scrolledUnderElevation: 1,
@@ -81,14 +80,16 @@ class _MyApp extends State<MyApp> {
               wordSpacing: 3,
               letterSpacing: 1,
               fontSize: 22.0,
-              color: Colors.black), //header at the app bar
+              color: const Color(0xFF06283D)), //header at the app bar
           bodyText2: TextStyle(
               wordSpacing: 3,
+              color: const Color(0xFF06283D),
               letterSpacing: 1,
               fontSize: 20.0,
               fontWeight: FontWeight.bold), //the body text
           subtitle1: TextStyle(
               wordSpacing: 3,
+              color: const Color(0xFF06283D),
               letterSpacing: 1,
               fontSize: 19.0), //the text field label
           subtitle2: TextStyle(
@@ -97,11 +98,12 @@ class _MyApp extends State<MyApp> {
               fontSize: 120.0), //the text field
 
           button: TextStyle(
-              wordSpacing: 3,
-              letterSpacing: 1,
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              decoration: TextDecoration.underline), //the button text
+            wordSpacing: 3,
+            letterSpacing: 1,
+            fontSize: 17,
+            fontWeight: FontWeight.w500,
+            // decoration: TextDecoration.underline
+          ), //the button text
         ),
         inputDecorationTheme: InputDecorationTheme(
           enabledBorder: OutlineInputBorder(
@@ -140,9 +142,7 @@ class _MyApp extends State<MyApp> {
       home: widget.auth
           ? (widget.notification
               ? viewRequests(userType: 'Volunteer', reqID: widget.payload)
-              : const homePage(
-                  userType: 'Volunteer',
-                ))
+              : const homePage())
           : login(),
     );
   }

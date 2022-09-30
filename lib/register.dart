@@ -32,8 +32,8 @@ TextEditingController nameController = TextEditingController();
 TextEditingController numberController = TextEditingController();
 TextEditingController bioController = TextEditingController();
 
-String group = "gender";
-String group1 = "role";
+String group = "Female";
+String group1 = "Special Need User";
 bool blind = false;
 bool mute = false;
 bool deaf = false;
@@ -70,18 +70,26 @@ class _registerState extends State<register> {
 
   bool _passwordVisible = false;
   @override
-  void dispose() {
+  void clearForm() {
+    group = "Female";
+    group1 = "Special Need User";
     emailController.text = "";
     passwordController.text = "";
     cofirmPasswordController.text = "";
     nameController.text = "";
     numberController.text = "";
-
-    super.dispose();
+    bioController.text = "";
+    DisabilityType.doc('HearingImpaired').update({'Checked': false});
+    DisabilityType.doc('PhysicallyImpaired ').update({'Checked': false});
+    DisabilityType.doc('VisuallyImpaired').update({'Checked': false});
+    DisabilityType.doc('VocallyImpaired').update({'Checked': false});
+    DisabilityType.doc('Other').update({'Checked': false});
+    //super.clearForm();
   }
 
   DateTime selectedDate = DateTime.now();
   bool showDate = false;
+  ScrollController _scrollController = ScrollController();
 
   Future<DateTime> _selectDate(BuildContext context) async {
     final selected = await showDatePicker(
@@ -264,7 +272,7 @@ class _registerState extends State<register> {
                               });
                             },
                           ),
-                          const Text("Special Needs User",
+                          const Text("Special Need User",
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.normal)),
                         ]),
@@ -292,29 +300,32 @@ class _registerState extends State<register> {
                     child: LayoutBuilder(builder: (context, constraints) {
                       if (group1 == "Volunteer") {
                         return Container(
-                          padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                          child: TextFormField(
-                            keyboardType: TextInputType.multiline,
-                            maxLines: 4,
-                            maxLength: 300,
-                            textAlign: TextAlign.left,
-                            controller: bioController,
-                            decoration: InputDecoration(
-                              hintText:
-                                  "Enter your bio here.\n(talk briefly about yourself! )",
-                              labelText: 'Bio',
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                  borderSide:
-                                      BorderSide(color: Colors.grey.shade400)),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                                borderSide: const BorderSide(
-                                    color: Colors.blue, width: 2),
+                            padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                            child: SingleChildScrollView(
+                              controller: _scrollController,
+                              child: TextFormField(
+                                scrollController: _scrollController,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: 6,
+                                maxLength: 180,
+                                textAlign: TextAlign.left,
+                                controller: bioController,
+                                decoration: InputDecoration(
+                                  hintText:
+                                      "Enter your bio here.\n(talk briefly about yourself! )",
+                                  labelText: 'Bio',
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(30.0),
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade400)),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                    borderSide: const BorderSide(
+                                        color: Colors.blue, width: 2),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
+                            ));
                       } else if (group1 == 'Special Need User') {
                         return Column(
                           children: [
@@ -382,7 +393,7 @@ class _registerState extends State<register> {
                                         return DropdownMenuItem<String>(
                                             child: CheckboxListTile(
                                                 value: (document.data()
-                                                        as Map)['Checked'],
+                                                    as Map)['Checked'],
                                                 title: Text(
                                                     (document.data()
                                                         as Map)['Type'],
@@ -392,106 +403,51 @@ class _registerState extends State<register> {
                                                             FontWeight.normal)),
                                                 onChanged: (bool? newValue) {
                                                   setState(() {
-                                                    String typeId = (document.data() as Map)['Type'].replaceAll(' ', '');
-                                                    DisabilityType.doc(typeId).update({'Checked':newValue});
+                                                    String typeId = (document
+                                                                .data()
+                                                            as Map)['Type']
+                                                        .replaceAll(' ', '');
+                                                    DisabilityType.doc(typeId)
+                                                        .update({
+                                                      'Checked': newValue
+                                                    });
+                                                    if ((document.data()
+                                                            as Map)['Type'] ==
+                                                        'Visually Impaired') {
+                                                      blind = (document.data()
+                                                          as Map)['Checked'];
+                                                    }
+                                                    if ((document.data()
+                                                            as Map)['Type'] ==
+                                                        'Vocally Impaired') {
+                                                      mute = (document.data()
+                                                          as Map)['Checked'];
+                                                    }
+                                                    if ((document.data()
+                                                            as Map)['Type'] ==
+                                                        'Hearing Impaired') {
+                                                      deaf = (document.data()
+                                                          as Map)['Checked'];
+                                                    }
+                                                    if ((document.data()
+                                                            as Map)['Type'] ==
+                                                        'Physically Impaired') {
+                                                      physical = (document
+                                                              .data()
+                                                          as Map)['Checked'];
+                                                    }
+                                                    if ((document.data()
+                                                            as Map)['Type'] ==
+                                                        'Other') {
+                                                      other = (document.data()
+                                                          as Map)['Checked'];
+                                                    }
                                                   });
                                                 }));
                                       }).toList(),
                                     );
                                   }
                                 }),
-
-                            //   Row(children: [
-                            //     SizedBox(
-                            //       height: 24.0,
-                            //       width: 35.0,
-                            //       child: Checkbox(
-                            //           value: blind,
-                            //           onChanged: (bool? value) {
-                            //             setState(() {
-                            //               blind = value!;
-                            //             });
-                            //           }),
-                            //     ),
-                            //     const Text("Visually Impaired",
-                            //         style: TextStyle(
-                            //             fontSize: 18,
-                            //             fontWeight: FontWeight.normal)),
-                            //   ]),
-                            //   Row(children: [
-                            //     SizedBox(
-                            //       height: 24.0,
-                            //       width: 35.0,
-                            //       child: Checkbox(
-                            //           value: mute,
-                            //           onChanged: (bool? value) {
-                            //             setState(() {
-                            //               mute = value!;
-                            //             });
-                            //           }),
-                            //     ),
-                            //     const Text("Vocally Impaired",
-                            //         style: TextStyle(
-                            //             fontSize: 18,
-                            //             fontWeight: FontWeight.normal)),
-                            //   ]),
-
-                            //   Row(children: [
-                            //     SizedBox(
-                            //       height: 24.0,
-                            //       width: 35.0,
-                            //       child: Checkbox(
-                            //           value: deaf,
-                            //           onChanged: (bool? value) {
-                            //             setState(() {
-                            //               deaf = value!;
-                            //             });
-                            //           }),
-                            //     ),
-                            //     const Text("Hearing Impaired",
-                            //         style: TextStyle(
-                            //             fontSize: 18,
-                            //             fontWeight: FontWeight.normal)),
-                            //   ]),
-
-                            //   Row(
-                            //     children: [
-                            //       SizedBox(
-                            //         height: 24.0,
-                            //         width: 35.0,
-                            //         child: Checkbox(
-                            //             value: physical,
-                            //             onChanged: (bool? value) {
-                            //               setState(() {
-                            //                 physical = value!;
-                            //               });
-                            //             }),
-                            //       ),
-                            //       const Text("Physically Impaired",
-                            //           style: TextStyle(
-                            //               fontSize: 18,
-                            //               fontWeight: FontWeight.normal)),
-                            //     ],
-                            //   ),
-                            //   Row(
-                            //     children: <Widget>[
-                            //       SizedBox(
-                            //         height: 24.0,
-                            //         width: 35.0,
-                            //         child: Checkbox(
-                            //             value: other,
-                            //             onChanged: (bool? value) {
-                            //               setState(() {
-                            //                 other = value!;
-                            //               });
-                            //             }),
-                            //       ),
-                            //       const Text("other",
-                            //           style: TextStyle(
-                            //               fontSize: 18,
-                            //               fontWeight: FontWeight.normal)),
-                            //     ],
-                            //   ),
                           ],
                         );
                       } else {
@@ -502,15 +458,14 @@ class _registerState extends State<register> {
                   SizedBox(
                     height: height * 0.01,
                   ),
-                  // WEDD START FROM HERE
+                  //WEDD START FROM HERE
                   //DOB
                   Container(
-                    // padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+                    //padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
                     margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                    //
                     //padding: const EdgeInsets.symmetric(horizontal: 15),
-                    //  margin: EdgeInsets.only(bottom: 10, top: 20),
-                    // width: 150,
+                    //margin: EdgeInsets.only(bottom: 10, top: 20),
+                    //width: 150,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -590,6 +545,7 @@ class _registerState extends State<register> {
                   SizedBox(
                     height: height * 0.01,
                   ),
+                 
                   //Password
                   TextFormField(
                     controller: passwordController,
@@ -634,33 +590,33 @@ class _registerState extends State<register> {
                     validator: (value) {
                       // Wedd's Code for password
                       password = value.toString();
-                      // RegExp Upper = RegExp(r"(?=.*[A-Z])");
-                      // RegExp digit = RegExp(r"(?=.*[0-9])");
-                      // if (value == null || value.isEmpty){
-                      //   return "please enter a password";
-                      // } else if (value.length < 7) {
-                      //   return "password should at least be 8 digits"; //ود موجودة ؟
-                      // }  else if (!Upper.hasMatch(value)) {
-                      // return "password should contain an Upper case";
-                      // }  else if (!digit.hasMatch(value)) {
-                      //   return "password should contain a number";
-                      // } else {
-                      //   return null;
-                      // }
-
-                      if (value == null || value.isEmpty || value.length < 8) {
-                        return 'Please enter a password min 8';
-                      }
-                      // else if (value.length < 8) {
-                      //   return 'Password must be at least 8 digits ';
-                      // } else if (!Upper.hasMatch(value)) {
-                      //   return 'Password should contain an upper case';
-                      // } else if (!digit.hasMatch(value)) {
-                      //   return 'Password should contain a number';
-                      // }
-                      else {
+                      RegExp Upper = RegExp(r"(?=.*[A-Z])");
+                      RegExp digit = RegExp(r"(?=.*[0-9])");
+                      if (value == null || value.isEmpty) {
+                        return "please enter a password";
+                      } else if (value.length < 7) {
+                        return "password should at least be 8 digits"; //ود موجودة ؟
+                      } else if (!Upper.hasMatch(value)) {
+                        return "password should contain an Upper case";
+                      } else if (!digit.hasMatch(value)) {
+                        return "password should contain a number";
+                      } else {
                         return null;
                       }
+
+                      // if (value == null || value.isEmpty || value.length < 8) {
+                      //   return 'Please enter a password min 8';
+                      // }
+                      // // else if (value.length < 8) {
+                      // //   return 'Password must be at least 8 digits ';
+                      // // } else if (!Upper.hasMatch(value)) {
+                      // //   return 'Password should contain an upper case';
+                      // // } else if (!digit.hasMatch(value)) {
+                      // //   return 'Password should contain a number';
+                      // // }
+                      // else {
+                      //   return null;
+                      // }
                     },
                   ),
                   SizedBox(
@@ -717,6 +673,12 @@ class _registerState extends State<register> {
                       }
                     },
                   ),
+                   SizedBox(
+                    height: 10,
+                  ),
+                   Text("Should contain Capital, digit, long than 7",
+                      style: TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.normal)),
                   SizedBox(
                     height: height * 0.01,
                   ),
@@ -769,26 +731,29 @@ class _registerState extends State<register> {
                           ),
                         ),
                         onPressed: () {
-                          // if (_formKey.currentState!.validate()) {
-                          //    ScaffoldMessenger.of(context).showSnackBar(
-                          //     const SnackBar(content: Text('Welcom To Awn')),
-                          //     );
-                          //   signUp();
-                          // }else{
-                          //   ScaffoldMessenger.of(context).showSnackBar(
-                          //     const SnackBar(content: Text('Please fill the empty blanks')),
-                          //     );
-                          // }
-
-                          if (cofirmPasswordController.text.isEmpty ||
-                              cofirmPasswordController.text !=
-                                  passwordController.text) {
-                            Utils.showSnackBar(
-                                "confirm password does not match");
-                            return;
-                          } else {
+                          if (_formKey.currentState!.validate()) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Welcom To Awn')),
+                            );
+                            clearForm();
                             signUp();
+                          } else {
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //   const SnackBar(
+                            //       content:
+                            //           Text('Please fill the empty blanks')),
+                            // );
                           }
+
+                          // if (cofirmPasswordController.text.isEmpty ||
+                          //     cofirmPasswordController.text !=
+                          //         passwordController.text) {
+                          //   Utils.showSnackBar(
+                          //       "confirm password does not match");
+                          //   return;
+                          // } else {
+                          //   signUp();
+                          // }
                         }),
                   ),
                   Container(
@@ -805,6 +770,7 @@ class _registerState extends State<register> {
                       TextSpan(
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
+                            clearForm();
                             Navigator.pushNamed(context, "/login");
                           },
                         text: 'Log In',

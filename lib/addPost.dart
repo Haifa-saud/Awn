@@ -371,7 +371,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                   builder: (context) => addPost(userType: widget.userType)));
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BottomNavBar(
         onPress: (int value) => setState(() {
           _selectedIndex = value;
