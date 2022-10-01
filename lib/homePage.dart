@@ -37,6 +37,20 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
   final Stream<QuerySnapshot> posts =
       FirebaseFirestore.instance.collection('posts').snapshots();
 
+//  Future<dynamic> readCategory() =>
+//       FirebaseFirestore.instance.collection('postCategory').get().then(
+//         (Query<DocumentSnapshot> doc) {
+//           print('test');
+//           print(doc.data() as Map<String, dynamic>);
+//           userData = doc.data() as Map<String, dynamic>;
+//           print('test3');
+
+//           return doc.data() as Map<String, dynamic>;
+//         },
+//       );
+//   QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('postCategory').get();
+//   var categories = snapshot.docs.map((d) => Category.fromJson(d.data())).toList();
+
   final Stream<QuerySnapshot> education = FirebaseFirestore.instance
       .collection('posts')
       .where('category', isEqualTo: 'Education')
@@ -531,5 +545,19 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                         })))
           ],
         ));
+  }
+}
+
+class Category {
+  String category;
+
+  Category({
+    required this.category,
+  });
+
+  factory Category.fromJson(Map<String, dynamic> json) {
+    return Category(
+      category: json['category'],
+    );
   }
 }

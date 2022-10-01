@@ -43,6 +43,7 @@ PlatformFile pickedFile = new PlatformFile(name: '', size: 0);
 String label = "click to upload disability certificate";
 bool upload = false;
 String filePath = "Pick file";
+String typeId = "";
 File? fileDB;
 //Wedd's change
 String password = "";
@@ -69,7 +70,7 @@ class _registerState extends State<register> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _passwordVisible = false;
-  // @override
+  @override
   void clearForm() {
     group = "Female";
     group1 = "Special Need User";
@@ -80,11 +81,16 @@ class _registerState extends State<register> {
     numberController.text = "";
     bioController.text = "";
     DisabilityType.doc('HearingImpaired').update({'Checked': false});
-    DisabilityType.doc('PhysicallyImpaired ').update({'Checked': false});
+    DisabilityType.doc('PhysicallyImpaired').update({'Checked': false});
     DisabilityType.doc('VisuallyImpaired').update({'Checked': false});
     DisabilityType.doc('VocallyImpaired').update({'Checked': false});
     DisabilityType.doc('Other').update({'Checked': false});
-    //super.clearForm();
+    blind = false;
+    mute = false;
+    deaf = false;
+    physical = false;
+    other = false;
+    typeId = "";
   }
 
   DateTime selectedDate = DateTime.now();
@@ -368,7 +374,7 @@ class _registerState extends State<register> {
                             Row(
                               children: const <Widget>[
                                 Text(
-                                  "Select imparity/ imparities: ",
+                                  "Select imparity/imparities: ",
                                 ),
                               ],
                             ),
@@ -403,46 +409,40 @@ class _registerState extends State<register> {
                                                             FontWeight.normal)),
                                                 onChanged: (bool? newValue) {
                                                   setState(() {
-                                                    String typeId = (document
-                                                                .data()
+                                                    typeId = (document.data()
                                                             as Map)['Type']
                                                         .replaceAll(' ', '');
                                                     DisabilityType.doc(typeId)
                                                         .update({
                                                       'Checked': newValue
                                                     });
-                                                    if ((document.data()
-                                                            as Map)['Type'] ==
-                                                        'Visually Impaired') {
-                                                      blind = (document.data()
-                                                          as Map)['Checked'];
-                                                    }
-                                                    if ((document.data()
-                                                            as Map)['Type'] ==
-                                                        'Vocally Impaired') {
-                                                      mute = (document.data()
-                                                          as Map)['Checked'];
-                                                    }
-                                                    if ((document.data()
-                                                            as Map)['Type'] ==
-                                                        'Hearing Impaired') {
-                                                      deaf = (document.data()
-                                                          as Map)['Checked'];
-                                                    }
-                                                    if ((document.data()
-                                                            as Map)['Type'] ==
-                                                        'Physically Impaired') {
-                                                      physical = (document
-                                                              .data()
-                                                          as Map)['Checked'];
-                                                    }
-                                                    if ((document.data()
-                                                            as Map)['Type'] ==
-                                                        'Other') {
-                                                      other = (document.data()
-                                                          as Map)['Checked'];
-                                                    }
                                                   });
+
+                                                  if ((document.data()
+                                                          as Map)['Type'] ==
+                                                      'Visually Impaired') {
+                                                    blind = !blind;
+                                                  }
+                                                  if ((document.data()
+                                                          as Map)['Type'] ==
+                                                      'Vocally Impaired') {
+                                                    mute = !mute;
+                                                  }
+                                                  if ((document.data()
+                                                          as Map)['Type'] ==
+                                                      'Hearing Impaired') {
+                                                    deaf = !deaf;
+                                                  }
+                                                  if ((document.data()
+                                                          as Map)['Type'] ==
+                                                      'Physically Impaired') {
+                                                    physical = !physical;
+                                                  }
+                                                  if ((document.data()
+                                                          as Map)['Type'] ==
+                                                      'Other') {
+                                                    other = !other;
+                                                  }
                                                 }));
                                       }).toList(),
                                     );
@@ -732,10 +732,12 @@ class _registerState extends State<register> {
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            signUp();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Welcome To Awn')),
+                              const SnackBar(content: Text('Welcom To Awn')),
                             );
+                            signUp();
+
+                            //   clearForm();
                           } else {
                             // ScaffoldMessenger.of(context).showSnackBar(
                             //   const SnackBar(
@@ -796,23 +798,23 @@ class _registerState extends State<register> {
     );
   }
 
-  Future selectFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    upload = true;
-    if (result == null) {
-      upload = false;
-      return;
-    }
-    setState(() {
-      pickedFile = result.files.first;
-      fileDB = File(pickedFile.path!);
+  // Future selectFile() async {
+  //   final result = await FilePicker.platform.pickFiles();
+  //   upload = true;
+  //   if (result == null) {
+  //     upload = false;
+  //     return;
+  //   }
+  //   setState(() {
+  //     pickedFile = result.files.first;
+  //     fileDB = File(pickedFile.path!);
 
-      // final path = 'User/${pickedFile.name}'; //خليه جالسه اجرب
-      // final file = File(pickedFile.path!);
-      // final ref = FirebaseStorage.instance.ref().child(path);
-      // UploadTask uploadTask = ref.putFile(file);
-    });
-  }
+  //     // final path = 'User/${pickedFile.name}'; //خليه جالسه اجرب
+  //     // final file = File(pickedFile.path!);
+  //     // final ref = FirebaseStorage.instance.ref().child(path);
+  //     // UploadTask uploadTask = ref.putFile(file);
+  //   });
+  // }
 
   Future signUp() async {
     final isValid = _formKey.currentState!.validate();
@@ -823,7 +825,9 @@ class _registerState extends State<register> {
         password: passwordController.text.trim(),
       );
       UserHelper.saveUser(user);
+      //
       clearForm();
+      Navigator.pushNamed(context, "/login");
     } on FirebaseAuthException catch (e) {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(

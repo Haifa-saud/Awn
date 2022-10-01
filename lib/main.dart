@@ -138,7 +138,6 @@ class _MyApp extends State<MyApp> {
           elevation: 1,
           contentTextStyle: TextStyle(fontSize: 16),
         ),
-      
       ),
       home: widget.auth
           ? (widget.notification

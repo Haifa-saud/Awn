@@ -1,5 +1,6 @@
 import 'package:awn/addPost.dart';
 import 'package:awn/services/appWidgets.dart';
+import 'package:awn/services/firebase_storage_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,6 +26,8 @@ class addRequest extends StatefulWidget {
 TextEditingController titleController = TextEditingController();
 TextEditingController durationController = TextEditingController();
 TextEditingController descController = TextEditingController();
+final Storage storage = Storage();
+
 void clearForm() {
   titleController.clear();
   durationController.clear();
@@ -38,6 +41,41 @@ class _AddRequestState extends State<addRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        bottom: PreferredSize(
+            preferredSize: Size.fromHeight(1.0),
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                child: Container(
+                  color: Colors.grey,
+                  height: 1.0,
+                ))),
+        actions: <Widget>[
+          Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+              child: FutureBuilder(
+                  future: storage.downloadURL('logo.png'),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done &&
+                        snapshot.hasData) {
+                      return Center(
+                        child: Image.network(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
+                          width: 40,
+                          height: 40,
+                        ),
+                      );
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting ||
+                        !snapshot.hasData) {
+                      return CircularProgressIndicator(
+                        color: Colors.blue,
+                      );
+                    }
+                    return Container();
+                  }))
+        ],
         title: const Text('Request Awn', textAlign: TextAlign.center),
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
