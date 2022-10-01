@@ -9,8 +9,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
-// import 'ViewMyRequistSN.dart';
-// import 'ViewMyRequistVol.dart';
 import 'services/firebase_options.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -32,15 +30,13 @@ class viewRequests extends StatefulWidget {
 class _AddRequestState extends State<viewRequests> {
   Future<String> getLocationAsString(var lat, var lng) async {
     List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
-    return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
+    return '${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
   }
 
   @override
   void initState() {
     if (widget.reqID != '') {
-      // Future.delayed(Duration.zero, () =>
       showAlert(this.context);
-      //  );
     }
     super.initState();
   }
@@ -70,13 +66,9 @@ class _AddRequestState extends State<viewRequests> {
     showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-              title: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 21,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32.0))),
+              contentPadding: const EdgeInsets.only(top: 8.0),
               content: FutureBuilder(
                   future: getLocationAsString(latitude, longitude),
                   builder: (context, snap) {
@@ -90,147 +82,176 @@ class _AddRequestState extends State<viewRequests> {
                                     'The request has been approved/expired')));
                       } else {
                         return Container(
-                            width: 450,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                //title
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                                  child: Container(
-                                    width: 280,
-                                    child: Text(
-                                      '${data['title']}',
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                                //date and time
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                                  child: Row(
-                                    children: [
-                                      const Icon(Icons.calendar_today,
-                                          size: 20, color: Colors.red),
-                                      Text(' ${data['date_dmy']}',
-                                          style: const TextStyle(
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w500)),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 15),
-                                        child: Row(
-                                          children: [
-                                            const Icon(Icons.schedule,
-                                                size: 20, color: Colors.red),
-                                            Text(' ${data['time']}',
-                                                style: const TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
-                                          ],
-                                        ),
+                          width: 450.0,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  const Text("Someone Needs Help!",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      )),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: <Widget>[
+                                      IconButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        icon: Icon(Icons.close),
+                                        color: Colors.grey,
                                       ),
                                     ],
                                   ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 0,
+                              ),
+                              const Divider(
+                                color: Colors.grey,
+                                height: 4.0,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 20, 0, 15),
+                                child: Container(
+                                  width: 280,
+                                  child: Text('${data['title']}',
+                                      // textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      )),
                                 ),
-                                //duration
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                                  child: Row(
-                                    children: [
-                                      Text('Duration: ${data['duration']}',
-                                          style: const TextStyle(
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w500)),
-                                    ],
-                                  ),
-                                ),
-                                //description
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 0, 0, 10),
-                                  child: Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                            'Description: ${data['description']}',
-                                            style: const TextStyle(
+                              ),
+                              //date and time
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 0),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.calendar_today,
+                                              size: 20,
+                                              color: Colors.red.shade200),
+                                          Text(' ${data['date_dmy']}',
+                                              style: const TextStyle(
                                                 fontSize: 17,
-                                                fontWeight: FontWeight.w500)),
+                                              )),
+                                        ],
                                       ),
-                                    ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 40),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.schedule,
+                                              size: 20,
+                                              color: Colors.red.shade200),
+                                          Text(' ${data['time']}',
+                                              style: const TextStyle(
+                                                fontSize: 17,
+                                              )),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              //duration
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                child: Row(
+                                  children: [
+                                    Text('Duration: ${data['duration']}',
+                                        style: const TextStyle(fontSize: 17)),
+                                  ],
+                                ),
+                              ),
+                              //description
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                          'Description: ${data['description']}',
+                                          style: const TextStyle(fontSize: 17)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              //location
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                child: Row(children: [
+                                  Icon(Icons.location_pin,
+                                      size: 20, color: Colors.red.shade200),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        (Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => MapsPage(
+                                                  latitude: latitude,
+                                                  longitude: longitude),
+                                            )));
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.grey.shade500,
+                                        backgroundColor: Colors.white,
+                                        padding: const EdgeInsets.fromLTRB(
+                                            1, 0, 1, 0),
+                                      ),
+                                      child: Container(
+                                          width: 255,
+                                          child: Text(reqLoc!,
+                                              style: TextStyle(
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                  color:
+                                                      Colors.grey.shade500))))
+                                ]),
+                              ),
+                              InkWell(
+                                child: Container(
+                                  padding: const EdgeInsets.only(
+                                      top: 10.0, bottom: 10.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.shade200,
+                                    borderRadius: const BorderRadius.only(
+                                        bottomLeft: Radius.circular(32.0),
+                                        bottomRight: Radius.circular(32.0)),
+                                  ),
+                                  child: const Text(
+                                    "Accept",
+                                    style: TextStyle(color: Colors.white),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
-                                // location
-                                Padding(
-                                  padding: const EdgeInsets.all(0),
-                                  child: Row(children: [
-                                    const Icon(Icons.location_pin,
-                                        size: 20, color: Colors.red),
-                                    ElevatedButton(
-                                        onPressed: () {
-                                          (Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => MapsPage(
-                                                    latitude: latitude,
-                                                    longitude: longitude),
-                                              )));
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          foregroundColor: Colors.grey.shade500,
-                                          backgroundColor: Colors.white,
-                                          padding: const EdgeInsets.fromLTRB(
-                                              1, 0, 1, 0),
-                                        ),
-                                        child: Container(
-                                            width: 255,
-                                            child: Text(reqLoc!,
-                                                style: const TextStyle(
-                                                    color: Colors.black))))
-                                  ]),
-                                ),
-                              ],
-                            ));
+                              ),
+                            ],
+                          ),
+                        );
                       }
                     } else {
                       return const Center(child: CircularProgressIndicator());
                     }
                   }),
-              actions: <Widget>[
-                ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.red.shade300,
-                      padding: const EdgeInsets.fromLTRB(17, 10, 17, 10),
-                      textStyle: const TextStyle(fontSize: 17),
-                    ),
-                    child: const Text('Discard')),
-                Visibility(
-                  visible: !(invalid),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      String docId = data['docId'];
-                      updateDB(docId);
-                      Confermation();
-                      Navigator.of(context).pop();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.green.shade400,
-                      padding: const EdgeInsets.fromLTRB(17, 10, 17, 10),
-                      textStyle: const TextStyle(fontSize: 17),
-                    ),
-                    child: const Text('Accept'),
-                  ),
-                ),
-              ],
             ));
   }
 
@@ -538,30 +559,6 @@ class _AddRequestState extends State<viewRequests> {
                                                                               const Text('Accept'),
                                                                         ),
                                                                       ),
-                                                                      // Container(
-                                                                      //   width: 100,
-                                                                      //   child:
-                                                                      //       ElevatedButton(
-                                                                      //           onPressed:
-                                                                      //               () {},
-                                                                      //           style: ElevatedButton
-                                                                      //               .styleFrom(
-                                                                      //             foregroundColor:
-                                                                      //                 Colors.white,
-                                                                      //             backgroundColor: Colors
-                                                                      //                 .red
-                                                                      //                 .shade300,
-                                                                      //             padding: const EdgeInsets.fromLTRB(
-                                                                      //                 17,
-                                                                      //                 13,
-                                                                      //                 17,
-                                                                      //                 13),
-                                                                      //             textStyle:
-                                                                      //                 const TextStyle(fontSize: 17),
-                                                                      //           ),
-                                                                      //           child: Text(
-                                                                      //               'Deny')),
-                                                                      // ),
                                                                     ],
                                                                   ),
                                                                 ),
