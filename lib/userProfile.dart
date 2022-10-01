@@ -3,7 +3,8 @@ import 'package:awn/login.dart';
 import 'package:awn/mapsPage.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
-import 'package:awn/userInfo.dart';
+import 'package:awn/services/sendNotification.dart';
+import 'package:awn/viewRequests.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,6 +26,25 @@ ScrollController _scrollController = ScrollController();
 class UserProfileState extends State<userProfile>
     with TickerProviderStateMixin {
   final Storage storage = Storage();
+
+  late final NotificationService notificationService;
+  @override
+  void initState() {
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
+    super.initState();
+  }
+
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        print(payload);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    viewRequests(userType: 'Volunteer', reqID: payload)));
+      });
 
   var userData;
   Future<Map<String, dynamic>> readUserData() => FirebaseFirestore.instance
@@ -235,10 +255,15 @@ class UserProfileState extends State<userProfile>
           ),
         ),
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => addPost(userType: widget.userType)));
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  addPost(userType: widget.userType),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,

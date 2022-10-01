@@ -1,3 +1,5 @@
+import 'package:awn/services/sendNotification.dart';
+import 'package:awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -69,6 +71,7 @@ class _MyStatefulWidgetState extends State<maps> {
     ));
   }
 
+  late final NotificationService notificationService;
   @override
   void initState() {
     getCurrentPosition();
@@ -89,10 +92,22 @@ class _MyStatefulWidgetState extends State<maps> {
     print(collName);
     DBId = widget.dataId;
     print(DBId);
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
     super.initState();
     print(addPost);
   }
 
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        print(payload);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    viewRequests(userType: 'Volunteer', reqID: payload)));
+      });
   LatLng selectedLoc = LatLng(24.7136, 46.6753);
 
   @override
@@ -140,8 +155,7 @@ class _MyStatefulWidgetState extends State<maps> {
                       label: 'Dismiss',
                       disabledTextColor: Colors.white,
                       textColor: Colors.white,
-                      onPressed: () {
-                      },
+                      onPressed: () {},
                     )),
               );
             },

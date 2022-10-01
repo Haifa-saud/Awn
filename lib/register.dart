@@ -1,4 +1,3 @@
-// ignore_for_file: non_constant_identifier_names
 import 'package:awn/services/Utils.dart';
 import 'package:awn/login.dart';
 import 'package:awn/services/firebase_storage_services.dart';
@@ -398,52 +397,52 @@ class _registerState extends State<register> {
                                             as Map)['Checked']);
                                         return DropdownMenuItem<String>(
                                             child: CheckboxListTile(
-                                                value: (document.data()
-                                                    as Map)['Checked'],
-                                                title: Text(
-                                                    (document.data()
-                                                        as Map)['Type'],
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.normal)),
-                                                onChanged: (bool? newValue) {
-                                                  setState(() {
-                                                    typeId = (document.data()
-                                                            as Map)['Type']
-                                                        .replaceAll(' ', '');
-                                                    DisabilityType.doc(typeId)
-                                                        .update({
-                                                      'Checked': newValue
-                                                    });
-                                                  });
+                                          value: (document.data()
+                                              as Map)['Checked'],
+                                          onChanged: (bool? newValue) {
+                                            setState(() {
+                                              typeId = (document.data()
+                                                      as Map)['Type']
+                                                  .replaceAll(' ', '');
+                                              DisabilityType.doc(typeId).update(
+                                                  {'Checked': newValue});
+                                            });
 
-                                                  if ((document.data()
-                                                          as Map)['Type'] ==
-                                                      'Visually Impaired') {
-                                                    blind = !blind;
-                                                  }
-                                                  if ((document.data()
-                                                          as Map)['Type'] ==
-                                                      'Vocally Impaired') {
-                                                    mute = !mute;
-                                                  }
-                                                  if ((document.data()
-                                                          as Map)['Type'] ==
-                                                      'Hearing Impaired') {
-                                                    deaf = !deaf;
-                                                  }
-                                                  if ((document.data()
-                                                          as Map)['Type'] ==
-                                                      'Physically Impaired') {
-                                                    physical = !physical;
-                                                  }
-                                                  if ((document.data()
-                                                          as Map)['Type'] ==
-                                                      'Other') {
-                                                    other = !other;
-                                                  }
-                                                }));
+                                            if ((document.data()
+                                                    as Map)['Type'] ==
+                                                'Visually Impaired') {
+                                              blind = !blind;
+                                            }
+                                            if ((document.data()
+                                                    as Map)['Type'] ==
+                                                'Vocally Impaired') {
+                                              mute = !mute;
+                                            }
+                                            if ((document.data()
+                                                    as Map)['Type'] ==
+                                                'Hearing Impaired') {
+                                              deaf = !deaf;
+                                            }
+                                            if ((document.data()
+                                                    as Map)['Type'] ==
+                                                'Physically Impaired') {
+                                              physical = !physical;
+                                            }
+                                            if ((document.data()
+                                                    as Map)['Type'] ==
+                                                'Other') {
+                                              other = !other;
+                                            }
+                                          },
+                                          title: Text(
+                                              (document.data() as Map)['Type'],
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight:
+                                                      FontWeight.normal)),
+                                          controlAffinity:
+                                              ListTileControlAffinity.leading,
+                                        ));
                                       }).toList(),
                                     );
                                   }
@@ -461,18 +460,16 @@ class _registerState extends State<register> {
                   //WEDD START FROM HERE
                   //DOB
                   Container(
-                    //padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
                     margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                    //padding: const EdgeInsets.symmetric(horizontal: 15),
-                    //margin: EdgeInsets.only(bottom: 10, top: 20),
-                    //width: 150,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Date of Birth:",
-                          textAlign: TextAlign.left, //style:TextStyle(re)
-                        ),
+                        Align(
+                            alignment: Alignment.centerLeft,
+                            child: const Text(
+                              "Date of Birth:",
+                              textAlign: TextAlign.left, //style:TextStyle(re)
+                            )),
                         SizedBox(
                           height: height * 0.01,
                         ),
@@ -524,8 +521,7 @@ class _registerState extends State<register> {
                       FilteringTextInputFormatter.digitsOnly
                     ],
                     maxLength: 10,
-                    decoration: theme.inputfield(
-                        "enter your phone number", "0555555555"),
+                    decoration: theme.inputfield("Phone Number", "0555555555"),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     //wedd's chnges
                     validator: (value) {
@@ -685,7 +681,8 @@ class _registerState extends State<register> {
                   SizedBox(
                     height: height * 0.01,
                   ),
-                  Container(
+                  Center(
+                      child: Container(
                     margin: const EdgeInsets.fromLTRB(50, 0, 50, 10),
                     decoration: BoxDecoration(
                       boxShadow: const [
@@ -756,7 +753,7 @@ class _registerState extends State<register> {
                           //   signUp();
                           // }
                         }),
-                  ),
+                  )),
                   Container(
                     margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                     //child: Text('Don\'t have an account? Create'),

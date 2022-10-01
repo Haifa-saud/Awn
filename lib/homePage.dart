@@ -125,9 +125,10 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                               if (snapshot.connectionState ==
                                       ConnectionState.waiting ||
                                   !snapshot.hasData) {
-                                return CircularProgressIndicator(
+                                return Center(
+                                    child: CircularProgressIndicator(
                                   color: Colors.blue,
-                                );
+                                ));
                               }
                               return Container();
                             }))
@@ -265,11 +266,15 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                addPost(userType: userData['Type'])));
+                    Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation1, animation2) =>
+                            addPost(userType: userData['Type']),
+                        transitionDuration: Duration(seconds: 1),
+                        reverseTransitionDuration: Duration.zero,
+                      ),
+                    );
                   },
                 ),
                 floatingActionButtonLocation:

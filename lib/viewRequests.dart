@@ -2,6 +2,7 @@ import 'package:awn/addPost.dart';
 import 'package:awn/mapsPage.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
+import 'package:awn/services/sendNotification.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -33,13 +34,27 @@ class _AddRequestState extends State<viewRequests> {
     return '${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
   }
 
+  late final NotificationService notificationService;
   @override
   void initState() {
     if (widget.reqID != '') {
       showAlert(this.context);
     }
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
     super.initState();
   }
+
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        print(payload);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    viewRequests(userType: 'Volunteer', reqID: payload)));
+      });
 
   final Stream<QuerySnapshot> requests = FirebaseFirestore.instance
       .collection('requests')
@@ -340,9 +355,10 @@ class _AddRequestState extends State<viewRequests> {
                     }
                     if (snapshot.connectionState == ConnectionState.waiting ||
                         !snapshot.hasData) {
-                      return CircularProgressIndicator(
+                      return Center(
+                          child: CircularProgressIndicator(
                         color: Colors.blue,
-                      );
+                      ));
                     }
                     return Container();
                   }))
@@ -683,10 +699,15 @@ class _AddRequestState extends State<viewRequests> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => addPost(userType: 'Volunteer')));
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  addPost(userType: 'Volunteer'),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,

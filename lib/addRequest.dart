@@ -69,9 +69,10 @@ class _AddRequestState extends State<addRequest> {
                     }
                     if (snapshot.connectionState == ConnectionState.waiting ||
                         !snapshot.hasData) {
-                      return CircularProgressIndicator(
+                      return Center(
+                          child: CircularProgressIndicator(
                         color: Colors.blue,
-                      );
+                      ));
                     }
                     return Container();
                   }))
@@ -123,10 +124,15 @@ class _AddRequestState extends State<addRequest> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => addPost(userType: widget.userType)));
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  addPost(userType: widget.userType),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,

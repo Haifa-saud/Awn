@@ -51,45 +51,75 @@ class BottomNavBar extends StatelessWidget {
     Future<void> _onItemTapped(int index) async {
       if (userType == 'Special Need User') {
         if (index == 0) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const homePage()),
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => homePage(),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
           );
         } else if (index == 1) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Tts(userType: userType)),
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  Tts(userType: userType),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
           );
         } else if (index == 2) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-                builder: (context) => addRequest(userType: userType)),
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  addRequest(userType: userType),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
           );
         } else if (index == 3) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => userProfile(userType: userType)));
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  userProfile(userType: userType),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
         }
       } else if (userType == 'Volunteer') {
         if (index == 0) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const homePage()),
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => homePage(),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
           );
         } else if (index == 1) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    viewRequests(userType: userType, reqID: '')),
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  viewRequests(userType: userType, reqID: ''),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
           );
         } else if (index == 2) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => userProfile(userType: userType)));
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  userProfile(userType: userType),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
         }
       }
     }

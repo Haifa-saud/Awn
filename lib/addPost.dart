@@ -3,6 +3,8 @@ import 'package:awn/homePage.dart';
 import 'package:awn/map.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
+import 'package:awn/services/sendNotification.dart';
+import 'package:awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -36,6 +38,25 @@ TextEditingController numberController = TextEditingController();
 TextEditingController websiteController = TextEditingController();
 
 class _MyStatefulWidgetState extends State<addPost> {
+    late final NotificationService notificationService;
+  @override
+  void initState() {
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
+
+    super.initState();
+  }
+
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        print(payload);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    viewRequests(userType: 'Volunteer', reqID: payload)));
+      });
   final _formKey = GlobalKey<FormState>();
 
   CollectionReference category =
@@ -79,9 +100,10 @@ class _MyStatefulWidgetState extends State<addPost> {
                     }
                     if (snapshot.connectionState == ConnectionState.waiting ||
                         !snapshot.hasData) {
-                      return CircularProgressIndicator(
+                      return Center(
+                          child: CircularProgressIndicator(
                         color: Colors.blue,
-                      );
+                      ));
                     }
                     return Container();
                   }))
@@ -387,10 +409,15 @@ class _MyStatefulWidgetState extends State<addPost> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => addPost(userType: widget.userType)));
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  addPost(userType: widget.userType),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
