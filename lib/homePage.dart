@@ -48,29 +48,9 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
 //           return doc.data() as Map<String, dynamic>;
 //         },
 //       );
-//   QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('postCategory').get();
-//   var categories = snapshot.docs.map((d) => Category.fromJson(d.data())).toList();
 
-  final Stream<QuerySnapshot> education = FirebaseFirestore.instance
-      .collection('posts')
-      .where('category', isEqualTo: 'Education')
-      .snapshots();
-  final Stream<QuerySnapshot> entertainment = FirebaseFirestore.instance
-      .collection('posts')
-      .where('category', isEqualTo: 'Entertainment')
-      .snapshots();
-  final Stream<QuerySnapshot> government = FirebaseFirestore.instance
-      .collection('posts')
-      .where('category', isEqualTo: 'Government')
-      .snapshots();
-  final Stream<QuerySnapshot> transportation = FirebaseFirestore.instance
-      .collection('posts')
-      .where('category', isEqualTo: 'Transportation')
-      .snapshots();
-  final Stream<QuerySnapshot> other = FirebaseFirestore.instance
-      .collection('posts')
-      .where('category', isEqualTo: 'Other')
-      .snapshots();
+  CollectionReference category = FirebaseFirestore.instance.collection(
+      'postCategory'); //   var categories = snapshot.docs.map((d) => Category.fromJson(d.data())).toList();
 
   int _selectedIndex = 0;
 
@@ -242,18 +222,25 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                           ]),
                       Expanded(
                         child: Container(
-                          width: double.maxFinite,
-                          height: MediaQuery.of(context).size.height,
-                          child:
-                              TabBarView(controller: _tabController, children: [
-                            placesList(posts),
-                            placesList(education),
-                            placesList(entertainment),
-                            placesList(transportation),
-                            placesList(government),
-                            placesList(other),
-                          ]),
-                        ),
+                            width: double.maxFinite,
+                            height: MediaQuery.of(context).size.height,
+                            child: StreamBuilder<QuerySnapshot>(
+                                stream: category.snapshots(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Text("Loading");
+                                  } else {
+                                    return TabBarView(
+                                      controller: _tabController,
+                                      children: snapshot.data!.docs
+                                          .map((DocumentSnapshot document) {
+                                        String cate = ((document.data()
+                                            as Map)['category']);
+                                        return placesList(cate);
+                                      }).toList(),
+                                    );
+                                  }
+                                })),
                       )
                     ])),
                 floatingActionButton: FloatingActionButton(
@@ -302,7 +289,16 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     );
   }
 
-  Widget placesList(Stream<QuerySnapshot> list) {
+  Widget placesList(String cate) {
+    Stream<QuerySnapshot> list =
+        FirebaseFirestore.instance.collection('posts').snapshots();
+    if (cate != 'All') {
+      list = FirebaseFirestore.instance
+          .collection('posts')
+          .where('category', isEqualTo: cate)
+          .snapshots();
+    }
+
     return Container(
         height: double.infinity,
         child: Column(
