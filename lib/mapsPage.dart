@@ -15,7 +15,7 @@ class MapsPage extends StatefulWidget {
 
 class _MapsPageState extends State<MapsPage> {
   late GoogleMapController myController;
-    late final NotificationService notificationService;
+  late final NotificationService notificationService;
   @override
   void initState() {
     notificationService = NotificationService();
@@ -47,7 +47,7 @@ class _MapsPageState extends State<MapsPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Awn Request Location'),
+          title: const Text('Selected Location'),
           leading: IconButton(
             icon: const Icon(Icons.navigate_before, color: Colors.black),
             onPressed: () => Navigator.of(context).pop(),

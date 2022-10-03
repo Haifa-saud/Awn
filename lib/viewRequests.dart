@@ -333,7 +333,7 @@ class _AddRequestState extends State<viewRequests> {
                   color: Colors.grey,
                   height: 1.0,
                 ))),
-        title: const Text('View Awn Requests'),
+        title: const Text('Awn Requests'),
         automaticallyImplyLeading: false,
         actions: <Widget>[
           Padding(
@@ -388,7 +388,7 @@ class _AddRequestState extends State<viewRequests> {
                               snapshot.data!.docs.isEmpty) {
                             return const Center(
                                 child: Text(
-                                    'There is no pending requests currently',
+                                    'There is no requests currently',
                                     style: TextStyle(
                                         fontWeight: FontWeight.normal,
                                         fontSize: 17)));

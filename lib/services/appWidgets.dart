@@ -5,6 +5,7 @@ import 'package:awn/homePage.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:flutter/material.dart';
 import '../userProfile.dart';
+import 'package:justino_icons/justino_icons.dart';
 
 //! Bottom Navigation Bar
 class BottomNavBar extends StatelessWidget {
@@ -43,7 +44,7 @@ class BottomNavBar extends StatelessWidget {
           ]
         : <IconData>[
             Icons.home,
-            Icons.volume_up,
+            JustinoIcons.getByName('speech') as IconData,
             Icons.handshake,
             Icons.person,
           ];
@@ -154,9 +155,3 @@ class BottomNavBar extends StatelessWidget {
     );
   }
 }
-
-// Helllooooo !!! , I am here
-
-// class AppBarWidget extends StatelessWidget{
-
-// }

@@ -578,7 +578,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
       'docId': '',
       'userID': userId,
       'VolID': '',
-      'notificationStatus': 'pending'
+      'notificationStatus': ''
     });
     String dataId = docReference.id;
     requests.doc(dataId).update({'docId': dataId});

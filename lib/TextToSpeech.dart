@@ -264,7 +264,8 @@ class _TtsState extends State<Tts> {
       padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
       child: TextFormField(
         inputFormatters: <TextInputFormatter>[
-          FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]"))
+          FilteringTextInputFormatter.allow(
+              RegExp('[ A-Za-z0-9\$_@./#&+-]')) //[0-9a-zA-Z ]
         ],
         controller: textEditingController,
         maxLines: 14,

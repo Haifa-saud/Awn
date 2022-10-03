@@ -38,7 +38,7 @@ TextEditingController numberController = TextEditingController();
 TextEditingController websiteController = TextEditingController();
 
 class _MyStatefulWidgetState extends State<addPost> {
-    late final NotificationService notificationService;
+  late final NotificationService notificationService;
   @override
   void initState() {
     notificationService = NotificationService();
@@ -109,28 +109,37 @@ class _MyStatefulWidgetState extends State<addPost> {
                   }))
         ],
         title: const Text('Add a Place', textAlign: TextAlign.center),
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () => showDialog<String>(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-              content: const Text('Discard the changes you made?'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Keep editing'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    clearForm();
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
-                  child: const Text('Discard'),
-                ),
-              ],
-            ),
-          ),
-        ),
+        automaticallyImplyLeading: false,
+        //   leading: IconButton(
+        //     icon: const Icon(Icons.close, color: Colors.black),
+        //     onPressed: () => showDialog<String>(
+        //       context: context,
+        //       builder: (BuildContext context) => AlertDialog(
+        //         content: const Text('Discard the changes you made?'),
+        //         actions: <Widget>[
+        //           TextButton(
+        //             onPressed: () => Navigator.of(context).pop(),
+        //             child: const Text('Keep editing'),
+        //           ),
+        //           TextButton(
+        //             onPressed: () {
+        //               clearForm();
+        //               Navigator.pushReplacement(
+        //                 context,
+        //                 PageRouteBuilder(
+        //                   pageBuilder: (context, animation1, animation2) =>
+        //                       homePage(),
+        //                   transitionDuration: Duration(seconds: 1),
+        //                   reverseTransitionDuration: Duration.zero,
+        //                 ),
+        //               );
+        //             },
+        //             child: const Text('Discard'),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
       ),
       body: Form(
         key: _formKey,
@@ -149,7 +158,7 @@ class _MyStatefulWidgetState extends State<addPost> {
               child: TextFormField(
                 textAlign: TextAlign.left,
                 controller: nameController,
-                maxLength: 50,
+                maxLength: 25,
                 decoration: const InputDecoration(
                     labelText: "Name (required)*",
                     hintText: "E.g. King Saud University"),
@@ -316,7 +325,7 @@ class _MyStatefulWidgetState extends State<addPost> {
               child: TextFormField(
                 keyboardType: TextInputType.multiline,
                 maxLines: 4,
-                maxLength: 150,
+                maxLength: 400,
                 textAlign: TextAlign.left,
                 controller: descriptionController,
                 decoration: InputDecoration(
@@ -476,8 +485,10 @@ class _MyStatefulWidgetState extends State<addPost> {
       'Phone number': numberController.text,
       'description': descriptionController.text,
       'userId': FirebaseAuth.instance.currentUser!.uid,
+      'docId': ''
     });
     dataId = docReference.id;
+    posts.doc(dataId).update({'docId': dataId});
     print("Document written with ID: ${docReference.id}");
 
     print('added to db');
