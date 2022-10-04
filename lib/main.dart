@@ -39,10 +39,12 @@ Future<void> main() async {
 }
 
 class MyApp extends StatefulWidget {
+  MyApp([this.auth = false, this.notification = false, this.payload = '']);
+
   bool auth;
   bool notification;
   String payload;
-  MyApp([this.auth = false, this.notification = false, this.payload = '']);
+
   @override
   State<MyApp> createState() => _MyApp();
 }

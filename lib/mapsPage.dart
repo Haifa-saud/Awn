@@ -34,15 +34,16 @@ class _MapsPageState extends State<MapsPage> {
                     viewRequests(userType: 'Volunteer', reqID: payload)));
       });
 
+  @override
   Widget build(BuildContext context) {
     Set<Marker> getMarker() {
-      return <Marker>[
+      return <Marker>{
         Marker(
-            markerId: MarkerId(''),
+            markerId: const MarkerId(''),
             position: LatLng(widget.latitude, widget.longitude),
             icon: BitmapDescriptor.defaultMarker,
-            infoWindow: InfoWindow(title: 'Special need location'))
-      ].toSet();
+            infoWindow: const InfoWindow(title: 'Special need location'))
+      };
     }
 
     return Scaffold(
