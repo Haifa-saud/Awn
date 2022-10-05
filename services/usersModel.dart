@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class usersModel {
   String DOB = "";
   String email = "";
@@ -9,6 +11,7 @@ class usersModel {
   String disability = "";
   String type = "";
   String gender = "";
+
   usersModel({
     required this.DOB,
     required this.disability,
@@ -21,7 +24,22 @@ class usersModel {
     required this.phone_number,
   });
 
-  Map<String, dynamic> toJson() => {
+  // factory usersModel.fromFirestore(
+  //   DocumentSnapshot<Map<String, dynamic>> snapshot,
+  //   SnapshotOptions? options,
+  // ) {
+  //   final data = snapshot.data();
+  //   return usersModel(
+  //     name: data?['name'],
+  //     email: data?['email'],
+  //     phone_number: data?['phone_number'],
+  //     gender: data?['gender'],
+  //     bio: data?['bio'],
+
+  //   );
+  // }
+
+  Map<String, dynamic> toJson(var id) => {
         'DOB': DOB,
         'id': id,
         'Disability': disability,

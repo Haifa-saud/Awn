@@ -1,21 +1,29 @@
-// import 'dart:js_util';
-// import 'dart:js_util';
+import 'package:awn/addRequest.dart';
+import 'package:awn/homePage.dart';
 import 'package:awn/map.dart';
+import 'package:awn/services/appWidgets.dart';
+import 'package:awn/services/firebase_storage_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'firebase_options.dart';
+import 'package:regexed_validator/regexed_validator.dart';
+import 'login.dart';
+import 'services/firebase_options.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'main.dart';
 
+//! bottom bar done
 class addPost extends StatefulWidget {
-  const addPost({Key? key}) : super(key: key);
+  final String userType;
+  const addPost({Key? key, required this.userType}) : super(key: key);
 
   @override
   State<addPost> createState() => _MyStatefulWidgetState();
@@ -29,25 +37,49 @@ TextEditingController websiteController = TextEditingController();
 
 class _MyStatefulWidgetState extends State<addPost> {
   final _formKey = GlobalKey<FormState>();
-  GlobalKey<ScaffoldState> _scaffoldStateKey = GlobalKey();
 
-  var categories = [
-    'Education',
-    'Transportation',
-    'Government',
-    'Entertainment',
-    'Other',
-  ];
+  CollectionReference category =
+      FirebaseFirestore.instance.collection('postCategory');
 
   var selectedCategory;
 
   var editImg = '';
+  int _selectedIndex = 2;
+  final Storage storage = Storage();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add a Post', textAlign: TextAlign.center),
+        actions: <Widget>[
+          Padding(
+              padding: const EdgeInsets.fromLTRB(0, 2, 8, 0),
+              child: FutureBuilder(
+                  future: storage.downloadURL('logo.png'),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done &&
+                        snapshot.hasData) {
+                      return Center(
+                        child: Image.network(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
+                          width: 40,
+                          height: 40,
+                        ),
+                      );
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting ||
+                        !snapshot.hasData) {
+                      return CircularProgressIndicator(
+                        color: Colors.grey.shade200,
+                      );
+                    }
+                    return Container();
+                  }))
+        ],
+        title: const Text('Add a Place', textAlign: TextAlign.center),
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
           onPressed: () => showDialog<String>(
@@ -88,11 +120,14 @@ class _MyStatefulWidgetState extends State<addPost> {
               child: TextFormField(
                 textAlign: TextAlign.left,
                 controller: nameController,
+                maxLength: 50,
                 decoration: const InputDecoration(
                     labelText: "Name (required)*",
                     hintText: "E.g. King Saud University"),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null ||
+                      value.isEmpty ||
+                      (value.trim()).isEmpty) {
                     return 'Please enter the institution name.';
                   }
                   return null;
@@ -100,26 +135,36 @@ class _MyStatefulWidgetState extends State<addPost> {
               ),
             ),
             /*category*/ Container(
-              padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-              child: DropdownButtonFormField(
-                onChanged: (value) {
-                  setState(() {
-                    selectedCategory = value;
-                  });
-                },
-                validator: (value) =>
-                    value == null ? 'Please select a category.' : null,
-                items: categories.map((String items) {
-                  return DropdownMenuItem<String>(
-                    value: items,
-                    child: Text(items),
-                  );
-                }).toList(),
-                value: selectedCategory,
-                hint: const Text('Category (required)*'),
-                isExpanded: false,
-              ),
-            ),
+                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                child: StreamBuilder<QuerySnapshot>(
+                    stream: category.snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return Text("Loading");
+                      } else {
+                        return DropdownButtonFormField(
+                          isDense: true,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedCategory = value;
+                            });
+                          },
+                          validator: (value) => value == null
+                              ? 'Please select a category.'
+                              : null,
+                          hint: const Text('Category (required)*'),
+                          items: snapshot.data!.docs
+                              .map((DocumentSnapshot document) {
+                            return DropdownMenuItem<String>(
+                              value: ((document.data() as Map)['category']),
+                              child: Text((document.data() as Map)['category']),
+                            );
+                          }).toList(),
+                          value: selectedCategory,
+                          isExpanded: false,
+                        );
+                      }
+                    })),
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
@@ -166,7 +211,6 @@ class _MyStatefulWidgetState extends State<addPost> {
                           size: 30,
                           color: Colors.red,
                         ),
-                        // This is where the _image value sets to null on tap of the red circle icon
                         onTap: () {
                           setState(
                             () {
@@ -188,6 +232,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
+            //website
             Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
               child: Directionality(
@@ -196,9 +241,16 @@ class _MyStatefulWidgetState extends State<addPost> {
                   textAlign: TextAlign.left,
                   controller: websiteController,
                   decoration: const InputDecoration(labelText: 'Website'),
+                  validator: (value) {
+                    if (value!.isNotEmpty && !validator.url(value)) {
+                      return 'Please enter a valid website Url';
+                    }
+                    return null;
+                  },
                 ),
               ),
             ),
+            //phone number
             Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
               child: TextFormField(
@@ -222,6 +274,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                 },
               ),
             ),
+            //description
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
@@ -280,6 +333,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                   if (_formKey.currentState!.validate()) {
                     addToDB();
                   } else {
+                    // Scrollable.ensureVisible(dataKey.currentContext!);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -304,6 +358,42 @@ class _MyStatefulWidgetState extends State<addPost> {
             ),
           ]),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Container(
+          width: 60,
+          height: 60,
+          child: const Icon(
+            Icons.add,
+            size: 40,
+          ),
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              stops: [0.0, 1.0],
+              colors: [
+                Colors.blue,
+                Color(0xFF39d6ce),
+              ],
+            ),
+          ),
+        ),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => addPost(userType: widget.userType)));
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      bottomNavigationBar: BottomNavBar(
+        onPress: (int value) => setState(() {
+          _selectedIndex = value;
+        }),
+        userType: widget.userType,
+        currentI: -1,
       ),
     );
   }
@@ -330,7 +420,6 @@ class _MyStatefulWidgetState extends State<addPost> {
   Future<void> addToDB() async {
     CollectionReference posts = FirebaseFirestore.instance.collection('posts');
 
-    //in case the user uploaded an image
     if (imagePath != '') {
       File image = imageDB!;
       final storage =
@@ -353,6 +442,7 @@ class _MyStatefulWidgetState extends State<addPost> {
       'Website': websiteController.text,
       'Phone number': numberController.text,
       'description': descriptionController.text,
+      'userId': FirebaseAuth.instance.currentUser!.uid,
     });
     dataId = docReference.id;
     print("Document written with ID: ${docReference.id}");

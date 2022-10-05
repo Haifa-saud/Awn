@@ -1,21 +1,21 @@
-import 'package:awn/Utils.dart';
+import 'package:awn/services/Utils.dart';
 import 'package:awn/register.dart';
 import 'package:awn/services/firebase_storage_services.dart';
-import 'package:awn/userModel.dart';
+import 'package:awn/services/sendNotification.dart';
+import 'package:awn/services/usersModel.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:workmanager/workmanager.dart';
 import 'forgotPassword.dart';
-import 'myGlobal.dart' as globals;
+import 'services/myGlobal.dart' as globals;
 
 class login extends StatefulWidget {
-  // final VoidCallback onClickedSignUp;
   const login({
     Key? key,
-    //required this.onClickedSignUp,
   }) : super(key: key);
 
   @override
@@ -27,8 +27,8 @@ TextEditingController contactInfoController = TextEditingController();
 TextEditingController descriptionController = TextEditingController();
 final user = FirebaseAuth.instance.currentUser!;
 String userId = user.uid;
-bool isOwner = false;
-String OwnerId = '';
+bool isVolunteer = false;
+String VolunteerId = '';
 var myList = [];
 
 class _loginState extends State<login> {
@@ -47,7 +47,6 @@ class _loginState extends State<login> {
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-
     super.dispose();
   }
 
@@ -55,12 +54,13 @@ class _loginState extends State<login> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   final Storage storage = Storage();
-  Stream<List<usersModel>> readShopOwner() => FirebaseFirestore.instance
+  Stream<List<usersModel>> readVolunteer() => FirebaseFirestore.instance
       .collection('users')
       .where("Type", isEqualTo: "Volunteer")
       .snapshots()
       .map((snapshot) =>
           snapshot.docs.map((doc) => usersModel.fromJson(doc.data())).toList());
+
   @override
   Widget build(BuildContext context) {
     //final Storage storage = Storage();
@@ -74,24 +74,15 @@ class _loginState extends State<login> {
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
-          //hexStringToColor("#00dacf"),
-          //hexStringToColor("#fcfffd"),
           Colors.cyanAccent.shade100,
-
-          // hexStringToColor("#fcfffd"),
-          //hexStringToColor("#fcfffd"),
-          //hexStringToColor("#fcfffd"),
           Colors.white54,
           Colors.white54,
-          //hexStringToColor("#fcfffd"),
-          //hexStringToColor("#283466")
           Colors.blue.shade200
         ], begin: Alignment.topRight, end: Alignment.bottomLeft)),
-        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         padding: const EdgeInsets.only(left: 40, right: 40),
         child: Form(
             key: _formKey,
-            //autovalidateMode: AutovalidateMode.onUserInteraction,
             child: ListView(
               children: [
                 Column(
@@ -108,8 +99,6 @@ class _loginState extends State<login> {
                                   ConnectionState.done &&
                               snapshot.hasData) {
                             return Center(
-                              //width: 100,
-                              // height: 100,
                               child: Image.network(
                                 snapshot.data!,
                                 fit: BoxFit.cover,
@@ -131,38 +120,14 @@ class _loginState extends State<login> {
                     SizedBox(
                       height: height * 0.05,
                     ),
-
-                    /*Obx(() => ListView.separated(
-                      itemBuilder: ((context, index) {
-                        return ClipRRect(
-                          child: SizedBox(
-                              height: 200,
-                              width: 200,
-                              child: FadeInImage(
-                                image: NetworkImage(
-                                    _logoController.finalimg[index]),
-                                placeholder: AssetImage(
-                                    "assets/images/app_splash_logo.png"),
-                              )),
-                        );
-                      }),
-                      separatorBuilder: ((context, index) {
-                        return SizedBox(
-                          height: 20,
-                        );
-                      }),
-                      itemCount: _logoController.finalimg.length,
-                    )),*/
-
                     StreamBuilder<List<usersModel>>(
-                      stream: readShopOwner(),
+                      stream: readVolunteer(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return const Center(
                               child: CircularProgressIndicator());
                         }
-
                         if (snapshot.hasError) {
                           return Text(
                               'Something went wrong! ${snapshot.error}');
@@ -177,10 +142,10 @@ class _loginState extends State<login> {
                           return const Center(
                               child: CircularProgressIndicator());
                         }
-                        return Text('');
+                        return const Text('');
                       },
                     ),
-                    Center(
+                    const Center(
                       child: Text(
                         "Log In",
                         style: TextStyle(
@@ -194,33 +159,26 @@ class _loginState extends State<login> {
                     ),
                     TextFormField(
                       controller: emailController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: "Enter Email",
                         hintText: "Email",
-                        contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(100.0),
-                            borderSide: BorderSide(color: Colors.grey)),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(100.0),
-                            borderSide:
-                                BorderSide(color: Colors.grey.shade400)),
-                        errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(100.0),
-                            borderSide:
-                                BorderSide(color: Colors.red, width: 2.0)),
-                        focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(100.0),
-                            borderSide:
-                                BorderSide(color: Colors.red, width: 2.0)),
+                        // contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        // focusedBorder: OutlineInputBorder(
+                        //     borderRadius: BorderRadius.circular(100.0),
+                        //     borderSide: const BorderSide(color: Colors.grey)),
+                        // enabledBorder: OutlineInputBorder(
+                        //     borderRadius: BorderRadius.circular(100.0),
+                        //     borderSide:
+                        //         BorderSide(color: Colors.grey.shade400)),
+                        // errorBorder: OutlineInputBorder(
+                        //     borderRadius: BorderRadius.circular(100.0),
+                        //     borderSide:
+                        //         const BorderSide(color: Colors.red, width: 2.0)),
+                        // focusedErrorBorder: OutlineInputBorder(
+                        //     borderRadius: BorderRadius.circular(100.0),
+                        //     borderSide:
+                        //         const BorderSide(color: Colors.red, width: 2.0)),
                       ),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (email) {
-                        if (email != null && !EmailValidator.validate(email))
-                          return "Enter a valid email";
-                        else
-                          return null;
-                      },
                     ),
                     SizedBox(
                       height: height * 0.05,
@@ -240,52 +198,46 @@ class _loginState extends State<login> {
                             color: Theme.of(context).primaryColorDark,
                           ),
                           onPressed: () {
-                            // Update the state i.e. toogle the state of passwordVisible variable
+                            // Update the state i.e. toggle the state of passwordVisible variable
                             setState(() {
                               _passwordVisible = !_passwordVisible;
                             });
                           },
                         ),
-                        contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(20, 10, 20, 10),
                         focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(100.0),
-                            borderSide: BorderSide(color: Colors.grey)),
+                            borderSide: const BorderSide(color: Colors.grey)),
                         enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(100.0),
                             borderSide:
                                 BorderSide(color: Colors.grey.shade400)),
                         errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(100.0),
-                            borderSide:
-                                BorderSide(color: Colors.red, width: 2.0)),
+                            borderSide: const BorderSide(
+                                color: Colors.red, width: 2.0)),
                         focusedErrorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(100.0),
-                            borderSide:
-                                BorderSide(color: Colors.red, width: 2.0)),
+                            borderSide: const BorderSide(
+                                color: Colors.red, width: 2.0)),
                       ),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) {
-                        if (value != null && value.length < 6)
-                          return "Enter a valid password";
-                        else
-                          return null;
-                      },
                     ),
                     SizedBox(
                       height: height * 0.01,
                     ),
                     Container(
-                      margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                      margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                       alignment: Alignment.topLeft,
                       child: GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => forgotPassword()),
+                                builder: (context) => const forgotPassword()),
                           );
                         },
-                        child: Text(
+                        child: const Text(
                           "forgot password?",
                           style: TextStyle(
                               color: Colors.grey,
@@ -298,15 +250,15 @@ class _loginState extends State<login> {
                       height: height * 0.01,
                     ),
                     Container(
-                      margin: EdgeInsets.fromLTRB(50, 10, 50, 10),
+                      margin: const EdgeInsets.fromLTRB(50, 10, 50, 10),
                       decoration: BoxDecoration(
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                               color: Colors.black26,
                               offset: Offset(0, 4),
                               blurRadius: 5.0)
                         ],
-                        gradient: LinearGradient(
+                        gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           stops: [0.0, 1.0],
@@ -326,13 +278,13 @@ class _loginState extends State<login> {
                               ),
                             ),
                             minimumSize:
-                                MaterialStateProperty.all(Size(50, 50)),
+                                MaterialStateProperty.all(const Size(50, 50)),
                             backgroundColor:
                                 MaterialStateProperty.all(Colors.transparent),
                             shadowColor:
                                 MaterialStateProperty.all(Colors.transparent),
                           ),
-                          child: Padding(
+                          child: const Padding(
                             padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
                             child: Text(
                               'Sign In',
@@ -351,48 +303,84 @@ class _loginState extends State<login> {
                                   email: emailController.text.trim(),
                                   password: passwordController.text.trim(),
                                 );
-                                OwnerId = '';
-                                OwnerId = newUser.user!.uid;
+                                VolunteerId = '';
+                                VolunteerId = newUser.user!.uid;
                                 for (var i = 0; i < myList.length; i++) {
-                                  if (myList[i] == OwnerId) {
-                                    isOwner = true;
+                                  if (myList[i] == VolunteerId) {
+                                    isVolunteer = true;
                                     break;
                                   }
                                 }
 
-                                if (isOwner) {
-                                  isOwner = false;
-                                  OwnerId = '';
+                                if (isVolunteer) {
+                                  isVolunteer = false;
+                                  VolunteerId = '';
                                   emailController.clear();
                                   passwordController.clear();
                                   Navigator.pushNamed(
                                       context, '/volunteerPage');
+                                  await Workmanager().initialize(
+                                      callbackDispatcher,
+                                      isInDebugMode: false);
+
+                                  var time = DateTime.now().second.toString();
+                                  await Workmanager().registerPeriodicTask(
+                                      time, 'firstTask',
+                                      frequency: const Duration(minutes: 15));
                                 } else {
-                                  OwnerId = '';
+                                  VolunteerId = '';
                                   emailController.clear();
                                   passwordController.clear();
                                   Navigator.pushNamed(context, '/homePage');
                                 }
                               } catch (e) {
                                 print(e.toString());
+                                if (emailController.text.isNotEmpty &&
+                                    passwordController.text.isNotEmpty) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content:
+                                        const Text('Invalid email/password'),
+                                    backgroundColor: Colors.red.shade400,
+                                    margin:
+                                        const EdgeInsets.fromLTRB(6, 0, 3, 0),
+                                    behavior: SnackBarBehavior.floating,
+                                    action: SnackBarAction(
+                                      label: 'Dismiss',
+                                      disabledTextColor: Colors.white,
+                                      textColor: Colors.white,
+                                      onPressed: () {},
+                                    ),
+                                  ));
+                                } else if (emailController.text.isEmpty ||
+                                    passwordController.text.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: const Text(
+                                          'Please fill required fields'),
+                                      backgroundColor: Colors.red.shade400,
+                                      margin:
+                                          const EdgeInsets.fromLTRB(6, 0, 3, 0),
+                                      behavior: SnackBarBehavior.floating,
+                                      action: SnackBarAction(
+                                        label: 'Dismiss',
+                                        disabledTextColor: Colors.white,
+                                        textColor: Colors.white,
+                                        onPressed: () {},
+                                      ),
+                                    ),
+                                  );
+                                }
                               }
                             }
-                            Utils.showSnackBar("wrong email//password");
-                          }
-
-                          //After successful login we will redirect to profile page. Let's create profile page now
-
-                          // Navigator.pushReplacement(
-                          // context,
-                          // MaterialPageRoute(
-                          //  builder: (context) => ProfilePage()));
-                          ),
+                            // Utils.showSnackBar("wrong email//password");
+                          }),
                     ),
                     Container(
-                      margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                       //child: Text('Don\'t have an account? Create'),
                       child: Text.rich(TextSpan(children: [
-                        TextSpan(
+                        const TextSpan(
                           text: "Don\'t have an account? ",
                           style: TextStyle(
                               fontSize: 18,
@@ -404,7 +392,7 @@ class _loginState extends State<login> {
                             ..onTap = () {
                               Navigator.pushNamed(context, "/register");
                             },
-                          text: 'Create',
+                          text: 'Register',
 
                           // Navigator.push(
                           //  context,
@@ -447,22 +435,23 @@ class _loginState extends State<login> {
       );
       getUsersList();
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('no such user exists'),
-          backgroundColor: Colors.red.shade400,
-          margin: EdgeInsets.fromLTRB(6, 0, 3, 0),
-          behavior: SnackBarBehavior.floating,
-          action: SnackBarAction(
-            label: 'Dismiss',
-            disabledTextColor: Colors.white,
-            textColor: Colors.white,
-            onPressed: () {
-              //Do whatever you want
-            },
+      if (emailController.text.isNotEmpty &&
+          passwordController.text.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Invalid email/password'),
+            backgroundColor: Colors.red.shade400,
+            margin: const EdgeInsets.fromLTRB(6, 0, 3, 0),
+            behavior: SnackBarBehavior.floating,
+            action: SnackBarAction(
+              label: 'Dismiss',
+              disabledTextColor: Colors.white,
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
   }
 }

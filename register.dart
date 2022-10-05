@@ -1,6 +1,5 @@
 // ignore_for_file: non_constant_identifier_names
-
-import 'package:awn/Utils.dart';
+import 'package:awn/services/Utils.dart';
 import 'package:awn/login.dart';
 import 'package:awn/services/firebase_storage_services.dart';
 import 'package:file_picker/file_picker.dart';
@@ -13,14 +12,13 @@ import 'package:intl/intl.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:email_validator/email_validator.dart';
-import 'theme.dart';
-import 'myGlobal.dart' as globals;
+import 'services/theme.dart';
+import 'services/myGlobal.dart' as globals;
+import 'package:awn/services/appWidgets.dart';
 
 class register extends StatefulWidget {
-  // final Function() onClickedSignIn;
   const register({
     Key? key,
-    // required this.onClickedSignIn,
   }) : super(key: key);
 
   @override
@@ -34,8 +32,8 @@ TextEditingController nameController = TextEditingController();
 TextEditingController numberController = TextEditingController();
 TextEditingController bioController = TextEditingController();
 
-String group = "gender";
-String group1 = "role";
+String group = "Female";
+String group1 = "Special Need User";
 bool blind = false;
 bool mute = false;
 bool deaf = false;
@@ -45,29 +43,59 @@ PlatformFile pickedFile = new PlatformFile(name: '', size: 0);
 String label = "click to upload disability certificate";
 bool upload = false;
 String filePath = "Pick file";
+String typeId = "";
 File? fileDB;
 //Wedd's change
 String password = "";
 String confirm_password = "";
 
 class _registerState extends State<register> {
+  // Future<Map<String, dynamic>> readUserData() => FirebaseFirestore.instance
+  //         .collection('usUserDisabilityTypeers')
+  //         .doc()
+  //         .get()
+  //         .then(
+  //           (DocumentSnapshot doc) {
+  //         print(doc.data() as Map<String, dynamic>);
+  //         return doc.data() as Map<String, dynamic>;
+  //       },
+  //     );
+  // Stream<QuerySnapshot> DisabilityType =
+  //     FirebaseFirestore.instance.collection('UserDisabilityType').snapshots();
+  CollectionReference DisabilityType =
+      FirebaseFirestore.instance.collection('UserDisabilityType');
+  var selectedDisabilityType;
+
   @override
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _passwordVisible = false;
   @override
-  void dispose() {
+  void clearForm() {
+    group = "Female";
+    group1 = "Special Need User";
     emailController.text = "";
     passwordController.text = "";
     cofirmPasswordController.text = "";
     nameController.text = "";
     numberController.text = "";
-
-    super.dispose();
+    bioController.text = "";
+    DisabilityType.doc('HearingImpaired').update({'Checked': false});
+    DisabilityType.doc('PhysicallyImpaired').update({'Checked': false});
+    DisabilityType.doc('VisuallyImpaired').update({'Checked': false});
+    DisabilityType.doc('VocallyImpaired').update({'Checked': false});
+    DisabilityType.doc('Other').update({'Checked': false});
+    blind = false;
+    mute = false;
+    deaf = false;
+    physical = false;
+    other = false;
+    typeId = "";
   }
 
   DateTime selectedDate = DateTime.now();
   bool showDate = false;
+  ScrollController _scrollController = ScrollController();
 
   Future<DateTime> _selectDate(BuildContext context) async {
     final selected = await showDatePicker(
@@ -134,9 +162,10 @@ class _registerState extends State<register> {
                   }
                   if (snapshot.connectionState == ConnectionState.waiting ||
                       !snapshot.hasData) {
-                    return CircularProgressIndicator(
+                    return Center(
+                        child: CircularProgressIndicator(
                       color: Colors.grey.shade200,
-                    );
+                    ));
                   }
                   return Container();
                 }),
@@ -249,7 +278,7 @@ class _registerState extends State<register> {
                               });
                             },
                           ),
-                          const Text("Special Needs User",
+                          const Text("Special Need User",
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.normal)),
                         ]),
@@ -277,29 +306,32 @@ class _registerState extends State<register> {
                     child: LayoutBuilder(builder: (context, constraints) {
                       if (group1 == "Volunteer") {
                         return Container(
-                          padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                          child: TextFormField(
-                            keyboardType: TextInputType.multiline,
-                            maxLines: 4,
-                            maxLength: 300,
-                            textAlign: TextAlign.left,
-                            controller: bioController,
-                            decoration: InputDecoration(
-                              hintText:
-                                  "Enter your bio here.\n(talk briefly about yourself! )",
-                              labelText: 'Bio',
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                  borderSide:
-                                      BorderSide(color: Colors.grey.shade400)),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                                borderSide: const BorderSide(
-                                    color: Colors.blue, width: 2),
+                            padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                            child: SingleChildScrollView(
+                              controller: _scrollController,
+                              child: TextFormField(
+                                scrollController: _scrollController,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: 6,
+                                maxLength: 180,
+                                textAlign: TextAlign.left,
+                                controller: bioController,
+                                decoration: InputDecoration(
+                                  hintText:
+                                      "Enter your bio here.\n(talk briefly about yourself! )",
+                                  labelText: 'Bio',
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(30.0),
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade400)),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                    borderSide: const BorderSide(
+                                        color: Colors.blue, width: 2),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
+                            ));
                       } else if (group1 == 'Special Need User') {
                         return Column(
                           children: [
@@ -342,7 +374,7 @@ class _registerState extends State<register> {
                             Row(
                               children: const <Widget>[
                                 Text(
-                                  "Select imparity/ imparities: ",
+                                  "Select imparity/imparities: ",
                                 ),
                               ],
                             ),
@@ -352,98 +384,70 @@ class _registerState extends State<register> {
 
                             //Wedd's change
                             // each row must have a check box and a text
-                            Row(children: [
-                              SizedBox(
-                                height: 24.0,
-                                width: 35.0,
-                                child: Checkbox(
-                                    value: blind,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        blind = value!;
-                                      });
-                                    }),
-                              ),
-                              const Text("Visually Impaired",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal)),
-                            ]),
 
-                            Row(children: [
-                              SizedBox(
-                                height: 24.0,
-                                width: 35.0,
-                                child: Checkbox(
-                                    value: mute,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        mute = value!;
-                                      });
-                                    }),
-                              ),
-                              const Text("Vocally Impaired",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal)),
-                            ]),
+                            StreamBuilder<QuerySnapshot>(
+                                stream: DisabilityType.snapshots(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Text("Loading");
+                                  } else {
+                                    return Column(
+                                      children: snapshot.data!.docs
+                                          .map((DocumentSnapshot document) {
+                                        bool isChecked = ((document.data()
+                                            as Map)['Checked']);
+                                        return DropdownMenuItem<String>(
+                                            child: CheckboxListTile(
+                                                value: (document.data()
+                                                    as Map)['Checked'],
+                                                title: Text(
+                                                    (document.data()
+                                                        as Map)['Type'],
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.normal)),
+                                                onChanged: (bool? newValue) {
+                                                  setState(() {
+                                                    typeId = (document.data()
+                                                            as Map)['Type']
+                                                        .replaceAll(' ', '');
+                                                    DisabilityType.doc(typeId)
+                                                        .update({
+                                                      'Checked': newValue
+                                                    });
+                                                  });
 
-                            Row(children: [
-                              SizedBox(
-                                height: 24.0,
-                                width: 35.0,
-                                child: Checkbox(
-                                    value: deaf,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        deaf = value!;
-                                      });
-                                    }),
-                              ),
-                              const Text("Hearing Impaired",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal)),
-                            ]),
-
-                            Row(
-                              children: [
-                                SizedBox(
-                                  height: 24.0,
-                                  width: 35.0,
-                                  child: Checkbox(
-                                      value: physical,
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          physical = value!;
-                                        });
-                                      }),
-                                ),
-                                const Text("Physically Impaired",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.normal)),
-                              ],
-                            ),
-                            Row(
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 24.0,
-                                  width: 35.0,
-                                  child: Checkbox(
-                                      value: other,
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          other = value!;
-                                        });
-                                      }),
-                                ),
-                                const Text("other",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.normal)),
-                              ],
-                            ),
+                                                  if ((document.data()
+                                                          as Map)['Type'] ==
+                                                      'Visually Impaired') {
+                                                    blind = !blind;
+                                                  }
+                                                  if ((document.data()
+                                                          as Map)['Type'] ==
+                                                      'Vocally Impaired') {
+                                                    mute = !mute;
+                                                  }
+                                                  if ((document.data()
+                                                          as Map)['Type'] ==
+                                                      'Hearing Impaired') {
+                                                    deaf = !deaf;
+                                                  }
+                                                  if ((document.data()
+                                                          as Map)['Type'] ==
+                                                      'Physically Impaired') {
+                                                    physical = !physical;
+                                                  }
+                                                  if ((document.data()
+                                                          as Map)['Type'] ==
+                                                      'Other') {
+                                                    other = !other;
+                                                  }
+                                                }));
+                                      }).toList(),
+                                    );
+                                  }
+                                }),
                           ],
                         );
                       } else {
@@ -454,15 +458,14 @@ class _registerState extends State<register> {
                   SizedBox(
                     height: height * 0.01,
                   ),
-                  // WEDD START FROM HERE
+                  //WEDD START FROM HERE
                   //DOB
                   Container(
-                    // padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+                    //padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
                     margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                    //
                     //padding: const EdgeInsets.symmetric(horizontal: 15),
-                    //  margin: EdgeInsets.only(bottom: 10, top: 20),
-                    // width: 150,
+                    //margin: EdgeInsets.only(bottom: 10, top: 20),
+                    //width: 150,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -542,6 +545,7 @@ class _registerState extends State<register> {
                   SizedBox(
                     height: height * 0.01,
                   ),
+
                   //Password
                   TextFormField(
                     controller: passwordController,
@@ -584,39 +588,35 @@ class _registerState extends State<register> {
                     ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      //خليت اللي يسبب ايرور كومنت عشان ماقدرت اسوي رن
-                      //Wedd's change
-                      // RegExp Upper = RegExp(r'^(?=.*? [A-Z])');
-                      // RegExp digit = RegExp(r'^(?=.*?[0-9])');
-                      // if (value == null){
-                      //   return "please enter a password";
-                      // } else if (value.length < 7) {
-                      //   return "password should at least be 8 digits"; //ود موجودة ؟
-                      // }  else if (!Upper.hasMatch(value)) {
-                      // return "password should contain an Upper case";
-                      // }  else if (!digit.hasMatch(value)) {
-                      //   return "password should contain a number";
-
-                      // } else {
-                      //   return null;
-                      // }
-                      // شكرا !!!!
-                      // RegExp Upper = RegExp(r'^(?=.*?[A-Z])');
-                      // RegExp digit = RegExp(r'^(?=.*?[0-9])');
-
-                      if (value == null || value.isEmpty || value.length < 8) {
-                        return 'Please enter a password min 8';
-                      }
-                      // else if (value.length < 8) {
-                      //   return 'Password must be at least 8 digits ';
-                      // } else if (!Upper.hasMatch(value)) {
-                      //   return 'Password should contain an upper case';
-                      // } else if (!digit.hasMatch(value)) {
-                      //   return 'Password should contain a number';
-                      // }
-                      else {
+                      // Wedd's Code for password
+                      password = value.toString();
+                      RegExp Upper = RegExp(r"(?=.*[A-Z])");
+                      RegExp digit = RegExp(r"(?=.*[0-9])");
+                      if (value == null || value.isEmpty) {
+                        return "please enter a password";
+                      } else if (value.length < 7) {
+                        return "password should at least be 8 digits"; //ود موجودة ؟
+                      } else if (!Upper.hasMatch(value)) {
+                        return "password should contain an Upper case";
+                      } else if (!digit.hasMatch(value)) {
+                        return "password should contain a number";
+                      } else {
                         return null;
                       }
+
+                      // if (value == null || value.isEmpty || value.length < 8) {
+                      //   return 'Please enter a password min 8';
+                      // }
+                      // // else if (value.length < 8) {
+                      // //   return 'Password must be at least 8 digits ';
+                      // // } else if (!Upper.hasMatch(value)) {
+                      // //   return 'Password should contain an upper case';
+                      // // } else if (!digit.hasMatch(value)) {
+                      // //   return 'Password should contain a number';
+                      // // }
+                      // else {
+                      //   return null;
+                      // }
                     },
                   ),
                   SizedBox(
@@ -662,13 +662,23 @@ class _registerState extends State<register> {
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
                       //Wedd's change
-                      if (value == null) {
+                      confirm_password = value.toString();
+                      //Wedd's change
+                      if (value == null || value.isEmpty) {
                         return "please confirm password";
+                      } else if (confirm_password != password) {
+                        return "Password not match";
                       } else {
                         return null;
                       }
                     },
                   ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text("Should contain Capital, digit, long than 7",
+                      style: TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.normal)),
                   SizedBox(
                     height: height * 0.01,
                   ),
@@ -721,22 +731,31 @@ class _registerState extends State<register> {
                           ),
                         ),
                         onPressed: () {
-                          if (cofirmPasswordController.text.isEmpty ||
-                              cofirmPasswordController.text !=
-                                  passwordController.text) {
-                            Utils.showSnackBar(
-                                "confirm password does not match");
-                            return;
-                          } else {
+                          if (_formKey.currentState!.validate()) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Welcom To Awn')),
+                            );
                             signUp();
-                          }
-                        }
 
-                        // Navigator.pushReplacement(
-                        // context,
-                        // MaterialPageRoute(
-                        //  builder: (context) => ProfilePage()));
-                        ),
+                            //   clearForm();
+                          } else {
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //   const SnackBar(
+                            //       content:
+                            //           Text('Please fill the empty blanks')),
+                            // );
+                          }
+
+                          // if (cofirmPasswordController.text.isEmpty ||
+                          //     cofirmPasswordController.text !=
+                          //         passwordController.text) {
+                          //   Utils.showSnackBar(
+                          //       "confirm password does not match");
+                          //   return;
+                          // } else {
+                          //   signUp();
+                          // }
+                        }),
                   ),
                   Container(
                     margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -752,6 +771,7 @@ class _registerState extends State<register> {
                       TextSpan(
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
+                            clearForm();
                             Navigator.pushNamed(context, "/login");
                           },
                         text: 'Log In',
@@ -778,23 +798,23 @@ class _registerState extends State<register> {
     );
   }
 
-  Future selectFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    upload = true;
-    if (result == null) {
-      upload = false;
-      return;
-    }
-    setState(() {
-      pickedFile = result.files.first;
-      fileDB = File(pickedFile.path!);
+  // Future selectFile() async {
+  //   final result = await FilePicker.platform.pickFiles();
+  //   upload = true;
+  //   if (result == null) {
+  //     upload = false;
+  //     return;
+  //   }
+  //   setState(() {
+  //     pickedFile = result.files.first;
+  //     fileDB = File(pickedFile.path!);
 
-      // final path = 'User/${pickedFile.name}'; //خليه جالسه اجرب
-      // final file = File(pickedFile.path!);
-      // final ref = FirebaseStorage.instance.ref().child(path);
-      // UploadTask uploadTask = ref.putFile(file);
-    });
-  }
+  //     // final path = 'User/${pickedFile.name}'; //خليه جالسه اجرب
+  //     // final file = File(pickedFile.path!);
+  //     // final ref = FirebaseStorage.instance.ref().child(path);
+  //     // UploadTask uploadTask = ref.putFile(file);
+  //   });
+  // }
 
   Future signUp() async {
     final isValid = _formKey.currentState!.validate();
@@ -805,6 +825,9 @@ class _registerState extends State<register> {
         password: passwordController.text.trim(),
       );
       UserHelper.saveUser(user);
+      //
+      clearForm();
+      Navigator.pushNamed(context, "/login");
     } on FirebaseAuthException catch (e) {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -845,11 +868,11 @@ bool other = false;*/
     String bio = bioController.text;
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
-    if (blind == true && blind != null) disability += " blind,";
-    if (mute == true && mute != null) disability += " mute,";
-    if (deaf == true && deaf != null) disability += " deaf,";
-    if (physical == true && physical != null) disability += " physical,";
-    if (other == true && other != null) disability += " other,";
+    if (blind == true && blind != null) disability += " Blind,";
+    if (mute == true && mute != null) disability += " Mute,";
+    if (deaf == true && deaf != null) disability += " Deaf,";
+    if (physical == true && physical != null) disability += " Physical,";
+    if (other == true && other != null) disability += " Other,";
     final userRef = db.collection("users").doc(user.uid);
     //final volRef = db.collection("volunteers").doc(user!.uid);
 

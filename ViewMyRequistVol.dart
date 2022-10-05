@@ -91,7 +91,7 @@ class _ViewMyRequistState extends State<ViewMyRequistVol>
       appBar: AppBar(
         title: const Text('View Awn Requests'),
         leading: IconButton(
-          icon: const Icon(Icons.navigate_before, color: Colors.white),
+          icon: const Icon(Icons.navigate_before, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -152,7 +152,7 @@ class _ViewMyRequistState extends State<ViewMyRequistVol>
     String userId = user.uid;
     final now = DateTime.now();
 
-    final today = DateFormat('yyyy-MM-dd HH: ss').format(now);
+    final today = DateFormat('yyyy-MM-dd HH: mm').format(now);
     final Stream<QuerySnapshot> ulist = FirebaseFirestore.instance
         .collection('requests')
         .where('VolID', isEqualTo: userId)

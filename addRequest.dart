@@ -1,9 +1,10 @@
+import 'package:awn/addPost.dart';
+import 'package:awn/services/appWidgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'firebase_options.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -12,8 +13,10 @@ import 'package:intl/intl.dart';
 import 'main.dart';
 import 'package:awn/map.dart';
 
+//! bottom bar done
 class addRequest extends StatefulWidget {
-  const addRequest({Key? key}) : super(key: key);
+  final String userType;
+  const addRequest({Key? key, required this.userType}) : super(key: key);
 
   @override
   State<addRequest> createState() => _AddRequestState();
@@ -26,39 +29,77 @@ void clearForm() {
   titleController.clear();
   durationController.clear();
   descController.clear();
-  ;
 }
 
 class _AddRequestState extends State<addRequest> {
+  int _selectedIndex = 2;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Request Awn', textAlign: TextAlign.center),
-          leading: IconButton(
-            icon: const Icon(Icons.close, color: Colors.white),
-            onPressed: () => showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                content: const Text('Discard the changes you made?'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Keep editing'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      clearForm();
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                    },
-                    child: const Text('Discard'),
-                  ),
-                ],
-              ),
+      appBar: AppBar(
+        title: const Text('Request Awn', textAlign: TextAlign.center),
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.black),
+          onPressed: () => showDialog<String>(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              content: const Text('Discard the changes you made?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Keep editing'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    clearForm();
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                  child: const Text('Discard'),
+                ),
+              ],
             ),
           ),
         ),
-        body: AwnRequestForm());
+      ),
+      body: AwnRequestForm(),
+      floatingActionButton: FloatingActionButton(
+        child: Container(
+          width: 60,
+          height: 60,
+          child: const Icon(
+            Icons.add,
+            size: 40,
+          ),
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              stops: [0.0, 1.0],
+              colors: [
+                Colors.blue,
+                Color(0xFF39d6ce),
+              ],
+            ),
+          ),
+        ),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => addPost(userType: widget.userType)));
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      bottomNavigationBar: BottomNavBar(
+        onPress: (int value) => setState(() {
+          _selectedIndex = value;
+        }),
+        userType: widget.userType,
+        currentI: 2,
+      ),
+    );
   }
 }
 
