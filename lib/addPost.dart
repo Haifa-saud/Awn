@@ -22,7 +22,6 @@ import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'main.dart';
 
-//! bottom bar done
 class addPost extends StatefulWidget {
   final String userType;
   const addPost({Key? key, required this.userType}) : super(key: key);

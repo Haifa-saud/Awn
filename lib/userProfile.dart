@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:workmanager/workmanager.dart';
+import 'chatPage.dart';
 import 'services/firebase_options.dart';
 
 class userProfile extends StatefulWidget {
@@ -223,8 +224,6 @@ class UserProfileState extends State<userProfile>
                               )
                             ]),
                         Expanded(
-                          // controller: _scrollController,
-
                           flex: 2,
                           child: Container(
                             width: double.maxFinite,
@@ -528,7 +527,10 @@ class UserProfileState extends State<userProfile>
                                                                         10,
                                                                         15,
                                                                         15),
-                                                                child: Stack(
+                                                                child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceEvenly,
                                                                     children: [
                                                                       Align(
                                                                           alignment:
@@ -544,6 +546,30 @@ class UserProfileState extends State<userProfile>
                                                                                     ),
                                                                                     textAlign: TextAlign.left,
                                                                                   )))),
+                                                                      Spacer(),
+                                                                      Visibility(
+                                                                          visible: status ==
+                                                                              'Approved',
+                                                                          child:
+                                                                              IconButton(
+                                                                            icon:
+                                                                                const Icon(Icons.chat_outlined),
+                                                                            iconSize:
+                                                                                25,
+                                                                            color:
+                                                                                const Color(0xFF39d6ce), //Color.fromARGB(255, 149, 204, 250),
+                                                                            onPressed:
+                                                                                () {
+                                                                              Navigator.push(
+                                                                                context,
+                                                                                PageRouteBuilder(
+                                                                                  pageBuilder: (context, animation1, animation2) => ChatPage(requestID: data.docs[index]['docId']),
+                                                                                  transitionDuration: const Duration(seconds: 1),
+                                                                                  reverseTransitionDuration: Duration.zero,
+                                                                                ),
+                                                                              );
+                                                                            },
+                                                                          )),
                                                                       Visibility(
                                                                         visible:
                                                                             !isVolunteer,
@@ -553,6 +579,8 @@ class UserProfileState extends State<userProfile>
                                                                               Alignment.topRight,
                                                                           margin:
                                                                               const EdgeInsets.only(top: 5),
+                                                                          // width:
+                                                                          //     80,
                                                                           child: Text(
                                                                               status,
                                                                               style: TextStyle(
@@ -854,14 +882,4 @@ class UserProfileState extends State<userProfile>
           },
         ));
   }
-
-  // setColor(int tabIndex) {
-  //   if (tabIndex == 0) {
-  //     return Colors.red;
-  //   } else if (tabIndex == 1) {
-  //     return Colors.green;
-  //   } else if (tabIndex == 2) {
-  //     return Colors.orange;
-  //   }
-  // }
 }

@@ -2,6 +2,7 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:awn/TextToSpeech.dart';
 import 'package:awn/addPost.dart';
 import 'package:awn/addRequest.dart';
+import 'package:awn/chatPage.dart';
 import 'package:awn/login.dart';
 import 'package:awn/mapsPage.dart';
 import 'package:awn/place.dart';
