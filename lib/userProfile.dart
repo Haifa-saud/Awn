@@ -50,7 +50,6 @@ class UserProfileState extends State<userProfile>
 
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        print(payload);
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -64,7 +63,7 @@ class UserProfileState extends State<userProfile>
           .get()
           .then(
         (DocumentSnapshot doc) {
-          print(doc.data() as Map<String, dynamic>);
+          // print(doc.data() as Map<String, dynamic>);
           return doc.data() as Map<String, dynamic>;
         },
       );
@@ -89,7 +88,6 @@ class UserProfileState extends State<userProfile>
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
               userData = snapshot.data as Map<String, dynamic>;
-              print(userData['Type']);
               var isVolunteer = userData['Type'] == "Volunteer" ? true : false;
               return Scaffold(
                   appBar: AppBar(
@@ -410,9 +408,7 @@ class UserProfileState extends State<userProfile>
     String userId = user.uid;
     final now = DateTime.now();
     var list;
-    print(isVolunteer);
     var userType = isVolunteer ? 'VolID' : 'userID';
-    print(userType);
 
     final today = DateFormat('yyyy-MM-dd HH: mm').format(now);
     if (str == 'Upcoming') {
@@ -452,7 +448,6 @@ class UserProfileState extends State<userProfile>
                         }
                         if (snapshot.data == null ||
                             snapshot.data!.docs.isEmpty) {
-                          print(snapshot.data);
                           return const Padding(
                               padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
                               child: Align(
@@ -463,7 +458,6 @@ class UserProfileState extends State<userProfile>
                                           fontSize: 17))));
                         } else {
                           final data = snapshot.requireData;
-                          print('data');
                           return ListView.builder(
                               controller: _scrollController,
                               itemCount: data.size,

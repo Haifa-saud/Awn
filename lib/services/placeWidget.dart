@@ -418,12 +418,14 @@ class Place extends StatelessWidget {
                                                       'View more',
                                                   trimExpandedText: 'View less',
                                                   moreStyle: const TextStyle(
+                                                      color: Colors.blue,
                                                       fontSize: 16,
                                                       fontWeight:
                                                           FontWeight.w500,
                                                       decoration: TextDecoration
                                                           .underline),
                                                   lessStyle: const TextStyle(
+                                                      color: Colors.blue,
                                                       fontSize: 16,
                                                       fontWeight:
                                                           FontWeight.w500,
