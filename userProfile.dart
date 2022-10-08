@@ -1,6 +1,7 @@
 import 'package:awn/addPost.dart';
 import 'package:awn/login.dart';
 import 'package:awn/mapsPage.dart';
+import 'package:awn/requestPage.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
 import 'package:awn/services/placeWidget.dart';
@@ -487,231 +488,219 @@ class UserProfileState extends State<userProfile>
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 10.0, vertical: 16),
                                             child: Stack(children: [
-                                              Container(
-                                                width: 600,
-                                                margin: const EdgeInsets.only(
-                                                    top: 12),
-                                                padding:
-                                                    const EdgeInsets.all(1),
-                                                decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    boxShadow: const [
-                                                      BoxShadow(
-                                                          blurRadius: 32,
-                                                          color: Colors.black45,
-                                                          spreadRadius: -8)
-                                                    ],
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                8, 1, 1, 1),
-                                                        child: Column(
-                                                          children: [
-                                                            Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                            .fromLTRB(
-                                                                        6,
-                                                                        10,
-                                                                        15,
-                                                                        15),
-                                                                child: Stack(
+                                              InkWell(
+                                                  child: Container(
+                                                    width: 600,
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            top: 12),
+                                                    padding:
+                                                        const EdgeInsets.all(1),
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        boxShadow: const [
+                                                          BoxShadow(
+                                                              blurRadius: 32,
+                                                              color: Colors
+                                                                  .black45,
+                                                              spreadRadius: -8)
+                                                        ],
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15)),
+                                                    child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceEvenly,
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        children: [
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .fromLTRB(
+                                                                    8, 1, 1, 1),
+                                                            child: Column(
+                                                              children: [
+                                                                Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.fromLTRB(
+                                                                            6,
+                                                                            10,
+                                                                            15,
+                                                                            15),
+                                                                    child: Stack(
+                                                                        children: [
+                                                                          Align(
+                                                                              alignment: Alignment.topLeft,
+                                                                              child: Container(
+                                                                                  width: 235,
+                                                                                  child: Align(
+                                                                                      alignment: Alignment.topLeft,
+                                                                                      child: Text(
+                                                                                        '${data.docs[index]['title']}',
+                                                                                        style: const TextStyle(
+                                                                                          fontWeight: FontWeight.w500,
+                                                                                        ),
+                                                                                        textAlign: TextAlign.left,
+                                                                                      )))),
+                                                                          Visibility(
+                                                                            visible:
+                                                                                !isVolunteer,
+                                                                            child:
+                                                                                Container(
+                                                                              alignment: Alignment.topRight,
+                                                                              margin: const EdgeInsets.only(top: 5),
+                                                                              child: Text(status,
+                                                                                  style: TextStyle(
+                                                                                      color: Colors.white,
+                                                                                      background: Paint()
+                                                                                        ..strokeWidth = 18.0
+                                                                                        ..color = getColor(data.docs[index]['status'])
+                                                                                        ..style = PaintingStyle.stroke
+                                                                                        ..strokeJoin = StrokeJoin.round,
+                                                                                      fontSize: 15,
+                                                                                      fontWeight: FontWeight.w500)),
+                                                                            ),
+                                                                          ),
+                                                                        ])),
+                                                                // date and time
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                              .fromLTRB(
+                                                                          6,
+                                                                          20,
+                                                                          0,
+                                                                          10),
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .start,
                                                                     children: [
-                                                                      Align(
-                                                                          alignment:
-                                                                              Alignment.topLeft,
-                                                                          child: Container(
-                                                                              width: 235,
-                                                                              child: Align(
-                                                                                  alignment: Alignment.topLeft,
-                                                                                  child: Text(
-                                                                                    '${data.docs[index]['title']}',
-                                                                                    style: const TextStyle(
-                                                                                      fontWeight: FontWeight.w500,
-                                                                                    ),
-                                                                                    textAlign: TextAlign.left,
-                                                                                  )))),
-                                                                      Visibility(
-                                                                        visible:
-                                                                            !isVolunteer,
+                                                                      Padding(
+                                                                        padding:
+                                                                            const EdgeInsets.only(left: 0),
                                                                         child:
-                                                                            Container(
-                                                                          alignment:
-                                                                              Alignment.topRight,
-                                                                          margin:
-                                                                              const EdgeInsets.only(top: 5),
-                                                                          child: Text(
-                                                                              status,
-                                                                              style: TextStyle(
-                                                                                  color: Colors.white,
-                                                                                  background: Paint()
-                                                                                    ..strokeWidth = 18.0
-                                                                                    ..color = getColor(data.docs[index]['status'])
-                                                                                    ..style = PaintingStyle.stroke
-                                                                                    ..strokeJoin = StrokeJoin.round,
-                                                                                  fontSize: 15,
-                                                                                  fontWeight: FontWeight.w500)),
+                                                                            Row(
+                                                                          children: [
+                                                                            Icon(Icons.calendar_today,
+                                                                                size: 20,
+                                                                                color: Colors.red.shade200),
+                                                                            Text(' ${data.docs[index]['date_dmy']}',
+                                                                                style: const TextStyle(
+                                                                                  fontSize: 17,
+                                                                                  fontWeight: FontWeight.w400,
+                                                                                )),
+                                                                          ],
                                                                         ),
                                                                       ),
-                                                                    ])),
-                                                            // date and time
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .fromLTRB(
-                                                                      6,
-                                                                      20,
-                                                                      0,
-                                                                      10),
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Padding(
-                                                                    padding: const EdgeInsets
-                                                                            .only(
-                                                                        left:
-                                                                            0),
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Icon(
-                                                                            Icons
-                                                                                .calendar_today,
-                                                                            size:
-                                                                                20,
-                                                                            color:
-                                                                                Colors.red.shade200),
-                                                                        Text(
-                                                                            ' ${data.docs[index]['date_dmy']}',
-                                                                            style:
-                                                                                const TextStyle(
-                                                                              fontSize: 17,
-                                                                              fontWeight: FontWeight.w400,
-                                                                            )),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                  Padding(
-                                                                    padding: const EdgeInsets
-                                                                            .only(
-                                                                        left:
-                                                                            40),
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Icon(
-                                                                            Icons
-                                                                                .schedule,
-                                                                            size:
-                                                                                20,
-                                                                            color:
-                                                                                Colors.red.shade200),
-                                                                        Text(
-                                                                            ' ${data.docs[index]['time']}',
-                                                                            style:
-                                                                                const TextStyle(
-                                                                              fontSize: 17,
-                                                                              fontWeight: FontWeight.w400,
-                                                                            )),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            ExpansionTile(
-                                                                title:
-                                                                    const Text(
-                                                                  'View more',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        15.0,
-                                                                    color: Colors
-                                                                        .grey,
+                                                                      Padding(
+                                                                        padding:
+                                                                            const EdgeInsets.only(left: 40),
+                                                                        child:
+                                                                            Row(
+                                                                          children: [
+                                                                            Icon(Icons.schedule,
+                                                                                size: 20,
+                                                                                color: Colors.red.shade200),
+                                                                            Text(' ${data.docs[index]['time']}',
+                                                                                style: const TextStyle(
+                                                                                  fontSize: 17,
+                                                                                  fontWeight: FontWeight.w400,
+                                                                                )),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ],
                                                                   ),
                                                                 ),
-                                                                children: [
-                                                                  //duration
-                                                                  Padding(
-                                                                    padding:
-                                                                        const EdgeInsets.fromLTRB(
-                                                                            6,
-                                                                            10,
-                                                                            20,
-                                                                            10),
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Text(
-                                                                            'Duration: ${data.docs[index]['duration']}',
-                                                                            style:
-                                                                                const TextStyle(fontWeight: FontWeight.w400, fontSize: 17)),
-                                                                      ],
+                                                                ExpansionTile(
+                                                                    title:
+                                                                        const Text(
+                                                                      'View more',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            15.0,
+                                                                        color: Colors
+                                                                            .grey,
+                                                                      ),
                                                                     ),
-                                                                  ), //description
-                                                                  Padding(
-                                                                    padding:
-                                                                        const EdgeInsets.fromLTRB(
+                                                                    children: [
+                                                                      //duration
+                                                                      Padding(
+                                                                        padding: const EdgeInsets.fromLTRB(
                                                                             6,
                                                                             10,
                                                                             20,
                                                                             10),
-                                                                    child: Row(
-                                                                      children: [
-                                                                        Flexible(
-                                                                          child: Text(
-                                                                              'Description: ${data.docs[index]['description']}',
-                                                                              style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 17)),
+                                                                        child:
+                                                                            Row(
+                                                                          children: [
+                                                                            Text('Duration: ${data.docs[index]['duration']}',
+                                                                                style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 17)),
+                                                                          ],
                                                                         ),
-                                                                      ],
-                                                                    ),
-                                                                  ), //location
-                                                                  Padding(
-                                                                    padding:
-                                                                        const EdgeInsets.fromLTRB(
+                                                                      ), //description
+                                                                      Padding(
+                                                                        padding: const EdgeInsets.fromLTRB(
                                                                             6,
                                                                             10,
                                                                             20,
                                                                             10),
-                                                                    child: Row(
-                                                                        children: [
-                                                                          Icon(
-                                                                              Icons.location_pin,
-                                                                              size: 20,
-                                                                              color: Colors.red.shade200),
-                                                                          ElevatedButton(
-                                                                              onPressed: () {
-                                                                                (Navigator.push(
-                                                                                    context,
-                                                                                    MaterialPageRoute(
-                                                                                      builder: (context) => MapsPage(latitude: latitude, longitude: longitude),
-                                                                                    )));
-                                                                              },
-                                                                              style: ElevatedButton.styleFrom(
-                                                                                foregroundColor: Colors.grey.shade500,
-                                                                                backgroundColor: Colors.white,
-                                                                                padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
-                                                                              ),
-                                                                              child: Container(width: 285, child: Text(reqLoc!, style: TextStyle(decoration: TextDecoration.underline, color: Colors.grey.shade500))))
-                                                                        ]),
-                                                                  ),
-                                                                ]),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ]),
-                                              )
+                                                                        child:
+                                                                            Row(
+                                                                          children: [
+                                                                            Flexible(
+                                                                              child: Text('Description: ${data.docs[index]['description']}', style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 17)),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ), //location
+                                                                      Padding(
+                                                                        padding: const EdgeInsets.fromLTRB(
+                                                                            6,
+                                                                            10,
+                                                                            20,
+                                                                            10),
+                                                                        child: Row(
+                                                                            children: [
+                                                                              Icon(Icons.location_pin, size: 20, color: Colors.red.shade200),
+                                                                              ElevatedButton(
+                                                                                  onPressed: () {
+                                                                                    (Navigator.push(
+                                                                                        context,
+                                                                                        MaterialPageRoute(
+                                                                                          builder: (context) => MapsPage(latitude: latitude, longitude: longitude),
+                                                                                        )));
+                                                                                  },
+                                                                                  style: ElevatedButton.styleFrom(
+                                                                                    foregroundColor: Colors.grey.shade500,
+                                                                                    backgroundColor: Colors.white,
+                                                                                    padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
+                                                                                  ),
+                                                                                  child: Container(width: 285, child: Text(reqLoc!, style: TextStyle(decoration: TextDecoration.underline, color: Colors.grey.shade500))))
+                                                                            ]),
+                                                                      ),
+                                                                    ]),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ]),
+                                                  ),
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              requestPage(
+                                                            reqID:
+                                                                data.docs[index]
+                                                                    ['docId'],
+                                                          ),
+                                                        ));
+                                                  })
                                             ]));
                                       } else {
                                         return const Center(child: Text(''));

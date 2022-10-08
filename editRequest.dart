@@ -4,21 +4,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 
-import 'editRequest.dart';
 import 'mapsPage.dart';
 
-class requestPage extends StatefulWidget {
+class editRequest extends StatefulWidget {
   //final String userType;
   final String reqID;
   // const editRequest({Key? key, required this.userType, required this.reqID})
   //     : super(key: key);
-  const requestPage({Key? key, required this.reqID}) : super(key: key);
+  const editRequest({Key? key, required this.reqID}) : super(key: key);
 
   @override
-  State<requestPage> createState() => _requestPageState();
+  State<editRequest> createState() => _editRequestState();
 }
 
-class _requestPageState extends State<requestPage> {
+class _editRequestState extends State<editRequest> {
   @override
   Widget build(BuildContext context) {
     Future<String> getLocationAsString(var lat, var lng) async {
@@ -80,7 +79,6 @@ class _requestPageState extends State<requestPage> {
   }
 
   Widget requestdetails() {
-    var edit = false;
     Future<String> getLocationAsString(var lat, var lng) async {
       List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
       return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
@@ -171,9 +169,15 @@ class _requestPageState extends State<requestPage> {
                                                             FontWeight.w500)),
                                               ),
                                               onTap: (() {
-                                                setState(() {
-                                                  edit = true;
-                                                });
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          editRequest(
+                                                        reqID: data.docs[index]
+                                                            ['docId'],
+                                                      ),
+                                                    ));
                                               }),
                                             )
                                           ])),
@@ -267,7 +271,6 @@ class _requestPageState extends State<requestPage> {
                                           ],
                                         ),
                                       ),
-
                                       //location
                                       Padding(
                                           padding:
@@ -314,22 +317,6 @@ class _requestPageState extends State<requestPage> {
                                                           )))
                                                 ],
                                               ))),
-                                      // buildTextField(
-                                      //     'title', data.docs[index]['title']),
-                                      Visibility(
-                                          visible: edit,
-                                          child: Column(
-                                            children: [
-                                              buildTextField('Title',
-                                                  data.docs[index]['title']),
-                                              buildTextField('Duration',
-                                                  data.docs[index]['duration']),
-                                              buildTextField(
-                                                  'Description',
-                                                  data.docs[index]
-                                                      ['description']),
-                                            ],
-                                          ))
                                     ],
                                   )));
                             } else {
@@ -342,70 +329,6 @@ class _requestPageState extends State<requestPage> {
                 },
               )))
     ]);
-  }
-
-  Widget myInfo(var userData) {
-    var userName = userData['name'];
-    bool isVolunteer = false;
-    bool isSpecial = false;
-    String dis = '';
-    if (userData['Type'] == "Volunteer") {
-      isVolunteer = true;
-    } else {
-      isSpecial = true;
-      dis = userData['Disability'];
-      dis = dis.substring(0, (dis.length - 1));
-    }
-    return Scaffold(
-        body: SingleChildScrollView(
-            child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 15,
-        ),
-        buildTextField('Name', userData['name']),
-        buildTextField('Date of Birth', userData['DOB']),
-        buildTextField('Gender', userData['gender']),
-        buildTextField('Email', userData['Email']),
-        buildTextField('Phone Number', userData['phone number']),
-        Visibility(
-          visible: isVolunteer,
-          child: buildTextField('Bio', userData['bio']),
-        ),
-        Visibility(
-            visible: isSpecial, child: buildTextField('Disability', dis)),
-      ],
-    )));
-  }
-
-  Widget buildTextField(String labelText, String placeholder) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 12, 30, 22),
-      child: TextField(
-        enabled: true,
-        maxLength: 180,
-        minLines: 1,
-        maxLines: 6,
-        decoration: InputDecoration(
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF06283D)),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.blue),
-            ),
-            contentPadding: const EdgeInsets.only(bottom: 3),
-            labelText: labelText,
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            hintText: placeholder,
-            hintStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            )),
-      ),
-    );
   }
 }
 
