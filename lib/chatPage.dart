@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 import 'package:uuid/uuid.dart';
@@ -43,21 +44,19 @@ class _ChatPageState extends State<ChatPage> {
       id = volID;
     }
 
-    // await FirebaseFirestore.instance
-    //     .collection('requests')
-    //     .doc(widget.requestID)
-    //     .collection('chats')
-    //     .where('author', isNotEqualTo: (id)) //'xW3YJxbVvihOSeAjdiw24WyI6SE3')
-    //     .get()
-    //     .then((var doc) {
-    //   doc.update({'read': true});
-    // });
+    final query = await FirebaseFirestore.instance
+        .collection('requests')
+        .doc(widget.requestID)
+        .collection('chats')
+        .where('author', isEqualTo: (id))
+        .where('read', isEqualTo: false)
+        .get();
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(id) //'xW3YJxbVvihOSeAjdiw24WyI6SE3')
-        .get()
-        .then(
+    query.docs.forEach((doc) {
+      doc.reference.update({'read': true});
+    });
+
+    await FirebaseFirestore.instance.collection('users').doc(id).get().then(
       (DocumentSnapshot doc) {
         print(id);
         user = doc.data() as Map<String, dynamic>;
@@ -97,6 +96,14 @@ class _ChatPageState extends State<ChatPage> {
                               ),
                             ),
                           ]),
+                      bottom: PreferredSize(
+                          preferredSize: Size.fromHeight(1.0),
+                          child: Padding(
+                              padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                              child: Container(
+                                color: Colors.grey,
+                                height: 1.0,
+                              ))),
                     ),
                     body: SafeArea(
                         child: Column(children: [
@@ -121,14 +128,43 @@ class _ChatPageState extends State<ChatPage> {
                                 final messages = snapshot.data;
 
                                 return
-                                    // StickyGroupedListView<String, dynamic>(
-                                    //       elements: messages,
-                                    //       groupSeparatorBuilder:(String groupByValue) => Text(groupByValue),
-                                    //       groupBy: (Element element) => element['group'],
+                                    // GroupedListView<Object, dynamic>(
+                                    //   elements: snapshot.data.docs,
+                                    //   groupBy: (element) => (element
+                                    //       as Map<String, dynamic>)['createdAt'],
+                                    //   groupSeparatorBuilder: (dynamic value) =>
+                                    //       Padding(
+                                    //     padding: const EdgeInsets.all(8.0),
+                                    //     child: Text(
+                                    //       value,
+                                    //       textAlign: TextAlign.center,
+                                    //       style: const TextStyle(
+                                    //           fontSize: 20,
+                                    //           fontWeight: FontWeight.bold),
+                                    //     ),
+                                    //   ),
+                                    //   itemBuilder: (context, index) {
+                                    //     final message =
+                                    //         messages.docs[index]['text'];
+
+                                    //     return Message(
+                                    //       message: message,
+                                    //       isMe: messages.docs[index]['author'] ==
+                                    //           currentUser.uid,
+                                    //       time: DateTime.fromMillisecondsSinceEpoch(
+                                    //           messages.docs[index]['createdAt']),
+                                    //     );
+                                    //   },
+                                    //   order: GroupedListOrder.ASC,
+                                    // );
+                                    // StickyGroupedListView(
+                                    //   elements: messages,
+                                    //   groupSeparatorBuilder:
+                                    //       (dynamic groupByValue) => Text(''),
+                                    //   groupBy: (element) => element['createdAt'],
                                     //   shrinkWrap: true,
                                     //   physics: const BouncingScrollPhysics(),
                                     //   reverse: true,
-                                    //   // itemCount: messages.size,
                                     //   itemBuilder: (context, index) {
                                     //     final message =
                                     //         messages.docs[index]['text'];
@@ -150,14 +186,24 @@ class _ChatPageState extends State<ChatPage> {
                                   itemBuilder: (context, index) {
                                     final message =
                                         messages.docs[index]['text'];
-
-                                    return Message(
-                                      message: message,
-                                      isMe: messages.docs[index]['author'] ==
-                                          currentUser.uid,
-                                      time: DateTime.fromMillisecondsSinceEpoch(
-                                          messages.docs[index]['createdAt']),
-                                    );
+                                    var isLastItem = false;
+                                    if (index == 0) {
+                                      //messages.size - 1) {
+                                      isLastItem = true;
+                                    }
+                                    return Column(children: [
+                                      Message(
+                                        message: message,
+                                        isMe: messages.docs[index]['author'] ==
+                                            currentUser.uid,
+                                        time:
+                                            DateTime.fromMillisecondsSinceEpoch(
+                                          messages.docs[index]['createdAt'],
+                                        ),
+                                        lastMessage: isLastItem,
+                                        isRead: messages.docs[index]['read'],
+                                      ),
+                                    ]);
                                   },
                                 );
                               }
@@ -182,31 +228,21 @@ class _ChatPageState extends State<ChatPage> {
                                   labelText: 'Type your message',
                                   border: OutlineInputBorder(
                                     borderSide: const BorderSide(width: 0),
-                                    gapPadding: 10,
-                                    borderRadius: BorderRadius.circular(25),
+                                    // gapPadding: 10,
+                                    borderRadius: BorderRadius.circular(15),
                                   ),
                                 ),
-                                // onChanged: (value) => setState(() {
-                                //   message = value;
-                                // }),
                               ),
                             ),
-                            const SizedBox(width: 20),
+                            const SizedBox(width: 15),
                             GestureDetector(
                               onTap: () {
                                 _controller.text.trim().isEmpty
                                     ? null
                                     : sendMessage(_controller.text);
                               },
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.blue,
-                                ),
-                                child:
-                                    const Icon(Icons.send, color: Colors.white),
-                              ),
+                              child:
+                                  const Icon(Icons.send, color: Colors.black),
                             ),
                           ],
                         ),
@@ -245,12 +281,14 @@ class Message extends StatelessWidget {
   final message;
   final bool isMe;
   final time;
+  final lastMessage, isRead;
 
-  const Message({
-    required this.message,
-    required this.isMe,
-    required this.time,
-  });
+  const Message(
+      {required this.message,
+      required this.isMe,
+      required this.time,
+      required this.lastMessage,
+      required this.isRead});
 
   @override
   Widget build(BuildContext context) {
@@ -260,9 +298,17 @@ class Message extends StatelessWidget {
     return Row(
       mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: <Widget>[
-        if (!isMe) const CircleAvatar(radius: 16),
+        // if (!isMe)
+        //   const CircleAvatar(
+        //     backgroundColor:
+        //         Color.fromARGB(255, 149, 204, 250), //Color(0xffE6E6E6),
+        //     radius: 16,
+        //     child: Icon(Icons.person,
+        //         size: 10, color: Colors.white //Color(0xffCCCCCC),
+        //         ),
+        //   ),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           margin: const EdgeInsets.all(10),
           constraints:
               BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
@@ -270,7 +316,7 @@ class Message extends StatelessWidget {
               ? BoxDecoration(
                   // shape: BoxShape.rectangle,
                   // shape: BoxShape.circle,
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     stops: [0.0, 1.0],
@@ -279,11 +325,14 @@ class Message extends StatelessWidget {
                       Color(0xFF39d6ce),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(25),
-                )
+                  borderRadius: borderRadius.subtract(BorderRadius.only(
+                      bottomRight:
+                          Radius.circular(12))) //BorderRadius.circular(25),
+                  )
               : BoxDecoration(
                   color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: borderRadius.subtract(
+                      BorderRadius.only(bottomLeft: Radius.circular(12))),
                 ),
           child: buildMessage(),
         ),
@@ -301,12 +350,20 @@ class Message extends StatelessWidget {
                 color: isMe ? Colors.white : Colors.black, fontSize: 18),
             textAlign: isMe ? TextAlign.end : TextAlign.start,
           ),
-          Text(
-            DateFormat('hh:mm a').format(time).toString(),
-            style: TextStyle(
-                color: isMe ? Colors.grey.shade200 : Colors.grey, fontSize: 11),
-            textAlign: TextAlign.end,
-          ),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            Text(
+              DateFormat('hh:mm a').format(time).toString(),
+              style: TextStyle(
+                  color: isMe ? Colors.grey.shade200 : Colors.grey,
+                  fontSize: 11),
+              textAlign: TextAlign.end,
+            ),
+            SizedBox(width: 7),
+            Visibility(
+                visible: lastMessage && isMe,
+                child: Icon(isRead ? Icons.done_all : Icons.done,
+                    color: Colors.grey.shade200, size: 14)),
+          ])
         ],
       );
 }
