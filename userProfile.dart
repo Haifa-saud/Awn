@@ -1,33 +1,62 @@
 import 'package:awn/addPost.dart';
-import 'package:awn/editRequest.dart';
 import 'package:awn/login.dart';
 import 'package:awn/mapsPage.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
-import 'package:awn/userInfo.dart';
+import 'package:awn/services/placeWidget.dart';
+import 'package:awn/services/sendNotification.dart';
+import 'package:awn/viewRequests.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:readmore/readmore.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:workmanager/workmanager.dart';
 import 'services/firebase_options.dart';
-// import 'MyRequestsSNU.dart';
-// import 'MyRequestsVol.dart';
 
 class userProfile extends StatefulWidget {
-  final String userType;
   const userProfile({Key? key, required this.userType}) : super(key: key);
+
+  final String userType;
+
   @override
   UserProfileState createState() => UserProfileState();
 }
 
+ScrollController _scrollController = ScrollController();
+
 class UserProfileState extends State<userProfile>
     with TickerProviderStateMixin {
+  late final NotificationService notificationService;
   final Storage storage = Storage();
-
   var userData;
+  var userId = FirebaseAuth.instance.currentUser!.uid;
+
+  int _selectedIndex = 3;
+
+  @override
+  void initState() {
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
+    super.initState();
+  }
+
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        print(payload);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    viewRequests(userType: 'Volunteer', reqID: payload)));
+      });
+
   Future<Map<String, dynamic>> readUserData() => FirebaseFirestore.instance
           .collection('users')
           .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -39,12 +68,9 @@ class UserProfileState extends State<userProfile>
         },
       );
 
-  int _selectedIndex = 3;
-  var userId = FirebaseAuth.instance.currentUser!.uid;
-
   @override
   Widget build(BuildContext context) {
-    TabController _tabController = TabController(length: 2, vsync: this);
+    TabController _tabController = TabController(length: 3, vsync: this);
 //! Logout
     Future<void> _signOut() async {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -80,11 +106,11 @@ class UserProfileState extends State<userProfile>
                                 builder: (ctx) => AlertDialog(
                                   title: const Text(
                                     "Logout",
-                                    textAlign: TextAlign.center,
+                                    textAlign: TextAlign.left,
                                   ),
                                   content: const Text(
                                     "Are You Sure You want to log out of your account ?",
-                                    textAlign: TextAlign.center,
+                                    textAlign: TextAlign.left,
                                   ),
                                   actions: <Widget>[
                                     //log in cancle button
@@ -122,18 +148,18 @@ class UserProfileState extends State<userProfile>
                     foregroundColor: Colors.black,
                     automaticallyImplyLeading: false,
                     scrolledUnderElevation: 1,
-                    toolbarHeight: 93,
+                    toolbarHeight: 60,
                     title: Row(children: [
                       Container(
-                        height: 55,
-                        width: 55,
-                        margin: const EdgeInsets.fromLTRB(8, 10, 10, 0),
+                        height: 45,
+                        width: 45,
+                        margin: const EdgeInsets.fromLTRB(8, 12, 10, 0),
                         child: const CircleAvatar(
                           backgroundColor: Color.fromARGB(
                               255, 149, 204, 250), //Color(0xffE6E6E6),
                           radius: 30,
                           child: Icon(Icons.person,
-                              size: 40, color: Colors.white //Color(0xffCCCCCC),
+                              size: 35, color: Colors.white //Color(0xffCCCCCC),
                               ),
                         ),
                       ),
@@ -143,7 +169,8 @@ class UserProfileState extends State<userProfile>
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(userData['name']),
+                                Text(userData['name'],
+                                    style: const TextStyle(fontSize: 20)),
                                 Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
@@ -151,7 +178,7 @@ class UserProfileState extends State<userProfile>
                                       textAlign: TextAlign.left,
                                       style: const TextStyle(
                                           color: Color.fromARGB(136, 6, 40, 61),
-                                          fontSize: 17,
+                                          fontSize: 15,
                                           fontWeight: FontWeight.normal),
                                     )),
                               ])),
@@ -185,9 +212,10 @@ class UserProfileState extends State<userProfile>
                                 indicatorWeight: 5,
                                 indicatorPadding:
                                     const EdgeInsets.only(top: 47),
-                                tabs: <Tab>[
-                                  new Tab(text: 'My Info'),
-                                  new Tab(text: 'My Requests'),
+                                tabs: const <Tab>[
+                                  Tab(text: 'My Info'),
+                                  Tab(text: 'My Requests'),
+                                  Tab(text: 'My Places'),
                                 ],
                                 labelColor: Colors.blue,
                                 unselectedLabelColor: Colors.grey,
@@ -204,6 +232,7 @@ class UserProfileState extends State<userProfile>
                                 children: [
                                   myInfo(userData),
                                   MyRequests(isVolunteer),
+                                  MyPlaces(userData['id']),
                                 ]),
                           ),
                         )
@@ -234,10 +263,15 @@ class UserProfileState extends State<userProfile>
           ),
         ),
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => addPost(userType: widget.userType)));
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  addPost(userType: widget.userType),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -316,11 +350,11 @@ class UserProfileState extends State<userProfile>
     );
   }
 
-//! My requests Vol
+//! My requests
   Widget MyRequests(var isVolunteer) {
     TabController _tabController = TabController(length: 2, vsync: this);
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
         child: Column(
           children: [
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -430,6 +464,7 @@ class UserProfileState extends State<userProfile>
                           final data = snapshot.requireData;
                           print('data');
                           return ListView.builder(
+                              controller: _scrollController,
                               itemCount: data.size,
                               itemBuilder: (context, index) {
                                 var reqLoc;
@@ -450,7 +485,7 @@ class UserProfileState extends State<userProfile>
                                         var reqLoc = snap.data;
                                         return Padding(
                                             padding: const EdgeInsets.symmetric(
-                                                horizontal: 28.0, vertical: 16),
+                                                horizontal: 10.0, vertical: 16),
                                             child: Stack(children: [
                                               Container(
                                                 width: 600,
@@ -469,14 +504,13 @@ class UserProfileState extends State<userProfile>
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             15)),
-                                                child: IntrinsicHeight(
-                                                    child: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceEvenly,
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        children: [
+                                                child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    children: [
                                                       Padding(
                                                         padding:
                                                             const EdgeInsets
@@ -485,44 +519,29 @@ class UserProfileState extends State<userProfile>
                                                         child: Column(
                                                           children: [
                                                             Padding(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .fromLTRB(
-                                                                          6,
-                                                                          10,
-                                                                          15,
-                                                                          15),
-                                                              child:
-                                                                  ElevatedButton(
-                                                                      onPressed:
-                                                                          (() {
-                                                                        Navigator.push(
-                                                                            context,
-                                                                            MaterialPageRoute(builder: (context) => editRequest(userType: userType, reqID: reqID)));
-                                                                      }),
-                                                                      child: Text(
-                                                                          'edit')),
-                                                            ),
-                                                            Padding(
                                                                 padding:
-                                                                    EdgeInsets
-                                                                        .fromLTRB(
-                                                                            6,
-                                                                            10,
-                                                                            15,
-                                                                            15),
+                                                                    const EdgeInsets
+                                                                            .fromLTRB(
+                                                                        6,
+                                                                        10,
+                                                                        15,
+                                                                        15),
                                                                 child: Stack(
                                                                     children: [
-                                                                      Text(
-                                                                        '${data.docs[index]['title']}',
-                                                                        style:
-                                                                            const TextStyle(
-                                                                          fontWeight:
-                                                                              FontWeight.w500,
-                                                                        ),
-                                                                        textAlign:
-                                                                            TextAlign.left,
-                                                                      ),
+                                                                      Align(
+                                                                          alignment:
+                                                                              Alignment.topLeft,
+                                                                          child: Container(
+                                                                              width: 235,
+                                                                              child: Align(
+                                                                                  alignment: Alignment.topLeft,
+                                                                                  child: Text(
+                                                                                    '${data.docs[index]['title']}',
+                                                                                    style: const TextStyle(
+                                                                                      fontWeight: FontWeight.w500,
+                                                                                    ),
+                                                                                    textAlign: TextAlign.left,
+                                                                                  )))),
                                                                       Visibility(
                                                                         visible:
                                                                             !isVolunteer,
@@ -537,11 +556,11 @@ class UserProfileState extends State<userProfile>
                                                                               style: TextStyle(
                                                                                   color: Colors.white,
                                                                                   background: Paint()
-                                                                                    ..strokeWidth = 20.0
+                                                                                    ..strokeWidth = 18.0
                                                                                     ..color = getColor(data.docs[index]['status'])
                                                                                     ..style = PaintingStyle.stroke
                                                                                     ..strokeJoin = StrokeJoin.round,
-                                                                                  fontSize: 17,
+                                                                                  fontSize: 15,
                                                                                   fontWeight: FontWeight.w500)),
                                                                         ),
                                                                       ),
@@ -620,7 +639,7 @@ class UserProfileState extends State<userProfile>
                                                                     fontSize:
                                                                         15.0,
                                                                     color: Colors
-                                                                        .black,
+                                                                        .grey,
                                                                   ),
                                                                 ),
                                                                 children: [
@@ -684,14 +703,14 @@ class UserProfileState extends State<userProfile>
                                                                                 backgroundColor: Colors.white,
                                                                                 padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
                                                                               ),
-                                                                              child: Container(width: 255, child: Text(reqLoc!, style: TextStyle(decoration: TextDecoration.underline, color: Colors.grey.shade500))))
+                                                                              child: Container(width: 285, child: Text(reqLoc!, style: TextStyle(decoration: TextDecoration.underline, color: Colors.grey.shade500))))
                                                                         ]),
                                                                   ),
                                                                 ]),
                                                           ],
                                                         ),
                                                       ),
-                                                    ])),
+                                                    ]),
                                               )
                                             ]));
                                       } else {
@@ -730,4 +749,117 @@ class UserProfileState extends State<userProfile>
     }
     return stat;
   }
+
+//! My Places
+  Widget MyPlaces(String userId) {
+    CollectionReference category =
+        FirebaseFirestore.instance.collection('postCategory');
+
+    int tabIndex = 0;
+    TabController _tabController = TabController(length: 3, vsync: this);
+
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: category.snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Text("Loading");
+            } else {
+              return Column(children: [
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  ButtonsTabBar(
+                    controller: _tabController,
+                    height: 50,
+                    radius: 15,
+                    buttonMargin: const EdgeInsets.fromLTRB(4, 8, 4, 1),
+                    unselectedDecoration: const BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                    unselectedLabelStyle:
+                        const TextStyle(color: Colors.white, fontSize: 16),
+                    labelStyle: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800),
+                    tabs: <Tab>[
+                      Tab(
+                          child: Container(
+                        padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border:
+                              Border.all(width: 2, color: Colors.red.shade300),
+                          color: Colors.transparent,
+                        ),
+                        child: Text(
+                          "Declined",
+                          style: TextStyle(color: Colors.red.shade300),
+                        ),
+                      )),
+                      Tab(
+                          child: Container(
+                        padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                              width: 2, color: Colors.orange.shade200),
+                          color: Colors.transparent,
+                        ),
+                        child: Text(
+                          "Pending",
+                          style: TextStyle(color: Colors.orange.shade200),
+                        ),
+                      )),
+                      Tab(
+                          child: Container(
+                        padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                              width: 2, color: Colors.green.shade300),
+                          color: Colors.transparent,
+                        ),
+                        child: Text(
+                          "Approved",
+                          style: TextStyle(color: Colors.green.shade300),
+                        ),
+                      )),
+                    ],
+                  ),
+                ]),
+                Expanded(
+                    child: Container(
+                        width: double.maxFinite,
+                        height: MediaQuery.of(context).size.height,
+                        child:
+                            TabBarView(controller: _tabController, children: [
+                          Place(
+                              userId: userId, category: '', status: 'Declined'),
+                          Place(
+                              userId: userId, category: '', status: 'Pending'),
+                          Place(
+                              userId: userId, category: '', status: 'Approved'),
+                        ])))
+              ]);
+            }
+          },
+        ));
+  }
+
+  // setColor(int tabIndex) {
+  //   if (tabIndex == 0) {
+  //     return Colors.red;
+  //   } else if (tabIndex == 1) {
+  //     return Colors.green;
+  //   } else if (tabIndex == 2) {
+  //     return Colors.orange;
+  //   }
+  // }
 }

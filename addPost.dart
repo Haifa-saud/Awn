@@ -3,6 +3,8 @@ import 'package:awn/homePage.dart';
 import 'package:awn/map.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
+import 'package:awn/services/sendNotification.dart';
+import 'package:awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -36,6 +38,25 @@ TextEditingController numberController = TextEditingController();
 TextEditingController websiteController = TextEditingController();
 
 class _MyStatefulWidgetState extends State<addPost> {
+  late final NotificationService notificationService;
+  @override
+  void initState() {
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
+
+    super.initState();
+  }
+
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        print(payload);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    viewRequests(userType: 'Volunteer', reqID: payload)));
+      });
   final _formKey = GlobalKey<FormState>();
 
   CollectionReference category =
@@ -51,9 +72,17 @@ class _MyStatefulWidgetState extends State<addPost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        bottom: PreferredSize(
+            preferredSize: Size.fromHeight(1.0),
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                child: Container(
+                  color: Colors.grey,
+                  height: 1.0,
+                ))),
         actions: <Widget>[
           Padding(
-              padding: const EdgeInsets.fromLTRB(0, 2, 8, 0),
+              padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
               child: FutureBuilder(
                   future: storage.downloadURL('logo.png'),
                   builder:
@@ -69,39 +98,48 @@ class _MyStatefulWidgetState extends State<addPost> {
                         ),
                       );
                     }
-
                     if (snapshot.connectionState == ConnectionState.waiting ||
                         !snapshot.hasData) {
-                      return CircularProgressIndicator(
-                        color: Colors.grey.shade200,
-                      );
+                      return Center(
+                          child: CircularProgressIndicator(
+                        color: Colors.blue,
+                      ));
                     }
                     return Container();
                   }))
         ],
         title: const Text('Add a Place', textAlign: TextAlign.center),
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () => showDialog<String>(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-              content: const Text('Discard the changes you made?'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Keep editing'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    clearForm();
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
-                  child: const Text('Discard'),
-                ),
-              ],
-            ),
-          ),
-        ),
+        automaticallyImplyLeading: false,
+        //   leading: IconButton(
+        //     icon: const Icon(Icons.close, color: Colors.black),
+        //     onPressed: () => showDialog<String>(
+        //       context: context,
+        //       builder: (BuildContext context) => AlertDialog(
+        //         content: const Text('Discard the changes you made?'),
+        //         actions: <Widget>[
+        //           TextButton(
+        //             onPressed: () => Navigator.of(context).pop(),
+        //             child: const Text('Keep editing'),
+        //           ),
+        //           TextButton(
+        //             onPressed: () {
+        //               clearForm();
+        //               Navigator.pushReplacement(
+        //                 context,
+        //                 PageRouteBuilder(
+        //                   pageBuilder: (context, animation1, animation2) =>
+        //                       homePage(),
+        //                   transitionDuration: Duration(seconds: 1),
+        //                   reverseTransitionDuration: Duration.zero,
+        //                 ),
+        //               );
+        //             },
+        //             child: const Text('Discard'),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
       ),
       body: Form(
         key: _formKey,
@@ -120,7 +158,7 @@ class _MyStatefulWidgetState extends State<addPost> {
               child: TextFormField(
                 textAlign: TextAlign.left,
                 controller: nameController,
-                maxLength: 50,
+                maxLength: 25,
                 decoration: const InputDecoration(
                     labelText: "Name (required)*",
                     hintText: "E.g. King Saud University"),
@@ -287,7 +325,7 @@ class _MyStatefulWidgetState extends State<addPost> {
               child: TextFormField(
                 keyboardType: TextInputType.multiline,
                 maxLines: 4,
-                maxLength: 150,
+                maxLength: 400,
                 textAlign: TextAlign.left,
                 controller: descriptionController,
                 decoration: InputDecoration(
@@ -333,24 +371,23 @@ class _MyStatefulWidgetState extends State<addPost> {
                   if (_formKey.currentState!.validate()) {
                     addToDB();
                   } else {
-                    // Scrollable.ensureVisible(dataKey.currentContext!);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Please fill in the required fields above, and in the specified format (if any).'),
-                        backgroundColor: Colors.red.shade400,
-                        margin: EdgeInsets.fromLTRB(6, 0, 3, 0),
-                        behavior: SnackBarBehavior.floating,
-                        action: SnackBarAction(
-                          label: 'Dismiss',
-                          disabledTextColor: Colors.white,
-                          textColor: Colors.white,
-                          onPressed: () {
-                            //Do whatever you want
-                          },
-                        ),
-                      ),
-                    );
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //   SnackBar(
+                    //     content: Text(
+                    //         'Please fill in the required fields above, and in the specified format (if any).'),
+                    //     backgroundColor: Colors.red.shade400,
+                    //     margin: EdgeInsets.fromLTRB(6, 0, 3, 0),
+                    //     behavior: SnackBarBehavior.floating,
+                    //     action: SnackBarAction(
+                    //       label: 'Dismiss',
+                    //       disabledTextColor: Colors.white,
+                    //       textColor: Colors.white,
+                    //       onPressed: () {
+                    //         //Do whatever you want
+                    //       },
+                    //     ),
+                    //   ),
+                    // );
                   }
                 },
                 child: const Text('Next'),
@@ -381,10 +418,15 @@ class _MyStatefulWidgetState extends State<addPost> {
           ),
         ),
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => addPost(userType: widget.userType)));
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  addPost(userType: widget.userType),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -443,8 +485,10 @@ class _MyStatefulWidgetState extends State<addPost> {
       'Phone number': numberController.text,
       'description': descriptionController.text,
       'userId': FirebaseAuth.instance.currentUser!.uid,
+      'docId': ''
     });
     dataId = docReference.id;
+    posts.doc(dataId).update({'docId': dataId});
     print("Document written with ID: ${docReference.id}");
 
     print('added to db');

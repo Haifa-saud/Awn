@@ -41,20 +41,18 @@ class _forgotPasswordState extends State<forgotPassword> {
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
+      // appBar: AppBar(
+      //   leading: IconButton(
+      //     icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+      //     onPressed: () => Navigator.of(context).pop(),
+      //   ),
+      // ),
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
-          //hexStringToColor("#00dacf"),
-          //hexStringToColor("#fcfffd"),
           Colors.cyanAccent.shade100,
-
-          // hexStringToColor("#fcfffd"),
-          //hexStringToColor("#fcfffd"),
-          //hexStringToColor("#fcfffd"),
           Colors.white54,
           Colors.white54,
-          //hexStringToColor("#fcfffd"),
-          //hexStringToColor("#283466")
           Colors.blue.shade200
         ], begin: Alignment.topRight, end: Alignment.bottomLeft)),
         margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -116,7 +114,7 @@ class _forgotPasswordState extends State<forgotPassword> {
                   height: height * 0.05,
                 ),
                 const Text(
-                  "Recieve an email to reset your password",
+                  "Enter your email to reset your password",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 25,
@@ -130,7 +128,7 @@ class _forgotPasswordState extends State<forgotPassword> {
                 TextFormField(
                   controller: emailController,
                   decoration: InputDecoration(
-                    labelText: "Enter Email",
+                    labelText: "Email",
                     hintText: "Email",
                     contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                     focusedBorder: OutlineInputBorder(
@@ -161,7 +159,10 @@ class _forgotPasswordState extends State<forgotPassword> {
                   height: 0.01,
                 ),
                 Container(
-                  margin: const EdgeInsets.fromLTRB(50, 10, 50, 10),
+                  // margin: const EdgeInsets.fromLTRB(0, 60, 0, 10),
+                  margin: const EdgeInsets.fromLTRB(50, 30, 50, 10),
+
+                  padding: const EdgeInsets.fromLTRB(30, 1, 30, 1),
                   decoration: BoxDecoration(
                     boxShadow: const [
                       BoxShadow(
@@ -180,7 +181,7 @@ class _forgotPasswordState extends State<forgotPassword> {
                     ),
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  child: ElevatedButton.icon(
+                  child: ElevatedButton(
                       style: ButtonStyle(
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -188,36 +189,24 @@ class _forgotPasswordState extends State<forgotPassword> {
                             borderRadius: BorderRadius.circular(30.0),
                           ),
                         ),
-                        minimumSize:
-                            MaterialStateProperty.all(const Size(50, 50)),
+                        // minimumSize:
+                        //     MaterialStateProperty.all(const Size(50, 50)),
                         backgroundColor:
                             MaterialStateProperty.all(Colors.transparent),
                         shadowColor:
                             MaterialStateProperty.all(Colors.transparent),
                       ),
-                      icon: const Icon(Icons.email_outlined),
-                      label: const Padding(
-                        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text(
-                          'Reset Password',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                          textAlign: TextAlign.center,
-                        ),
+                      child: Text(
+                        'Reset Password',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                        textAlign: TextAlign.center,
                       ),
                       onPressed: () {
                         resetPassword();
-                      }
-
-                      //After successful login we will redirect to profile page. Let's create profile page now
-
-                      // Navigator.pushReplacement(
-                      // context,
-                      // MaterialPageRoute(
-                      //  builder: (context) => ProfilePage()));
-                      ),
+                      }),
                 ),
               ],
               // Navigator.pushReplacement(

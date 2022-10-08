@@ -111,9 +111,10 @@ class _loginState extends State<login> {
                           if (snapshot.connectionState ==
                                   ConnectionState.waiting ||
                               !snapshot.hasData) {
-                            return CircularProgressIndicator(
+                            return Center(
+                                child: CircularProgressIndicator(
                               color: Colors.grey.shade200,
-                            );
+                            ));
                           }
                           return Container();
                         }),
@@ -238,7 +239,7 @@ class _loginState extends State<login> {
                           );
                         },
                         child: const Text(
-                          "forgot password?",
+                          "Forgot password?",
                           style: TextStyle(
                               color: Colors.grey,
                               decoration: TextDecoration.underline,
@@ -249,7 +250,8 @@ class _loginState extends State<login> {
                     SizedBox(
                       height: height * 0.01,
                     ),
-                    Container(
+                    Center(
+                        child: Container(
                       margin: const EdgeInsets.fromLTRB(50, 10, 50, 10),
                       decoration: BoxDecoration(
                         boxShadow: const [
@@ -375,7 +377,7 @@ class _loginState extends State<login> {
                             }
                             // Utils.showSnackBar("wrong email//password");
                           }),
-                    ),
+                    )),
                     Container(
                       margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                       //child: Text('Don\'t have an account? Create'),

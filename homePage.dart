@@ -4,8 +4,10 @@ import 'package:awn/addPost.dart';
 import 'package:awn/addRequest.dart';
 import 'package:awn/login.dart';
 import 'package:awn/mapsPage.dart';
+import 'package:awn/place.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
+import 'package:awn/services/placeWidget.dart';
 import 'package:awn/services/sendNotification.dart';
 import 'package:awn/services/usersModel.dart';
 import 'package:awn/userProfile.dart';
@@ -18,12 +20,16 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:readmore/readmore.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:workmanager/workmanager.dart';
 import 'services/firebase_options.dart';
 import 'package:awn/map.dart';
 import 'package:path/path.dart' as Path;
 import 'package:buttons_tabbar/buttons_tabbar.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class homePage extends StatefulWidget {
   // final userType;
@@ -34,49 +40,18 @@ class homePage extends StatefulWidget {
 }
 
 class MyHomePage extends State<homePage> with TickerProviderStateMixin {
-  final Stream<QuerySnapshot> posts =
-      FirebaseFirestore.instance.collection('posts').snapshots();
+  CollectionReference category =
+      FirebaseFirestore.instance.collection('postCategory');
 
-  final Stream<QuerySnapshot> education = FirebaseFirestore.instance
-      .collection('posts')
-      .where('category', isEqualTo: 'Education')
-      .snapshots();
-  final Stream<QuerySnapshot> entertainment = FirebaseFirestore.instance
-      .collection('posts')
-      .where('category', isEqualTo: 'Entertainment')
-      .snapshots();
-  final Stream<QuerySnapshot> government = FirebaseFirestore.instance
-      .collection('posts')
-      .where('category', isEqualTo: 'Government')
-      .snapshots();
-  final Stream<QuerySnapshot> transportation = FirebaseFirestore.instance
-      .collection('posts')
-      .where('category', isEqualTo: 'Transportation')
-      .snapshots();
-  final Stream<QuerySnapshot> other = FirebaseFirestore.instance
-      .collection('posts')
-      .where('category', isEqualTo: 'Other')
-      .snapshots();
+  late final NotificationService notificationService;
+
+  final Storage storage = Storage();
+  var userData;
 
   int _selectedIndex = 0;
 
-  var userData;
-  Future<Map<String, dynamic>> readUserData(var id) =>
-      FirebaseFirestore.instance.collection('users').doc(id).get().then(
-        (DocumentSnapshot doc) {
-          print('test');
-          print(doc.data() as Map<String, dynamic>);
-          userData = doc.data() as Map<String, dynamic>;
-          print('test3');
-
-          return doc.data() as Map<String, dynamic>;
-        },
-      );
-
-  late final NotificationService notificationService;
   @override
   void initState() {
-    print('test' + FirebaseAuth.instance.currentUser!.uid);
     userData = readUserData(FirebaseAuth.instance.currentUser!.uid);
     notificationService = NotificationService();
     listenToNotificationStream();
@@ -85,16 +60,22 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     super.initState();
   }
 
+  Future<Map<String, dynamic>> readUserData(var id) =>
+      FirebaseFirestore.instance.collection('users').doc(id).get().then(
+        (DocumentSnapshot doc) {
+          userData = doc.data() as Map<String, dynamic>;
+          return doc.data() as Map<String, dynamic>;
+        },
+      );
+
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        print(payload);
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) =>
                     viewRequests(userType: 'Volunteer', reqID: payload)));
       });
-  final Storage storage = Storage();
 
   @override
   Widget build(BuildContext context) {
@@ -131,9 +112,10 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                               if (snapshot.connectionState ==
                                       ConnectionState.waiting ||
                                   !snapshot.hasData) {
-                                return CircularProgressIndicator(
+                                return const Center(
+                                    child: CircularProgressIndicator(
                                   color: Colors.blue,
-                                );
+                                ));
                               }
                               return Container();
                             }))
@@ -143,13 +125,13 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                   backgroundColor: Colors.white, //(0xFFfcfffe)
                   automaticallyImplyLeading: false,
                   scrolledUnderElevation: 1,
-                  toolbarHeight: 80,
+                  toolbarHeight: 60,
                   title: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
+                          padding: const EdgeInsets.fromLTRB(0, 15, 0, 2),
                           child: Text(
                             "Hello, " + userData['name'],
                           ),
@@ -185,71 +167,75 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                       ]),
                 ),
                 body: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                    child: Column(children: [
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ButtonsTabBar(
-                                controller: _tabController,
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    stops: [0.0, 1.0],
-                                    colors: [
-                                      Colors.blue,
-                                      Color(0xFF39d6ce),
-                                    ],
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: category.snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(child: CircularProgressIndicator());
+                        } else {
+                          return Column(children: [
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ButtonsTabBar(
+                                    controller: _tabController,
+                                    decoration: const BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        stops: [0.0, 1.0],
+                                        colors: [
+                                          Colors.blue,
+                                          Color(0xFF39d6ce),
+                                        ],
+                                      ),
+                                    ),
+                                    unselectedDecoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(
+                                          color: Colors.blue, width: 5),
+                                    ),
+                                    radius: 30,
+                                    buttonMargin:
+                                        const EdgeInsets.fromLTRB(6, 4, 6, 4),
+                                    contentPadding: const EdgeInsets.fromLTRB(
+                                        15, 10, 15, 10),
+                                    labelStyle: const TextStyle(
+                                        color: Colors.white, fontSize: 15),
+                                    tabs: snapshot.data!.docs
+                                        .map((DocumentSnapshot document) {
+                                      String cate = ((document.data()
+                                          as Map)['category']);
+                                      return Tab(text: cate);
+                                    }).toList(),
                                   ),
-                                ),
-                                unselectedDecoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border:
-                                      Border.all(color: Colors.blue, width: 5),
-                                ),
-                                radius: 30,
-                                // borderColor: Colors.blue,
-                                buttonMargin:
-                                    const EdgeInsets.fromLTRB(6, 4, 6, 4),
-                                contentPadding:
-                                    const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                                // unselectedBackgroundColor: Colors.white,
-                                labelStyle: const TextStyle(
-                                    color: Colors.white, fontSize: 15),
-                                tabs: const [
-                                  Tab(text: "All"),
-                                  Tab(text: "Education"),
-                                  Tab(text: 'Entertainment'),
-                                  Tab(text: 'Transportation'),
-                                  Tab(text: 'government'),
-                                  Tab(text: 'Other')
                                 ]),
-                          ]),
-                      Expanded(
-                        child: Container(
-                          width: double.maxFinite,
-                          height: MediaQuery.of(context).size.height,
-                          child:
-                              TabBarView(controller: _tabController, children: [
-                            placesList(posts),
-                            placesList(education),
-                            placesList(entertainment),
-                            placesList(transportation),
-                            placesList(government),
-                            placesList(other),
-                          ]),
-                        ),
-                      )
-                    ])),
+                            Expanded(
+                                child: Container(
+                                    width: double.maxFinite,
+                                    height: MediaQuery.of(context).size.height,
+                                    child: TabBarView(
+                                      controller: _tabController,
+                                      children: snapshot.data!.docs
+                                          .map((DocumentSnapshot document) {
+                                        String cate = ((document.data()
+                                            as Map)['category']);
+                                        return Place(
+                                            userId: '',
+                                            category: cate,
+                                            status: '');
+                                      }).toList(),
+                                    )))
+                          ]);
+                        }
+                      },
+                    )),
                 floatingActionButton: FloatingActionButton(
                   child: Container(
                     width: 60,
                     height: 60,
-                    child: const Icon(
-                      Icons.add,
-                      size: 40,
-                    ),
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
@@ -262,13 +248,21 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                         ],
                       ),
                     ),
+                    child: const Icon(
+                      Icons.add,
+                      size: 40,
+                    ),
                   ),
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                addPost(userType: userData['Type'])));
+                    Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation1, animation2) =>
+                            addPost(userType: userData['Type']),
+                        transitionDuration: const Duration(seconds: 1),
+                        reverseTransitionDuration: Duration.zero,
+                      ),
+                    );
                   },
                 ),
                 floatingActionButtonLocation:
@@ -286,250 +280,5 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
             }
           }),
     );
-  }
-
-  Widget placesList(Stream<QuerySnapshot> list) {
-    return Container(
-        height: double.infinity,
-        child: Column(
-          children: [
-            //! places list
-            Expanded(
-                child: Container(
-                    height: double.infinity,
-                    child: StreamBuilder<QuerySnapshot>(
-                        stream: list,
-                        builder: (
-                          BuildContext context,
-                          AsyncSnapshot<QuerySnapshot> snapshot,
-                        ) {
-                          if (snapshot.hasError) {
-                            return const Text('Something went wrong');
-                          }
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                          if (!snapshot.hasData) {
-                            return const Center(
-                                child: Text('No available posts'));
-                          } else {
-                            final data = snapshot.requireData;
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: data.size,
-                              itemBuilder: (context, index) {
-                                bool phone =
-                                    data.docs[index]['Phone number'] == ''
-                                        ? false
-                                        : true;
-                                bool website = data.docs[index]['Website'] == ''
-                                    ? false
-                                    : true;
-                                bool description =
-                                    data.docs[index]['description'] == ''
-                                        ? false
-                                        : true;
-                                bool loc = data.docs[index]['latitude'] == ''
-                                    ? false
-                                    : true;
-                                bool img = data.docs[index]['img'] == ''
-                                    ? false
-                                    : true;
-
-                                // Icon icon = data.docs[index]['img'] == '' ? Icon(Icons.navigate_before,
-                                //     color: Colors.white);
-
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 36.0, vertical: 16),
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        width: 600,
-                                        margin: const EdgeInsets.only(top: 12),
-                                        padding: const EdgeInsets.all(2),
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            boxShadow: const [
-                                              BoxShadow(
-                                                  blurRadius: 32,
-                                                  color: Colors.black45,
-                                                  spreadRadius: -8)
-                                            ],
-                                            borderRadius:
-                                                BorderRadius.circular(15)),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      0, 0, 0, 0),
-                                              child: Text(
-                                                  '${data.docs[index]['name']}',
-                                                  textAlign: TextAlign.left,
-                                                  style: const TextStyle(
-                                                      fontSize: 18)),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      1, 0, 4, 4),
-                                              child: Text(
-                                                  '${data.docs[index]['category']}',
-                                                  textAlign: TextAlign.left,
-                                                  style: const TextStyle(
-                                                      fontSize: 14)),
-                                            ),
-                                            Visibility(
-                                              visible: img,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        1, 0, 4, 4),
-                                                child: Image.network(
-                                                  data.docs[index]['img'],
-                                                  width: 100,
-                                                  height: 100,
-                                                  //     // fit: BoxFit.cover,
-                                                  errorBuilder: (BuildContext
-                                                          context,
-                                                      Object exception,
-                                                      StackTrace? stackTrace) {
-                                                    return const Text(
-                                                        'Image could not be load');
-                                                  },
-                                                ),
-                                              ),
-                                            ),
-                                            Visibility(
-                                              visible: website ||
-                                                  phone ||
-                                                  description,
-                                              child: ExpansionTile(
-                                                title: const Text(
-                                                  'View more',
-                                                  style: TextStyle(
-                                                    fontSize: 15.0,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                                children: [
-                                                  SizedBox(
-                                                    width: 450,
-                                                    child: Visibility(
-                                                      visible: phone,
-                                                      child: Text(
-                                                        '${data.docs[index]['Phone number']}',
-                                                        style: const TextStyle(
-                                                          fontSize: 15.0,
-                                                          color: Color.fromARGB(
-                                                              158, 0, 0, 0),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 450,
-                                                    child: Visibility(
-                                                      visible: website,
-                                                      child: Text(
-                                                        '${data.docs[index]['Website']}',
-                                                        style: const TextStyle(
-                                                          fontSize: 15.0,
-                                                          color: Color.fromARGB(
-                                                              158, 0, 0, 0),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 450,
-                                                    child: Visibility(
-                                                      visible: website,
-                                                      child: Text(
-                                                        '${data.docs[index]['description']}',
-                                                        style: const TextStyle(
-                                                          fontSize: 15.0,
-                                                          color: Color.fromARGB(
-                                                              158, 0, 0, 0),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 450,
-                                                    child: Visibility(
-                                                      visible: website,
-                                                      child: Text(
-                                                        '${data.docs[index]['description']}',
-                                                        style: const TextStyle(
-                                                          fontSize: 15.0,
-                                                          color: Color.fromARGB(
-                                                              158, 0, 0, 0),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  ElevatedButton(
-                                                      style: ElevatedButton.styleFrom(
-                                                          foregroundColor: Colors
-                                                              .blue,
-                                                          backgroundColor: Colors
-                                                              .white,
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  17,
-                                                                  16,
-                                                                  17,
-                                                                  16),
-                                                          textStyle:
-                                                              const TextStyle(
-                                                                  fontSize: 18),
-                                                          side: BorderSide(
-                                                              color: Colors.grey
-                                                                  .shade400,
-                                                              width: 1)),
-                                                      child: const Text(
-                                                          'Add Image'),
-                                                      onPressed: () {
-                                                        double latitude =
-                                                            double.parse(data
-                                                                    .docs[index]
-                                                                ['latitude']);
-                                                        double longitude =
-                                                            double.parse(data
-                                                                    .docs[index]
-                                                                ['longitude']);
-                                                        (Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  MapsPage(
-                                                                      latitude:
-                                                                          latitude,
-                                                                      longitude:
-                                                                          longitude),
-                                                            )));
-                                                      }),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          }
-                        })))
-          ],
-        ));
   }
 }

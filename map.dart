@@ -1,3 +1,5 @@
+import 'package:awn/services/sendNotification.dart';
+import 'package:awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -5,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:workmanager/workmanager.dart';
 
+import 'homePage.dart';
 import 'main.dart';
 
 class maps extends StatefulWidget {
@@ -69,6 +72,7 @@ class _MyStatefulWidgetState extends State<maps> {
     ));
   }
 
+  late final NotificationService notificationService;
   @override
   void initState() {
     getCurrentPosition();
@@ -86,13 +90,22 @@ class _MyStatefulWidgetState extends State<maps> {
       border = BorderRadius.circular(30);
       sucessMsg = 'Request is sent successfully';
     }
-    print(collName);
     DBId = widget.dataId;
-    print(DBId);
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
     super.initState();
-    print(addPost);
   }
 
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        print(payload);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    viewRequests(userType: 'Volunteer', reqID: payload)));
+      });
   LatLng selectedLoc = LatLng(24.7136, 46.6753);
 
   @override
@@ -140,8 +153,7 @@ class _MyStatefulWidgetState extends State<maps> {
                       label: 'Dismiss',
                       disabledTextColor: Colors.white,
                       textColor: Colors.white,
-                      onPressed: () {
-                      },
+                      onPressed: () {},
                     )),
               );
             },
@@ -282,10 +294,18 @@ class _MyStatefulWidgetState extends State<maps> {
     print(collName);
     final postID = FirebaseFirestore.instance.collection(collName).doc(DBId);
     print(postID);
-    postID.update({
-      'latitude': selectedLoc.latitude.toString(),
-      'longitude': selectedLoc.longitude.toString()
-    });
+    if (collName == "requests") {
+      postID.update({
+        'latitude': selectedLoc.latitude.toString(),
+        'longitude': selectedLoc.longitude.toString(),
+        'notificationStatus': 'pending',
+      });
+    } else if (collName == "posts") {
+      postID.update({
+        'latitude': selectedLoc.latitude.toString(),
+        'longitude': selectedLoc.longitude.toString()
+      });
+    }
     if (collName == 'requests') {
       var time = DateTime.now().second.toString();
     }
@@ -297,6 +317,13 @@ class _MyStatefulWidgetState extends State<maps> {
         content: Text(sucessMsg),
       ),
     );
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2) => homePage(),
+        transitionDuration: Duration(seconds: 1),
+        reverseTransitionDuration: Duration.zero,
+      ),
+    );
   }
 }
