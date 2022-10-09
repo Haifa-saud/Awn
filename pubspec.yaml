@@ -85,6 +85,7 @@ dependencies:
   uuid: ^3.0.6
   sticky_grouped_list: ^3.1.0
   grouped_list: ^5.1.2
+  flutter_sound: ^8.3.9
 
 
   

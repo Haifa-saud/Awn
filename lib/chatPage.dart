@@ -205,7 +205,6 @@ class _ChatPageState extends State<ChatPage> {
                                             DateTime.fromMillisecondsSinceEpoch(
                                           messages.docs[index]['createdAt'],
                                         ),
-                                        lastMessage: isLastItem,
                                         isRead: messages.docs[index]['read'],
                                         img: messages.docs[index]['img'],
                                       ),
@@ -305,7 +304,6 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void sendMessage(var message, var imagePath) async {
-    print(197);
     CollectionReference messages = FirebaseFirestore.instance
         .collection('requests')
         .doc(widget.requestID)
@@ -332,13 +330,13 @@ class Message extends StatelessWidget {
   final message;
   final bool isMe;
   final time;
-  final lastMessage, isRead, img;
+  final isRead, img;
 
   const Message(
       {required this.message,
       required this.isMe,
       required this.time,
-      required this.lastMessage,
+      // required this.lastMessage,
       required this.isRead,
       required this.img});
 
@@ -429,7 +427,7 @@ class Message extends StatelessWidget {
             ),
             SizedBox(width: 7),
             Visibility(
-                visible: lastMessage && isMe,
+                visible: isMe,
                 child: Icon(isRead ? Icons.done_all : Icons.done,
                     color: Colors.grey.shade200, size: 14)),
           ])
