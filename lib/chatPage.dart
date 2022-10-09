@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path/path.dart' as Path;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
@@ -25,6 +28,31 @@ class _ChatPageState extends State<ChatPage> {
   final _controller = TextEditingController();
   String message = '';
   User currentUser = FirebaseAuth.instance.currentUser!;
+  var recorder;
+  bool isRecorderReady = false;
+
+  @override
+  void initState() {
+    super.initState();
+    recorder = FlutterSoundRecorder();
+    initRecorder();
+  }
+
+  Future initRecorder() async {
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw 'Microphone permission denied';
+    }
+    await recorder.openAudioSession();
+    isRecorderReady = true;
+    recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
+  }
+
+  @override
+  void dispose() {
+    recorder.closeAudioSession();
+    super.dispose();
+  }
 
   Future<Map<String, dynamic>> getOtherUserID() async {
     var user, volID, userID, id;
@@ -34,18 +62,14 @@ class _ChatPageState extends State<ChatPage> {
         .get()
         .then(
       (DocumentSnapshot doc) {
-        // print(doc.data() as Map<String, dynamic>);
         user = doc.data() as Map<String, dynamic>;
         volID = user['VolID'];
-        // print(user['VolID']);
         userID = user['userID'];
       },
     );
     if (volID == FirebaseAuth.instance.currentUser!.uid) {
-      print('userID:' + userID);
       id = userID;
     } else {
-      print('volID' + volID);
       id = volID;
     }
 
@@ -63,7 +87,6 @@ class _ChatPageState extends State<ChatPage> {
 
     await FirebaseFirestore.instance.collection('users').doc(id).get().then(
       (DocumentSnapshot doc) {
-        print(id);
         user = doc.data() as Map<String, dynamic>;
       },
     );
@@ -76,7 +99,6 @@ class _ChatPageState extends State<ChatPage> {
         body: FutureBuilder<Map<String, dynamic>>(
             future: getOtherUserID(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
-              print(snapshot);
               if (snapshot.hasData) {
                 var userData = snapshot.data as Map<String, dynamic>;
                 return Scaffold(
@@ -132,58 +154,7 @@ class _ChatPageState extends State<ChatPage> {
                               } else {
                                 final messages = snapshot.data;
 
-                                return
-                                    // GroupedListView<Object, dynamic>(
-                                    //   elements: snapshot.data.docs,
-                                    //   groupBy: (element) => (element
-                                    //       as Map<String, dynamic>)['createdAt'],
-                                    //   groupSeparatorBuilder: (dynamic value) =>
-                                    //       Padding(
-                                    //     padding: const EdgeInsets.all(8.0),
-                                    //     child: Text(
-                                    //       value,
-                                    //       textAlign: TextAlign.center,
-                                    //       style: const TextStyle(
-                                    //           fontSize: 20,
-                                    //           fontWeight: FontWeight.bold),
-                                    //     ),
-                                    //   ),
-                                    //   itemBuilder: (context, index) {
-                                    //     final message =
-                                    //         messages.docs[index]['text'];
-
-                                    //     return Message(
-                                    //       message: message,
-                                    //       isMe: messages.docs[index]['author'] ==
-                                    //           currentUser.uid,
-                                    //       time: DateTime.fromMillisecondsSinceEpoch(
-                                    //           messages.docs[index]['createdAt']),
-                                    //     );
-                                    //   },
-                                    //   order: GroupedListOrder.ASC,
-                                    // );
-                                    // StickyGroupedListView(
-                                    //   elements: messages,
-                                    //   groupSeparatorBuilder:
-                                    //       (dynamic groupByValue) => Text(''),
-                                    //   groupBy: (element) => element['createdAt'],
-                                    //   shrinkWrap: true,
-                                    //   physics: const BouncingScrollPhysics(),
-                                    //   reverse: true,
-                                    //   itemBuilder: (context, index) {
-                                    //     final message =
-                                    //         messages.docs[index]['text'];
-
-                                    //     return Message(
-                                    //       message: message,
-                                    //       isMe: messages.docs[index]['author'] ==
-                                    //           currentUser.uid,
-                                    //       time: DateTime.fromMillisecondsSinceEpoch(
-                                    //           messages.docs[index]['createdAt']),
-                                    //     );
-                                    //   },
-                                    // );
-                                    ListView.builder(
+                                return ListView.builder(
                                   shrinkWrap: true,
                                   physics: const BouncingScrollPhysics(),
                                   reverse: true,
@@ -220,22 +191,61 @@ class _ChatPageState extends State<ChatPage> {
                         padding: const EdgeInsets.all(8),
                         child: Row(
                           children: <Widget>[
-                            Visibility(
-                                visible:
-                                    true, //_controller.text.trim().isEmpty,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    sendImage(ImageSource.gallery);
-                                  },
-                                  child: const Icon(Icons.add,
-                                      color: Colors.black),
-                                )),
+                            StreamBuilder<RecordingDisposition>(
+                                stream: recorder.onProgress,
+                                builder: (context, snapshot) {
+                                  final duration = snapshot.hasData
+                                      ? snapshot.data!.duration
+                                      : Duration.zero;
+                                  String twoDigits(int n) =>
+                                      n.toString().padLeft(0);
+                                  final twoDigitMinutes = twoDigits(
+                                      duration.inMinutes.remainder(60));
+                                  final twoDigitSeconds = twoDigits(
+                                      duration.inSeconds.remainder(60));
+                                  return Text(
+                                      '$twoDigitMinutes:$twoDigitSeconds');
+                                }),
+                            // Visibility(
+                            //     visible:
+                            //         true, //_controller.text.trim().isEmpty,
+                            //     child: GestureDetector(
+                            //       onTap: () {
+                            //         sendImage(ImageSource.gallery);
+                            //       },
+                            //       child: const Icon(Icons.add,
+                            //           color: Colors.black),
+                            //     )),
+                            // GestureDetector(
+                            //   onTap: () {
+                            //     sendImage(ImageSource.camera);
+                            //   },
+                            //   child: const Icon(Icons.camera_alt_outlined,
+                            //       color: Colors.black),
+                            // ),
                             GestureDetector(
-                              onTap: () {
-                                sendImage(ImageSource.camera);
+                              onTap: () async {
+                                if (recorder.isRecording) {
+                                  if (!isRecorderReady) {
+                                    print('not ready');
+                                    return;
+                                  }
+                                  final path = await recorder.stopRecorder();
+                                  final audioFile = File(path!);
+                                  print("Recorded Audio: $audioFile");
+                                  pickedFile = audioFile;
+                                  sendAudioMessage();
+                                } else {
+                                  if (!isRecorderReady) {
+                                    print('not ready');
+
+                                    return;
+                                  }
+                                  await recorder.startRecorder(
+                                      toFile: Uuid().v1());
+                                }
                               },
-                              child: const Icon(Icons.camera_alt_outlined,
-                                  color: Colors.black),
+                              child: const Icon(Icons.mic, color: Colors.black),
                             ),
                             Expanded(
                               child: TextField(
@@ -279,6 +289,20 @@ class _ChatPageState extends State<ChatPage> {
   String imagePath = '';
   File? imageDB;
   String strImg = '';
+
+  File? pickedFile;
+  UploadTask? uploadTask;
+
+  Future sendAudioMessage() async {
+    final audio = File(pickedFile!.path);
+    var metadata = SettableMetadata(contentType: 'audio/mpeg');
+    final storage = FirebaseStorage.instance.ref().child('chatAudio/${audio}');
+    final strAudio = Path.basename(audio.path);
+    uploadTask = storage.putFile(audio, metadata);
+    final snapshot = await uploadTask!.whenComplete(() {});
+    final urlDownload = await snapshot.ref.getDownloadURL();
+    print(' Download Link: $urlDownload');
+  }
 
   Future<void> sendImage(var imgSource) async {
     //gallery camera

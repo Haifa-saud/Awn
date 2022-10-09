@@ -100,17 +100,6 @@ class Place extends StatelessWidget {
                                       builder: (context, snap) {
                                         if (snap.hasData) {
                                           var reqLoc = snap.data;
-                                          // String category =
-                                          //     data.docs[index]['category'];
-                                          // var icon;
-
-                                          // if (category == 'Education')
-                                          //   icon = const Icon(Icons.school);
-                                          // else if (category == 'Transportation')
-                                          //   icon = const Icon(
-                                          //       Icons.directions_car);
-                                          // else
-                                          //   icon = const Icon(Icons.school);
                                           return Padding(
                                             padding: const EdgeInsets.only(
                                                 left: 24,
@@ -127,23 +116,6 @@ class Place extends StatelessWidget {
                                                       buildPlace(
                                                           data.docs[index]
                                                               ['docId'])),
-                                              //     Navigator.pushReplacement(
-                                              //   context,
-                                              //   PageRouteBuilder(
-                                              //     pageBuilder: (context,
-                                              //             animation1,
-                                              //             animation2) =>
-                                              //         place(
-                                              //       placeID: data.docs[index]
-                                              //           ['docId'],
-                                              //     ),
-                                              //     transitionDuration:
-                                              //         const Duration(
-                                              //             seconds: 1),
-                                              //     reverseTransitionDuration:
-                                              //         Duration.zero,
-                                              //   ),
-                                              // ),
                                               splashColor: Colors.transparent,
                                               child: Container(
                                                 decoration: BoxDecoration(

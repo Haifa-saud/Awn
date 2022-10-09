@@ -1,36 +1,13 @@
-import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
-import 'package:awn/TextToSpeech.dart';
 import 'package:awn/addPost.dart';
-import 'package:awn/addRequest.dart';
-import 'package:awn/chatPage.dart';
-import 'package:awn/login.dart';
-import 'package:awn/mapsPage.dart';
-import 'package:awn/place.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
 import 'package:awn/services/placeWidget.dart';
 import 'package:awn/services/sendNotification.dart';
-import 'package:awn/services/usersModel.dart';
-import 'package:awn/userProfile.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:readmore/readmore.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:workmanager/workmanager.dart';
-import 'services/firebase_options.dart';
-import 'package:awn/map.dart';
-import 'package:path/path.dart' as Path;
 import 'package:buttons_tabbar/buttons_tabbar.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class homePage extends StatefulWidget {
   // final userType;
