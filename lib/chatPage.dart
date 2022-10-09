@@ -1,10 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:path/path.dart' as Path;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:grouped_list/grouped_list.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 import 'package:uuid/uuid.dart';
 
@@ -202,6 +207,7 @@ class _ChatPageState extends State<ChatPage> {
                                         ),
                                         lastMessage: isLastItem,
                                         isRead: messages.docs[index]['read'],
+                                        img: messages.docs[index]['img'],
                                       ),
                                     ]);
                                   },
@@ -215,6 +221,23 @@ class _ChatPageState extends State<ChatPage> {
                         padding: const EdgeInsets.all(8),
                         child: Row(
                           children: <Widget>[
+                            Visibility(
+                                visible:
+                                    true, //_controller.text.trim().isEmpty,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    sendImage(ImageSource.gallery);
+                                  },
+                                  child: const Icon(Icons.add,
+                                      color: Colors.black),
+                                )),
+                            GestureDetector(
+                              onTap: () {
+                                sendImage(ImageSource.camera);
+                              },
+                              child: const Icon(Icons.camera_alt_outlined,
+                                  color: Colors.black),
+                            ),
                             Expanded(
                               child: TextField(
                                 controller: _controller,
@@ -239,7 +262,7 @@ class _ChatPageState extends State<ChatPage> {
                               onTap: () {
                                 _controller.text.trim().isEmpty
                                     ? null
-                                    : sendMessage(_controller.text);
+                                    : sendMessage(_controller.text, '');
                               },
                               child:
                                   const Icon(Icons.send, color: Colors.black),
@@ -254,7 +277,34 @@ class _ChatPageState extends State<ChatPage> {
             }));
   }
 
-  void sendMessage(var message) async {
+  String imagePath = '';
+  File? imageDB;
+  String strImg = '';
+
+  Future<void> sendImage(var imgSource) async {
+    //gallery camera
+    await Permission.photos.request();
+    var permissionStatus = await Permission.photos.status;
+    if (permissionStatus.isGranted) {
+      XFile? img = await ImagePicker().pickImage(source: imgSource);
+      setState(() {
+        File image = File(img!.path);
+        print('Image path $image');
+        imagePath = image.toString();
+        imageDB = image;
+      });
+      File image = imageDB!;
+      final storage =
+          FirebaseStorage.instance.ref().child('postsImage/${image}');
+      strImg = Path.basename(image.path);
+      UploadTask uploadTask = storage.putFile(image);
+      TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+      imagePath = await (await uploadTask).ref.getDownloadURL();
+      sendMessage('', imagePath);
+    }
+  }
+
+  void sendMessage(var message, var imagePath) async {
     print(197);
     CollectionReference messages = FirebaseFirestore.instance
         .collection('requests')
@@ -266,6 +316,7 @@ class _ChatPageState extends State<ChatPage> {
       'createdAt': DateTime.now().millisecondsSinceEpoch,
       'id': '',
       'text': message,
+      'img': imagePath,
       'read': false
     });
     _controller.clear();
@@ -281,14 +332,15 @@ class Message extends StatelessWidget {
   final message;
   final bool isMe;
   final time;
-  final lastMessage, isRead;
+  final lastMessage, isRead, img;
 
   const Message(
       {required this.message,
       required this.isMe,
       required this.time,
       required this.lastMessage,
-      required this.isRead});
+      required this.isRead,
+      required this.img});
 
   @override
   Widget build(BuildContext context) {
@@ -308,12 +360,15 @@ class Message extends StatelessWidget {
         //         ),
         //   ),
         Container(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          padding: img == ''
+              ? const EdgeInsets.fromLTRB(16, 8, 16, 8)
+              : const EdgeInsets.all(3),
           margin: const EdgeInsets.all(10),
           constraints:
               BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
           decoration: isMe
               ? BoxDecoration(
+
                   // shape: BoxShape.rectangle,
                   // shape: BoxShape.circle,
                   gradient: const LinearGradient(
@@ -344,12 +399,26 @@ class Message extends StatelessWidget {
         crossAxisAlignment:
             isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            message,
-            style: TextStyle(
-                color: isMe ? Colors.white : Colors.black, fontSize: 18),
-            textAlign: isMe ? TextAlign.end : TextAlign.start,
-          ),
+          Visibility(
+              visible: img != '',
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.network(
+                    img,
+                    fit: BoxFit.cover,
+                    errorBuilder: (BuildContext context, Object exception,
+                        StackTrace? stackTrace) {
+                      return const Text('Image could not be load');
+                    },
+                  ))),
+          Visibility(
+              visible: message != '',
+              child: Text(
+                message,
+                style: TextStyle(
+                    color: isMe ? Colors.white : Colors.black, fontSize: 18),
+                textAlign: isMe ? TextAlign.end : TextAlign.start,
+              )),
           Row(mainAxisSize: MainAxisSize.min, children: [
             Text(
               DateFormat('hh:mm a').format(time).toString(),
