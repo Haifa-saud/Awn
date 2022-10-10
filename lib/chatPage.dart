@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:path/path.dart' as Path;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -34,63 +36,54 @@ class _ChatPageState extends State<ChatPage> {
   bool isPlaying = false;
   var playerSubscription;
   // Duration duration = Duration.zero, pos = Duration.zero;
-  int duration = 42673, pos = 0;
   double subscriptionDuration = 0;
+  double sliderCurrentPosition = 0.0;
+  double maxDuration = 1.0;
 
   @override
   void initState() {
     initRecorder();
     initPlayer();
     super.initState();
+    sliderValue = 0.0;
   }
 
   Future initPlayer() async {
     await audioPlayer.openAudioSession().then((value) {
-      setState(() {
-        isPlayerReady = true;
-      });
+      isPlayerReady = true;
     });
     playerSubscription =
         audioPlayer.setSubscriptionDuration(const Duration(milliseconds: 500));
-    // audioPlayer.onProgress!.listen((e) {
-    //   isPlaying = e == PlayerState.isPlaying;
-    //   // setPosition(e.position.inMilliseconds);
-    //   setState(() {
-    //     pos = e.position.inMilliseconds;
-    //   });
-    // });
   }
 
-  // Future<void> setSubscriptionDuration(
-  //     double d) async // v is between 0.0 and 2000 (milliseconds)
-  // {
-  //   subscriptionDuration = d;
-  //   setState(() {});
-  //   await audioPlayer.setSubscriptionDuration(
-  //     Duration(milliseconds: d.floor()),
-  //   );
-  // }
+  String _playerTxt = '00:00:00';
 
-  // Future<void> setPosition(var d) async {
-  //   if (d > duration) {
-  //     d = duration;
-  //   }
-  //   setState(() {
-  //     pos = d;
-  //   });
-  // }
+  void _addListeners() {
+    initializeDateFormatting();
+    playerSubscription = audioPlayer.onProgress!.listen((e) {
+      maxDuration = e.duration.inMilliseconds.toDouble();
+      if (maxDuration <= 0) maxDuration = 0.0;
 
-  // Future<void> seek(double d) async {
-  //   await audioPlayer.seekToPlayer(Duration(milliseconds: d.floor()));
-  //   await setPosition(d.floor());
-  // }
+      sliderCurrentPosition =
+          min(e.position.inMilliseconds.toDouble(), maxDuration);
+      if (sliderCurrentPosition < 0.0) {
+        sliderCurrentPosition = 0.0;
+      }
+
+      var date = DateTime.fromMillisecondsSinceEpoch(e.position.inMilliseconds,
+          isUtc: true);
+      var txt = DateFormat('mm:ss:SS').format(date);
+      // setState(() {
+      _playerTxt = txt.substring(0, 8);
+      // });
+    });
+  }
 
   void playAudio(var path) {
     assert(
         isPlayerReady); //&& audioRecorder.isStopped && audioPlayer.isStopped);
-    audioPlayer
-        .startPlayer(fromURI: path, whenFinished: () {})
-        .then((value) {});
+    audioPlayer.startPlayer(fromURI: path);
+    _addListeners();
   }
 
   Future initRecorder() async {
@@ -106,13 +99,16 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void dispose() {
     audioRecorder.closeAudioSession();
-    // if (playerSubscription != null) {
-    //   playerSubscription!.cancel();
-    //   playerSubscription = null;
-    // }
     audioPlayer.closeAudioSession();
 
     super.dispose();
+  }
+
+  void cancelPlayerSubscriptions() {
+    if (playerSubscription != null) {
+      playerSubscription!.cancel();
+      playerSubscription = null;
+    }
   }
 
   Future<Map<String, dynamic>> getOtherUserID() async {
@@ -156,6 +152,13 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isKeyboard = true;
+    void hideWidget() {
+      setState(() {
+        isKeyboard = !isKeyboard;
+      });
+    }
+
     return Scaffold(
         body: FutureBuilder<Map<String, dynamic>>(
             future: getOtherUserID(),
@@ -221,26 +224,17 @@ class _ChatPageState extends State<ChatPage> {
                                   reverse: true,
                                   itemCount: messages.size,
                                   itemBuilder: (context, index) {
-                                    final message =
-                                        messages.docs[index]['text'];
-                                    var isLastItem = false;
-                                    if (index == 0) {
-                                      //messages.size - 1) {
-                                      isLastItem = true;
-                                    }
                                     return Column(children: [
                                       Message(
-                                        message: message,
-                                        isMe: messages.docs[index]['author'] ==
+                                        messages.docs[index]['text'],
+                                        messages.docs[index]['author'] ==
                                             currentUser.uid,
-                                        time:
-                                            DateTime.fromMillisecondsSinceEpoch(
+                                        DateTime.fromMillisecondsSinceEpoch(
                                           messages.docs[index]['createdAt'],
                                         ),
-                                        isRead: messages.docs[index]['read'],
-                                        img: messages.docs[index]['img'],
-                                        audio: AudioChat(
-                                            messages.docs[index]['audio']),
+                                        messages.docs[index]['read'],
+                                        messages.docs[index]['img'],
+                                        messages.docs[index]['audio'],
                                       ),
                                     ]);
                                   },
@@ -254,21 +248,8 @@ class _ChatPageState extends State<ChatPage> {
                         padding: const EdgeInsets.all(8),
                         child: Row(
                           children: <Widget>[
-                            StreamBuilder<RecordingDisposition>(
-                                stream: audioRecorder.onProgress,
-                                builder: (context, snapshot) {
-                                  final duration = snapshot.hasData
-                                      ? snapshot.data!.duration
-                                      : Duration.zero;
-                                  String twoDigits(int n) =>
-                                      n.toString().padLeft(0);
-                                  final twoDigitMinutes = twoDigits(
-                                      duration.inMinutes.remainder(60));
-                                  final twoDigitSeconds = twoDigits(
-                                      duration.inSeconds.remainder(60));
-                                  return Text(
-                                      '$twoDigitMinutes:$twoDigitSeconds');
-                                }),
+                            //isKeyboard
+
                             // Visibility(
                             //     visible:
                             //         true, //_controller.text.trim().isEmpty,
@@ -288,6 +269,7 @@ class _ChatPageState extends State<ChatPage> {
                             // ),
                             GestureDetector(
                               onTap: () async {
+                                hideWidget();
                                 if (audioRecorder.isRecording) {
                                   if (!isRecorderReady) {
                                     print('not ready');
@@ -295,41 +277,58 @@ class _ChatPageState extends State<ChatPage> {
                                   }
                                   final path =
                                       await audioRecorder.stopRecorder();
-                                  final audioFile = File(path!);
+                                  audioFile = File(path!);
                                   print("Recorded Audio: $audioFile");
-                                  pickedFile = audioFile;
                                   sendAudioMessage();
                                 } else {
                                   if (!isRecorderReady) {
                                     print('not ready');
-
                                     return;
                                   }
                                   await audioRecorder.startRecorder(
-                                      toFile: const Uuid().v1());
+                                      toFile: const Uuid().v4());
                                 }
                               },
                               child: const Icon(Icons.mic, color: Colors.black),
                             ),
-                            Expanded(
-                              child: TextField(
-                                controller: _controller,
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                autocorrect: true,
-                                enableSuggestions: true,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.grey[100],
-                                  labelText: 'Type your message',
-                                  border: OutlineInputBorder(
-                                    borderSide: const BorderSide(width: 0),
-                                    // gapPadding: 10,
-                                    borderRadius: BorderRadius.circular(15),
+                            Visibility(
+                                visible: isKeyboard,
+                                child: Expanded(
+                                  child: TextField(
+                                    controller: _controller,
+                                    textCapitalization:
+                                        TextCapitalization.sentences,
+                                    autocorrect: true,
+                                    enableSuggestions: true,
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: Colors.grey[100],
+                                      labelText: 'Type your message',
+                                      border: OutlineInputBorder(
+                                        borderSide: const BorderSide(width: 0),
+                                        // gapPadding: 10,
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
+                                )),
+                            Visibility(
+                                visible: !isKeyboard,
+                                child: StreamBuilder<RecordingDisposition>(
+                                    stream: audioRecorder.onProgress,
+                                    builder: (context, snapshot) {
+                                      final duration = snapshot.hasData
+                                          ? snapshot.data!.duration
+                                          : Duration.zero;
+                                      String twoDigits(int n) =>
+                                          n.toString().padLeft(0);
+                                      final twoDigitMinutes = twoDigits(
+                                          duration.inMinutes.remainder(60));
+                                      final twoDigitSeconds = twoDigits(
+                                          duration.inSeconds.remainder(60));
+                                      return Text(
+                                          '$twoDigitMinutes:$twoDigitSeconds');
+                                    })),
                             const SizedBox(width: 15),
                             GestureDetector(
                               onTap: () {
@@ -350,46 +349,152 @@ class _ChatPageState extends State<ChatPage> {
             }));
   }
 
-  Widget AudioChat(audio) {
-    // pos = Duration(seconds: 1);
-    // duration = Duration(seconds: 3);
-
-    return Row(children: [
-      Visibility(
-          visible: audio != '',
-          child: IconButton(
-              icon: const Icon(Icons.play_arrow),
-              onPressed: () async {
-                if (isPlaying) {
-                  // audioPlayer.pause();
-                } else {
-                  playAudio(audio);
-                }
-              })),
-      // Visibility(
-      //   visible: audio != '',
-      //   child: Slider(
-      //       min: 0,
-      //       max: 2000.0, //.inSeconds.toDouble(),
-      //       value: subscriptionDuration, //.inSeconds.toDouble(),
-      //       onChanged: setSubscriptionDuration),
-      // ),
-      // Visibility(
-      //     visible: audio != '',
-      //     child: Row(children: [
-      //       Text("${pos.remainder(60)}:${(pos.remainder(60))}"),
-      //       // Text(
-      //       //     "${(duration - pos).inMinutes.remainder(60)}:${((duration - pos).inSeconds.remainder(60))}")
-
-      //       // Text(formatTime(duration - pos)),
-      //     ])),
-    ]);
+  double sliderValue = 0.0;
+  Future<void> seekToPlayer(int milliSecs) async {
+    try {
+      if (audioPlayer.isPlaying) {
+        await audioPlayer.seekToPlayer(Duration(milliseconds: milliSecs));
+      }
+    } on Exception catch (err) {
+      audioPlayer.logger.e('error: $err');
+    }
+    // setState(() {
+    //   sliderValue = milliSecs + 0.0;
+    // });
   }
 
-  File? pickedFile;
+//! Widgets
+  Widget Message(message, isMe, time, isRead, img, audio) {
+    String audioText = _playerTxt;
+    var sliderValue = maxDuration, currPosition = sliderCurrentPosition;
+    final radius = const Radius.circular(12);
+    final borderRadius = BorderRadius.all(radius);
+    return Row(
+      mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: <Widget>[
+        // if (!isMe)
+        //   const CircleAvatar(
+        //     backgroundColor:
+        //         Color.fromARGB(255, 183, 217, 245), //Color(0xffE6E6E6),
+        //     radius: 16,
+        //     child: Icon(Icons.person,
+        //         size: 12, color: Colors.white //Color(0xffCCCCCC),
+        //         ),
+        //   ),
+        Container(
+          padding: img == ''
+              ? const EdgeInsets.fromLTRB(16, 8, 16, 8)
+              : const EdgeInsets.all(3),
+          margin: const EdgeInsets.all(10),
+          constraints:
+              BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+          decoration: isMe
+              ? BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 1.0],
+                    colors: [
+                      Colors.blue,
+                      Color(0xFF39d6ce),
+                    ],
+                  ),
+                  borderRadius: borderRadius.subtract(const BorderRadius.only(
+                      bottomRight: Radius.circular(12))))
+              : BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: borderRadius.subtract(
+                      const BorderRadius.only(bottomLeft: Radius.circular(12))),
+                ),
+          child: Column(
+            crossAxisAlignment:
+                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: <Widget>[
+              Visibility(
+                  visible: img != '',
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.network(
+                        img,
+                        fit: BoxFit.cover,
+                        errorBuilder: (BuildContext context, Object exception,
+                            StackTrace? stackTrace) {
+                          return const Text('Image could not be load');
+                        },
+                      ))),
+              Visibility(
+                  // key: id;
+                  visible: audio != '',
+                  child: Row(children: [
+                    IconButton(
+                        icon: const Icon(Icons.play_arrow),
+                        onPressed: () async {
+                          if (isPlaying) {
+                          } else {
+                            playAudio(audio);
+                          }
+                        }),
+                    Slider(
+                      value: min(currPosition, sliderValue),
+                      min: 0.0,
+                      max: sliderValue,
+                      onChanged: (value) async {
+                        await seekToPlayer(value.toInt());
+                      },
+                      // divisions:
+                      //     maxDuration == 0.0 ? 1 : maxDuration.toInt()),
+                    ),
+                  ])),
+              // Visibility(
+              //     visible: audio != '',
+              //     child: Text(
+              //       audio.toString(),
+              //       style: TextStyle(
+              //           color: isMe ? Colors.white : Colors.black,
+              //           fontSize: 18),
+              //       textAlign: isMe ? TextAlign.end : TextAlign.start,
+              //     )),
+              Visibility(
+                  visible: message != '',
+                  child: Text(
+                    message,
+                    style: TextStyle(
+                        color: isMe ? Colors.white : Colors.black,
+                        fontSize: 18),
+                    textAlign: isMe ? TextAlign.end : TextAlign.start,
+                  )),
+              Row(mainAxisSize: MainAxisSize.min, children: [
+                Visibility(
+                  visible: audio != '',
+                  child: Text(audioText,
+                      style: TextStyle(color: Colors.white, fontSize: 10)),
+                ),
+                Visibility(visible: audio != '', child: const Spacer()),
+                Text(
+                  DateFormat('hh:mm a').format(time).toString(),
+                  style: TextStyle(
+                      color: isMe ? Colors.grey.shade200 : Colors.grey,
+                      fontSize: 11),
+                  textAlign: TextAlign.end,
+                ),
+                const SizedBox(width: 7),
+                Visibility(
+                    visible: isMe,
+                    child: Icon(isRead ? Icons.done_all : Icons.done,
+                        color: Colors.grey.shade200, size: 14)),
+              ])
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+//! Firebase
+  File? audioFile;
 
   Future sendAudioMessage() async {
-    final audio = File(pickedFile!.path);
+    final audio = File(audioFile!.path);
     var metadata = SettableMetadata(contentType: 'audio/mpeg');
     final storage = FirebaseStorage.instance.ref().child('chatAudio/${audio}');
     final strAudio = Path.basename(audio.path);
@@ -398,7 +503,6 @@ class _ChatPageState extends State<ChatPage> {
     final urlDownload = await snapshot.ref.getDownloadURL();
     print(' Download Link: $urlDownload');
     sendMessage('', '', urlDownload);
-    playAudio(urlDownload);
   }
 
   Future<void> sendImage(var imgSource) async {
@@ -409,13 +513,10 @@ class _ChatPageState extends State<ChatPage> {
     var permissionStatus = await Permission.photos.status;
     if (permissionStatus.isGranted) {
       XFile? img = await ImagePicker().pickImage(source: imgSource);
-      setState(() {
-        File image = File(img!.path);
-        print('Image path $image');
-        imagePath = image.toString();
-        imageDB = image;
-      });
-      File image = imageDB!;
+      File imagee = File(img!.path);
+      imagePath = imagee.toString();
+      imageDB = imagee;
+      File image = imageDB;
       final storage =
           FirebaseStorage.instance.ref().child('postsImage/${image}');
       strImg = Path.basename(image.path);
@@ -447,118 +548,4 @@ class _ChatPageState extends State<ChatPage> {
     messages.doc(dataId).update({'id': dataId});
     print("Document written with ID: ${docReference.id}");
   }
-}
-
-//! Message
-class Message extends StatelessWidget {
-  final message;
-  final bool isMe;
-  final time;
-  final isRead, img;
-  final Widget audio;
-
-  Message(
-      {required this.message,
-      required this.isMe,
-      required this.time,
-      required this.isRead,
-      required this.img,
-      required this.audio});
-
-  // final audioPlayer = AudioPlayer();
-  // bool isPlaying = false;
-  // Duration duration = Duration.zero, pos = Duration.zero;
-  @override
-  Widget build(BuildContext context) {
-    final radius = const Radius.circular(12);
-    final borderRadius = BorderRadius.all(radius);
-
-    return Row(
-      mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: <Widget>[
-        // if (!isMe)
-        //   const CircleAvatar(
-        //     backgroundColor:
-        //         Color.fromARGB(255, 149, 204, 250), //Color(0xffE6E6E6),
-        //     radius: 16,
-        //     child: Icon(Icons.person,
-        //         size: 10, color: Colors.white //Color(0xffCCCCCC),
-        //         ),
-        //   ),
-        Container(
-          padding: img == ''
-              ? const EdgeInsets.fromLTRB(16, 8, 16, 8)
-              : const EdgeInsets.all(3),
-          margin: const EdgeInsets.all(10),
-          constraints:
-              BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
-          decoration: isMe
-              ? BoxDecoration(
-                  // shape: BoxShape.rectangle,
-                  // shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    stops: [0.0, 1.0],
-                    colors: [
-                      Colors.blue,
-                      Color(0xFF39d6ce),
-                    ],
-                  ),
-                  borderRadius: borderRadius.subtract(const BorderRadius.only(
-                      bottomRight:
-                          Radius.circular(12))) //BorderRadius.circular(25),
-                  )
-              : BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: borderRadius.subtract(
-                      const BorderRadius.only(bottomLeft: Radius.circular(12))),
-                ),
-          child: buildMessage(),
-        ),
-      ],
-    );
-  }
-
-  Widget buildMessage() => Column(
-        crossAxisAlignment:
-            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: <Widget>[
-          Visibility(
-              visible: img != '',
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Image.network(
-                    img,
-                    fit: BoxFit.cover,
-                    errorBuilder: (BuildContext context, Object exception,
-                        StackTrace? stackTrace) {
-                      return const Text('Image could not be load');
-                    },
-                  ))),
-          audio,
-          Visibility(
-              visible: message != '',
-              child: Text(
-                message,
-                style: TextStyle(
-                    color: isMe ? Colors.white : Colors.black, fontSize: 18),
-                textAlign: isMe ? TextAlign.end : TextAlign.start,
-              )),
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            Text(
-              DateFormat('hh:mm a').format(time).toString(),
-              style: TextStyle(
-                  color: isMe ? Colors.grey.shade200 : Colors.grey,
-                  fontSize: 11),
-              textAlign: TextAlign.end,
-            ),
-            const SizedBox(width: 7),
-            Visibility(
-                visible: isMe,
-                child: Icon(isRead ? Icons.done_all : Icons.done,
-                    color: Colors.grey.shade200, size: 14)),
-          ])
-        ],
-      );
 }
