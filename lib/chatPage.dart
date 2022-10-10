@@ -159,6 +159,8 @@ class _ChatPageState extends State<ChatPage> {
       });
     }
 
+    var recorderDuration;
+
     return Scaffold(
         body: FutureBuilder<Map<String, dynamic>>(
             future: getOtherUserID(),
@@ -226,16 +228,17 @@ class _ChatPageState extends State<ChatPage> {
                                   itemBuilder: (context, index) {
                                     return Column(children: [
                                       Message(
-                                        messages.docs[index]['text'],
-                                        messages.docs[index]['author'] ==
-                                            currentUser.uid,
-                                        DateTime.fromMillisecondsSinceEpoch(
-                                          messages.docs[index]['createdAt'],
-                                        ),
-                                        messages.docs[index]['read'],
-                                        messages.docs[index]['img'],
-                                        messages.docs[index]['audio'],
-                                      ),
+                                          messages.docs[index]['text'],
+                                          messages.docs[index]['author'] ==
+                                              currentUser.uid,
+                                          DateTime.fromMillisecondsSinceEpoch(
+                                            messages.docs[index]['createdAt'],
+                                          ),
+                                          messages.docs[index]['read'],
+                                          messages.docs[index]['img'],
+                                          messages.docs[index]['audio'],
+                                          messages.docs[index]
+                                              ['audioDuration']),
                                     ]);
                                   },
                                 );
@@ -279,7 +282,7 @@ class _ChatPageState extends State<ChatPage> {
                                       await audioRecorder.stopRecorder();
                                   audioFile = File(path!);
                                   print("Recorded Audio: $audioFile");
-                                  sendAudioMessage();
+                                  sendAudioMessage(recorderDuration);
                                 } else {
                                   if (!isRecorderReady) {
                                     print('not ready');
@@ -313,7 +316,7 @@ class _ChatPageState extends State<ChatPage> {
                                   ),
                                 )),
                             Visibility(
-                                visible: !isKeyboard,
+                                visible: true,
                                 child: StreamBuilder<RecordingDisposition>(
                                     stream: audioRecorder.onProgress,
                                     builder: (context, snapshot) {
@@ -326,6 +329,8 @@ class _ChatPageState extends State<ChatPage> {
                                           duration.inMinutes.remainder(60));
                                       final twoDigitSeconds = twoDigits(
                                           duration.inSeconds.remainder(60));
+                                      recorderDuration =
+                                          '$twoDigitMinutes:$twoDigitSeconds';
                                       return Text(
                                           '$twoDigitMinutes:$twoDigitSeconds');
                                     })),
@@ -334,7 +339,7 @@ class _ChatPageState extends State<ChatPage> {
                               onTap: () {
                                 _controller.text.trim().isEmpty
                                     ? null
-                                    : sendMessage(_controller.text, '', '');
+                                    : sendMessage(_controller.text, '', '', '');
                               },
                               child:
                                   const Icon(Icons.send, color: Colors.black),
@@ -358,13 +363,10 @@ class _ChatPageState extends State<ChatPage> {
     } on Exception catch (err) {
       audioPlayer.logger.e('error: $err');
     }
-    // setState(() {
-    //   sliderValue = milliSecs + 0.0;
-    // });
   }
 
 //! Widgets
-  Widget Message(message, isMe, time, isRead, img, audio) {
+  Widget Message(message, isMe, time, isRead, img, audio, audioDuration) {
     String audioText = _playerTxt;
     var sliderValue = maxDuration, currPosition = sliderCurrentPosition;
     final radius = const Radius.circular(12);
@@ -423,37 +425,32 @@ class _ChatPageState extends State<ChatPage> {
                         },
                       ))),
               Visibility(
-                  // key: id;
-                  visible: audio != '',
-                  child: Row(children: [
-                    IconButton(
-                        icon: const Icon(Icons.play_arrow),
-                        onPressed: () async {
-                          if (isPlaying) {
-                          } else {
-                            playAudio(audio);
-                          }
-                        }),
-                    Slider(
-                      value: min(currPosition, sliderValue),
-                      min: 0.0,
-                      max: sliderValue,
-                      onChanged: (value) async {
-                        await seekToPlayer(value.toInt());
-                      },
-                      // divisions:
-                      //     maxDuration == 0.0 ? 1 : maxDuration.toInt()),
-                    ),
-                  ])),
-              // Visibility(
-              //     visible: audio != '',
-              //     child: Text(
-              //       audio.toString(),
-              //       style: TextStyle(
-              //           color: isMe ? Colors.white : Colors.black,
-              //           fontSize: 18),
-              //       textAlign: isMe ? TextAlign.end : TextAlign.start,
-              //     )),
+                // key: id;
+                visible: audio != '',
+                // child: Row(children: [
+                child: IconButton(
+                    icon: !isPlaying
+                        ? const Icon(Icons.play_arrow)
+                        : const Icon(Icons.stop),
+                    onPressed: () async {
+                      if (isPlaying) {
+                      } else {
+                        playAudio(audio);
+                      }
+                    }),
+                // Slider(
+                //   value: min(currPosition, sliderValue),
+                //   min: 0.0,
+                //   max: sliderValue,
+                //   onChanged: (value) async {
+                //     await seekToPlayer(value.toInt());
+                //   },
+                //   // divisions:
+                //   //     maxDuration == 0.0 ? 1 : maxDuration.toInt()),
+                // ),
+                // ]
+              ),
+              // ),
               Visibility(
                   visible: message != '',
                   child: Text(
@@ -466,10 +463,11 @@ class _ChatPageState extends State<ChatPage> {
               Row(mainAxisSize: MainAxisSize.min, children: [
                 Visibility(
                   visible: audio != '',
-                  child: Text(audioText,
+                  child: Text(audioDuration,
                       style: TextStyle(color: Colors.white, fontSize: 10)),
                 ),
-                Visibility(visible: audio != '', child: const Spacer()),
+                Visibility(
+                    visible: audio != '', child: const SizedBox(width: 15)),
                 Text(
                   DateFormat('hh:mm a').format(time).toString(),
                   style: TextStyle(
@@ -493,7 +491,7 @@ class _ChatPageState extends State<ChatPage> {
 //! Firebase
   File? audioFile;
 
-  Future sendAudioMessage() async {
+  Future sendAudioMessage(var duration) async {
     final audio = File(audioFile!.path);
     var metadata = SettableMetadata(contentType: 'audio/mpeg');
     final storage = FirebaseStorage.instance.ref().child('chatAudio/${audio}');
@@ -502,7 +500,7 @@ class _ChatPageState extends State<ChatPage> {
     final snapshot = await uploadTask.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
     print(' Download Link: $urlDownload');
-    sendMessage('', '', urlDownload);
+    sendMessage('', '', urlDownload, duration);
   }
 
   Future<void> sendImage(var imgSource) async {
@@ -523,11 +521,12 @@ class _ChatPageState extends State<ChatPage> {
       UploadTask uploadTask = storage.putFile(image);
       TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
       imagePath = await (await uploadTask).ref.getDownloadURL();
-      sendMessage('', imagePath, '');
+      sendMessage('', imagePath, '', '');
     }
   }
 
-  void sendMessage(var message, var imagePath, var audioPath) async {
+  void sendMessage(
+      var message, var imagePath, var audioPath, var audioDuration) async {
     CollectionReference messages = FirebaseFirestore.instance
         .collection('requests')
         .doc(widget.requestID)
@@ -540,6 +539,7 @@ class _ChatPageState extends State<ChatPage> {
       'text': message,
       'img': imagePath,
       'audio': audioPath,
+      'audioDuration': audioDuration,
       'read': false,
     });
     _controller.clear();
