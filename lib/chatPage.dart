@@ -28,14 +28,69 @@ class _ChatPageState extends State<ChatPage> {
   final _controller = TextEditingController();
   String message = '';
   User currentUser = FirebaseAuth.instance.currentUser!;
-  var recorder;
-  bool isRecorderReady = false;
+  FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
+  bool isRecorderReady = false, isPlayerReady = false;
+  FlutterSoundPlayer audioPlayer = FlutterSoundPlayer();
+  bool isPlaying = false;
+  var playerSubscription;
+  // Duration duration = Duration.zero, pos = Duration.zero;
+  int duration = 42673, pos = 0;
+  double subscriptionDuration = 0;
 
   @override
   void initState() {
-    super.initState();
-    recorder = FlutterSoundRecorder();
     initRecorder();
+    initPlayer();
+    super.initState();
+  }
+
+  Future initPlayer() async {
+    await audioPlayer.openAudioSession().then((value) {
+      setState(() {
+        isPlayerReady = true;
+      });
+    });
+    playerSubscription =
+        audioPlayer.setSubscriptionDuration(const Duration(milliseconds: 500));
+    // audioPlayer.onProgress!.listen((e) {
+    //   isPlaying = e == PlayerState.isPlaying;
+    //   // setPosition(e.position.inMilliseconds);
+    //   setState(() {
+    //     pos = e.position.inMilliseconds;
+    //   });
+    // });
+  }
+
+  // Future<void> setSubscriptionDuration(
+  //     double d) async // v is between 0.0 and 2000 (milliseconds)
+  // {
+  //   subscriptionDuration = d;
+  //   setState(() {});
+  //   await audioPlayer.setSubscriptionDuration(
+  //     Duration(milliseconds: d.floor()),
+  //   );
+  // }
+
+  // Future<void> setPosition(var d) async {
+  //   if (d > duration) {
+  //     d = duration;
+  //   }
+  //   setState(() {
+  //     pos = d;
+  //   });
+  // }
+
+  // Future<void> seek(double d) async {
+  //   await audioPlayer.seekToPlayer(Duration(milliseconds: d.floor()));
+  //   await setPosition(d.floor());
+  // }
+
+  void playAudio(var path) {
+    assert(
+        isPlayerReady); //&& audioRecorder.isStopped && audioPlayer.isStopped);
+    audioPlayer
+        .startPlayer(fromURI: path, whenFinished: () {})
+        .then((value) {});
   }
 
   Future initRecorder() async {
@@ -43,14 +98,20 @@ class _ChatPageState extends State<ChatPage> {
     if (status != PermissionStatus.granted) {
       throw 'Microphone permission denied';
     }
-    await recorder.openAudioSession();
+    await audioRecorder.openAudioSession();
     isRecorderReady = true;
-    recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
+    audioRecorder.setSubscriptionDuration(const Duration(milliseconds: 500));
   }
 
   @override
   void dispose() {
-    recorder.closeAudioSession();
+    audioRecorder.closeAudioSession();
+    // if (playerSubscription != null) {
+    //   playerSubscription!.cancel();
+    //   playerSubscription = null;
+    // }
+    audioPlayer.closeAudioSession();
+
     super.dispose();
   }
 
@@ -124,9 +185,9 @@ class _ChatPageState extends State<ChatPage> {
                             ),
                           ]),
                       bottom: PreferredSize(
-                          preferredSize: Size.fromHeight(1.0),
+                          preferredSize: const Size.fromHeight(1.0),
                           child: Padding(
-                              padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                              padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                               child: Container(
                                 color: Colors.grey,
                                 height: 1.0,
@@ -178,6 +239,8 @@ class _ChatPageState extends State<ChatPage> {
                                         ),
                                         isRead: messages.docs[index]['read'],
                                         img: messages.docs[index]['img'],
+                                        audio: AudioChat(
+                                            messages.docs[index]['audio']),
                                       ),
                                     ]);
                                   },
@@ -192,7 +255,7 @@ class _ChatPageState extends State<ChatPage> {
                         child: Row(
                           children: <Widget>[
                             StreamBuilder<RecordingDisposition>(
-                                stream: recorder.onProgress,
+                                stream: audioRecorder.onProgress,
                                 builder: (context, snapshot) {
                                   final duration = snapshot.hasData
                                       ? snapshot.data!.duration
@@ -225,12 +288,13 @@ class _ChatPageState extends State<ChatPage> {
                             // ),
                             GestureDetector(
                               onTap: () async {
-                                if (recorder.isRecording) {
+                                if (audioRecorder.isRecording) {
                                   if (!isRecorderReady) {
                                     print('not ready');
                                     return;
                                   }
-                                  final path = await recorder.stopRecorder();
+                                  final path =
+                                      await audioRecorder.stopRecorder();
                                   final audioFile = File(path!);
                                   print("Recorded Audio: $audioFile");
                                   pickedFile = audioFile;
@@ -241,8 +305,8 @@ class _ChatPageState extends State<ChatPage> {
 
                                     return;
                                   }
-                                  await recorder.startRecorder(
-                                      toFile: Uuid().v1());
+                                  await audioRecorder.startRecorder(
+                                      toFile: const Uuid().v1());
                                 }
                               },
                               child: const Icon(Icons.mic, color: Colors.black),
@@ -271,7 +335,7 @@ class _ChatPageState extends State<ChatPage> {
                               onTap: () {
                                 _controller.text.trim().isEmpty
                                     ? null
-                                    : sendMessage(_controller.text, '');
+                                    : sendMessage(_controller.text, '', '');
                               },
                               child:
                                   const Icon(Icons.send, color: Colors.black),
@@ -286,26 +350,61 @@ class _ChatPageState extends State<ChatPage> {
             }));
   }
 
-  String imagePath = '';
-  File? imageDB;
-  String strImg = '';
+  Widget AudioChat(audio) {
+    // pos = Duration(seconds: 1);
+    // duration = Duration(seconds: 3);
+
+    return Row(children: [
+      Visibility(
+          visible: audio != '',
+          child: IconButton(
+              icon: const Icon(Icons.play_arrow),
+              onPressed: () async {
+                if (isPlaying) {
+                  // audioPlayer.pause();
+                } else {
+                  playAudio(audio);
+                }
+              })),
+      // Visibility(
+      //   visible: audio != '',
+      //   child: Slider(
+      //       min: 0,
+      //       max: 2000.0, //.inSeconds.toDouble(),
+      //       value: subscriptionDuration, //.inSeconds.toDouble(),
+      //       onChanged: setSubscriptionDuration),
+      // ),
+      // Visibility(
+      //     visible: audio != '',
+      //     child: Row(children: [
+      //       Text("${pos.remainder(60)}:${(pos.remainder(60))}"),
+      //       // Text(
+      //       //     "${(duration - pos).inMinutes.remainder(60)}:${((duration - pos).inSeconds.remainder(60))}")
+
+      //       // Text(formatTime(duration - pos)),
+      //     ])),
+    ]);
+  }
 
   File? pickedFile;
-  UploadTask? uploadTask;
 
   Future sendAudioMessage() async {
     final audio = File(pickedFile!.path);
     var metadata = SettableMetadata(contentType: 'audio/mpeg');
     final storage = FirebaseStorage.instance.ref().child('chatAudio/${audio}');
     final strAudio = Path.basename(audio.path);
-    uploadTask = storage.putFile(audio, metadata);
-    final snapshot = await uploadTask!.whenComplete(() {});
+    UploadTask uploadTask = storage.putFile(audio, metadata);
+    final snapshot = await uploadTask.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
     print(' Download Link: $urlDownload');
+    sendMessage('', '', urlDownload);
+    playAudio(urlDownload);
   }
 
   Future<void> sendImage(var imgSource) async {
-    //gallery camera
+    String imagePath = '';
+    File? imageDB;
+    String strImg = '';
     await Permission.photos.request();
     var permissionStatus = await Permission.photos.status;
     if (permissionStatus.isGranted) {
@@ -323,11 +422,11 @@ class _ChatPageState extends State<ChatPage> {
       UploadTask uploadTask = storage.putFile(image);
       TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
       imagePath = await (await uploadTask).ref.getDownloadURL();
-      sendMessage('', imagePath);
+      sendMessage('', imagePath, '');
     }
   }
 
-  void sendMessage(var message, var imagePath) async {
+  void sendMessage(var message, var imagePath, var audioPath) async {
     CollectionReference messages = FirebaseFirestore.instance
         .collection('requests')
         .doc(widget.requestID)
@@ -339,7 +438,8 @@ class _ChatPageState extends State<ChatPage> {
       'id': '',
       'text': message,
       'img': imagePath,
-      'read': false
+      'audio': audioPath,
+      'read': false,
     });
     _controller.clear();
 
@@ -355,15 +455,19 @@ class Message extends StatelessWidget {
   final bool isMe;
   final time;
   final isRead, img;
+  final Widget audio;
 
-  const Message(
+  Message(
       {required this.message,
       required this.isMe,
       required this.time,
-      // required this.lastMessage,
       required this.isRead,
-      required this.img});
+      required this.img,
+      required this.audio});
 
+  // final audioPlayer = AudioPlayer();
+  // bool isPlaying = false;
+  // Duration duration = Duration.zero, pos = Duration.zero;
   @override
   Widget build(BuildContext context) {
     final radius = const Radius.circular(12);
@@ -390,7 +494,6 @@ class Message extends StatelessWidget {
               BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
           decoration: isMe
               ? BoxDecoration(
-
                   // shape: BoxShape.rectangle,
                   // shape: BoxShape.circle,
                   gradient: const LinearGradient(
@@ -402,14 +505,14 @@ class Message extends StatelessWidget {
                       Color(0xFF39d6ce),
                     ],
                   ),
-                  borderRadius: borderRadius.subtract(BorderRadius.only(
+                  borderRadius: borderRadius.subtract(const BorderRadius.only(
                       bottomRight:
                           Radius.circular(12))) //BorderRadius.circular(25),
                   )
               : BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: borderRadius.subtract(
-                      BorderRadius.only(bottomLeft: Radius.circular(12))),
+                      const BorderRadius.only(bottomLeft: Radius.circular(12))),
                 ),
           child: buildMessage(),
         ),
@@ -433,6 +536,7 @@ class Message extends StatelessWidget {
                       return const Text('Image could not be load');
                     },
                   ))),
+          audio,
           Visibility(
               visible: message != '',
               child: Text(
@@ -449,7 +553,7 @@ class Message extends StatelessWidget {
                   fontSize: 11),
               textAlign: TextAlign.end,
             ),
-            SizedBox(width: 7),
+            const SizedBox(width: 7),
             Visibility(
                 visible: isMe,
                 child: Icon(isRead ? Icons.done_all : Icons.done,
