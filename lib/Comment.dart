@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-import 'Info.dart';
-import 'infoPage.dart';
 import 'main.dart';
 import 'package:flutter/material.dart';
-import 'firebase_options.dart';
-
+//import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
@@ -19,13 +17,18 @@ class comments extends StatefulWidget {
 }
 
 class commentsState extends State<comments> {
+  bool pop = false;
   final ScrollController _scrollController = ScrollController();
-  String comment = '1';
+  String comment = '';
 
   @override
   Widget build(BuildContext context) {
-    Stream<QuerySnapshot> comments =
-        FirebaseFirestore.instance.collection('comment').snapshots();
+    // Stream<QuerySnapshot> comments = FirebaseFirestore.instance
+    //     .collection('comment')
+    //     //.where('PostID', isEqualTo: "Post1")
+    //     .snapshots();
+
+    final delete_comm = FirebaseFirestore.instance.collection('comment');
 
     final _formKey = GlobalKey<FormState>();
 
@@ -42,7 +45,7 @@ class commentsState extends State<comments> {
         ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(50),
+            bottom: Radius.circular(10),
           ),
         ),
       ),
@@ -68,39 +71,35 @@ class commentsState extends State<comments> {
 
                   content: Form(
                     key: _formKey,
-                    child: SingleChildScrollView(
-                      //padding: const EdgeInsets.fromLTRB(80, 60, 80, 60),
-                      controller: _scrollController,
-                      child: SizedBox(
-                        height: 130,
-                        width: 350,
-                        child: TextFormField(
-                          scrollController: _scrollController,
-                          keyboardType: TextInputType.multiline,
-                          maxLines: 4,
-                          maxLength: 120,
-                          textAlign: TextAlign.left,
-                          decoration: InputDecoration(
-                            hintText: "Enter comment",
-                            labelText: 'comment',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide:
-                                    BorderSide(color: Colors.grey.shade400)),
-                            focusedBorder: OutlineInputBorder(
+                    child: SizedBox(
+                      height: 130,
+                      width: 350,
+                      child: TextFormField(
+                        scrollController: _scrollController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 4,
+                        maxLength: 120,
+                        textAlign: TextAlign.left,
+                        decoration: InputDecoration(
+                          hintText: "Enter comment",
+                          labelText: 'comment',
+                          enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
-                              borderSide: const BorderSide(
-                                  color: Colors.blue, width: 2),
-                            ),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade400)),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide:
+                                const BorderSide(color: Colors.blue, width: 2),
                           ),
-                          validator: (value) {
-                            comment = value.toString();
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter some text';
-                            }
-                            return null;
-                          },
                         ),
+                        validator: (value) {
+                          comment = value.toString();
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter some text';
+                          }
+                          return null;
+                        },
                       ),
                     ),
                   ),
@@ -141,37 +140,97 @@ class commentsState extends State<comments> {
           ),
           const Divider(),
           const Spacer(),
-          StreamBuilder<QuerySnapshot>(
-              stream: comments,
+          StreamBuilder<dynamic>(
+              stream:
+                  FirebaseFirestore.instance.collection("comment").snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Text("this post has no comments");
                 } else {
-                  return Column(
-                    children:
-                        snapshot.data!.docs.map((DocumentSnapshot document) {
-                      return Container(
-                          child: Column(children: [
-                        Text((document.data() as Map)['name']),
-                        Text((document.data() as Map)['date'],
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.normal,
-                                color: Color.fromARGB(255, 54, 99, 222))),
-                        Text((document.data() as Map)['text'],
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.normal,
-                            )),
-                        // Text((document.data() as Map)['time'],
-                        //     style: TextStyle(
-                        //       fontSize: 18,
-                        //       fontWeight: FontWeight.normal,
-                        //     )),
-                        Divider(),
-                      ]));
-                    }).toList(),
+                  final comment_Data = snapshot.data;
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(),
+                    reverse: true,
+                    itemCount: comment_Data!.size,
+                    itemBuilder: (context, index) {
+                      return Column(children: [
+                        Text(comment_Data.docs[index]['name']),
+                        Text(comment_Data.docs[index]['date']),
+                        Text(comment_Data.docs[index]['text']),
+                        Text(comment_Data.docs[index]['Commenter']),
+
+                        //  if (UserID == 'User1"'){
+
+                        //       IconButton(
+                        //         iconSize: 10,
+                        //         icon: const Icon(
+                        //           Icons.delete,
+                        //         ),
+                        //         onPressed: () {
+                        //           delete_comm
+                        //               .doc('id') // <-- Doc ID to be deleted.
+                        //               .delete() // <-- Delete
+                        //               .then((_) => print('Deleted'))
+                        //               .catchError((error) =>
+                        //                   print('Delete failed: $error'));
+                        //         },
+                        //       )
+
+                        //       },
+
+                        const Divider(),
+                      ]);
+                    },
                   );
+
+                  // ignore: dead_code
+                  // Column(
+                  //   children:
+                  //       snapshot.data!.docs.map((DocumentSnapshot document) {
+                  //     return Container(
+                  //         child: Column(children: [
+                  //       Text((document.data() as Map)['name']),
+                  //       Text((document.data() as Map)['date'],
+                  //           style: TextStyle(
+                  //               fontSize: 18,
+                  //               fontWeight: FontWeight.normal,
+                  //               color: Color.fromARGB(255, 54, 99, 222))),
+                  //       //Text((document.data() as Map)['Commenter']),
+                  //       Text((document.data() as Map)['text'],
+                  //           style: TextStyle(
+                  //             fontSize: 18,
+                  //             fontWeight: FontWeight.normal,
+                  //           )),
+
+                  //       //UserID = (document.data() as Map)['UserID'],
+                  //       // Column(
+                  //       //   children: <Widget>[
+                  //       //     if (UserID == 'User1"'){
+
+                  //       //       (IconButton(
+                  //       //         iconSize: 10,
+                  //       //         icon: const Icon(
+                  //       //           Icons.delete,
+                  //       //         ),
+                  //       //         onPressed: () {
+                  //       //           delete_comm
+                  //       //               .doc('id') // <-- Doc ID to be deleted.
+                  //       //               .delete() // <-- Delete
+                  //       //               .then((_) => print('Deleted'))
+                  //       //               .catchError((error) =>
+                  //       //                   print('Delete failed: $error'));
+                  //       //         },
+                  //       //       )
+                  //       //       )
+                  //       //       },
+                  //       //   ],
+                  //       // ),
+                  //       Divider(),
+                  //     ]));
+                  //   }).toList(),
+                  // );
                 }
               }),
           const Spacer(),
@@ -187,13 +246,17 @@ class commentsState extends State<comments> {
     String dataId = '';
     print('will be added to db');
     //add all value without the location
+    id = FirebaseFirestore.instance.collection('comment').doc().id;
     DocumentReference docReference = await Post_comment.add({
+      'commentID': id,
       'date': actualDate,
       'name': commenter,
       'time': actualTime,
       'text': comment,
-      //'UserID': FirebaseAuth.instance.currentUser!.uid,
-      //'PostID': placeID
+      'UserID': 'User5',
+      //FirebaseAuth.instance.currentUser!.uid,
+      'PostID': 'Post5'
+      //placeID
     });
     dataId = docReference.id;
     print("Document written with ID: ${docReference.id}");
@@ -202,6 +265,8 @@ class commentsState extends State<comments> {
   }
 }
 
+String id = '';
+String UserID = '';
 String commenter = '';
 var now = DateTime.now();
 var formatterDate = DateFormat('dd/MM/yy');
