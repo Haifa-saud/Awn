@@ -145,10 +145,15 @@ class _MyStatefulWidgetState extends State<addPost> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
           child: ListView(children: <Widget>[
+            Container(
+                child: Text(
+              '*indicates required fields',
+              style: TextStyle(fontSize: 15),
+            )),
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
               child: Text(
-                'Institution Details',
+                'Institution Details*',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -159,8 +164,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                 controller: nameController,
                 maxLength: 25,
                 decoration: const InputDecoration(
-                    labelText: "Name (required)*",
-                    hintText: "E.g. King Saud University"),
+                    labelText: "Name", hintText: "E.g. King Saud University"),
                 validator: (value) {
                   if (value == null ||
                       value.isEmpty ||
@@ -189,7 +193,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                           validator: (value) => value == null
                               ? 'Please select a category.'
                               : null,
-                          hint: const Text('Category (required)*'),
+                          hint: const Text('Category'),
                           items: snapshot.data!.docs
                               .map((DocumentSnapshot document) {
                             return DropdownMenuItem<String>(
@@ -205,7 +209,7 @@ class _MyStatefulWidgetState extends State<addPost> {
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
-                'Institution Image',
+                'Institution Image*',
               ),
             ),
             /*image*/ Column(

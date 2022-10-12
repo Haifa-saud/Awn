@@ -118,7 +118,9 @@ class Place extends StatelessWidget {
                                                       buildPlace(
                                                           data.docs[index]
                                                               ['docId'],
-                                                          isAdmin)),
+                                                          isAdmin,
+                                                          data.docs[index]
+                                                              ['status'])),
                                               splashColor: Colors.transparent,
                                               child: Container(
                                                 decoration: BoxDecoration(
@@ -263,7 +265,8 @@ class Place extends StatelessWidget {
         ));
   }
 
-  Widget buildPlace(placeID, var isAdmin) {
+  Widget buildPlace(placeID, var isAdmin, var status) {
+    print('status $status');
     late GoogleMapController myController;
     Set<Marker> getMarker(lat, lng) {
       return <Marker>{
@@ -656,20 +659,22 @@ class Place extends StatelessWidget {
                                                 ),
                                                 Spacer(),
                                               ])
-                                        : /*comment*/ Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                const Text(
-                                                  'Comments',
-                                                ),
-                                                const SizedBox(height: 7),
-                                              ],
-                                            )),
+                                        : (status == 'Approved'
+                                            ? /*comment*/ Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    const Text(
+                                                      'Comments',
+                                                    ),
+                                                    const SizedBox(height: 7),
+                                                  ],
+                                                ))
+                                            : Text('')),
                                   ]))),
                         ],
                       )
