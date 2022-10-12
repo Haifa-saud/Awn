@@ -27,6 +27,7 @@ class Place extends StatelessWidget {
   }
 
   Widget placesList(String cate, String status, String userId) {
+    var isAdmin = false;
     Stream<QuerySnapshot> list =
         FirebaseFirestore.instance.collection('posts').snapshots();
     if (cate != 'All' && cate != '') {
@@ -45,6 +46,7 @@ class Place extends StatelessWidget {
           .snapshots();
     } else if (status != '') {
       //admin page
+      isAdmin = true;
       list = FirebaseFirestore.instance
           .collection('posts')
           .where('status', isEqualTo: status)
@@ -115,7 +117,8 @@ class Place extends StatelessWidget {
                                                   builder: (context) =>
                                                       buildPlace(
                                                           data.docs[index]
-                                                              ['docId'])),
+                                                              ['docId'],
+                                                          isAdmin)),
                                               splashColor: Colors.transparent,
                                               child: Container(
                                                 decoration: BoxDecoration(
@@ -260,7 +263,7 @@ class Place extends StatelessWidget {
         ));
   }
 
-  Widget buildPlace(placeID) {
+  Widget buildPlace(placeID, var isAdmin) {
     late GoogleMapController myController;
     Set<Marker> getMarker(lat, lng) {
       return <Marker>{
@@ -312,12 +315,9 @@ class Place extends StatelessWidget {
                           SliverAppBar(
                             toolbarHeight: 60,
                             automaticallyImplyLeading: false,
-                            // leading: const Icon(Icons.navigate_before,
-                            //     color: Colors.black),
                             bottom: PreferredSize(
                                 preferredSize: const Size.fromHeight(20),
                                 child: Container(
-                                    // padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                                     decoration: const BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.only(
@@ -379,6 +379,7 @@ class Place extends StatelessWidget {
                                                 const SizedBox(height: 7),
                                                 ReadMoreText(
                                                   data['description'],
+                                                  textAlign: TextAlign.justify,
                                                   style: const TextStyle(
                                                       wordSpacing: 2,
                                                       fontSize: 18,
@@ -594,31 +595,81 @@ class Place extends StatelessWidget {
                                                         },
                                                       )))),
                                         ])),
-                                    const SizedBox(height: 35),
-                                    /*comment*/ Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Text(
-                                              'Comments',
-                                              style: TextStyle(
-                                                decoration:
-                                                    TextDecoration.underline,
-                                                decorationThickness: 2,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 7),
-                                          ],
-                                        )),
-                                    const Text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor sit amet elit eu sagittis. Maecenas at tellus convallis, scelerisque nibh id, condimentum dolor. Nullam in ligula ut felis facilisis pellentesque quis tincidunt elit. Suspendisse potenti. Sed ante urna, mollis id justo ut, mollis imperdiet nunc. Aliquam placerat interdum mauris non tempor. Integer ac diam velit. Vestibulum nec nibh dolor. Morbi ex leo, facilisis quis feugiat eget, gravida non tortor. Phasellus id consequat lacus, sed semper augue. Mauris tortor leo, iaculis gravida metus sed, tristique rutrum est' +
-                                        'Pellentesque vehicula purus vitae eros scelerisque pretium. Donec in metus placerat nulla mollis scelerisque a et tellus. Aenean quis blandit turpis. Aliquam ultrices nunc ultrices massa rhoncus, sed rutrum tortor hendrerit. Sed pharetra pellentesque lectus, et posuere ex cursus consectetur. In et est faucibus, cursus mauris vel, tincidunt ex. Aenean a odio at enim sodales consectetur gravida euismod orci. Nunc feugiat urna vel sapien vulputate fringilla. Aliquam erat volutpat. Sed posuere a diam in pretium. Nam nec velit at ante ornare pharetra. Vestibulum turpis ipsum, suscipit at euismod at, malesuada in dui. Etiam nec lacus et justo pharetra malesuada eget eu diam. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer tincidunt nulla eget purus tincidunt, in euismod augue iaculis. Duis gravida, lectus eget vestibulum suscipit, velit nunc aliquam nibh, et cursus neque velit eu neque.' +
-                                        'Donec sit amet lacinia sem, ut facilisis dui. Curabitur nulla diam, maximus et lacus vel, convallis lobortis erat. Maecenas suscipit et nibh eu facilisis. Ut egestas, turpis in porta feugiat, neque nibh dignissim nulla, non molestie quam orci eget massa. Ut scelerisque molestie pulvinar. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Duis dictum elit quis nibh venenatis auctor. Nullam ut lacus in enim pretium fringilla. Nullam molestie convallis massa at dictum. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer placerat, erat quis volutpat porttitor, mi felis tincidunt dolor, quis vulputate nulla nibh nec libero. Mauris egestas volutpat mauris iaculis lacinia. Nulla sollicitudin, sem vitae lobortis sagittis, augue felis finibus sapien, a semper dolor sem et mi. Mauris faucibus, ex in pellentesque commodo, nisi nulla viverra est, pellentesque finibus libero odio a turpis.' +
-                                        'Nullam dapibus urna mauris, a rutrum diam mollis nec. Cras eu pellentesque nulla, et commodo enim. Integer ac quam id metus fermentum lobortis eu vel nulla. Morbi et nulla sollicitudin, ultrices urna suscipit, consequat risus. Etiam et sapien sem. Aliquam volutpat vestibulum luctus. Etiam convallis facilisis urna, vel dapibus ligula facilisis vel. Nunc non placerat dolor. Nulla sit amet placerat nibh. Etiam laoreet, sem in imperdiet commodo, enim mi posuere mi, at vestibulum eros magna vitae quam. Cras a felis sed ante placerat rutrum. Etiam efficitur orci ligula, ut scelerisque ante pharetra eget. Vestibulum non turpis tincidunt, porttitor neque at, dignissim risus. Duis et posuere orci, eu dictum nunc.' +
-                                        'Vivamus dignissim pulvinar neque a tempus. Praesent sodales, ipsum sit amet placerat egestas, sapien leo posuere lacus, non sagittis elit dolor eget ligula. Proin convallis risus mauris, sit amet hendrerit enim suscipit lacinia. Maecenas vitae pellentesque mi. Vivamus lectus arcu, consequat nec mauris in, lacinia lacinia tortor. Mauris porta egestas ligula sed laoreet. Sed finibus ultricies arcu, at lacinia nulla consequat fe'),
+                                    isAdmin
+                                        ? const SizedBox(height: 25)
+                                        : const SizedBox(height: 35),
+                                    isAdmin
+                                        ? Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                                Spacer(),
+                                                ElevatedButton(
+                                                  style: ElevatedButton
+                                                      .styleFrom(
+                                                          fixedSize: Size(
+                                                              120, 50),
+                                                          backgroundColor:
+                                                              Colors.green
+                                                                  .shade300,
+                                                          foregroundColor: Colors
+                                                              .white,
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  17,
+                                                                  15,
+                                                                  17,
+                                                                  15),
+                                                          textStyle:
+                                                              const TextStyle(
+                                                            fontSize: 18,
+                                                          ),
+                                                          side: BorderSide(
+                                                              color: Colors
+                                                                  .green
+                                                                  .shade300,
+                                                              width: 1)),
+                                                  child: Text('Approve'),
+                                                  onPressed: () {}, //!for haifa
+                                                ),
+                                                SizedBox(width: 15),
+                                                ElevatedButton(
+                                                  style: ElevatedButton.styleFrom(
+                                                      fixedSize: Size(120, 50),
+                                                      backgroundColor: Colors
+                                                          .red.shade300,
+                                                      foregroundColor: Colors
+                                                          .white,
+                                                      padding: const EdgeInsets
+                                                              .fromLTRB(
+                                                          17, 15, 17, 15),
+                                                      textStyle:
+                                                          const TextStyle(
+                                                              fontSize: 18),
+                                                      side: BorderSide(
+                                                          color: Colors
+                                                              .red.shade300,
+                                                          width: 1)),
+                                                  child: Text('Deny'),
+                                                  onPressed: () {}, //!for haifa
+                                                ),
+                                                Spacer(),
+                                              ])
+                                        : /*comment*/ Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Text(
+                                                  'Comments',
+                                                ),
+                                                const SizedBox(height: 7),
+                                              ],
+                                            )),
                                   ]))),
                         ],
                       )
