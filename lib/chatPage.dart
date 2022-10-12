@@ -35,7 +35,7 @@ class _ChatPageState extends State<ChatPage>
   FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
   bool isRecorderReady = false, isPlayerReady = false;
   FlutterSoundPlayer audioPlayer = FlutterSoundPlayer();
-  bool isPlaying = false;
+  // bool isPlaying = false;
   var playerSubscription;
   // Duration duration = Duration.zero, pos = Duration.zero;
   double subscriptionDuration = 0;
@@ -99,6 +99,15 @@ class _ChatPageState extends State<ChatPage>
         isPlayerReady); //&& audioRecorder.isStopped && audioPlayer.isStopped);
     audioPlayer.startPlayer(fromURI: path);
     _addListeners();
+  }
+
+  Future<void> stopPlayer() async {
+    if (audioPlayer != null) {
+      await audioPlayer.stopPlayer();
+      // setState(() {
+      //   isPlaying = false;
+      // });
+    }
   }
 
   Future initRecorder() async {
@@ -511,31 +520,50 @@ class _ChatPageState extends State<ChatPage>
                         },
                       ))),
               Visibility(
-                // key: id;
-                visible: audio != '',
-                // child: Row(children: [
-                child: IconButton(
-                    icon: !isPlaying
-                        ? const Icon(Icons.play_arrow)
-                        : const Icon(Icons.stop),
-                    onPressed: () async {
-                      if (isPlaying) {
-                      } else {
-                        playAudio(audio);
-                      }
-                    }),
-                // Slider(
-                //   value: min(currPosition, sliderValue),
-                //   min: 0.0,
-                //   max: sliderValue,
-                //   onChanged: (value) async {
-                //     await seekToPlayer(value.toInt());
-                //   },
-                //   // divisions:
-                //   //     maxDuration == 0.0 ? 1 : maxDuration.toInt()),
-                // ),
-                // ]
-              ),
+                  // key: id;
+                  visible: audio != '',
+                  child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        IconButton(
+                            icon: true
+                                ? (isMe
+                                    ? const Icon(Icons.play_arrow,
+                                        color: Colors.white, size: 35)
+                                    : const Icon(Icons.play_arrow, size: 35))
+                                : (isMe
+                                    ? const Icon(Icons.stop,
+                                        color: Colors.white, size: 35)
+                                    : const Icon(Icons.stop, size: 35)),
+                            onPressed: () async {
+                              // if (isPlaying) {
+                              //   // stopPlayer();
+                              // } else {
+                              // setState(() {
+                              // isPlaying = true;
+                              // });
+                              playAudio(audio);
+                              // }
+                            }),
+                        SizedBox(width: 10),
+                        Text(audioDuration,
+                            style: TextStyle(
+                                color: isMe ? Colors.white : Colors.black,
+                                fontSize: 20)),
+                      ])
+                  // Slider(
+                  //   value: min(currPosition, sliderValue),
+                  //   min: 0.0,
+                  //   max: sliderValue,
+                  //   onChanged: (value) async {
+                  //     await seekToPlayer(value.toInt());
+                  //   },
+                  // divisions:
+                  //     maxDuration == 0.0 ? 1 : maxDuration.toInt()),
+                  // ),
+                  // ]
+                  ),
               // ),
               Visibility(
                   visible: message != '',
@@ -547,14 +575,6 @@ class _ChatPageState extends State<ChatPage>
                     textAlign: isMe ? TextAlign.end : TextAlign.start,
                   )),
               Row(mainAxisSize: MainAxisSize.min, children: [
-                Visibility(
-                  visible: audio != '',
-                  child: Text(audioDuration,
-                      style:
-                          const TextStyle(color: Colors.white, fontSize: 10)),
-                ),
-                Visibility(
-                    visible: audio != '', child: const SizedBox(width: 15)),
                 Text(
                   DateFormat('hh:mm a').format(time).toString(),
                   style: TextStyle(
