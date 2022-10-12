@@ -129,6 +129,7 @@ class _requestPageState extends State<requestPage> {
                           builder: (context, snap) {
                             if (snap.hasData) {
                               var reqLoc = snap.data;
+                              // var title = data.docs[index]['title'];
                               titleController.text =
                                   data.docs[index]['title'].toString();
                               durationController.text =
@@ -244,13 +245,15 @@ class _requestPageState extends State<requestPage> {
                                               onTap: (() {
                                                 setState(() {
                                                   edit = true;
+                                                  var title;
                                                   Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
                                                         builder: (context) =>
                                                             editRequest(
-                                                                userType:
-                                                                    'Special Need User'),
+                                                          userType:
+                                                              'Special Need User',
+                                                        ),
                                                       ));
                                                 });
                                                 //  editReq();
