@@ -1,4 +1,5 @@
 import 'package:awn/addPost.dart';
+import 'package:awn/comment.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
 import 'package:awn/services/placeWidget.dart';
@@ -237,6 +238,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                       PageRouteBuilder(
                         pageBuilder: (context, animation1, animation2) =>
                             addPost(userType: userData['Type']),
+                            // comments(),
                         transitionDuration: const Duration(seconds: 1),
                         reverseTransitionDuration: Duration.zero,
                       ),

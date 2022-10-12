@@ -45,7 +45,6 @@ class _ChatPageState extends State<ChatPage> {
     initRecorder();
     initPlayer();
     super.initState();
-    sliderValue = 0.0;
   }
 
   Future initPlayer() async {
@@ -150,6 +149,8 @@ class _ChatPageState extends State<ChatPage> {
     return user;
   }
 
+  bool showRecording = false;
+
   @override
   Widget build(BuildContext context) {
     bool isKeyboard = true;
@@ -219,7 +220,6 @@ class _ChatPageState extends State<ChatPage> {
                                     'Something Went Wrong Try later');
                               } else {
                                 final messages = snapshot.data;
-
                                 return ListView.builder(
                                   shrinkWrap: true,
                                   physics: const BouncingScrollPhysics(),
@@ -251,8 +251,6 @@ class _ChatPageState extends State<ChatPage> {
                         padding: const EdgeInsets.all(8),
                         child: Row(
                           children: <Widget>[
-                            //isKeyboard
-
                             // Visibility(
                             //     visible:
                             //         true, //_controller.text.trim().isEmpty,
@@ -270,9 +268,73 @@ class _ChatPageState extends State<ChatPage> {
                             //   child: const Icon(Icons.camera_alt_outlined,
                             //       color: Colors.black),
                             // ),
-                            GestureDetector(
+                            /*mic icon*/ Visibility(
+                                visible: !showRecording,
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    if (!isRecorderReady) {
+                                      return;
+                                    }
+                                    await audioRecorder.startRecorder(
+                                        toFile: const Uuid().v4());
+                                    setRecording(true);
+                                  },
+                                  child: const Icon(Icons.mic,
+                                      color: Colors.black),
+                                )),
+
+                            // AnimatedSwitcher(
+                            //   duration: const Duration(milliseconds: 300),
+                            //   child:
+                            !showRecording
+                                ? Expanded(
+                                    child: TextField(
+                                      controller: _controller,
+                                      textCapitalization:
+                                          TextCapitalization.sentences,
+                                      autocorrect: true,
+                                      enableSuggestions: true,
+                                      decoration: InputDecoration(
+                                        suffixIcon: IconButton(
+                                          icon: Icon(Icons.send),
+                                          onPressed: () {},
+                                        ),
+                                        filled: true,
+                                        fillColor: Colors.grey[100],
+                                        labelText: 'Type your message',
+                                        border: OutlineInputBorder(
+                                          borderSide:
+                                              const BorderSide(width: 0),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : StreamBuilder<RecordingDisposition>(
+                                    stream: audioRecorder.onProgress,
+                                    builder: (context, snapshot) {
+                                      var duration = snapshot.hasData
+                                          ? snapshot.data!.duration
+                                          : Duration.zero;
+                                      String twoDigits(int n) =>
+                                          n.toString().padLeft(0);
+                                      var twoDigitMinutes = twoDigits(
+                                          duration.inMinutes.remainder(60));
+                                      var twoDigitSeconds = twoDigits(
+                                          duration.inSeconds.remainder(60));
+                                      duration = Duration.zero;
+                                      recorderDuration =
+                                          '$twoDigitMinutes:$twoDigitSeconds';
+                                      return Text(
+                                          '$twoDigitMinutes:$twoDigitSeconds');
+                                    },
+                                  ),
+                            // ),
+
+                            const SizedBox(width: 15),
+                            /*send icon*/ GestureDetector(
                               onTap: () async {
-                                hideWidget();
                                 if (audioRecorder.isRecording) {
                                   if (!isRecorderReady) {
                                     print('not ready');
@@ -283,63 +345,11 @@ class _ChatPageState extends State<ChatPage> {
                                   audioFile = File(path!);
                                   print("Recorded Audio: $audioFile");
                                   sendAudioMessage(recorderDuration);
-                                } else {
-                                  if (!isRecorderReady) {
-                                    print('not ready');
-                                    return;
-                                  }
-                                  await audioRecorder.startRecorder(
-                                      toFile: const Uuid().v4());
                                 }
-                              },
-                              child: const Icon(Icons.mic, color: Colors.black),
-                            ),
-                            Visibility(
-                                visible: isKeyboard,
-                                child: Expanded(
-                                  child: TextField(
-                                    controller: _controller,
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
-                                    autocorrect: true,
-                                    enableSuggestions: true,
-                                    decoration: InputDecoration(
-                                      filled: true,
-                                      fillColor: Colors.grey[100],
-                                      labelText: 'Type your message',
-                                      border: OutlineInputBorder(
-                                        borderSide: const BorderSide(width: 0),
-                                        // gapPadding: 10,
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                    ),
-                                  ),
-                                )),
-                            Visibility(
-                                visible: true,
-                                child: StreamBuilder<RecordingDisposition>(
-                                    stream: audioRecorder.onProgress,
-                                    builder: (context, snapshot) {
-                                      final duration = snapshot.hasData
-                                          ? snapshot.data!.duration
-                                          : Duration.zero;
-                                      String twoDigits(int n) =>
-                                          n.toString().padLeft(0);
-                                      final twoDigitMinutes = twoDigits(
-                                          duration.inMinutes.remainder(60));
-                                      final twoDigitSeconds = twoDigits(
-                                          duration.inSeconds.remainder(60));
-                                      recorderDuration =
-                                          '$twoDigitMinutes:$twoDigitSeconds';
-                                      return Text(
-                                          '$twoDigitMinutes:$twoDigitSeconds');
-                                    })),
-                            const SizedBox(width: 15),
-                            GestureDetector(
-                              onTap: () {
                                 _controller.text.trim().isEmpty
                                     ? null
                                     : sendMessage(_controller.text, '', '', '');
+                                setRecording(true);
                               },
                               child:
                                   const Icon(Icons.send, color: Colors.black),
@@ -354,15 +364,15 @@ class _ChatPageState extends State<ChatPage> {
             }));
   }
 
-  double sliderValue = 0.0;
-  Future<void> seekToPlayer(int milliSecs) async {
-    try {
-      if (audioPlayer.isPlaying) {
-        await audioPlayer.seekToPlayer(Duration(milliseconds: milliSecs));
-      }
-    } on Exception catch (err) {
-      audioPlayer.logger.e('error: $err');
-    }
+  // _toggle() {
+  //   setState(() {
+  //     loading = !loading;
+  //   });
+  // }
+  void setRecording(bool isRecording) {
+    setState(() {
+      showRecording = isRecording;
+    });
   }
 
 //! Widgets
