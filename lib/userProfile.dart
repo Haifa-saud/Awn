@@ -97,8 +97,7 @@ class UserProfileState extends State<userProfile>
                           child: IconButton(
                             icon: const Icon(Icons.logout_rounded),
                             iconSize: 25,
-                            color: const Color(
-                                0xFF39d6ce), //Color.fromARGB(255, 149, 204, 250),
+                            color: const Color(0xFF39d6ce),
                             onPressed: () {
                               showDialog(
                                 context: context,

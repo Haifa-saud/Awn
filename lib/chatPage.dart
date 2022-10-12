@@ -26,8 +26,10 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends State<ChatPage>
+    with SingleTickerProviderStateMixin {
   final _controller = TextEditingController();
+  var animationController;
   String message = '';
   User currentUser = FirebaseAuth.instance.currentUser!;
   FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
@@ -39,12 +41,26 @@ class _ChatPageState extends State<ChatPage> {
   double subscriptionDuration = 0;
   double sliderCurrentPosition = 0.0;
   double maxDuration = 1.0;
+  bool showRecording = false, showIcons = true;
 
   @override
   void initState() {
     initRecorder();
     initPlayer();
     super.initState();
+
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        milliseconds: 1600,
+      ),
+    );
+
+    animationController.addListener(() {
+      setState(() {});
+    });
+
+    animationController.forward();
   }
 
   Future initPlayer() async {
@@ -99,16 +115,16 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     audioRecorder.closeAudioSession();
     audioPlayer.closeAudioSession();
-
+    animationController.dispose();
     super.dispose();
   }
 
-  void cancelPlayerSubscriptions() {
-    if (playerSubscription != null) {
-      playerSubscription!.cancel();
-      playerSubscription = null;
-    }
-  }
+  // void cancelPlayerSubscriptions() {
+  //   if (playerSubscription != null) {
+  //     playerSubscription!.cancel();
+  //     playerSubscription = null;
+  //   }
+  // }
 
   Future<Map<String, dynamic>> getOtherUserID() async {
     var user, volID, userID, id;
@@ -149,17 +165,8 @@ class _ChatPageState extends State<ChatPage> {
     return user;
   }
 
-  bool showRecording = false;
-
   @override
   Widget build(BuildContext context) {
-    bool isKeyboard = true;
-    void hideWidget() {
-      setState(() {
-        isKeyboard = !isKeyboard;
-      });
-    }
-
     var recorderDuration;
 
     return Scaffold(
@@ -251,38 +258,6 @@ class _ChatPageState extends State<ChatPage> {
                         padding: const EdgeInsets.all(8),
                         child: Row(
                           children: <Widget>[
-                            // Visibility(
-                            //     visible:
-                            //         true, //_controller.text.trim().isEmpty,
-                            //     child: GestureDetector(
-                            //       onTap: () {
-                            //         sendImage(ImageSource.gallery);
-                            //       },
-                            //       child: const Icon(Icons.add,
-                            //           color: Colors.black),
-                            //     )),
-                            // GestureDetector(
-                            //   onTap: () {
-                            //     sendImage(ImageSource.camera);
-                            //   },
-                            //   child: const Icon(Icons.camera_alt_outlined,
-                            //       color: Colors.black),
-                            // ),
-                            /*mic icon*/ Visibility(
-                                visible: !showRecording,
-                                child: GestureDetector(
-                                  onTap: () async {
-                                    if (!isRecorderReady) {
-                                      return;
-                                    }
-                                    await audioRecorder.startRecorder(
-                                        toFile: const Uuid().v4());
-                                    setRecording(true);
-                                  },
-                                  child: const Icon(Icons.mic,
-                                      color: Colors.black),
-                                )),
-
                             // AnimatedSwitcher(
                             //   duration: const Duration(milliseconds: 300),
                             //   child:
@@ -294,66 +269,166 @@ class _ChatPageState extends State<ChatPage> {
                                           TextCapitalization.sentences,
                                       autocorrect: true,
                                       enableSuggestions: true,
+                                      onChanged: (text) {
+                                        if (_controller.text.trim() != "") {
+                                          setIcons(false);
+                                        } else {
+                                          setIcons(true);
+                                        }
+                                      },
                                       decoration: InputDecoration(
-                                        suffixIcon: IconButton(
-                                          icon: Icon(Icons.send),
-                                          onPressed: () {},
-                                        ),
+                                        suffixIcon: showIcons
+                                            ? Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  IconButton(
+                                                    icon: const Icon(Icons.mic),
+                                                    focusColor:
+                                                        const Color(0xFF39d6ce),
+                                                    onPressed: () async {
+                                                      if (!isRecorderReady) {
+                                                        return;
+                                                      }
+                                                      await audioRecorder
+                                                          .startRecorder(
+                                                              toFile:
+                                                                  const Uuid()
+                                                                      .v4());
+                                                      setRecording(true);
+                                                    },
+                                                  ),
+                                                  IconButton(
+                                                    icon: const Icon(Icons
+                                                        .camera_alt_outlined),
+                                                    onPressed: () {
+                                                      sendImage(
+                                                          ImageSource.camera);
+                                                    },
+                                                  ),
+                                                  IconButton(
+                                                    icon: const Icon(Icons
+                                                        .insert_photo_outlined),
+                                                    onPressed: () {
+                                                      sendImage(
+                                                          ImageSource.gallery);
+                                                    },
+                                                  ),
+                                                ],
+                                              )
+                                            : Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                    IconButton(
+                                                      icon: const Icon(
+                                                          Icons.send),
+                                                      color: const Color(
+                                                          0xFF39d6ce),
+                                                      iconSize: 30,
+                                                      onPressed: () {
+                                                        _controller.text
+                                                                .trim()
+                                                                .isEmpty
+                                                            ? null
+                                                            : sendMessage(
+                                                                _controller
+                                                                    .text,
+                                                                '',
+                                                                '',
+                                                                '');
+                                                        setIcons(true);
+                                                      },
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                  ]),
                                         filled: true,
-                                        fillColor: Colors.grey[100],
-                                        labelText: 'Type your message',
+                                        fillColor: Colors.grey.shade50,
+                                        labelText: 'Message...',
                                         border: OutlineInputBorder(
-                                          borderSide:
-                                              const BorderSide(width: 0),
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(100.0),
+                                            borderSide: BorderSide(
+                                                color: Colors.grey.shade400)),
+                                        contentPadding:
+                                            const EdgeInsets.fromLTRB(
+                                                20, 20, 20, 20),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(100.0),
+                                            borderSide: const BorderSide(
+                                                color: const Color(0xFF39d6ce),
+                                                width: 2)),
+                                        floatingLabelStyle: const TextStyle(
+                                            fontSize: 22,
+                                            color: Color(0xFF39d6ce)),
+                                        helperStyle:
+                                            const TextStyle(fontSize: 14),
                                       ),
                                     ),
                                   )
-                                : StreamBuilder<RecordingDisposition>(
-                                    stream: audioRecorder.onProgress,
-                                    builder: (context, snapshot) {
-                                      var duration = snapshot.hasData
-                                          ? snapshot.data!.duration
-                                          : Duration.zero;
-                                      String twoDigits(int n) =>
-                                          n.toString().padLeft(0);
-                                      var twoDigitMinutes = twoDigits(
-                                          duration.inMinutes.remainder(60));
-                                      var twoDigitSeconds = twoDigits(
-                                          duration.inSeconds.remainder(60));
-                                      duration = Duration.zero;
-                                      recorderDuration =
-                                          '$twoDigitMinutes:$twoDigitSeconds';
-                                      return Text(
-                                          '$twoDigitMinutes:$twoDigitSeconds');
-                                    },
-                                  ),
-                            // ),
-
-                            const SizedBox(width: 15),
-                            /*send icon*/ GestureDetector(
-                              onTap: () async {
-                                if (audioRecorder.isRecording) {
-                                  if (!isRecorderReady) {
-                                    print('not ready');
-                                    return;
-                                  }
-                                  final path =
-                                      await audioRecorder.stopRecorder();
-                                  audioFile = File(path!);
-                                  print("Recorded Audio: $audioFile");
-                                  sendAudioMessage(recorderDuration);
-                                }
-                                _controller.text.trim().isEmpty
-                                    ? null
-                                    : sendMessage(_controller.text, '', '', '');
-                                setRecording(true);
-                              },
-                              child:
-                                  const Icon(Icons.send, color: Colors.black),
-                            ),
+                                : Expanded(
+                                    child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: <Widget>[
+                                      const Divider(
+                                          height: 5,
+                                          color: Colors.grey,
+                                          thickness: 4),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete_forever),
+                                        color: Colors.red,
+                                        iconSize: 33,
+                                        onPressed: () {
+                                          audioRecorder.stopRecorder();
+                                          setRecording(false);
+                                        },
+                                      ),
+                                      const Spacer(),
+                                      StreamBuilder<RecordingDisposition>(
+                                        stream: audioRecorder.onProgress,
+                                        builder: (context, snapshot) {
+                                          var duration = snapshot.hasData
+                                              ? snapshot.data!.duration
+                                              : Duration.zero;
+                                          String twoDigits(int n) =>
+                                              n.toString().padLeft(0);
+                                          var twoDigitMinutes = twoDigits(
+                                              duration.inMinutes.remainder(60));
+                                          var twoDigitSeconds = twoDigits(
+                                              duration.inSeconds.remainder(60));
+                                          duration = Duration.zero;
+                                          recorderDuration =
+                                              '$twoDigitMinutes:$twoDigitSeconds';
+                                          return Text(
+                                              '$twoDigitMinutes:$twoDigitSeconds');
+                                        },
+                                      ),
+                                      const Spacer(),
+                                      IconButton(
+                                        icon: const Icon(Icons.send),
+                                        color: const Color(0xFF39d6ce),
+                                        iconSize: 33,
+                                        onPressed: () async {
+                                          if (audioRecorder.isRecording) {
+                                            if (!isRecorderReady) {
+                                              return;
+                                            }
+                                            final path = await audioRecorder
+                                                .stopRecorder();
+                                            audioFile = File(path!);
+                                            print("Recorded Audio: $audioFile");
+                                            sendAudioMessage(recorderDuration);
+                                          }
+                                          setRecording(false);
+                                        },
+                                      ),
+                                    ],
+                                  ))
                           ],
                         ),
                       )
@@ -364,14 +439,15 @@ class _ChatPageState extends State<ChatPage> {
             }));
   }
 
-  // _toggle() {
-  //   setState(() {
-  //     loading = !loading;
-  //   });
-  // }
   void setRecording(bool isRecording) {
     setState(() {
       showRecording = isRecording;
+    });
+  }
+
+  void setIcons(bool isTyping) {
+    setState(() {
+      showIcons = isTyping;
     });
   }
 
@@ -474,7 +550,8 @@ class _ChatPageState extends State<ChatPage> {
                 Visibility(
                   visible: audio != '',
                   child: Text(audioDuration,
-                      style: TextStyle(color: Colors.white, fontSize: 10)),
+                      style:
+                          const TextStyle(color: Colors.white, fontSize: 10)),
                 ),
                 Visibility(
                     visible: audio != '', child: const SizedBox(width: 15)),
