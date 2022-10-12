@@ -1,3 +1,4 @@
+import 'package:awn/addRequest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -80,7 +81,11 @@ class _requestPageState extends State<requestPage> {
   }
 
   Widget requestdetails() {
-    var edit = false;
+    TextEditingController titleController = TextEditingController();
+    TextEditingController durationController = TextEditingController();
+    TextEditingController descController = TextEditingController();
+
+    bool edit = false;
     Future<String> getLocationAsString(var lat, var lng) async {
       List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
       return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
@@ -93,7 +98,7 @@ class _requestPageState extends State<requestPage> {
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
     final now = DateTime.now();
-
+    // editReq() {}
     return Column(children: [
       Expanded(
           child: Container(
@@ -124,6 +129,12 @@ class _requestPageState extends State<requestPage> {
                           builder: (context, snap) {
                             if (snap.hasData) {
                               var reqLoc = snap.data;
+                              titleController.text =
+                                  data.docs[index]['title'].toString();
+                              durationController.text =
+                                  data.docs[index]['duration'].toString();
+                              descController.text =
+                                  data.docs[index]['description'].toString();
                               return Container(
                                   margin: EdgeInsets.fromLTRB(5, 12, 5, 0),
                                   decoration: BoxDecoration(
@@ -138,6 +149,66 @@ class _requestPageState extends State<requestPage> {
                                   child: Card(
                                       child: Column(
                                     children: [
+                                      ///edit
+
+                                      // ///title
+                                      // Container(
+                                      //   padding: const EdgeInsets.fromLTRB(
+                                      //       6, 12, 6, 6),
+                                      //   child: Text(
+                                      //     'Title',
+                                      //     textAlign: TextAlign.left,
+                                      //   ),
+                                      // ),
+                                      // Container(
+                                      //     padding: const EdgeInsets.fromLTRB(
+                                      //         6, 12, 6, 12),
+                                      //     child: TextFormField(
+                                      //       maxLength: 20,
+                                      //       controller: titleController,
+                                      //       decoration: const InputDecoration(
+                                      //         hintText:
+                                      //             'E.g. Help with shopping',
+                                      //       ),
+                                      //       // onChanged: (value) {title = value; },
+                                      //       validator: (value) {
+                                      //         if (value == null ||
+                                      //             value.isEmpty ||
+                                      //             (value.trim()).isEmpty) {
+                                      //           // double s = checkCurrentTime();
+                                      //           return 'Please enter a title '; //s.toString()
+                                      //         }
+                                      //         return null;
+                                      //       },
+                                      //     )),
+                                      // //duration
+                                      // Container(
+                                      //   padding:
+                                      //       EdgeInsets.fromLTRB(6, 35, 6, 8),
+                                      //   child: Text('Duration*'),
+                                      // ),
+
+                                      // Container(
+                                      //   padding: const EdgeInsets.fromLTRB(
+                                      //       6, 8, 6, 12),
+                                      //   child: TextFormField(
+                                      //     controller: durationController,
+                                      //     decoration: const InputDecoration(
+                                      //       hintText: 'E.g. For about 2 hours',
+                                      //     ),
+                                      //     // onChanged: (value) {duration = value;},
+                                      //     validator: (value) {
+                                      //       if (value == null ||
+                                      //           value.isEmpty ||
+                                      //           (value.trim()).isEmpty) {
+                                      //         return 'Please enter the duration';
+                                      //       }
+                                      //     },
+                                      //   ),
+                                      // ),
+
+                                      //view
+
                                       //title
                                       Padding(
                                           padding: EdgeInsets.fromLTRB(
@@ -173,10 +244,21 @@ class _requestPageState extends State<requestPage> {
                                               onTap: (() {
                                                 setState(() {
                                                   edit = true;
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            editRequest(
+                                                                userType:
+                                                                    'Special Need User'),
+                                                      ));
                                                 });
+                                                //  editReq();
+                                                //     print(edit);
                                               }),
                                             )
                                           ])),
+
                                       // Container(
                                       //   alignment: Alignment.topRight,
                                       //   margin: EdgeInsets.only(top: 5),
