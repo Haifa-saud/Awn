@@ -28,39 +28,19 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage>
     with SingleTickerProviderStateMixin {
-  final _controller = TextEditingController();
-  var animationController;
   String message = '';
   User currentUser = FirebaseAuth.instance.currentUser!;
-  FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
-  bool isRecorderReady = false, isPlayerReady = false;
+  bool isPlayerReady = false;
   FlutterSoundPlayer audioPlayer = FlutterSoundPlayer();
-  // bool isPlaying = false;
   var playerSubscription;
-  // Duration duration = Duration.zero, pos = Duration.zero;
   double subscriptionDuration = 0;
   double sliderCurrentPosition = 0.0;
   double maxDuration = 1.0;
-  bool showRecording = false, showIcons = true;
 
   @override
   void initState() {
-    initRecorder();
     initPlayer();
     super.initState();
-
-    animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(
-        milliseconds: 1600,
-      ),
-    );
-
-    animationController.addListener(() {
-      setState(() {});
-    });
-
-    animationController.forward();
   }
 
   Future initPlayer() async {
@@ -110,21 +90,9 @@ class _ChatPageState extends State<ChatPage>
     }
   }
 
-  Future initRecorder() async {
-    final status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
-      throw 'Microphone permission denied';
-    }
-    await audioRecorder.openAudioSession();
-    isRecorderReady = true;
-    audioRecorder.setSubscriptionDuration(const Duration(milliseconds: 500));
-  }
-
   @override
   void dispose() {
-    audioRecorder.closeAudioSession();
     audioPlayer.closeAudioSession();
-    animationController.dispose();
     super.dispose();
   }
 
@@ -176,9 +144,7 @@ class _ChatPageState extends State<ChatPage>
 
   @override
   Widget build(BuildContext context) {
-    var recorderDuration;
     var upcomingMessageDate = '00/00/0000';
-    // DateFormat('d/M/Y').format(time).toString(),
 
     return Scaffold(
         body: FutureBuilder<Map<String, dynamic>>(
@@ -345,202 +311,12 @@ class _ChatPageState extends State<ChatPage>
                           }
                         },
                       )),
-                      Container(
-                        color: Colors.white,
-                        padding: const EdgeInsets.all(8),
-                        child: Row(
-                          children: <Widget>[
-                            // AnimatedSwitcher(
-                            //   duration: const Duration(milliseconds: 300),
-                            //   child:
-                            !showRecording
-                                ? Expanded(
-                                    child: TextField(
-                                      controller: _controller,
-                                      textCapitalization:
-                                          TextCapitalization.sentences,
-                                      autocorrect: true,
-                                      enableSuggestions: true,
-                                      onChanged: (text) {
-                                        if (_controller.text.trim() != "") {
-                                          setIcons(false);
-                                        } else {
-                                          setIcons(true);
-                                        }
-                                      },
-                                      decoration: InputDecoration(
-                                        suffixIcon: showIcons
-                                            ? Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: <Widget>[
-                                                  IconButton(
-                                                    icon: const Icon(Icons.mic),
-                                                    focusColor:
-                                                        const Color(0xFF39d6ce),
-                                                    onPressed: () async {
-                                                      if (!isRecorderReady) {
-                                                        return;
-                                                      }
-                                                      await audioRecorder
-                                                          .startRecorder(
-                                                              toFile:
-                                                                  const Uuid()
-                                                                      .v4());
-                                                      setRecording(true);
-                                                    },
-                                                  ),
-                                                  IconButton(
-                                                    icon: const Icon(Icons
-                                                        .camera_alt_outlined),
-                                                    onPressed: () {
-                                                      sendImage(
-                                                          ImageSource.camera);
-                                                    },
-                                                  ),
-                                                  IconButton(
-                                                    icon: const Icon(Icons
-                                                        .insert_photo_outlined),
-                                                    onPressed: () {
-                                                      sendImage(
-                                                          ImageSource.gallery);
-                                                    },
-                                                  ),
-                                                ],
-                                              )
-                                            : Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                    IconButton(
-                                                      icon: const Icon(
-                                                          Icons.send),
-                                                      color: const Color(
-                                                          0xFF39d6ce),
-                                                      iconSize: 30,
-                                                      onPressed: () {
-                                                        _controller.text
-                                                                .trim()
-                                                                .isEmpty
-                                                            ? null
-                                                            : sendMessage(
-                                                                _controller
-                                                                    .text,
-                                                                '',
-                                                                '',
-                                                                '');
-                                                        setIcons(true);
-                                                      },
-                                                    ),
-                                                    const SizedBox(width: 10),
-                                                  ]),
-                                        filled: true,
-                                        fillColor: Colors.grey.shade50,
-                                        labelText: 'Message...',
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            borderSide: BorderSide(
-                                                color: Colors.grey.shade400)),
-                                        contentPadding:
-                                            const EdgeInsets.fromLTRB(
-                                                20, 20, 20, 20),
-                                        focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            borderSide: const BorderSide(
-                                                color: const Color(0xFF39d6ce),
-                                                width: 2)),
-                                        floatingLabelStyle: const TextStyle(
-                                            fontSize: 22,
-                                            color: Color(0xFF39d6ce)),
-                                        helperStyle:
-                                            const TextStyle(fontSize: 14),
-                                      ),
-                                    ),
-                                  )
-                                : Expanded(
-                                    child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: <Widget>[
-                                      const Divider(
-                                          height: 5,
-                                          color: Colors.grey,
-                                          thickness: 4),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete_forever),
-                                        color: Colors.red,
-                                        iconSize: 33,
-                                        onPressed: () {
-                                          audioRecorder.stopRecorder();
-                                          setRecording(false);
-                                        },
-                                      ),
-                                      const Spacer(),
-                                      StreamBuilder<RecordingDisposition>(
-                                        stream: audioRecorder.onProgress,
-                                        builder: (context, snapshot) {
-                                          var duration = snapshot.hasData
-                                              ? snapshot.data!.duration
-                                              : Duration.zero;
-                                          String twoDigits(int n) =>
-                                              n.toString().padLeft(0);
-                                          var twoDigitMinutes = twoDigits(
-                                              duration.inMinutes.remainder(60));
-                                          var twoDigitSeconds = twoDigits(
-                                              duration.inSeconds.remainder(60));
-                                          duration = Duration.zero;
-                                          recorderDuration =
-                                              '$twoDigitMinutes:$twoDigitSeconds';
-                                          return Text(
-                                              '$twoDigitMinutes:$twoDigitSeconds');
-                                        },
-                                      ),
-                                      const Spacer(),
-                                      IconButton(
-                                        icon: const Icon(Icons.send),
-                                        color: const Color(0xFF39d6ce),
-                                        iconSize: 33,
-                                        onPressed: () async {
-                                          if (audioRecorder.isRecording) {
-                                            if (!isRecorderReady) {
-                                              return;
-                                            }
-                                            final path = await audioRecorder
-                                                .stopRecorder();
-                                            audioFile = File(path!);
-                                            print("Recorded Audio: $audioFile");
-                                            sendAudioMessage(recorderDuration);
-                                          }
-                                          setRecording(false);
-                                        },
-                                      ),
-                                    ],
-                                  ))
-                          ],
-                        ),
-                      )
+                      ChatField(requestID: widget.requestID),
                     ])));
               } else {
                 return const Center(child: CircularProgressIndicator());
               }
             }));
-  }
-
-  void setRecording(bool isRecording) {
-    setState(() {
-      showRecording = isRecording;
-    });
-  }
-
-  void setIcons(bool isTyping) {
-    setState(() {
-      showIcons = isTyping;
-    });
   }
 
 //! Widgets
@@ -678,6 +454,206 @@ class _ChatPageState extends State<ChatPage>
         ),
       ],
     );
+  }
+}
+
+class ChatField extends StatefulWidget {
+  final requestID;
+
+  const ChatField({required this.requestID, Key? key}) : super(key: key);
+
+  @override
+  State<ChatField> createState() => ChatFieldState();
+}
+
+class ChatFieldState extends State<ChatField>
+    with SingleTickerProviderStateMixin {
+  final _controller = TextEditingController();
+  User currentUser = FirebaseAuth.instance.currentUser!;
+  FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
+  bool isRecorderReady = false;
+
+  bool showRecording = false, showIcons = true;
+
+  @override
+  void initState() {
+    initRecorder();
+    super.initState();
+  }
+
+  Future initRecorder() async {
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw 'Microphone permission denied';
+    }
+    await audioRecorder.openAudioSession();
+    isRecorderReady = true;
+    audioRecorder.setSubscriptionDuration(const Duration(milliseconds: 500));
+  }
+
+  @override
+  void dispose() {
+    audioRecorder.closeAudioSession();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var recorderDuration;
+
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        children: <Widget>[
+          !showRecording
+              ? Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    textCapitalization: TextCapitalization.sentences,
+                    autocorrect: true,
+                    enableSuggestions: true,
+                    onChanged: (text) {
+                      if (_controller.text.trim() != "") {
+                        setIcons(false);
+                      } else {
+                        setIcons(true);
+                      }
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: showIcons
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                IconButton(
+                                  icon: const Icon(Icons.mic),
+                                  focusColor: const Color(0xFF39d6ce),
+                                  onPressed: () async {
+                                    if (!isRecorderReady) {
+                                      return;
+                                    }
+                                    await audioRecorder.startRecorder(
+                                        toFile: const Uuid().v4());
+                                    setRecording(true);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.camera_alt_outlined),
+                                  onPressed: () {
+                                    sendImage(ImageSource.camera);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.insert_photo_outlined),
+                                  onPressed: () {
+                                    sendImage(ImageSource.gallery);
+                                  },
+                                ),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.send),
+                                    color: const Color(0xFF39d6ce),
+                                    iconSize: 30,
+                                    onPressed: () {
+                                      _controller.text.trim().isEmpty
+                                          ? null
+                                          : sendMessage(
+                                              _controller.text, '', '', '');
+                                      setIcons(true);
+                                    },
+                                  ),
+                                  const SizedBox(width: 10),
+                                ]),
+                      filled: true,
+                      fillColor: Colors.grey.shade50,
+                      labelText: 'Message...',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(100.0),
+                          borderSide: BorderSide(color: Colors.grey.shade400)),
+                      contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(100.0),
+                          borderSide: const BorderSide(
+                              color: const Color(0xFF39d6ce), width: 2)),
+                      floatingLabelStyle: const TextStyle(
+                          fontSize: 22, color: Color(0xFF39d6ce)),
+                      helperStyle: const TextStyle(fontSize: 14),
+                    ),
+                  ),
+                )
+              : Expanded(
+                  child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    const Divider(height: 5, color: Colors.grey, thickness: 4),
+                    IconButton(
+                      icon: const Icon(Icons.delete_forever),
+                      color: Colors.red,
+                      iconSize: 33,
+                      onPressed: () {
+                        audioRecorder.stopRecorder();
+                        setRecording(false);
+                      },
+                    ),
+                    const Spacer(),
+                    StreamBuilder<RecordingDisposition>(
+                      stream: audioRecorder.onProgress,
+                      builder: (context, snapshot) {
+                        var duration = snapshot.hasData
+                            ? snapshot.data!.duration
+                            : Duration.zero;
+                        String twoDigits(int n) => n.toString().padLeft(0);
+                        var twoDigitMinutes =
+                            twoDigits(duration.inMinutes.remainder(60));
+                        var twoDigitSeconds =
+                            twoDigits(duration.inSeconds.remainder(60));
+                        duration = Duration.zero;
+                        recorderDuration = '$twoDigitMinutes:$twoDigitSeconds';
+                        return Text('$twoDigitMinutes:$twoDigitSeconds');
+                      },
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.send),
+                      color: const Color(0xFF39d6ce),
+                      iconSize: 33,
+                      onPressed: () async {
+                        if (audioRecorder.isRecording) {
+                          if (!isRecorderReady) {
+                            return;
+                          }
+                          final path = await audioRecorder.stopRecorder();
+                          audioFile = File(path!);
+                          print("Recorded Audio: $audioFile");
+                          sendAudioMessage(recorderDuration);
+                        }
+                        setRecording(false);
+                      },
+                    ),
+                  ],
+                ))
+        ],
+      ),
+    );
+  }
+
+  void setRecording(bool isRecording) {
+    setState(() {
+      showRecording = isRecording;
+    });
+  }
+
+  void setIcons(bool isTyping) {
+    setState(() {
+      showIcons = isTyping;
+    });
   }
 
 //! Firebase

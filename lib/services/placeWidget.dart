@@ -671,6 +671,90 @@ class Place extends StatelessWidget {
                                                     const Text(
                                                       'Comments',
                                                     ),
+                                                    TextField(
+                                                      // controller: _controller,
+                                                      textCapitalization:
+                                                          TextCapitalization
+                                                              .sentences,
+                                                      autocorrect: true,
+                                                      enableSuggestions: true,
+                                                      onChanged: (text) {
+                                                        // if (_controller.text.trim() != "") {
+                                                        //   setIcons(false);
+                                                        // } else {
+                                                        //   // setIcons(true);
+                                                        // }
+                                                      },
+                                                      decoration:
+                                                          InputDecoration(
+                                                        suffixIcon: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .end,
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              IconButton(
+                                                                icon: const Icon(
+                                                                    Icons.send),
+                                                                color: const Color(
+                                                                    0xFF39d6ce),
+                                                                iconSize: 30,
+                                                                onPressed: () {
+                                                                  // _controller.text
+                                                                  //         .trim()
+                                                                  //         .isEmpty
+                                                                  //     ? null
+                                                                  //     : sendMessage(
+                                                                  //         _controller
+                                                                  //             .text,
+                                                                  //         '',
+                                                                  //         '',
+                                                                  //         '');
+                                                                  // setIcons(true);
+                                                                },
+                                                              ),
+                                                              const SizedBox(
+                                                                  width: 10),
+                                                            ]),
+                                                        filled: true,
+                                                        fillColor:
+                                                            Colors.grey.shade50,
+                                                        labelText:
+                                                            'Share your experiences...',
+                                                        border: OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        100.0),
+                                                            borderSide: BorderSide(
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade400)),
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .fromLTRB(
+                                                                20, 20, 20, 20),
+                                                        focusedBorder: OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        100.0),
+                                                            borderSide: const BorderSide(
+                                                                color: const Color(
+                                                                    0xFF39d6ce),
+                                                                width: 2)),
+                                                        floatingLabelStyle:
+                                                            const TextStyle(
+                                                                fontSize: 22,
+                                                                color: Color(
+                                                                    0xFF39d6ce)),
+                                                        helperStyle:
+                                                            const TextStyle(
+                                                                fontSize: 14),
+                                                      ),
+                                                    ),
                                                     const SizedBox(height: 7),
                                                     StreamBuilder<dynamic>(
                                                         stream:
@@ -742,19 +826,15 @@ class Place extends StatelessWidget {
                                                                                                         )))),
                                                                                           ])),
                                                                                       //comment
-                                                                                      Padding(
-                                                                                        padding: const EdgeInsets.fromLTRB(6, 10, 20, 10),
-                                                                                        child: Flexible(
-                                                                                          child: Text(comment_Data.docs[index]['text'], style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 17)),
-                                                                                        ),
-                                                                                      ),
-                                                                                      Text("_____________________________________________",
-                                                                                          style: const TextStyle(
-                                                                                            fontWeight: FontWeight.w400,
-                                                                                            fontSize: 17,
-                                                                                            color: Color.fromARGB(115, 172, 169, 169),
+                                                                                      Align(
+                                                                                          alignment: Alignment.topLeft,
+                                                                                          child: Padding(
+                                                                                            padding: const EdgeInsets.fromLTRB(6, 0, 0, 10),
+                                                                                            child: Flexible(
+                                                                                              child: Text(comment_Data.docs[index]['text'], style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 17)),
+                                                                                            ),
                                                                                           )),
-                                                                                      // date and time
+
                                                                                       Padding(
                                                                                         padding: const EdgeInsets.fromLTRB(6, 0, 0, 0),
                                                                                         child: Row(
@@ -772,26 +852,26 @@ class Place extends StatelessWidget {
                                                                                                 ],
                                                                                               ),
                                                                                             ),
-                                                                                            // Divider(),
-
-                                                                                            Padding(
-                                                                                                padding: const EdgeInsets.only(left: 210),
-                                                                                                child: Visibility(
-                                                                                                    visible: comment_Data.docs[index]['UserID'] == "User5",
-                                                                                                    child: IconButton(
-                                                                                                      iconSize: 30,
-                                                                                                      icon: const Icon(
-                                                                                                        Icons.delete,
-                                                                                                      ),
-                                                                                                      onPressed: () {
-                                                                                                        // delete_comm
-                                                                                                        //     .doc('id') // <-- Doc ID to be deleted.
-                                                                                                        //     .delete() // <-- Delete
-                                                                                                        //     .then((_) => print('Deleted'))
-                                                                                                        //     .catchError((error) =>
-                                                                                                        //         print('Delete failed: $error'));
-                                                                                                      },
-                                                                                                    )))
+                                                                                            Align(
+                                                                                                alignment: Alignment.centerRight,
+                                                                                                child: Padding(
+                                                                                                    padding: const EdgeInsets.only(left: 0),
+                                                                                                    child: Visibility(
+                                                                                                        visible: comment_Data.docs[index]['UserID'] == "User5",
+                                                                                                        child: IconButton(
+                                                                                                          iconSize: 30,
+                                                                                                          icon: const Icon(
+                                                                                                            Icons.delete,
+                                                                                                          ),
+                                                                                                          onPressed: () {
+                                                                                                            // delete_comm
+                                                                                                            //     .doc('id') // <-- Doc ID to be deleted.
+                                                                                                            //     .delete() // <-- Delete
+                                                                                                            //     .then((_) => print('Deleted'))
+                                                                                                            //     .catchError((error) =>
+                                                                                                            //         print('Delete failed: $error'));
+                                                                                                          },
+                                                                                                        ))))
                                                                                           ],
                                                                                         ),
                                                                                       ),
@@ -816,4 +896,11 @@ class Place extends StatelessWidget {
           }
         });
   }
+  // var showIcons = true;
+  //   void setIcons(bool isTyping) {
+  //   setState(() {
+  //     showIcons = isTyping;
+  //   });
+  // }
+
 }
