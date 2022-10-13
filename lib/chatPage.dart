@@ -177,6 +177,8 @@ class _ChatPageState extends State<ChatPage>
   @override
   Widget build(BuildContext context) {
     var recorderDuration;
+    var previousMessageDate = '00/00/0000';
+    // DateFormat('d/M/Y').format(time).toString(),
 
     return Scaffold(
         body: FutureBuilder<Map<String, dynamic>>(
@@ -242,19 +244,62 @@ class _ChatPageState extends State<ChatPage>
                                   reverse: true,
                                   itemCount: messages.size,
                                   itemBuilder: (context, index) {
+                                    if (index != 0) {
+                                      previousMessageDate = DateFormat('d/M/y')
+                                          .format(DateTime
+                                              .fromMillisecondsSinceEpoch(
+                                                  messages.docs[index - 0]
+                                                      ['createdAt']))
+                                          .toString();
+                                    } else {
+                                      // previousMessageDate = DateFormat('d/M/y')
+                                      //     .format(DateTime
+                                      //         .fromMillisecondsSinceEpoch(
+                                      //             messages.docs[0]
+                                      //                 ['createdAt']))
+                                      //     .toString();
+                                    }
+                                    // previousMessageDate !=
+                                    //         DateFormat('d/M/y')
+                                    //             .format(DateTime
+                                    //                 .fromMillisecondsSinceEpoch(
+                                    //                     messages.docs[index]
+                                    //                         ['createdAt']))
+                                    //             .toString()
+                                    //     ? previousMessageDate =
+                                    //         DateFormat('d/M/y').format(DateTime
+                                    //             .fromMillisecondsSinceEpoch(
+                                    //                 messages.docs[index]
+                                    //                     ['createdAt']))
+                                    //     : SizedBox(height: 0);
                                     return Column(children: [
+                                      previousMessageDate !=
+                                              DateFormat('d/M/y')
+                                                  .format(DateTime
+                                                      .fromMillisecondsSinceEpoch(
+                                                          messages.docs[index]
+                                                              ['createdAt']))
+                                                  .toString()
+                                          ? Center(
+                                              child: Text(DateFormat('d/M/y')
+                                                  .format(DateTime
+                                                      .fromMillisecondsSinceEpoch(
+                                                          messages.docs[index]
+                                                              ['createdAt']))))
+                                          : SizedBox(height: 0),
                                       Message(
-                                          messages.docs[index]['text'],
-                                          messages.docs[index]['author'] ==
-                                              currentUser.uid,
-                                          DateTime.fromMillisecondsSinceEpoch(
-                                            messages.docs[index]['createdAt'],
-                                          ),
-                                          messages.docs[index]['read'],
-                                          messages.docs[index]['img'],
-                                          messages.docs[index]['audio'],
-                                          messages.docs[index]
-                                              ['audioDuration']),
+                                        messages.docs[index]['text'],
+                                        messages.docs[index]['author'] ==
+                                            currentUser.uid,
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                          messages.docs[index]['createdAt'],
+                                        ),
+                                        messages.docs[index]['read'],
+                                        messages.docs[index]['img'],
+                                        messages.docs[index]['audio'],
+                                        messages.docs[index]['audioDuration'],
+                                        // previousMessgaeDate
+                                      ),
                                     ]);
                                   },
                                 );
@@ -577,6 +622,8 @@ class _ChatPageState extends State<ChatPage>
               Row(mainAxisSize: MainAxisSize.min, children: [
                 Text(
                   DateFormat('hh:mm a').format(time).toString(),
+                  // DateFormat('d/M/y').format(time).toString(),
+
                   style: TextStyle(
                       color: isMe ? Colors.grey.shade200 : Colors.grey,
                       fontSize: 11),
