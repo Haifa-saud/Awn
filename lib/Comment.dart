@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'main.dart';
 import 'package:flutter/material.dart';
-//import 'firebase_options.dart';
+import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
@@ -23,12 +23,12 @@ class commentsState extends State<comments> {
 
   @override
   Widget build(BuildContext context) {
-    // Stream<QuerySnapshot> comments = FirebaseFirestore.instance
-    //     .collection('comment')
-    //     //.where('PostID', isEqualTo: "Post1")
-    //     .snapshots();
+    Stream<QuerySnapshot> comments = FirebaseFirestore.instance
+        .collection('comment')
+        //.where('PostID', isEqualTo: "Post1")
+        .snapshots();
 
-    final delete_comm = FirebaseFirestore.instance.collection('comment');
+    //final delete_comm = FirebaseFirestore.instance.collection('comment');
 
     final _formKey = GlobalKey<FormState>();
 
@@ -51,8 +51,6 @@ class commentsState extends State<comments> {
       ),
       body: Center(
         child: SizedBox(
-            // height: 50, //height of button
-            // width: 50,
             child: Column(children: [
           const Spacer(),
           const Divider(),
@@ -68,7 +66,6 @@ class commentsState extends State<comments> {
                     textAlign: TextAlign.center,
                   ),
                   //comment
-
                   content: Form(
                     key: _formKey,
                     child: SizedBox(
@@ -148,89 +145,165 @@ class commentsState extends State<comments> {
                   return Text("this post has no comments");
                 } else {
                   final comment_Data = snapshot.data;
-
                   return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const BouncingScrollPhysics(),
-                    reverse: true,
-                    itemCount: comment_Data!.size,
-                    itemBuilder: (context, index) {
-                      return Column(children: [
-                        Text(comment_Data.docs[index]['name']),
-                        Text(comment_Data.docs[index]['date']),
-                        Text(comment_Data.docs[index]['text']),
-                        Text(comment_Data.docs[index]['Commenter']),
-
-                        //  if (UserID == 'User1"'){
-
-                        //       IconButton(
-                        //         iconSize: 10,
-                        //         icon: const Icon(
-                        //           Icons.delete,
-                        //         ),
-                        //         onPressed: () {
-                        //           delete_comm
-                        //               .doc('id') // <-- Doc ID to be deleted.
-                        //               .delete() // <-- Delete
-                        //               .then((_) => print('Deleted'))
-                        //               .catchError((error) =>
-                        //                   print('Delete failed: $error'));
-                        //         },
-                        //       )
-
-                        //       },
-
-                        const Divider(),
-                      ]);
-                    },
-                  );
-
-                  // ignore: dead_code
-                  // Column(
-                  //   children:
-                  //       snapshot.data!.docs.map((DocumentSnapshot document) {
-                  //     return Container(
-                  //         child: Column(children: [
-                  //       Text((document.data() as Map)['name']),
-                  //       Text((document.data() as Map)['date'],
-                  //           style: TextStyle(
-                  //               fontSize: 18,
-                  //               fontWeight: FontWeight.normal,
-                  //               color: Color.fromARGB(255, 54, 99, 222))),
-                  //       //Text((document.data() as Map)['Commenter']),
-                  //       Text((document.data() as Map)['text'],
-                  //           style: TextStyle(
-                  //             fontSize: 18,
-                  //             fontWeight: FontWeight.normal,
-                  //           )),
-
-                  //       //UserID = (document.data() as Map)['UserID'],
-                  //       // Column(
-                  //       //   children: <Widget>[
-                  //       //     if (UserID == 'User1"'){
-
-                  //       //       (IconButton(
-                  //       //         iconSize: 10,
-                  //       //         icon: const Icon(
-                  //       //           Icons.delete,
-                  //       //         ),
-                  //       //         onPressed: () {
-                  //       //           delete_comm
-                  //       //               .doc('id') // <-- Doc ID to be deleted.
-                  //       //               .delete() // <-- Delete
-                  //       //               .then((_) => print('Deleted'))
-                  //       //               .catchError((error) =>
-                  //       //                   print('Delete failed: $error'));
-                  //       //         },
-                  //       //       )
-                  //       //       )
-                  //       //       },
-                  //       //   ],
-                  //       // ),
-                  //       Divider(),
-                  //     ]));
-                  //   }).toList(),
-                  // );
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      reverse: true,
+                      itemCount: comment_Data!.size,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 16),
+                            child: Stack(children: [
+                              Container(
+                                width: 600,
+                                margin: const EdgeInsets.only(top: 12),
+                                padding: const EdgeInsets.all(1),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: const [
+                                      BoxShadow(
+                                          blurRadius: 32,
+                                          color: Colors.black45,
+                                          spreadRadius: -8)
+                                    ],
+                                    borderRadius: BorderRadius.circular(15)),
+                                child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            8, 1, 1, 1),
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        6, 10, 15, 15),
+                                                child: Stack(children: [
+                                                  Align(
+                                                      alignment:
+                                                          Alignment.topLeft,
+                                                      child: Container(
+                                                          width: 235,
+                                                          child: Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: Text(
+                                                                comment_Data.docs[index]['name'],
+                                                                style:
+                                                                    const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                ),
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .left,
+                                                              )))),
+                                                ])),
+                                            // date and time
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      6, 20, 0, 10),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 0),
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                            Icons
+                                                                .calendar_today,
+                                                            size: 20,
+                                                            color: Colors
+                                                                .red.shade200),
+                                                        Text(
+                                                            comment_Data.docs[index]['date'],
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 17,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                            )),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 40),
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(Icons.schedule,
+                                                            size: 20,
+                                                            color: Colors
+                                                                .red.shade200),
+                                                        Text(
+                                                            comment_Data.docs[index]['time'],
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 17,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                            )),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            //comment
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      6, 10, 20, 10),
+                                              child: Row(
+                                                children: [
+                                                  Flexible(
+                                                    child: Text(
+                                                        comment_Data.docs[index]['text'],
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                            fontSize: 17)),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Visibility(
+                                                visible: comment_Data.docs[index]['UserID'] == commenter,
+                                                child: IconButton(
+                                                  iconSize: 10,
+                                                  icon: const Icon(
+                                                    Icons.delete,
+                                                  ),
+                                                  onPressed: () {
+                                                    // delete_comm
+                                                    //     .doc('id') // <-- Doc ID to be deleted.
+                                                    //     .delete() // <-- Delete
+                                                    //     .then((_) => print('Deleted'))
+                                                    //     .catchError((error) =>
+                                                    //         print('Delete failed: $error'));
+                                                  },
+                                                ))
+                                          ],
+                                        ),
+                                      ),
+                                    ]),
+                              )
+                            ]));
+                      });
                 }
               }),
           const Spacer(),
@@ -246,9 +319,7 @@ class commentsState extends State<comments> {
     String dataId = '';
     print('will be added to db');
     //add all value without the location
-    id = FirebaseFirestore.instance.collection('comment').doc().id;
     DocumentReference docReference = await Post_comment.add({
-      'commentID': id,
       'date': actualDate,
       'name': commenter,
       'time': actualTime,
