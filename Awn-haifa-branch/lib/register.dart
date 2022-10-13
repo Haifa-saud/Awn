@@ -1,652 +1,929 @@
-import 'package:awn/Utils.dart';
-import 'package:awn/login.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'firebase_options.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:path/path.dart' as Path;
-import 'forgotPassword.dart';
-import 'main.dart';
-import 'package:email_validator/email_validator.dart';
+// import 'package:awn/services/Utils.dart';
+// import 'package:awn/login.dart';
+// import 'package:awn/services/firebase_storage_services.dart';
+// import 'package:file_picker/file_picker.dart';
+// import 'package:flutter/material.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/gestures.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:flutter/services.dart';
+// import 'package:intl/intl.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
+// import 'dart:io';
+// import 'package:email_validator/email_validator.dart';
+// import 'services/theme.dart';
+// import 'services/myGlobal.dart' as globals;
+// import 'package:awn/services/appWidgets.dart';
 
-class register extends StatefulWidget {
-  final Function() onClickedSignIn;
-  const register({
-    Key? key,
-    required this.onClickedSignIn,
-  }) : super(key: key);
+// class register extends StatefulWidget {
+//   const register({
+//     Key? key,
+//   }) : super(key: key);
 
-  @override
-  _registerState createState() => _registerState();
-}
+//   @override
+//   _registerState createState() => _registerState();
+// }
 
-TextEditingController emailController = TextEditingController();
-TextEditingController passwordController = TextEditingController();
-TextEditingController cofirmPasswordController = TextEditingController();
-TextEditingController nameController = TextEditingController();
-TextEditingController numberController = TextEditingController();
-String group = "Gender";
-String group1 = "Role";
-bool blind = false;
-bool mute = false;
-bool deaf = false;
-bool physical = false;
-bool other = false;
+// TextEditingController emailController = TextEditingController();
+// TextEditingController passwordController = TextEditingController();
+// TextEditingController cofirmPasswordController = TextEditingController();
+// TextEditingController nameController = TextEditingController();
+// TextEditingController numberController = TextEditingController();
+// TextEditingController bioController = TextEditingController();
 
-class _registerState extends State<register> {
-  @override
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+// String group = "Female";
+// String group1 = "Special Need User";
+// bool blind = false;
+// bool mute = false;
+// bool deaf = false;
+// bool physical = false;
+// bool other = false;
+// PlatformFile pickedFile = new PlatformFile(name: '', size: 0);
+// String label = "click to upload disability certificate";
+// bool upload = false;
+// String filePath = "Pick file";
+// String typeId = "";
+// File? fileDB;
+// //Wedd's change
+// String password = "";
+// String confirm_password = "";
 
-  bool _passwordVisible = false;
-  void dispose() {
-    emailController.text = "";
-    passwordController.text = "";
-    cofirmPasswordController.text = "";
-    nameController.text = "";
-    numberController.text = "";
+// class _registerState extends State<register> {
+//   // Future<Map<String, dynamic>> readUserData() => FirebaseFirestore.instance
+//   //         .collection('usUserDisabilityTypeers')
+//   //         .doc()
+//   //         .get()
+//   //         .then(
+//   //           (DocumentSnapshot doc) {
+//   //         print(doc.data() as Map<String, dynamic>);
+//   //         return doc.data() as Map<String, dynamic>;
+//   //       },
+//   //     );
+//   // Stream<QuerySnapshot> DisabilityType =
+//   //     FirebaseFirestore.instance.collection('UserDisabilityType').snapshots();
+//   CollectionReference DisabilityType =
+//       FirebaseFirestore.instance.collection('UserDisabilityType');
+//   var selectedDisabilityType;
 
-    super.dispose();
-  }
+//   @override
+//   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  DateTime selectedDate = DateTime.now();
-  bool showDate = false;
+//   bool _passwordVisible = false;
+//   @override
+//   void clearForm() {
+//     group = "Female";
+//     group1 = "Special Need User";
+//     emailController.text = "";
+//     passwordController.text = "";
+//     cofirmPasswordController.text = "";
+//     nameController.text = "";
+//     numberController.text = "";
+//     bioController.text = "";
+//     DisabilityType.doc('HearingImpaired').update({'Checked': false});
+//     DisabilityType.doc('PhysicallyImpaired').update({'Checked': false});
+//     DisabilityType.doc('VisuallyImpaired').update({'Checked': false});
+//     DisabilityType.doc('VocallyImpaired').update({'Checked': false});
+//     DisabilityType.doc('Other').update({'Checked': false});
+//     blind = false;
+//     mute = false;
+//     deaf = false;
+//     physical = false;
+//     other = false;
+//     typeId = "";
+//   }
 
-  Future<DateTime> _selectDate(BuildContext context) async {
-    final selected = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      // firstDate: DateTime(2000),
-      firstDate: DateTime(1950),
-      lastDate: DateTime.now(),
-    );
-    if (selected != null && selected != selectedDate) {
-      setState(() {
-        selectedDate = selected;
-      });
-    }
-    return selectedDate;
-  }
+//   DateTime selectedDate = DateTime.now();
+//   bool showDate = false;
+//   ScrollController _scrollController = ScrollController();
 
-  String getDate() {
-    // ignore: unnecessary_null_comparison
-    if (selectedDate == null) {
-      return 'select date';
-    } else {
-      return DateFormat('MMM d, yyyy').format(selectedDate);
-    }
-  }
+//   Future<DateTime> _selectDate(BuildContext context) async {
+//     final selected = await showDatePicker(
+//       context: context,
+//       initialDate: selectedDate,
+//       // firstDate: DateTime(2000),
+//       firstDate: DateTime(1950),
+//       lastDate: DateTime.now(),
+//     );
+//     if (selected != null && selected != selectedDate) {
+//       setState(() {
+//         selectedDate = selected;
+//       });
+//     }
+//     return selectedDate;
+//   }
 
-  Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+//   String getDate() {
+//     if (selectedDate == null) {
+//       return 'select date';
+//     } else {
+//       globals.bDay = DateFormat('MMM d, yyyy').format(selectedDate);
+//       return DateFormat('MMM d, yyyy').format(selectedDate);
+//     }
+//   }
 
-    final double height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      key: _scaffoldKey,
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-          //hexStringToColor("#00dacf"),
-          //hexStringToColor("#fcfffd"),
-          Colors.cyanAccent.shade100,
+//   final Storage storage = Storage();
 
-          // hexStringToColor("#fcfffd"),
-          //hexStringToColor("#fcfffd"),
-          //hexStringToColor("#fcfffd"),
-          Colors.white54,
-          Colors.white54,
-          //hexStringToColor("#fcfffd"),
-          //hexStringToColor("#283466")
-          Colors.blue.shade200
-        ], begin: Alignment.topRight, end: Alignment.bottomLeft)),
-        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-        padding: const EdgeInsets.only(left: 40, right: 40),
-        child: ListView(
-          children: [
-            Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Text(
-                      "Register",
-                      style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 95, 94, 94)),
-                    ),
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  TextFormField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: "Enter Email",
-                      hintText: "Email",
-                      contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400)),
-                      errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                      focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                    ),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      value != null && value.length < 8
-                          ? 'Enter a valid email'
-                          : null;
-                    },
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  TextFormField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      labelText: "Enter your first and last name",
-                      hintText: "",
-                      contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400)),
-                      errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                      focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                    ),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      value != null && value.length < 2
-                          ? 'Enter a valid name'
-                          : null;
-                    },
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              "Gender:",
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Radio(
-                              value: "Female",
-                              groupValue: group,
-                              onChanged: (T) {
-                                print(T);
-                                setState(() {
-                                  group = T!;
-                                });
-                              },
-                            ),
-                            Text("Female"),
-                            Radio(
-                              value: "Male",
-                              groupValue: group,
-                              onChanged: (T) {
-                                print(T);
-                                setState(() {
-                                  group = T!;
-                                });
-                              },
-                            ),
-                            Text("Male"),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Text("Register As:"),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Radio(
-                              value: "Special Needs User",
-                              groupValue: group1,
-                              onChanged: (T) {
-                                print(T);
-                                setState(() {
-                                  group1 = T!;
-                                });
-                              },
-                            ),
-                            Text("Special Needs User"),
-                            Radio(
-                              value: "Volunteer",
-                              groupValue: group1,
-                              onChanged: (T) {
-                                print(T);
-                                setState(() {
-                                  group1 = T!;
-                                });
-                              },
-                            ),
-                            Text("Volunteer"),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        if (group1.isNotEmpty && group1 == "Volunteer") {
-                          return Card(
-                              color: Color.fromARGB(255, 243, 241, 241),
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: TextField(
-                                  maxLines: 5, //or null
-                                  decoration: InputDecoration.collapsed(
-                                      hintText:
-                                          "Enter your bio here. \n(talk briefly about yourself! )"),
-                                ),
-                              ));
-                        }
+//   Widget build(BuildContext context) {
+//     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-                        return Column(
-                          children: [
-                            TextFormField(
-                              controller: nameController,
-                              decoration: InputDecoration(
-                                labelText: "Enter your first and last name",
-                                hintText: "",
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    borderSide: BorderSide(
-                                        color: Colors.grey.shade400)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 2.0)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 2.0)),
-                              ),
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) {
-                                value != null && value.length < 2
-                                    ? 'Enter a valid name'
-                                    : null;
-                              },
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Checkbox(
-                                    value: blind,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        blind = value!;
-                                      });
-                                    }),
-                                Text("Visually Impaired"),
-                                Checkbox(
-                                    value: mute,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        mute = value!;
-                                      });
-                                    }),
-                                Text("Vocally Impaired"),
-                                Checkbox(
-                                    value: deaf,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        deaf = value!;
-                                      });
-                                    }),
-                                Text("hearing Impaired"),
-                                Checkbox(
-                                    value: physical,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        physical = value!;
-                                      });
-                                    }),
-                                Text("physically Impaired"),
-                                Checkbox(
-                                    value: other,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        other = value!;
-                                      });
-                                    }),
-                                Text("other"),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  // WEDD START FROM HERE
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+//     final double height = MediaQuery.of(context).size.height;
+//     return Scaffold(
+//       key: _scaffoldKey,
+//       body: Container(
+//         decoration: BoxDecoration(
+//             gradient: LinearGradient(colors: [
+//           Colors.cyanAccent.shade100,
+//           Colors.white54,
+//           Colors.white54,
+//           Colors.blue.shade200
+//         ], begin: Alignment.topRight, end: Alignment.bottomLeft)),
+//         margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+//         padding: const EdgeInsets.only(left: 40, right: 40),
+//         child: ListView(
+//           children: [
+//             SizedBox(
+//               height: height * 0.05,
+//             ),
+//             FutureBuilder(
+//                 future: storage.downloadURL('logo.png'),
+//                 builder:
+//                     (BuildContext context, AsyncSnapshot<String> snapshot) {
+//                   if (snapshot.connectionState == ConnectionState.done &&
+//                       snapshot.hasData) {
+//                     return Center(
+//                       child: Image.network(
+//                         snapshot.data!,
+//                         fit: BoxFit.cover,
+//                         width: 100,
+//                         height: 100,
+//                       ),
+//                     );
+//                   }
+//                   if (snapshot.connectionState == ConnectionState.waiting ||
+//                       !snapshot.hasData) {
+//                     return Center(
+//                         child: CircularProgressIndicator(
+//                       color: Colors.grey.shade200,
+//                     ));
+//                   }
+//                   return Container();
+//                 }),
+//             SizedBox(
+//               height: height * 0.02,
+//             ),
+//             Form(
+//               key: _formKey,
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   const Center(
+//                     child: Text(
+//                       "Register",
+//                       style: TextStyle(
+//                           fontSize: 30,
+//                           fontWeight: FontWeight.bold,
+//                           color: Color.fromARGB(255, 95, 94, 94)),
+//                     ),
+//                   ),
+//                   SizedBox(
+//                     height: height * 0.02,
+//                   ),
+//                   TextFormField(
+//                     controller: emailController,
+//                     decoration:
+//                         theme.inputfield("Email", "example@example.example"),
+//                     autovalidateMode: AutovalidateMode.onUserInteraction,
+//                     validator: (email) {
+//                       if (email != null && !EmailValidator.validate(email)) {
+//                         return "Enter a valid email";
+//                       } else {
+//                         return null;
+//                       }
+//                     },
+//                   ),
+//                   SizedBox(
+//                     height: height * 0.01,
+//                   ),
+//                   TextFormField(
+//                     controller: nameController,
+//                     decoration: theme.inputfield("Name", "Sara Ahmad"),
+//                     autovalidateMode: AutovalidateMode.onUserInteraction,
+//                     validator: (value) {
+//                       if (value != null && value.length < 2) {
+//                         return "Enter a valid name";
+//                       } else {
+//                         return null;
+//                       }
+//                     },
+//                   ),
+//                   SizedBox(
+//                     height: height * 0.01,
+//                   ),
+//                   Container(
+//                     margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+//                     child: Column(
+//                       children: [
+//                         Row(
+//                           children: const [
+//                             Text(
+//                               "Gender:",
+//                             ),
+//                           ],
+//                         ),
+//                         Row(
+//                           children: [
+//                             Radio(
+//                               value: "Female",
+//                               groupValue: group,
+//                               onChanged: (T) {
+//                                 setState(() {
+//                                   group = T!;
+//                                 });
+//                               },
+//                             ),
+//                             const Text("Female",
+//                                 style: TextStyle(
+//                                     fontSize: 18,
+//                                     fontWeight: FontWeight.normal)),
+//                             Radio(
+//                               value: "Male",
+//                               groupValue: group,
+//                               onChanged: (T) {
+//                                 print(T);
+//                                 setState(() {
+//                                   group = T!;
+//                                 });
+//                               },
+//                             ),
+//                             const Text("Male",
+//                                 style: TextStyle(
+//                                     fontSize: 18,
+//                                     fontWeight: FontWeight.normal)),
+//                           ],
+//                         ),
+//                         Row(
+//                           children: const [
+//                             Text("Register As:"),
+//                           ],
+//                         ),
+//                         Row(children: [
+//                           Radio(
+//                             value: "Special Need User",
+//                             groupValue: group1,
+//                             onChanged: (T) {
+//                               print(T);
+//                               setState(() {
+//                                 group1 = T!;
+//                               });
+//                             },
+//                           ),
+//                           const Text("Special Need User",
+//                               style: TextStyle(
+//                                   fontSize: 18, fontWeight: FontWeight.normal)),
+//                         ]),
+//                         Row(
+//                           children: [
+//                             Radio(
+//                               value: "Volunteer",
+//                               groupValue: group1,
+//                               onChanged: (T) {
+//                                 setState(() {
+//                                   group1 = T!;
+//                                 });
+//                               },
+//                             ),
+//                             const Text("Volunteer",
+//                                 style: TextStyle(
+//                                     fontSize: 18,
+//                                     fontWeight: FontWeight.normal)),
+//                           ],
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                   Container(
+//                     child: LayoutBuilder(builder: (context, constraints) {
+//                       if (group1 == "Volunteer") {
+//                         return Container(
+//                             padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+//                             child: SingleChildScrollView(
+//                               controller: _scrollController,
+//                               child: TextFormField(
+//                                 scrollController: _scrollController,
+//                                 keyboardType: TextInputType.multiline,
+//                                 maxLines: 6,
+//                                 maxLength: 180,
+//                                 textAlign: TextAlign.left,
+//                                 controller: bioController,
+//                                 decoration: InputDecoration(
+//                                   hintText:
+//                                       "Enter your bio here.\n(talk briefly about yourself! )",
+//                                   labelText: 'Bio',
+//                                   enabledBorder: OutlineInputBorder(
+//                                       borderRadius: BorderRadius.circular(30.0),
+//                                       borderSide: BorderSide(
+//                                           color: Colors.grey.shade400)),
+//                                   focusedBorder: OutlineInputBorder(
+//                                     borderRadius: BorderRadius.circular(30.0),
+//                                     borderSide: const BorderSide(
+//                                         color: Colors.blue, width: 2),
+//                                   ),
+//                                 ),
+//                               ),
+//                             ));
+//                       } else if (group1 == 'Special Need User') {
+//                         return Column(
+//                           children: [
+//                             /* Text(
+//                               "Click to upload your disability certificate:",
+//                             ),
+//                             Container(
+//                               margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+//                               child: ElevatedButton(
+//                                 style: ElevatedButton.styleFrom(
+//                                     foregroundColor: Colors.grey.shade500,
+//                                     backgroundColor: Colors.white,
+//                                     padding:
+//                                         EdgeInsets.fromLTRB(14, 10, 14, 10),
+//                                     side: BorderSide(
+//                                         color: Colors.grey.shade400, width: 1)),
+//                                 child: Padding(
+//                                   padding: EdgeInsets.fromLTRB(40, 0, 40, 0),
+//                                   child: Text(
+//                                     filePath,
+//                                     style: TextStyle(
+//                                       fontSize: 15, /*color: Colors.white*/
+//                                     ),
+//                                   ),
+//                                 ),
+//                                 onPressed: selectFile,
 
-                    //
-                    //padding: const EdgeInsets.symmetric(horizontal: 15),
-                    //  margin: EdgeInsets.only(bottom: 10, top: 20),
-                    // width: 150,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text("Select your date of birth:     "),
-                        ElevatedButton(
-                          onPressed: () {
-                            _selectDate(context);
-                            showDate = false;
-                          },
-                          style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.grey.shade500,
-                              backgroundColor: Colors.white,
-                              padding: EdgeInsets.fromLTRB(14, 20, 14, 20),
-                              side: BorderSide(
-                                  color: Colors.grey.shade400, width: 1)),
-                          child: const Text('Date of Birth'),
-                        ),
-                        showDate
-                            ? Container(
-                                margin: EdgeInsets.only(left: 5),
-                                child: Text(getDate()))
-                            : const SizedBox(),
-                      ],
-                    ),
-                  ),
-                  //END HERE
-                  TextFormField(
-                    controller: numberController,
-                    decoration: InputDecoration(
-                      labelText: "Enter your phone number",
-                      hintText: "0555555555",
-                      contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400)),
-                      errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                      focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                    ),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      value != null && value.length < 10
-                          ? 'Enter a valid number'
-                          : null;
-                    },
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  TextFormField(
-                    controller: passwordController,
-                    obscureText: !_passwordVisible,
-                    decoration: InputDecoration(
-                      labelText: "Enter Password",
-                      hintText: "Password",
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          // Based on passwordVisible state choose the icon
-                          _passwordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: Theme.of(context).primaryColorDark,
-                        ),
-                        onPressed: () {
-                          // Update the state i.e. toogle the state of passwordVisible variable
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                        },
-                      ),
-                      contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400)),
-                      errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                      focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                    ),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      value != null && value.length < 8
-                          ? 'Enter a valid password'
-                          : null;
-                    },
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  TextFormField(
-                    controller: cofirmPasswordController,
-                    obscureText: !_passwordVisible,
-                    decoration: InputDecoration(
-                      labelText: "Enter Password",
-                      hintText: "Password",
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          // Based on passwordVisible state choose the icon
-                          _passwordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: Theme.of(context).primaryColorDark,
-                        ),
-                        onPressed: () {
-                          // Update the state i.e. toogle the state of passwordVisible variable
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                        },
-                      ),
-                      contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400)),
-                      errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                      focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              BorderSide(color: Colors.red, width: 2.0)),
-                    ),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) {
-                      value != null && value.length < 8
-                          ? 'Enter a valid password'
-                          : null;
-                    },
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  SizedBox(
-                    height: height * 0.01,
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(70, 0, 50, 10),
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(0, 4),
-                            blurRadius: 5.0)
-                      ],
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        stops: [0.0, 1.0],
-                        colors: [
-                          Colors.blue,
-                          Colors.cyanAccent,
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: ElevatedButton(
-                        style: ButtonStyle(
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                          ),
-                          minimumSize: MaterialStateProperty.all(Size(50, 50)),
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          shadowColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
-                          child: Text(
-                            'Register',
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ),
-                        onPressed: () {
-                          if (cofirmPasswordController.text.isEmpty ||
-                              cofirmPasswordController.text !=
-                                  passwordController.text) {
-                            Utils.showSnackBar(
-                                "confirm password does not match");
-                            return;
-                          }
-                          signUp();
-                        }
-                        // Navigator.pushReplacement(
-                        // context,
-                        // MaterialPageRoute(
-                        //  builder: (context) => ProfilePage()));
-                        ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(50, 10, 50, 10),
-                    //child: Text('Don\'t have an account? Create'),
-                    child: Text.rich(TextSpan(children: [
-                      TextSpan(text: "Don\'t have an account? "),
-                      TextSpan(
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = widget.onClickedSignIn,
-                        text: 'Log In',
+//                                 /*() {
+//                                  //After successful login we will redirect to profile page. Let's create profile page now
+//                                 },*/
+//                                 // Navigator.pushReplacement(
+//                                 // context,
+//                                 // MaterialPageRoute(
+//                                 //  builder: (context) => ProfilePage()));
+//                               ),
+//                             ),*/
+//                             SizedBox(
+//                               height: height * 0.01,
+//                             ),
+//                             Row(
+//                               children: const <Widget>[
+//                                 Text(
+//                                   "Select imparity/imparities: ",
+//                                 ),
+//                               ],
+//                             ),
+//                             SizedBox(
+//                               height: height * 0.01,
+//                             ),
 
-                        // Navigator.push(
-                        //  context,
-                        //  MaterialPageRoute(
-                        //    builder: (context) =>
-                        //     RegistrationPage()));
+//                             //Wedd's change
+//                             // each row must have a check box and a text
 
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).accentColor),
-                      ),
-                    ])),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+//                             StreamBuilder<QuerySnapshot>(
+//                                 stream: DisabilityType.snapshots(),
+//                                 builder: (context, snapshot) {
+//                                   if (!snapshot.hasData) {
+//                                     return Text("Loading");
+//                                   } else {
+//                                     return Column(
+//                                       children: snapshot.data!.docs
+//                                           .map((DocumentSnapshot document) {
+//                                         bool isChecked = ((document.data()
+//                                             as Map)['Checked']);
+//                                         return DropdownMenuItem<String>(
+//                                             child: CheckboxListTile(
+//                                           value: (document.data()
+//                                               as Map)['Checked'],
+//                                           onChanged: (bool? newValue) {
+//                                             setState(() {
+//                                               typeId = (document.data()
+//                                                       as Map)['Type']
+//                                                   .replaceAll(' ', '');
+//                                               DisabilityType.doc(typeId).update(
+//                                                   {'Checked': newValue});
+//                                             });
 
-  Future signUp() async {
-    final isValid = _formKey.currentState!.validate();
-    if (!isValid) return;
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-    } on FirebaseAuthException catch (e) {
-      print(e);
-      Utils.showSnackBar(e.message);
-    }
-  }
-}
+//                                             if ((document.data()
+//                                                     as Map)['Type'] ==
+//                                                 'Visually Impaired') {
+//                                               blind = !blind;
+//                                             }
+//                                             if ((document.data()
+//                                                     as Map)['Type'] ==
+//                                                 'Vocally Impaired') {
+//                                               mute = !mute;
+//                                             }
+//                                             if ((document.data()
+//                                                     as Map)['Type'] ==
+//                                                 'Hearing Impaired') {
+//                                               deaf = !deaf;
+//                                             }
+//                                             if ((document.data()
+//                                                     as Map)['Type'] ==
+//                                                 'Physically Impaired') {
+//                                               physical = !physical;
+//                                             }
+//                                             if ((document.data()
+//                                                     as Map)['Type'] ==
+//                                                 'Other') {
+//                                               other = !other;
+//                                             }
+//                                           },
+//                                           title: Text(
+//                                               (document.data() as Map)['Type'],
+//                                               style: TextStyle(
+//                                                   fontSize: 18,
+//                                                   fontWeight:
+//                                                       FontWeight.normal)),
+//                                           controlAffinity:
+//                                               ListTileControlAffinity.leading,
+//                                         ));
+//                                       }).toList(),
+//                                     );
+//                                   }
+//                                 }),
+//                           ],
+//                         );
+//                       } else {
+//                         return const Text('');
+//                       }
+//                     }),
+//                   ),
+//                   SizedBox(
+//                     height: height * 0.01,
+//                   ),
+//                   //WEDD START FROM HERE
+//                   //DOB
+//                   Container(
+//                     margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+//                     child: Column(
+//                       mainAxisAlignment: MainAxisAlignment.start,
+//                       children: [
+//                         Align(
+//                             alignment: Alignment.centerLeft,
+//                             child: const Text(
+//                               "Date of Birth:",
+//                               textAlign: TextAlign.left, //style:TextStyle(re)
+//                             )),
+//                         SizedBox(
+//                           height: height * 0.01,
+//                         ),
+//                         Row(
+//                           mainAxisAlignment: MainAxisAlignment.center,
+//                           children: [
+//                             ElevatedButton(
+//                               onPressed: () {
+//                                 _selectDate(context);
+//                                 showDate = false;
+//                                 globals.bDay = getDate();
+//                               },
+//                               style: ElevatedButton.styleFrom(
+//                                   foregroundColor: Colors.grey.shade500,
+//                                   backgroundColor: Colors.white,
+//                                   padding:
+//                                       const EdgeInsets.fromLTRB(14, 10, 14, 10),
+//                                   side: BorderSide(
+//                                       color: Colors.grey.shade400, width: 1)),
+//                               child: Padding(
+//                                 padding:
+//                                     const EdgeInsets.fromLTRB(40, 0, 40, 0),
+//                                 child: Text(
+//                                   getDate(),
+//                                   style: const TextStyle(
+//                                     fontSize: 15,
+//                                     fontWeight:
+//                                         FontWeight.bold, /*color: Colors.white*/
+//                                   ),
+//                                 ),
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                         showDate
+//                             ? Container(
+//                                 margin: const EdgeInsets.only(left: 5),
+//                                 child: Text(getDate()))
+//                             : const SizedBox(),
+//                       ],
+//                     ),
+//                   ),
+//                   //END HERE
+//                   //Phone number
+//                   TextFormField(
+//                     controller: numberController,
+//                     keyboardType: TextInputType.number,
+//                     inputFormatters: <TextInputFormatter>[
+//                       FilteringTextInputFormatter.digitsOnly
+//                     ],
+//                     maxLength: 10,
+//                     decoration: theme.inputfield("Phone Number", "0555555555"),
+//                     autovalidateMode: AutovalidateMode.onUserInteraction,
+//                     //wedd's chnges
+//                     validator: (value) {
+//                       // if (value != null && value.length < 10)
+//                       //   return "Enter a valid number";
+//                       // else
+//                       //   return null;
 
-class UserHelper {
-  static FirebaseFirestore db = FirebaseFirestore.instance;
-  static saveUser(User? user) async {
-    //PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    Map<String, dynamic> userData = {
-      "Email": emailController.text,
-      "Type": group1,
-      "Disability": "user.disability",
-      "gender": group,
-      "name": nameController.text,
-      "phone number": numberController.text,
-      "DOB": "getDate()",
-    };
-    final userRef = db.collection("users").doc(user!.uid);
-    if (!((await userRef.get()).exists)) {
-      await userRef.set(userData);
-    }
-  }
-}
+//                       //Wedd's changes
+//                       if (value == null) {
+//                         return "Please enter a phone number";
+//                       } else if (value.length != 10) {
+//                         return "Please enter a valid phone number";
+//                       }
+//                     },
+//                   ),
+//                   SizedBox(
+//                     height: height * 0.01,
+//                   ),
+
+//                   //Password
+//                   TextFormField(
+//                     controller: passwordController,
+//                     obscureText: !_passwordVisible,
+//                     decoration: InputDecoration(
+//                       labelText: "Password",
+//                       //Wedd's change
+//                       hintText:
+//                           "must have upper case, digit, more than 8 digits",
+//                       suffixIcon: IconButton(
+//                         icon: Icon(
+//                           // Based on passwordVisible state choose the icon
+//                           _passwordVisible
+//                               ? Icons.visibility
+//                               : Icons.visibility_off,
+//                           color: Theme.of(context).primaryColorDark,
+//                         ),
+//                         onPressed: () {
+//                           // Update the state i.e. toogle the state of passwordVisible variable
+//                           setState(() {
+//                             _passwordVisible = !_passwordVisible;
+//                           });
+//                         },
+//                       ),
+//                       contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+//                       focusedBorder: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(100.0),
+//                           borderSide: const BorderSide(color: Colors.grey)),
+//                       enabledBorder: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(100.0),
+//                           borderSide: BorderSide(color: Colors.grey.shade400)),
+//                       errorBorder: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(100.0),
+//                           borderSide:
+//                               const BorderSide(color: Colors.red, width: 2.0)),
+//                       focusedErrorBorder: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(100.0),
+//                           borderSide:
+//                               const BorderSide(color: Colors.red, width: 2.0)),
+//                     ),
+//                     autovalidateMode: AutovalidateMode.onUserInteraction,
+//                     validator: (value) {
+//                       // Wedd's Code for password
+//                       password = value.toString();
+//                       RegExp Upper = RegExp(r"(?=.*[A-Z])");
+//                       RegExp digit = RegExp(r"(?=.*[0-9])");
+//                       if (value == null || value.isEmpty) {
+//                         return "please enter a password";
+//                       } else if (value.length < 7) {
+//                         return "password should at least be 8 digits"; //ود موجودة ؟
+//                       } else if (!Upper.hasMatch(value)) {
+//                         return "password should contain an Upper case";
+//                       } else if (!digit.hasMatch(value)) {
+//                         return "password should contain a number";
+//                       } else {
+//                         return null;
+//                       }
+
+//                       // if (value == null || value.isEmpty || value.length < 8) {
+//                       //   return 'Please enter a password min 8';
+//                       // }
+//                       // // else if (value.length < 8) {
+//                       // //   return 'Password must be at least 8 digits ';
+//                       // // } else if (!Upper.hasMatch(value)) {
+//                       // //   return 'Password should contain an upper case';
+//                       // // } else if (!digit.hasMatch(value)) {
+//                       // //   return 'Password should contain a number';
+//                       // // }
+//                       // else {
+//                       //   return null;
+//                       // }
+//                     },
+//                   ),
+//                   SizedBox(
+//                     height: height * 0.01,
+//                   ),
+//                   TextFormField(
+//                     controller: cofirmPasswordController,
+//                     obscureText: !_passwordVisible,
+//                     decoration: InputDecoration(
+//                       labelText: "Confirm Password",
+//                       hintText: "Password",
+//                       suffixIcon: IconButton(
+//                         icon: Icon(
+//                           // Based on passwordVisible state choose the icon
+//                           _passwordVisible
+//                               ? Icons.visibility
+//                               : Icons.visibility_off,
+//                           color: Theme.of(context).primaryColorDark,
+//                         ),
+//                         onPressed: () {
+//                           // Update the state i.e. toogle the state of passwordVisible variable
+//                           setState(() {
+//                             _passwordVisible = !_passwordVisible;
+//                           });
+//                         },
+//                       ),
+//                       contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+//                       focusedBorder: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(100.0),
+//                           borderSide: const BorderSide(color: Colors.grey)),
+//                       enabledBorder: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(100.0),
+//                           borderSide: BorderSide(color: Colors.grey.shade400)),
+//                       errorBorder: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(100.0),
+//                           borderSide:
+//                               const BorderSide(color: Colors.red, width: 2.0)),
+//                       focusedErrorBorder: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(100.0),
+//                           borderSide:
+//                               const BorderSide(color: Colors.red, width: 2.0)),
+//                     ),
+//                     autovalidateMode: AutovalidateMode.onUserInteraction,
+//                     validator: (value) {
+//                       //Wedd's change
+//                       confirm_password = value.toString();
+//                       //Wedd's change
+//                       if (value == null || value.isEmpty) {
+//                         return "please confirm password";
+//                       } else if (confirm_password != password) {
+//                         return "Password not match";
+//                       } else {
+//                         return null;
+//                       }
+//                     },
+//                   ),
+//                   SizedBox(
+//                     height: 10,
+//                   ),
+//                   Text("Should contain Capital, digit, long than 7",
+//                       style: TextStyle(
+//                           fontSize: 15, fontWeight: FontWeight.normal)),
+//                   SizedBox(
+//                     height: height * 0.01,
+//                   ),
+//                   SizedBox(
+//                     height: height * 0.01,
+//                   ),
+//                   Center(
+//                       child: Container(
+//                     margin: const EdgeInsets.fromLTRB(50, 0, 50, 10),
+//                     decoration: BoxDecoration(
+//                       boxShadow: const [
+//                         BoxShadow(
+//                             color: Colors.black26,
+//                             offset: Offset(0, 4),
+//                             blurRadius: 5.0)
+//                       ],
+//                       gradient: const LinearGradient(
+//                         begin: Alignment.topLeft,
+//                         end: Alignment.bottomRight,
+//                         stops: [0.0, 1.0],
+//                         colors: [
+//                           Colors.blue,
+//                           Colors.cyanAccent,
+//                         ],
+//                       ),
+//                       borderRadius: BorderRadius.circular(30),
+//                     ),
+//                     child: ElevatedButton(
+//                         style: ButtonStyle(
+//                           shape:
+//                               MaterialStateProperty.all<RoundedRectangleBorder>(
+//                             RoundedRectangleBorder(
+//                               borderRadius: BorderRadius.circular(30.0),
+//                             ),
+//                           ),
+//                           minimumSize:
+//                               MaterialStateProperty.all(const Size(50, 50)),
+//                           backgroundColor:
+//                               MaterialStateProperty.all(Colors.transparent),
+//                           shadowColor:
+//                               MaterialStateProperty.all(Colors.transparent),
+//                         ),
+//                         child: const Padding(
+//                           padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
+//                           child: Text(
+//                             'Register',
+//                             style: TextStyle(
+//                                 fontSize: 20,
+//                                 fontWeight: FontWeight.bold,
+//                                 color: Colors.white),
+//                           ),
+//                         ),
+//                         onPressed: () {
+//                           if (_formKey.currentState!.validate()) {
+//                             ScaffoldMessenger.of(context).showSnackBar(
+//                               const SnackBar(content: Text('Welcom To Awn')),
+//                             );
+//                             signUp();
+
+//                             //   clearForm();
+//                           } else {
+//                             // ScaffoldMessenger.of(context).showSnackBar(
+//                             //   const SnackBar(
+//                             //       content:
+//                             //           Text('Please fill the empty blanks')),
+//                             // );
+//                           }
+
+//                           // if (cofirmPasswordController.text.isEmpty ||
+//                           //     cofirmPasswordController.text !=
+//                           //         passwordController.text) {
+//                           //   Utils.showSnackBar(
+//                           //       "confirm password does not match");
+//                           //   return;
+//                           // } else {
+//                           //   signUp();
+//                           // }
+//                         }),
+//                   )),
+//                   Container(
+//                     margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+//                     //child: Text('Don\'t have an account? Create'),
+//                     child: Text.rich(TextSpan(children: [
+//                       const TextSpan(
+//                         text: "Already have an account? ",
+//                         style: TextStyle(
+//                             fontSize: 18,
+//                             fontWeight: FontWeight.bold,
+//                             color: Color.fromARGB(255, 95, 94, 94)),
+//                       ),
+//                       TextSpan(
+//                         recognizer: TapGestureRecognizer()
+//                           ..onTap = () {
+//                             clearForm();
+//                             Navigator.pushNamed(context, "/login");
+//                           },
+//                         text: 'Log In',
+
+//                         // Navigator.push(
+//                         //  context,
+//                         //  MaterialPageRoute(
+//                         //    builder: (context) =>
+//                         //     RegistrationPage()));
+
+//                         style: TextStyle(
+//                             fontWeight: FontWeight.bold,
+//                             color: Theme.of(context).accentColor,
+//                             decoration: TextDecoration.underline),
+//                       ),
+//                     ])),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   // Future selectFile() async {
+//   //   final result = await FilePicker.platform.pickFiles();
+//   //   upload = true;
+//   //   if (result == null) {
+//   //     upload = false;
+//   //     return;
+//   //   }
+//   //   setState(() {
+//   //     pickedFile = result.files.first;
+//   //     fileDB = File(pickedFile.path!);
+
+//   //     // final path = 'User/${pickedFile.name}'; //خليه جالسه اجرب
+//   //     // final file = File(pickedFile.path!);
+//   //     // final ref = FirebaseStorage.instance.ref().child(path);
+//   //     // UploadTask uploadTask = ref.putFile(file);
+//   //   });
+//   // }
+
+//   Future signUp() async {
+//     final isValid = _formKey.currentState!.validate();
+//     if (!isValid) return;
+//     try {
+//       await FirebaseAuth.instance.createUserWithEmailAndPassword(
+//         email: emailController.text.trim(),
+//         password: passwordController.text.trim(),
+//       );
+//       UserHelper.saveUser(user);
+//       //
+//       clearForm();
+//       Navigator.pushNamed(context, "/login");
+//     } on FirebaseAuthException catch (e) {
+//       print(e);
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(
+//           content: const Text('e.message'),
+//           backgroundColor: Colors.red.shade400,
+//           margin: const EdgeInsets.fromLTRB(6, 0, 3, 0),
+//           behavior: SnackBarBehavior.floating,
+//           action: SnackBarAction(
+//             label: 'Dismiss',
+//             disabledTextColor: Colors.white,
+//             textColor: Colors.white,
+//             onPressed: () {
+//               //Do whatever you want
+//             },
+//           ),
+//         ),
+//       );
+//       // Utils.showSnackBar(e.message);
+//     }
+//   }
+// }
+
+// class UserHelper {
+//   static FirebaseFirestore db = FirebaseFirestore.instance;
+//   static saveUser(User? user) async {
+//     //PackageInfo packageInfo = await PackageInfo.fromPlatform();
+//     /*blind = false;
+// bool mute = false;
+// bool deaf = false;
+// bool physical = false;
+// bool other = false;*/
+//     String email = emailController.text;
+//     String name = nameController.text;
+//     String number = numberController.text;
+//     String age = globals.bDay;
+//     String disability = "";
+//     String bio = bioController.text;
+//     final user = FirebaseAuth.instance.currentUser!;
+//     String userId = user.uid;
+//     if (blind == true && blind != null) disability += " Blind,";
+//     if (mute == true && mute != null) disability += " Mute,";
+//     if (deaf == true && deaf != null) disability += " Deaf,";
+//     if (physical == true && physical != null) disability += " Physical,";
+//     if (other == true && other != null) disability += " Other,";
+//     final userRef = db.collection("users").doc(user.uid);
+//     //final volRef = db.collection("volunteers").doc(user!.uid);
+
+//     Map<String, dynamic> userData;
+//     // if (group1 == "Volunteer") {
+//     if (!((await userRef.get()).exists)) {
+//       await userRef.set({
+//         "Email": email,
+//         "Type": group1,
+//         "bio": bio,
+//         "gender": group,
+//         "name": name,
+//         "phone number": number,
+//         "DOB": age,
+//         "Disability": disability,
+//         "id": userId,
+//       });
+//     }
+//     // } else if (group1 == "Special Need User") {
+//     // if (result.files.first != null){
+//     // var len = pickedFile? ?? '0';
+//     //   if (fileDB == null) {
+//     //     File file = fileDB!;
+//     //     //String filePath = Path.basename(file.path);
+
+//     //     final path = 'User/${pickedFile.name}';
+//     //     // String pickedPath = pickedFile.path == '' ? '' : pickedFile.path;
+//     //     // final file = File(pickedFile!.path!);
+//     //     // if (result.files.first != null){
+//     //     final ref = FirebaseStorage.instance.ref().child(filePath);
+//     //     UploadTask uploadTask = ref.putFile(file);
+//     //     final user = FirebaseAuth.instance.currentUser!;
+//     //     String userId = user.uid;
+//     //     // String filePath = Path.basename(file.path);
+//     //     TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+//     //     filePath = await (await uploadTask).ref.getDownloadURL();
+//     //     if (!((await userRef.get()).exists)) {
+//     //       await userRef.set({
+//     //         "Email": email,
+//     //         "id": userId,
+//     //         "Type": group1,
+//     //         "Disability": disability,
+//     //         "gender": group,
+//     //         "name": name,
+//     //         "phone number": number,
+//     //         "DOB": age,
+//     //         //"file": filePath,
+//     //       });
+//     //     }
+//     //     // final userRef = db.collection("users").doc(user!.uid);
+//     //     // if (!((await userRef.get()).exists)) {
+//     //     //   await userRef.set(userData);
+//     //     // }
+//     //   }
+//     // }
+//   }
+// }
