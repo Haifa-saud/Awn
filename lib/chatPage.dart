@@ -28,80 +28,20 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage>
     with SingleTickerProviderStateMixin {
-  String message = '';
   User currentUser = FirebaseAuth.instance.currentUser!;
-  bool isPlayerReady = false;
-  FlutterSoundPlayer audioPlayer = FlutterSoundPlayer();
-  var playerSubscription;
   double subscriptionDuration = 0;
   double sliderCurrentPosition = 0.0;
   double maxDuration = 1.0;
 
   @override
   void initState() {
-    initPlayer();
     super.initState();
-  }
-
-  Future initPlayer() async {
-    await audioPlayer.openAudioSession().then((value) {
-      isPlayerReady = true;
-    });
-    playerSubscription =
-        audioPlayer.setSubscriptionDuration(const Duration(milliseconds: 500));
-  }
-
-  String _playerTxt = '00:00:00';
-
-  void _addListeners() {
-    initializeDateFormatting();
-    playerSubscription = audioPlayer.onProgress!.listen((e) {
-      maxDuration = e.duration.inMilliseconds.toDouble();
-      if (maxDuration <= 0) maxDuration = 0.0;
-
-      sliderCurrentPosition =
-          min(e.position.inMilliseconds.toDouble(), maxDuration);
-      if (sliderCurrentPosition < 0.0) {
-        sliderCurrentPosition = 0.0;
-      }
-
-      var date = DateTime.fromMillisecondsSinceEpoch(e.position.inMilliseconds,
-          isUtc: true);
-      var txt = DateFormat('mm:ss:SS').format(date);
-      // setState(() {
-      _playerTxt = txt.substring(0, 8);
-      // });
-    });
-  }
-
-  void playAudio(var path) {
-    assert(
-        isPlayerReady); //&& audioRecorder.isStopped && audioPlayer.isStopped);
-    audioPlayer.startPlayer(fromURI: path);
-    _addListeners();
-  }
-
-  Future<void> stopPlayer() async {
-    if (audioPlayer != null) {
-      await audioPlayer.stopPlayer();
-      // setState(() {
-      //   isPlaying = false;
-      // });
-    }
   }
 
   @override
   void dispose() {
-    audioPlayer.closeAudioSession();
     super.dispose();
   }
-
-  // void cancelPlayerSubscriptions() {
-  //   if (playerSubscription != null) {
-  //     playerSubscription!.cancel();
-  //     playerSubscription = null;
-  //   }
-  // }
 
   Future<Map<String, dynamic>> getOtherUserID() async {
     var user, volID, userID, id;
@@ -225,13 +165,6 @@ class _ChatPageState extends State<ChatPage>
                                                     ['createdAt']))
                                         .toString();
                                     return Column(children: [
-                                      // ? Center(
-                                      //     child: Text(DateFormat('d/M/y')
-                                      //         .format(DateTime
-                                      //             .fromMillisecondsSinceEpoch(
-                                      //                 messages.docs[index]
-                                      //                     ['createdAt']))))
-                                      // : SizedBox(height: 0),
                                       Center(
                                         child: upcomingMessageDate !=
                                                 currentDate
@@ -239,15 +172,6 @@ class _ChatPageState extends State<ChatPage>
                                                 padding:
                                                     const EdgeInsets.fromLTRB(
                                                         8, 6, 8, 6),
-                                                child: Text(
-                                                    DateFormat('d/M/y').format(DateTime
-                                                        .fromMillisecondsSinceEpoch(
-                                                            messages.docs[index]
-                                                                ['createdAt'])),
-                                                    style: const TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.normal)),
                                                 decoration: BoxDecoration(
                                                   color: Colors.grey.shade100,
                                                   border: Border.all(
@@ -257,6 +181,15 @@ class _ChatPageState extends State<ChatPage>
                                                   borderRadius:
                                                       BorderRadius.circular(12),
                                                 ),
+                                                child: Text(
+                                                    DateFormat('d/M/y').format(DateTime
+                                                        .fromMillisecondsSinceEpoch(
+                                                            messages.docs[index]
+                                                                ['createdAt'])),
+                                                    style: const TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.normal)),
                                               )
                                             : const SizedBox(height: 0),
                                       ),
@@ -266,6 +199,17 @@ class _ChatPageState extends State<ChatPage>
                                                   padding:
                                                       const EdgeInsets.fromLTRB(
                                                           8, 6, 8, 6),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.grey.shade100,
+                                                    border: Border.all(
+                                                      width: 0,
+                                                      color:
+                                                          Colors.grey.shade100,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                  ),
                                                   child: Text(
                                                       DateFormat('d/M/y')
                                                           .format(DateTime
@@ -278,31 +222,21 @@ class _ChatPageState extends State<ChatPage>
                                                           fontSize: 15,
                                                           fontWeight: FontWeight
                                                               .normal)),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.grey.shade100,
-                                                    border: Border.all(
-                                                      width: 0,
-                                                      color:
-                                                          Colors.grey.shade100,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                  ),
                                                 )
                                               : const SizedBox(height: 0)),
-                                      Message(
-                                        messages.docs[index]['text'],
-                                        messages.docs[index]['author'] ==
+                                      Chat(
+                                        message: messages.docs[index]['text'],
+                                        isMe: messages.docs[index]['author'] ==
                                             currentUser.uid,
-                                        DateTime.fromMillisecondsSinceEpoch(
+                                        time:
+                                            DateTime.fromMillisecondsSinceEpoch(
                                           messages.docs[index]['createdAt'],
                                         ),
-                                        messages.docs[index]['read'],
-                                        messages.docs[index]['img'],
-                                        messages.docs[index]['audio'],
-                                        messages.docs[index]['audioDuration'],
-                                        // upcomingMessgaeDate
+                                        isRead: messages.docs[index]['read'],
+                                        img: messages.docs[index]['img'],
+                                        audio: messages.docs[index]['audio'],
+                                        audioDuration: messages.docs[index]
+                                            ['audioDuration'],
                                       ),
                                     ]);
                                   },
@@ -318,15 +252,94 @@ class _ChatPageState extends State<ChatPage>
               }
             }));
   }
+}
 
-//! Widgets
-  Widget Message(message, isMe, time, isRead, img, audio, audioDuration) {
-    String audioText = _playerTxt;
-    var sliderValue = maxDuration, currPosition = sliderCurrentPosition;
+//! specific chat widget
+class Chat extends StatefulWidget {
+  final message, isMe, isRead, time, audio, img, audioDuration;
+
+  const Chat(
+      {Key? key,
+      required this.message,
+      required this.isMe,
+      required this.time,
+      required this.isRead,
+      required this.img,
+      required this.audio,
+      required this.audioDuration})
+      : super(key: key);
+
+  @override
+  State<Chat> createState() => ChatState();
+}
+
+class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
+  final _controller = TextEditingController();
+  User currentUser = FirebaseAuth.instance.currentUser!;
+  FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
+  var playerSubscription;
+  var isPlaying = false;
+
+  bool isPlayerReady = false;
+  FlutterSoundPlayer audioPlayer = FlutterSoundPlayer();
+
+  @override
+  void initState() {
+    initPlayer();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    audioPlayer.closeAudioSession();
+    super.dispose();
+  }
+
+  Future initPlayer() async {
+    await audioPlayer.openAudioSession().then((value) {
+      isPlayerReady = true;
+    });
+    playerSubscription =
+        audioPlayer.setSubscriptionDuration(const Duration(milliseconds: 500));
+  }
+
+  String _playerTxt = '00:00:00';
+
+  bool _addListeners() {
+    bool isPlaying = false;
+    initializeDateFormatting();
+    playerSubscription = audioPlayer.onProgress!.listen((e) {
+      isPlaying = true;
+    });
+    return isPlaying;
+  }
+
+  void playAudio(var path) {
+    assert(
+        isPlayerReady); //&& audioRecorder.isStopped && audioPlayer.isStopped);
+    audioPlayer.startPlayer(fromURI: path);
+    setState(() {
+      isPlaying = true;
+    });
+    // return _addListeners();
+  }
+
+  Future<void> stopPlayer() async {
+    if (audioPlayer != null) {
+      await audioPlayer.stopPlayer();
+      setState(() {
+        isPlaying = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final radius = const Radius.circular(12);
     final borderRadius = BorderRadius.all(radius);
     return Row(
-      mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment:
+          widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: <Widget>[
         // if (!isMe)
         //   const CircleAvatar(
@@ -338,13 +351,13 @@ class _ChatPageState extends State<ChatPage>
         //         ),
         //   ),
         Container(
-          padding: img == ''
+          padding: widget.img == ''
               ? const EdgeInsets.fromLTRB(16, 8, 16, 8)
               : const EdgeInsets.all(3),
           margin: const EdgeInsets.all(10),
           constraints:
               BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
-          decoration: isMe
+          decoration: widget.isMe
               ? BoxDecoration(
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
@@ -364,14 +377,14 @@ class _ChatPageState extends State<ChatPage>
                 ),
           child: Column(
             crossAxisAlignment:
-                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                widget.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: <Widget>[
               Visibility(
-                  visible: img != '',
+                  visible: widget.img != '',
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.network(
-                        img,
+                        widget.img,
                         fit: BoxFit.cover,
                         errorBuilder: (BuildContext context, Object exception,
                             StackTrace? stackTrace) {
@@ -379,74 +392,56 @@ class _ChatPageState extends State<ChatPage>
                         },
                       ))),
               Visibility(
-                  // key: id;
-                  visible: audio != '',
+                  visible: widget.audio != '',
                   child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         IconButton(
-                            icon: true
-                                ? (isMe
+                            icon: !isPlaying
+                                ? (widget.isMe
                                     ? const Icon(Icons.play_arrow,
                                         color: Colors.white, size: 35)
                                     : const Icon(Icons.play_arrow, size: 35))
-                                : (isMe
+                                : (widget.isMe
                                     ? const Icon(Icons.stop,
                                         color: Colors.white, size: 35)
                                     : const Icon(Icons.stop, size: 35)),
                             onPressed: () async {
-                              // if (isPlaying) {
-                              //   // stopPlayer();
-                              // } else {
-                              // setState(() {
-                              // isPlaying = true;
-                              // });
-                              playAudio(audio);
-                              // }
+                              isPlaying
+                                  ? stopPlayer()
+                                  : playAudio(widget.audio);
                             }),
                         const SizedBox(width: 10),
-                        Text(audioDuration,
+                        Text(widget.audioDuration,
                             style: TextStyle(
-                                color: isMe ? Colors.white : Colors.black,
+                                color:
+                                    widget.isMe ? Colors.white : Colors.black,
                                 fontSize: 20)),
-                      ])
-                  // Slider(
-                  //   value: min(currPosition, sliderValue),
-                  //   min: 0.0,
-                  //   max: sliderValue,
-                  //   onChanged: (value) async {
-                  //     await seekToPlayer(value.toInt());
-                  //   },
-                  // divisions:
-                  //     maxDuration == 0.0 ? 1 : maxDuration.toInt()),
-                  // ),
-                  // ]
-                  ),
-              // ),
+                      ])),
               Visibility(
-                  visible: message != '',
+                  visible: widget.message != '',
                   child: Text(
-                    message,
+                    widget.message,
                     style: TextStyle(
-                        color: isMe ? Colors.white : Colors.black,
+                        color: widget.isMe ? Colors.white : Colors.black,
                         fontSize: 18),
-                    textAlign: isMe ? TextAlign.end : TextAlign.start,
+                    textAlign: widget.isMe ? TextAlign.end : TextAlign.start,
                   )),
               Row(mainAxisSize: MainAxisSize.min, children: [
                 Text(
-                  DateFormat('hh:mm a').format(time).toString(),
+                  DateFormat('hh:mm a').format(widget.time).toString(),
                   // DateFormat('d/M/y').format(time).toString(),
 
                   style: TextStyle(
-                      color: isMe ? Colors.grey.shade200 : Colors.grey,
+                      color: widget.isMe ? Colors.grey.shade200 : Colors.grey,
                       fontSize: 11),
                   textAlign: TextAlign.end,
                 ),
                 const SizedBox(width: 7),
                 Visibility(
-                    visible: isMe,
-                    child: Icon(isRead ? Icons.done_all : Icons.done,
+                    visible: widget.isMe,
+                    child: Icon(widget.isRead ? Icons.done_all : Icons.done,
                         color: Colors.grey.shade200, size: 14)),
               ])
             ],
@@ -457,6 +452,7 @@ class _ChatPageState extends State<ChatPage>
   }
 }
 
+//! chat text field
 class ChatField extends StatefulWidget {
   final requestID;
 
