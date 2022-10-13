@@ -52,8 +52,7 @@ class commentsState2 extends State<comments2> {
       body: Center(
         child: SizedBox(
             child: Column(children: [
-          const Spacer(),
-          const Divider(),
+          // const Divider(),
           IconButton(
             icon: const Icon(Icons.comment),
             iconSize: 48,
@@ -109,7 +108,7 @@ class commentsState2 extends State<comments2> {
                       },
                       child: Container(
                         padding: const EdgeInsets.all(14),
-                        child: const Text("Cancle",
+                        child: const Text("cancel",
                             style: TextStyle(
                                 color: Color.fromARGB(255, 164, 10, 10))),
                       ),
@@ -135,11 +134,12 @@ class commentsState2 extends State<comments2> {
               );
             },
           ),
-          const Divider(),
-          const Spacer(),
+          //const Divider(),
           StreamBuilder<dynamic>(
-              stream:
-                  FirebaseFirestore.instance.collection("Comments").snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection("Comments")
+                  .where('PostID', isEqualTo: "M9vFg6LRwhdZAh77g7pw")
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Text("this post has no comments");
@@ -157,7 +157,7 @@ class commentsState2 extends State<comments2> {
                             child: Stack(children: [
                               Container(
                                 width: 600,
-                                margin: const EdgeInsets.only(top: 12),
+                                margin: const EdgeInsets.only(top: 1),
                                 padding: const EdgeInsets.all(1),
                                 decoration: BoxDecoration(
                                     color: Colors.white,
@@ -222,14 +222,14 @@ class commentsState2 extends State<comments2> {
                                                         fontSize: 17)),
                                               ),
                                             ),
-                                            Text(
-                                                "_____________________________________________",
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 17,
-                                                  color: Color.fromARGB(
-                                                      115, 172, 169, 169),
-                                                )),
+                                            // Text(
+                                            //     "_____________________________________________",
+                                            //     style: const TextStyle(
+                                            //       fontWeight: FontWeight.w400,
+                                            //       fontSize: 17,
+                                            //       color: Color.fromARGB(
+                                            //           115, 172, 169, 169),
+                                            //     )),
                                             // date and time
                                             Padding(
                                               padding:
@@ -275,14 +275,67 @@ class commentsState2 extends State<comments2> {
                                                             iconSize: 30,
                                                             icon: const Icon(
                                                               Icons.delete,
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      194,
+                                                                      98,
+                                                                      98),
                                                             ),
                                                             onPressed: () {
-                                                              // delete_comm
-                                                              //     .doc('id') // <-- Doc ID to be deleted.
-                                                              //     .delete() // <-- Delete
-                                                              //     .then((_) => print('Deleted'))
-                                                              //     .catchError((error) =>
-                                                              //         print('Delete failed: $error'));
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder: (ctx) =>
+                                                                    AlertDialog(
+                                                                  title: const Text(
+                                                                      "Are You Sure ?"),
+                                                                  content:
+                                                                      const Text(
+                                                                    "Are You Sure You want to delete your comment? , This procces can't be undone",
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                  ),
+                                                                  actions: <
+                                                                      Widget>[
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(ctx)
+                                                                            .pop();
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.all(14),
+                                                                        child: const Text(
+                                                                            "cancel"),
+                                                                      ),
+                                                                    ),
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        // delete_comm
+                                                                        //     .doc('id') // <-- Doc ID to be deleted.
+                                                                        //     .delete() // <-- Delete
+                                                                        //     .then((_) => print('Deleted'))
+                                                                        //     .catchError((error) =>
+                                                                        //         print('Delete failed: $error'));
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.all(14),
+                                                                        child: const Text(
+                                                                            "Delete",
+                                                                            style:
+                                                                                TextStyle(color: Color.fromARGB(255, 164, 10, 10))),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              );
                                                             },
                                                           )))
                                                 ],
@@ -317,7 +370,7 @@ class commentsState2 extends State<comments2> {
       'text': comment,
       'UserID': 'User5',
       //FirebaseAuth.instance.currentUser!.uid,
-      'PostID': 'Post5'
+      'PostID': 'M9vFg6LRwhdZAh77g7pw'
       //placeID
     });
     dataId = docReference.id;
@@ -327,8 +380,8 @@ class commentsState2 extends State<comments2> {
   }
 }
 
-String id = '';
-String UserID = '';
+//String id = '';
+//String UserID = '';
 
 var now = DateTime.now();
 var formatterDate = DateFormat('MMM d, h:mm a');
