@@ -672,6 +672,138 @@ class Place extends StatelessWidget {
                                                       'Comments',
                                                     ),
                                                     const SizedBox(height: 7),
+                                                    StreamBuilder<dynamic>(
+                                                        stream:
+                                                            FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    "Comments")
+                                                                .snapshots(),
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (!snapshot
+                                                              .hasData) {
+                                                            return Text(
+                                                                "this post has no comments");
+                                                          } else {
+                                                            final comment_Data =
+                                                                snapshot.data;
+                                                            return ListView
+                                                                .builder(
+                                                                    shrinkWrap:
+                                                                        true,
+                                                                    physics:
+                                                                        const BouncingScrollPhysics(),
+                                                                    reverse:
+                                                                        true,
+                                                                    itemCount:
+                                                                        comment_Data!
+                                                                            .size,
+                                                                    itemBuilder:
+                                                                        (context,
+                                                                            index) {
+                                                                      return Padding(
+                                                                          padding: const EdgeInsets.symmetric(
+                                                                              horizontal:
+                                                                                  10.0,
+                                                                              vertical:
+                                                                                  16),
+                                                                          child:
+                                                                              Stack(children: [
+                                                                            Container(
+                                                                              width: 600,
+                                                                              margin: const EdgeInsets.only(top: 12),
+                                                                              padding: const EdgeInsets.all(1),
+                                                                              decoration: BoxDecoration(
+                                                                                  color: Colors
+                                                                                      .white,
+                                                                                  boxShadow: const [
+                                                                                    BoxShadow(blurRadius: 32, color: Colors.black45, spreadRadius: -8)
+                                                                                  ],
+                                                                                  borderRadius: BorderRadius.circular(15)),
+                                                                              child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, mainAxisSize: MainAxisSize.max, children: [
+                                                                                Padding(
+                                                                                  padding: const EdgeInsets.fromLTRB(8, 1, 1, 1),
+                                                                                  child: Column(
+                                                                                    children: [
+                                                                                      Padding(
+                                                                                          padding: const EdgeInsets.fromLTRB(6, 10, 15, 15),
+                                                                                          child: Stack(children: [
+                                                                                            Align(
+                                                                                                alignment: Alignment.topLeft,
+                                                                                                child: Container(
+                                                                                                    width: 235,
+                                                                                                    child: Align(
+                                                                                                        alignment: Alignment.topLeft,
+                                                                                                        child: Text(
+                                                                                                          comment_Data.docs[index]['name'],
+                                                                                                          style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
+                                                                                                          textAlign: TextAlign.left,
+                                                                                                        )))),
+                                                                                          ])),
+                                                                                      //comment
+                                                                                      Padding(
+                                                                                        padding: const EdgeInsets.fromLTRB(6, 10, 20, 10),
+                                                                                        child: Flexible(
+                                                                                          child: Text(comment_Data.docs[index]['text'], style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 17)),
+                                                                                        ),
+                                                                                      ),
+                                                                                      Text("_____________________________________________",
+                                                                                          style: const TextStyle(
+                                                                                            fontWeight: FontWeight.w400,
+                                                                                            fontSize: 17,
+                                                                                            color: Color.fromARGB(115, 172, 169, 169),
+                                                                                          )),
+                                                                                      // date and time
+                                                                                      Padding(
+                                                                                        padding: const EdgeInsets.fromLTRB(6, 0, 0, 0),
+                                                                                        child: Row(
+                                                                                          mainAxisAlignment: MainAxisAlignment.start,
+                                                                                          children: [
+                                                                                            Padding(
+                                                                                              padding: const EdgeInsets.only(left: 0),
+                                                                                              child: Row(
+                                                                                                children: [
+                                                                                                  Text(comment_Data.docs[index]['date'],
+                                                                                                      style: const TextStyle(
+                                                                                                        fontSize: 13,
+                                                                                                        fontWeight: FontWeight.w400,
+                                                                                                      )),
+                                                                                                ],
+                                                                                              ),
+                                                                                            ),
+                                                                                            // Divider(),
+
+                                                                                            Padding(
+                                                                                                padding: const EdgeInsets.only(left: 210),
+                                                                                                child: Visibility(
+                                                                                                    visible: comment_Data.docs[index]['UserID'] == "User5",
+                                                                                                    child: IconButton(
+                                                                                                      iconSize: 30,
+                                                                                                      icon: const Icon(
+                                                                                                        Icons.delete,
+                                                                                                      ),
+                                                                                                      onPressed: () {
+                                                                                                        // delete_comm
+                                                                                                        //     .doc('id') // <-- Doc ID to be deleted.
+                                                                                                        //     .delete() // <-- Delete
+                                                                                                        //     .then((_) => print('Deleted'))
+                                                                                                        //     .catchError((error) =>
+                                                                                                        //         print('Delete failed: $error'));
+                                                                                                      },
+                                                                                                    )))
+                                                                                          ],
+                                                                                        ),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                ),
+                                                                              ]),
+                                                                            )
+                                                                          ]));
+                                                                    });
+                                                          }
+                                                        }),
                                                   ],
                                                 ))
                                             : Text('')),

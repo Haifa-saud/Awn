@@ -177,7 +177,7 @@ class _ChatPageState extends State<ChatPage>
   @override
   Widget build(BuildContext context) {
     var recorderDuration;
-    var previousMessageDate = '00/00/0000';
+    var upcomingMessageDate = '00/00/0000';
     // DateFormat('d/M/Y').format(time).toString(),
 
     return Scaffold(
@@ -244,49 +244,87 @@ class _ChatPageState extends State<ChatPage>
                                   reverse: true,
                                   itemCount: messages.size,
                                   itemBuilder: (context, index) {
-                                    if (index != 0) {
-                                      previousMessageDate = DateFormat('d/M/y')
+                                    if (index != messages.size - 1) {
+                                      upcomingMessageDate = DateFormat('d/M/y')
                                           .format(DateTime
                                               .fromMillisecondsSinceEpoch(
-                                                  messages.docs[index - 0]
+                                                  messages.docs[index + 1]
                                                       ['createdAt']))
                                           .toString();
-                                    } else {
-                                      // previousMessageDate = DateFormat('d/M/y')
-                                      //     .format(DateTime
-                                      //         .fromMillisecondsSinceEpoch(
-                                      //             messages.docs[0]
-                                      //                 ['createdAt']))
-                                      //     .toString();
                                     }
-                                    // previousMessageDate !=
-                                    //         DateFormat('d/M/y')
-                                    //             .format(DateTime
-                                    //                 .fromMillisecondsSinceEpoch(
-                                    //                     messages.docs[index]
-                                    //                         ['createdAt']))
-                                    //             .toString()
-                                    //     ? previousMessageDate =
-                                    //         DateFormat('d/M/y').format(DateTime
-                                    //             .fromMillisecondsSinceEpoch(
-                                    //                 messages.docs[index]
-                                    //                     ['createdAt']))
-                                    //     : SizedBox(height: 0);
+                                    var currentDate = DateFormat('d/M/y')
+                                        .format(
+                                            DateTime.fromMillisecondsSinceEpoch(
+                                                messages.docs[index]
+                                                    ['createdAt']))
+                                        .toString();
                                     return Column(children: [
-                                      previousMessageDate !=
-                                              DateFormat('d/M/y')
-                                                  .format(DateTime
-                                                      .fromMillisecondsSinceEpoch(
-                                                          messages.docs[index]
-                                                              ['createdAt']))
-                                                  .toString()
-                                          ? Center(
-                                              child: Text(DateFormat('d/M/y')
-                                                  .format(DateTime
-                                                      .fromMillisecondsSinceEpoch(
-                                                          messages.docs[index]
-                                                              ['createdAt']))))
-                                          : SizedBox(height: 0),
+                                      // ? Center(
+                                      //     child: Text(DateFormat('d/M/y')
+                                      //         .format(DateTime
+                                      //             .fromMillisecondsSinceEpoch(
+                                      //                 messages.docs[index]
+                                      //                     ['createdAt']))))
+                                      // : SizedBox(height: 0),
+                                      Center(
+                                        child: upcomingMessageDate !=
+                                                currentDate
+                                            ? Container(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        8, 6, 8, 6),
+                                                child: Text(
+                                                    DateFormat('d/M/y').format(DateTime
+                                                        .fromMillisecondsSinceEpoch(
+                                                            messages.docs[index]
+                                                                ['createdAt'])),
+                                                    style: const TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.normal)),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey.shade100,
+                                                  border: Border.all(
+                                                    width: 0,
+                                                    color: Colors.grey.shade100,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                              )
+                                            : const SizedBox(height: 0),
+                                      ),
+                                      Center(
+                                          child: index == messages.size - 1
+                                              ? Container(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          8, 6, 8, 6),
+                                                  child: Text(
+                                                      DateFormat('d/M/y')
+                                                          .format(DateTime
+                                                              .fromMillisecondsSinceEpoch(
+                                                                  messages.docs[
+                                                                          index]
+                                                                      [
+                                                                      'createdAt'])),
+                                                      style: const TextStyle(
+                                                          fontSize: 15,
+                                                          fontWeight: FontWeight
+                                                              .normal)),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.grey.shade100,
+                                                    border: Border.all(
+                                                      width: 0,
+                                                      color:
+                                                          Colors.grey.shade100,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                  ),
+                                                )
+                                              : const SizedBox(height: 0)),
                                       Message(
                                         messages.docs[index]['text'],
                                         messages.docs[index]['author'] ==
@@ -298,7 +336,7 @@ class _ChatPageState extends State<ChatPage>
                                         messages.docs[index]['img'],
                                         messages.docs[index]['audio'],
                                         messages.docs[index]['audioDuration'],
-                                        // previousMessgaeDate
+                                        // upcomingMessgaeDate
                                       ),
                                     ]);
                                   },
@@ -396,7 +434,7 @@ class _ChatPageState extends State<ChatPage>
                                                         setIcons(true);
                                                       },
                                                     ),
-                                                    SizedBox(width: 10),
+                                                    const SizedBox(width: 10),
                                                   ]),
                                         filled: true,
                                         fillColor: Colors.grey.shade50,
@@ -591,7 +629,7 @@ class _ChatPageState extends State<ChatPage>
                               playAudio(audio);
                               // }
                             }),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Text(audioDuration,
                             style: TextStyle(
                                 color: isMe ? Colors.white : Colors.black,
