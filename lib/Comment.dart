@@ -9,14 +9,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:path/path.dart' as Path;
 
-class comments extends StatefulWidget {
+class comments2 extends StatefulWidget {
   // final String userId;
-  const comments({super.key});
+  const comments2({super.key});
   @override
-  commentsState createState() => commentsState();
+  commentsState2 createState() => commentsState2();
 }
 
-class commentsState extends State<comments> {
+class commentsState2 extends State<comments2> {
   bool pop = false;
   final ScrollController _scrollController = ScrollController();
   String comment = '';
@@ -24,11 +24,11 @@ class commentsState extends State<comments> {
   @override
   Widget build(BuildContext context) {
     Stream<QuerySnapshot> comments = FirebaseFirestore.instance
-        .collection('comment')
+        .collection('Comments')
         //.where('PostID', isEqualTo: "Post1")
         .snapshots();
 
-    //final delete_comm = FirebaseFirestore.instance.collection('comment');
+    //final delete_comm = FirebaseFirestore.instance.collection('Comments');
 
     final _formKey = GlobalKey<FormState>();
 
@@ -139,7 +139,7 @@ class commentsState extends State<comments> {
           const Spacer(),
           StreamBuilder<dynamic>(
               stream:
-                  FirebaseFirestore.instance.collection("comment").snapshots(),
+                  FirebaseFirestore.instance.collection("Comments").snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Text("this post has no comments");
@@ -193,23 +193,48 @@ class commentsState extends State<comments> {
                                                                   Alignment
                                                                       .topLeft,
                                                               child: Text(
-                                                                comment_Data.docs[index]['name'],
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                ),
+                                                                comment_Data.docs[
+                                                                        index]
+                                                                    ['name'],
+                                                                style: const TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        20),
                                                                 textAlign:
                                                                     TextAlign
                                                                         .left,
                                                               )))),
                                                 ])),
+                                            //comment
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      6, 10, 20, 10),
+                                              child: Flexible(
+                                                child: Text(
+                                                    comment_Data.docs[index]
+                                                        ['text'],
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        fontSize: 17)),
+                                              ),
+                                            ),
+                                            Text(
+                                                "_____________________________________________",
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 17,
+                                                  color: Color.fromARGB(
+                                                      115, 172, 169, 169),
+                                                )),
                                             // date and time
                                             Padding(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
-                                                      6, 20, 0, 10),
+                                                      6, 0, 0, 0),
                                               child: Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
@@ -220,17 +245,13 @@ class commentsState extends State<comments> {
                                                             left: 0),
                                                     child: Row(
                                                       children: [
-                                                        Icon(
-                                                            Icons
-                                                                .calendar_today,
-                                                            size: 20,
-                                                            color: Colors
-                                                                .red.shade200),
                                                         Text(
-                                                            comment_Data.docs[index]['date'],
+                                                            comment_Data
+                                                                    .docs[index]
+                                                                ['date'],
                                                             style:
                                                                 const TextStyle(
-                                                              fontSize: 17,
+                                                              fontSize: 13,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .w400,
@@ -238,65 +259,35 @@ class commentsState extends State<comments> {
                                                       ],
                                                     ),
                                                   ),
+                                                  // Divider(),
+
                                                   Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 40),
-                                                    child: Row(
-                                                      children: [
-                                                        Icon(Icons.schedule,
-                                                            size: 20,
-                                                            color: Colors
-                                                                .red.shade200),
-                                                        Text(
-                                                            comment_Data.docs[index]['time'],
-                                                            style:
-                                                                const TextStyle(
-                                                              fontSize: 17,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                            )),
-                                                      ],
-                                                    ),
-                                                  ),
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 210),
+                                                      child: Visibility(
+                                                          visible: comment_Data
+                                                                          .docs[
+                                                                      index]
+                                                                  ['UserID'] ==
+                                                              "User5",
+                                                          child: IconButton(
+                                                            iconSize: 30,
+                                                            icon: const Icon(
+                                                              Icons.delete,
+                                                            ),
+                                                            onPressed: () {
+                                                              // delete_comm
+                                                              //     .doc('id') // <-- Doc ID to be deleted.
+                                                              //     .delete() // <-- Delete
+                                                              //     .then((_) => print('Deleted'))
+                                                              //     .catchError((error) =>
+                                                              //         print('Delete failed: $error'));
+                                                            },
+                                                          )))
                                                 ],
                                               ),
                                             ),
-                                            //comment
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      6, 10, 20, 10),
-                                              child: Row(
-                                                children: [
-                                                  Flexible(
-                                                    child: Text(
-                                                        comment_Data.docs[index]['text'],
-                                                        style: const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            fontSize: 17)),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Visibility(
-                                                visible: comment_Data.docs[index]['UserID'] == commenter,
-                                                child: IconButton(
-                                                  iconSize: 10,
-                                                  icon: const Icon(
-                                                    Icons.delete,
-                                                  ),
-                                                  onPressed: () {
-                                                    // delete_comm
-                                                    //     .doc('id') // <-- Doc ID to be deleted.
-                                                    //     .delete() // <-- Delete
-                                                    //     .then((_) => print('Deleted'))
-                                                    //     .catchError((error) =>
-                                                    //         print('Delete failed: $error'));
-                                                  },
-                                                ))
                                           ],
                                         ),
                                       ),
@@ -314,15 +305,15 @@ class commentsState extends State<comments> {
 
   Future<void> addToDB() async {
     CollectionReference Post_comment =
-        FirebaseFirestore.instance.collection('comment');
+        FirebaseFirestore.instance.collection('Comments');
 
     String dataId = '';
     print('will be added to db');
     //add all value without the location
     DocumentReference docReference = await Post_comment.add({
       'date': actualDate,
-      'name': commenter,
-      'time': actualTime,
+      'name': 'wedd Alhossaiyn',
+      //'time': actualTime,
       'text': comment,
       'UserID': 'User5',
       //FirebaseAuth.instance.currentUser!.uid,
@@ -338,9 +329,9 @@ class commentsState extends State<comments> {
 
 String id = '';
 String UserID = '';
-String commenter = '';
+
 var now = DateTime.now();
-var formatterDate = DateFormat('dd/MM/yy');
-var formatterTime = DateFormat('kk:mm');
+var formatterDate = DateFormat('MMM d, h:mm a');
+//var formatterTime = DateFormat('kk:mm');
 String actualDate = formatterDate.format(now);
-String actualTime = formatterTime.format(now);
+//String actualTime = formatterTime.format(now);
