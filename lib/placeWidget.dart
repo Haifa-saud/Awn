@@ -6,6 +6,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
 import 'package:url_launcher/url_launcher.dart';
+//wedd addition
+import 'myGlobal.dart' as globals;
 
 class Place extends StatelessWidget {
   Place(
@@ -941,11 +943,9 @@ class Place extends StatelessWidget {
     DocumentReference docReference = await Post_comment.add({
       'commentID': '',
       'date': actualDate,
-      //user name
-      'name': 'commenter_name',
+      'name': globals.User_name ,
       'text': comment,
       'UserID': userId,
-      //place id
       'PostID': Place_id
     });
     dataId = docReference.id;
