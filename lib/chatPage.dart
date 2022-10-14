@@ -23,23 +23,39 @@ class ChatPage extends StatefulWidget {
   const ChatPage({required this.requestID, Key? key}) : super(key: key);
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<ChatPage> createState() => ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage>
+class ChatPageState extends State<ChatPage>
     with SingleTickerProviderStateMixin {
   User currentUser = FirebaseAuth.instance.currentUser!;
-  double subscriptionDuration = 0;
-  double sliderCurrentPosition = 0.0;
-  double maxDuration = 1.0;
+
+  //* audio player section
+  var audioPlayer = FlutterSoundPlayer();
+  var isPlaying = false;
+  var playSubscription;
+  var isPlayerReady = false;
+
+  Future initPlayer() async {
+    audioPlayer = FlutterSoundPlayer();
+    await audioPlayer.openAudioSession().then((value) {
+      isPlayerReady = true;
+    });
+    playSubscription =
+        audioPlayer.setSubscriptionDuration(const Duration(milliseconds: 500));
+  }
 
   @override
   void initState() {
+    isPlayerReady = false;
+    initPlayer();
+    // isPlaying = false;
     super.initState();
   }
 
   @override
   void dispose() {
+    audioPlayer.closeAudioSession();
     super.dispose();
   }
 
@@ -237,6 +253,8 @@ class _ChatPageState extends State<ChatPage>
                                         audio: messages.docs[index]['audio'],
                                         audioDuration: messages.docs[index]
                                             ['audioDuration'],
+                                        isPlayerReady: isPlayerReady,
+                                        audioPlayer: audioPlayer,
                                       ),
                                     ]);
                                   },
@@ -256,7 +274,15 @@ class _ChatPageState extends State<ChatPage>
 
 //! specific chat widget
 class Chat extends StatefulWidget {
-  final message, isMe, isRead, time, audio, img, audioDuration;
+  final message,
+      isMe,
+      isRead,
+      time,
+      audio,
+      img,
+      audioDuration,
+      isPlayerReady,
+      audioPlayer;
 
   const Chat(
       {Key? key,
@@ -266,7 +292,9 @@ class Chat extends StatefulWidget {
       required this.isRead,
       required this.img,
       required this.audio,
-      required this.audioDuration})
+      required this.audioDuration,
+      required this.isPlayerReady,
+      required this.audioPlayer})
       : super(key: key);
 
   @override
@@ -274,188 +302,190 @@ class Chat extends StatefulWidget {
 }
 
 class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
-  final _controller = TextEditingController();
-  User currentUser = FirebaseAuth.instance.currentUser!;
-  FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
-  var playerSubscription;
-  var isPlaying = false;
-
-  bool isPlayerReady = false;
-  FlutterSoundPlayer audioPlayer = FlutterSoundPlayer();
+  var isPlaying;
 
   @override
   void initState() {
-    initPlayer();
+    isPlaying = false;
     super.initState();
   }
 
   @override
   void dispose() {
-    audioPlayer.closeAudioSession();
     super.dispose();
   }
 
-  Future initPlayer() async {
-    await audioPlayer.openAudioSession().then((value) {
-      isPlayerReady = true;
-    });
-    playerSubscription =
-        audioPlayer.setSubscriptionDuration(const Duration(milliseconds: 500));
-  }
-
-  String _playerTxt = '00:00:00';
-
-  bool _addListeners() {
-    bool isPlaying = false;
-    initializeDateFormatting();
-    playerSubscription = audioPlayer.onProgress!.listen((e) {
-      isPlaying = true;
-    });
-    return isPlaying;
-  }
-
-  void playAudio(var path) {
-    assert(
-        isPlayerReady); //&& audioRecorder.isStopped && audioPlayer.isStopped);
-    audioPlayer.startPlayer(fromURI: path);
+  Future<void> playAudio(var path) async {
+    assert(widget.isPlayerReady);
+    // && audioRecorder.isStopped && audioPlayer.isStopped);
+    if (widget.audioPlayer.isPlaying) {
+      await widget.audioPlayer.stopPlayer();
+    }
+    widget.audioPlayer.startPlayer(
+        fromURI: path,
+        whenFinished: () {
+          setState(() {
+            isPlaying = false;
+          });
+        });
     setState(() {
       isPlaying = true;
     });
-    // return _addListeners();
   }
 
   Future<void> stopPlayer() async {
-    if (audioPlayer != null) {
-      await audioPlayer.stopPlayer();
-      setState(() {
-        isPlaying = false;
-      });
-    }
+    await widget.audioPlayer.stopPlayer();
+    setState(() {
+      isPlaying = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final radius = const Radius.circular(12);
-    final borderRadius = BorderRadius.all(radius);
+    const radius = Radius.circular(12);
+    const borderRadius = BorderRadius.all(radius);
     return Row(
-      mainAxisAlignment:
-          widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: <Widget>[
-        // if (!isMe)
-        //   const CircleAvatar(
-        //     backgroundColor:
-        //         Color.fromARGB(255, 183, 217, 245), //Color(0xffE6E6E6),
-        //     radius: 16,
-        //     child: Icon(Icons.person,
-        //         size: 12, color: Colors.white //Color(0xffCCCCCC),
-        //         ),
-        //   ),
-        Container(
-          padding: widget.img == ''
-              ? const EdgeInsets.fromLTRB(16, 8, 16, 8)
-              : const EdgeInsets.all(3),
-          margin: const EdgeInsets.all(10),
-          constraints:
-              BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
-          decoration: widget.isMe
-              ? BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    stops: [0.0, 1.0],
-                    colors: [
-                      Colors.blue,
-                      Color(0xFF39d6ce),
-                    ],
+        mainAxisAlignment:
+            widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            margin: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.8),
+            decoration: widget.isMe
+                ? BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      stops: [0.0, 1.0],
+                      colors: [
+                        Colors.blue,
+                        Color(0xFF39d6ce),
+                      ],
+                    ),
+                    borderRadius: borderRadius.subtract(const BorderRadius.only(
+                        bottomRight: Radius.circular(12))))
+                : BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: borderRadius.subtract(const BorderRadius.only(
+                        bottomLeft: Radius.circular(12))),
                   ),
-                  borderRadius: borderRadius.subtract(const BorderRadius.only(
-                      bottomRight: Radius.circular(12))))
-              : BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: borderRadius.subtract(
-                      const BorderRadius.only(bottomLeft: Radius.circular(12))),
-                ),
-          child: Column(
-            crossAxisAlignment:
-                widget.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: <Widget>[
-              Visibility(
-                  visible: widget.img != '',
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.network(
-                        widget.img,
-                        fit: BoxFit.cover,
-                        errorBuilder: (BuildContext context, Object exception,
-                            StackTrace? stackTrace) {
-                          return const Text('Image could not be load');
-                        },
-                      ))),
-              Visibility(
-                  visible: widget.audio != '',
-                  child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        IconButton(
-                            icon: !isPlaying
-                                ? (widget.isMe
-                                    ? const Icon(Icons.play_arrow,
-                                        color: Colors.white, size: 35)
-                                    : const Icon(Icons.play_arrow, size: 35))
-                                : (widget.isMe
-                                    ? const Icon(Icons.stop,
-                                        color: Colors.white, size: 35)
-                                    : const Icon(Icons.stop, size: 35)),
-                            onPressed: () async {
-                              isPlaying
-                                  ? stopPlayer()
-                                  : playAudio(widget.audio);
-                            }),
-                        const SizedBox(width: 10),
-                        Text(widget.audioDuration,
-                            style: TextStyle(
-                                color:
-                                    widget.isMe ? Colors.white : Colors.black,
-                                fontSize: 20)),
-                      ])),
-              Visibility(
-                  visible: widget.message != '',
-                  child: Text(
-                    widget.message,
-                    style: TextStyle(
-                        color: widget.isMe ? Colors.white : Colors.black,
-                        fontSize: 18),
-                    textAlign: widget.isMe ? TextAlign.end : TextAlign.start,
-                  )),
-              Row(mainAxisSize: MainAxisSize.min, children: [
-                Text(
-                  DateFormat('hh:mm a').format(widget.time).toString(),
-                  // DateFormat('d/M/y').format(time).toString(),
-
-                  style: TextStyle(
-                      color: widget.isMe ? Colors.grey.shade200 : Colors.grey,
-                      fontSize: 11),
-                  textAlign: TextAlign.end,
-                ),
-                const SizedBox(width: 7),
-                Visibility(
-                    visible: widget.isMe,
-                    child: Icon(widget.isRead ? Icons.done_all : Icons.done,
-                        color: Colors.grey.shade200, size: 14)),
-              ])
-            ],
-          ),
-        ),
-      ],
-    );
+            child: Column(
+                crossAxisAlignment: widget.isMe
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                      padding: widget.img == ''
+                          ? const EdgeInsets.fromLTRB(16, 8, 16, 8)
+                          : const EdgeInsets.all(3),
+                      child: Column(
+                          crossAxisAlignment: widget.isMe
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                          children: <Widget>[
+                            /*img*/ Visibility(
+                                visible: widget.img != '',
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.network(
+                                      widget.img,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (BuildContext context,
+                                          Object exception,
+                                          StackTrace? stackTrace) {
+                                        return const Text(
+                                            'Image could not be load');
+                                      },
+                                    ))),
+                            /*audio*/ Visibility(
+                                visible: widget.audio != '',
+                                child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      isPlaying
+                                          ? IconButton(
+                                              icon: (widget.isMe
+                                                  ? const Icon(Icons.stop,
+                                                      color: Colors.white,
+                                                      size: 35)
+                                                  : const Icon(Icons.stop,
+                                                      size: 35)),
+                                              onPressed: () async {
+                                                stopPlayer();
+                                              })
+                                          : IconButton(
+                                              icon: (widget.isMe
+                                                  ? const Icon(Icons.play_arrow,
+                                                      color: Colors.white,
+                                                      size: 35)
+                                                  : const Icon(Icons.play_arrow,
+                                                      size: 35)),
+                                              onPressed: () async {
+                                                PlayerState theState =
+                                                    await widget.audioPlayer
+                                                        .getPlayerState();
+                                                if (theState !=
+                                                    widget.audioPlayer
+                                                        .isStopped) {
+                                                  // stopPlayer();
+                                                  playAudio(widget.audio);
+                                                } else {
+                                                  playAudio(widget.audio);
+                                                }
+                                              }),
+                                      const SizedBox(width: 10),
+                                      Text(widget.audioDuration,
+                                          style: TextStyle(
+                                              color: widget.isMe
+                                                  ? Colors.white
+                                                  : Colors.black,
+                                              fontSize: 20)),
+                                    ])),
+                            /*text*/ Visibility(
+                                visible: widget.message != '',
+                                child: Text(
+                                  widget.message,
+                                  style: TextStyle(
+                                      color: widget.isMe
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontSize: 18),
+                                  textAlign: widget.isMe
+                                      ? TextAlign.end
+                                      : TextAlign.start,
+                                )),
+                          ])),
+                  Padding(
+                      padding: EdgeInsets.fromLTRB(4, 2, 4, 2),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        /*time*/ Text(
+                          DateFormat('hh:mm a').format(widget.time).toString(),
+                          style: TextStyle(
+                              color: widget.isMe
+                                  ? Colors.grey.shade200
+                                  : Colors.grey,
+                              fontSize: 11,
+                              wordSpacing: 1),
+                        ),
+                        const SizedBox(width: 2),
+                        /*read/unread*/ Visibility(
+                            visible: widget.isMe,
+                            child: Icon(
+                                widget.isRead ? Icons.done_all : Icons.done,
+                                color: Colors.grey.shade200,
+                                size: 14)),
+                      ]))
+                ]),
+          )
+        ]);
   }
 }
 
 //! chat text field
 class ChatField extends StatefulWidget {
   final requestID;
-
   const ChatField({required this.requestID, Key? key}) : super(key: key);
 
   @override
@@ -689,8 +719,7 @@ class ChatFieldState extends State<ChatField>
     }
   }
 
-  void sendMessage(
-      var message, var imagePath, var audioPath, var audioDuration) async {
+  void sendMessage(var message, var imagePath, var audio, var duration) async {
     CollectionReference messages = FirebaseFirestore.instance
         .collection('requests')
         .doc(widget.requestID)
@@ -702,8 +731,8 @@ class ChatFieldState extends State<ChatField>
       'id': '',
       'text': message,
       'img': imagePath,
-      'audio': audioPath,
-      'audioDuration': audioDuration,
+      'audio': audio,
+      'audioDuration': duration,
       'read': false,
     });
     _controller.clear();
