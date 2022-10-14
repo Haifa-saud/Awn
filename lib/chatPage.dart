@@ -30,6 +30,21 @@ class ChatPageState extends State<ChatPage>
     with SingleTickerProviderStateMixin {
   User currentUser = FirebaseAuth.instance.currentUser!;
 
+  //*audio recorder section
+  var audioRecorder;
+  bool isRecorderReady = false;
+
+  Future initRecorder() async {
+    audioRecorder = FlutterSoundRecorder();
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw 'Microphone permission denied';
+    }
+    await audioRecorder.openAudioSession();
+    isRecorderReady = true;
+    audioRecorder.setSubscriptionDuration(const Duration(milliseconds: 500));
+  }
+
   //* audio player section
   var audioPlayer = FlutterSoundPlayer();
   var isPlaying = false;
@@ -47,14 +62,15 @@ class ChatPageState extends State<ChatPage>
 
   @override
   void initState() {
+    initRecorder();
     isPlayerReady = false;
     initPlayer();
-    // isPlaying = false;
     super.initState();
   }
 
   @override
   void dispose() {
+    audioRecorder.closeAudioSession();
     audioPlayer.closeAudioSession();
     super.dispose();
   }
@@ -101,6 +117,8 @@ class ChatPageState extends State<ChatPage>
   @override
   Widget build(BuildContext context) {
     var upcomingMessageDate = '00/00/0000';
+    var unreadMessages = false;
+    var showOnce = true;
 
     return Scaffold(
         body: FutureBuilder<Map<String, dynamic>>(
@@ -166,6 +184,15 @@ class ChatPageState extends State<ChatPage>
                                   reverse: true,
                                   itemCount: messages.size,
                                   itemBuilder: (context, index) {
+                                    // unreadMessages = false;
+                                    showOnce = true;
+                                    if (messages.docs[index]['author'] !=
+                                            currentUser.uid &&
+                                        !messages.docs[index]['read'] &&
+                                        showOnce) {
+                                      unreadMessages = true;
+                                      showOnce = false;
+                                    }
                                     if (index != messages.size - 1) {
                                       upcomingMessageDate = DateFormat('d/M/y')
                                           .format(DateTime
@@ -182,9 +209,34 @@ class ChatPageState extends State<ChatPage>
                                         .toString();
                                     return Column(children: [
                                       Center(
+                                        child: unreadMessages && !showOnce
+                                            ? Container(
+                                                margin: EdgeInsets.all(10),
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        8, 6, 8, 6),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey.shade100,
+                                                  border: Border.all(
+                                                    width: 0,
+                                                    color: Colors.grey.shade100,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Text('UNREAD MESSAGES',
+                                                    style: const TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.normal)),
+                                              )
+                                            : const SizedBox(height: 0),
+                                      ),
+                                      Center(
                                         child: upcomingMessageDate !=
                                                 currentDate
                                             ? Container(
+                                                margin: EdgeInsets.all(10),
                                                 padding:
                                                     const EdgeInsets.fromLTRB(
                                                         8, 6, 8, 6),
@@ -198,10 +250,12 @@ class ChatPageState extends State<ChatPage>
                                                       BorderRadius.circular(12),
                                                 ),
                                                 child: Text(
-                                                    DateFormat('d/M/y').format(DateTime
-                                                        .fromMillisecondsSinceEpoch(
-                                                            messages.docs[index]
-                                                                ['createdAt'])),
+                                                    DateFormat('d MMM y')
+                                                        .format(DateTime
+                                                            .fromMillisecondsSinceEpoch(
+                                                                messages.docs[
+                                                                        index][
+                                                                    'createdAt'])),
                                                     style: const TextStyle(
                                                         fontSize: 15,
                                                         fontWeight:
@@ -212,6 +266,7 @@ class ChatPageState extends State<ChatPage>
                                       Center(
                                           child: index == messages.size - 1
                                               ? Container(
+                                                  margin: EdgeInsets.all(10),
                                                   padding:
                                                       const EdgeInsets.fromLTRB(
                                                           8, 6, 8, 6),
@@ -227,17 +282,20 @@ class ChatPageState extends State<ChatPage>
                                                             12),
                                                   ),
                                                   child: Text(
-                                                      DateFormat('d/M/y')
+                                                      DateFormat('d MMM y')
                                                           .format(DateTime
                                                               .fromMillisecondsSinceEpoch(
                                                                   messages.docs[
-                                                                          index]
-                                                                      [
+                                                                          index][
                                                                       'createdAt'])),
-                                                      style: const TextStyle(
-                                                          fontSize: 15,
-                                                          fontWeight: FontWeight
-                                                              .normal)),
+                                                      style:
+                                                          TextStyle(
+                                                              fontSize: 15,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .normal,
+                                                              color: Colors.grey
+                                                                  .shade600)),
                                                 )
                                               : const SizedBox(height: 0)),
                                       Chat(
@@ -263,7 +321,11 @@ class ChatPageState extends State<ChatPage>
                           }
                         },
                       )),
-                      ChatField(requestID: widget.requestID),
+                      ChatField(
+                        requestID: widget.requestID,
+                        audioRecorder: audioRecorder,
+                        isRecorderReady: isRecorderReady,
+                      ),
                     ])));
               } else {
                 return const Center(child: CircularProgressIndicator());
@@ -316,8 +378,9 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
   }
 
   Future<void> playAudio(var path) async {
-    assert(widget.isPlayerReady);
-    // && audioRecorder.isStopped && audioPlayer.isStopped);
+    //! when playing new audio, must wait for the previous to stop
+    assert(widget.isPlayerReady && widget.audioPlayer.isStopped);
+    // && audioRecorder.isStopped );
     if (widget.audioPlayer.isPlaying) {
       await widget.audioPlayer.stopPlayer();
     }
@@ -423,17 +486,7 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
                                                   : const Icon(Icons.play_arrow,
                                                       size: 35)),
                                               onPressed: () async {
-                                                PlayerState theState =
-                                                    await widget.audioPlayer
-                                                        .getPlayerState();
-                                                if (theState !=
-                                                    widget.audioPlayer
-                                                        .isStopped) {
-                                                  // stopPlayer();
-                                                  playAudio(widget.audio);
-                                                } else {
-                                                  playAudio(widget.audio);
-                                                }
+                                                playAudio(widget.audio);
                                               }),
                                       const SizedBox(width: 10),
                                       Text(widget.audioDuration,
@@ -485,8 +538,13 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
 
 //! chat text field
 class ChatField extends StatefulWidget {
-  final requestID;
-  const ChatField({required this.requestID, Key? key}) : super(key: key);
+  final requestID, audioRecorder, isRecorderReady;
+  const ChatField(
+      {required this.requestID,
+      required this.audioRecorder,
+      required this.isRecorderReady,
+      Key? key})
+      : super(key: key);
 
   @override
   State<ChatField> createState() => ChatFieldState();
@@ -496,30 +554,15 @@ class ChatFieldState extends State<ChatField>
     with SingleTickerProviderStateMixin {
   final _controller = TextEditingController();
   User currentUser = FirebaseAuth.instance.currentUser!;
-  FlutterSoundRecorder audioRecorder = FlutterSoundRecorder();
-  bool isRecorderReady = false;
-
   bool showRecording = false, showIcons = true;
 
   @override
   void initState() {
-    initRecorder();
     super.initState();
-  }
-
-  Future initRecorder() async {
-    final status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
-      throw 'Microphone permission denied';
-    }
-    await audioRecorder.openAudioSession();
-    isRecorderReady = true;
-    audioRecorder.setSubscriptionDuration(const Duration(milliseconds: 500));
   }
 
   @override
   void dispose() {
-    audioRecorder.closeAudioSession();
     super.dispose();
   }
 
@@ -556,10 +599,10 @@ class ChatFieldState extends State<ChatField>
                                   icon: const Icon(Icons.mic),
                                   focusColor: const Color(0xFF39d6ce),
                                   onPressed: () async {
-                                    if (!isRecorderReady) {
+                                    if (!widget.isRecorderReady) {
                                       return;
                                     }
-                                    await audioRecorder.startRecorder(
+                                    await widget.audioRecorder.startRecorder(
                                         toFile: const Uuid().v4());
                                     setRecording(true);
                                   },
@@ -624,13 +667,13 @@ class ChatFieldState extends State<ChatField>
                       color: Colors.red,
                       iconSize: 33,
                       onPressed: () {
-                        audioRecorder.stopRecorder();
+                        widget.audioRecorder.stopRecorder();
                         setRecording(false);
                       },
                     ),
                     const Spacer(),
                     StreamBuilder<RecordingDisposition>(
-                      stream: audioRecorder.onProgress,
+                      stream: widget.audioRecorder.onProgress,
                       builder: (context, snapshot) {
                         var duration = snapshot.hasData
                             ? snapshot.data!.duration
@@ -651,11 +694,12 @@ class ChatFieldState extends State<ChatField>
                       color: const Color(0xFF39d6ce),
                       iconSize: 33,
                       onPressed: () async {
-                        if (audioRecorder.isRecording) {
-                          if (!isRecorderReady) {
+                        if (widget.audioRecorder.isRecording) {
+                          if (!widget.isRecorderReady) {
                             return;
                           }
-                          final path = await audioRecorder.stopRecorder();
+                          final path =
+                              await widget.audioRecorder.stopRecorder();
                           audioFile = File(path!);
                           print("Recorded Audio: $audioFile");
                           sendAudioMessage(recorderDuration);
