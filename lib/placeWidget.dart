@@ -932,34 +932,30 @@ class Place extends StatelessWidget {
           }
         });
   }
+   //Wedd addition - every thing below
+  Future<void> addToDB() async {
+    CollectionReference Post_comment =
+        FirebaseFirestore.instance.collection('Comments');
+    String dataId = '';
+    print('will be added to db');
+    DocumentReference docReference = await Post_comment.add({
+      'commentID': '',
+      'date': actualDate,
+      //user name
+      'name': 'commenter_name',
+      'text': comment,
+      'UserID': userId,
+      //place id
+      'PostID': Place_id
+    });
+    dataId = docReference.id;
+    Post_comment.doc(dataId).update({'commentID': dataId});
+    print("Document written with ID: ${docReference.id}");
+    print('comment added');
+    comment.text = '';
+    Place_id = '';
+  }
 }
-
-//Wedd addition - every thing below
-Future<void> addToDB() async {
-  CollectionReference Post_comment =
-      FirebaseFirestore.instance.collection('Comments');
-  String dataId = '';
-  print('will be added to db');
-  DocumentReference docReference = await Post_comment.add({
-    'commentID': '',
-    'date': actualDate,
-    //user name
-    'name': 'wedd Alhossaiyn',
-    'text': comment,
-    //user id
-    'UserID': commenter,
-    //place id
-    'PostID': Place_id
-  });
-  dataId = docReference.id;
-  Post_comment.doc(dataId).update({'commentID': dataId});
-  print("Document written with ID: ${docReference.id}");
-  print('comment added');
-  comment.text = '';
-  commenter = '';
-  Place_id = '';
-}
-
 var commenter, commenter_name, Place_id;
 var now = DateTime.now();
 var formatterDate = DateFormat('MMM d, h:mm a');
