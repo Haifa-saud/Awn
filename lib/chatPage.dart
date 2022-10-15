@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:just_waveform/just_waveform.dart';
 import 'package:path/path.dart' as Path;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,7 +16,9 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:grouped_list/grouped_list.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:uuid/uuid.dart';
@@ -47,12 +52,13 @@ class ChatPageState extends State<ChatPage>
 
   //* audio player section
   var audioPlayer = FlutterSoundPlayer();
-  var isPlaying = false;
+  var isPlaying;
   var playSubscription;
   var isPlayerReady = false;
 
   Future initPlayer() async {
     audioPlayer = FlutterSoundPlayer();
+    isPlaying = false;
     await audioPlayer.openAudioSession().then((value) {
       isPlayerReady = true;
     });
@@ -317,6 +323,7 @@ class ChatPageState extends State<ChatPage>
                                         audioDuration: messages.docs[index]
                                             ['audioDuration'],
                                         isPlayerReady: isPlayerReady,
+                                        isPlaying: isPlaying,
                                         audioPlayer: audioPlayer,
                                         audioRecorder: audioRecorder,
                                       ),
@@ -353,8 +360,9 @@ class Chat extends StatefulWidget {
       isPlayerReady,
       audioPlayer,
       audioRecorder;
+  var isPlaying;
 
-  const Chat(
+  Chat(
       {Key? key,
       required this.message,
       required this.isMe,
@@ -364,6 +372,7 @@ class Chat extends StatefulWidget {
       required this.audio,
       required this.audioDuration,
       required this.isPlayerReady,
+      required this.isPlaying,
       required this.audioPlayer,
       required this.audioRecorder})
       : super(key: key);
@@ -373,17 +382,17 @@ class Chat extends StatefulWidget {
 }
 
 class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
-  var isPlaying;
+  StreamSubscription? _mPlayerSubscription;
 
   @override
   void initState() {
-    isPlaying = false;
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+    cancelPlayerSubscriptions();
   }
 
   Future<void> playAudio(var path) async {
@@ -391,10 +400,11 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
     assert(widget.isPlayerReady);
     // && audioRecorder.isStopped );
     if (widget.audioPlayer.isPlaying) {
+      // widget.audioPlayer.stopPlayer();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             backgroundColor: Colors.red,
-            content: Text(
+            content: const Text(
                 'Please stop the played audio currently, or wait until it is stopped.'),
             action: SnackBarAction(
               label: 'Dismiss',
@@ -403,7 +413,6 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
               onPressed: () {},
             )),
       );
-      // await widget.audioPlayer.stopPlayer();
     } else if (widget.audioRecorder.isRecording) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -421,22 +430,50 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
           fromURI: path,
           whenFinished: () {
             setState(() {
-              isPlaying = false;
+              widget.isPlaying = false;
             });
+            cancelPlayerSubscriptions();
           });
       setState(() {
-        isPlaying = true;
+        widget.isPlaying = true;
+      });
+      _mPlayerSubscription = widget.audioPlayer.onProgress.listen((e) {
+        setState(() {
+          duration = e.duration;
+          position = e.position;
+        });
       });
     }
   }
 
+  void cancelPlayerSubscriptions() {
+    if (_mPlayerSubscription != null) {
+      _mPlayerSubscription!.cancel();
+      _mPlayerSubscription = null;
+    }
+  }
+
+  Duration position = Duration.zero;
+  Duration duration = Duration.zero;
+
   Future<void> stopPlayer() async {
     await widget.audioPlayer.stopPlayer();
     setState(() {
-      isPlaying = false;
+      widget.isPlaying = false;
     });
   }
 
+  // Future<void> seek(double d) async {
+  //   await widget.audioPlayer.seekToPlayer(Duration(milliseconds: d.floor()));
+  //   await setPos(d);
+  //   if (d > duration.toDouble()) {
+  //     d = duration;
+  //   }
+  //   setState(() {
+  //     position = d;
+  //   });
+
+  // }
   @override
   Widget build(BuildContext context) {
     const radius = Radius.circular(12);
@@ -501,7 +538,7 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
                                     mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      isPlaying
+                                      widget.isPlaying
                                           ? IconButton(
                                               icon: (widget.isMe
                                                   ? const Icon(Icons.stop,
@@ -522,13 +559,19 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
                                               onPressed: () async {
                                                 playAudio(widget.audio);
                                               }),
-                                      const SizedBox(width: 10),
-                                      Text(widget.audioDuration,
-                                          style: TextStyle(
-                                              color: widget.isMe
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                              fontSize: 20)),
+                                      Slider(
+                                          activeColor: Colors.white,
+                                          inactiveColor: Colors.grey.shade300,
+                                          thumbColor: Colors.white,
+                                          value: position.inSeconds.toDouble(),
+                                          min: 0,
+                                          max: duration.inSeconds.toDouble(),
+                                          onChanged: (double value) async {
+                                            final position = Duration(
+                                                seconds: value.toInt());
+                                            await widget.audioPlayer
+                                                .seekToPlayer(position);
+                                          }),
                                     ])),
                             /*text*/ Visibility(
                                 visible: widget.message != '',
@@ -543,6 +586,22 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
                                       ? TextAlign.end
                                       : TextAlign.start,
                                 )),
+                            widget.audio != ''
+                                ? widget.isPlaying
+                                    ? Text(
+                                        '${position.inMinutes.remainder(60)}:${position.inSeconds.remainder(60)}',
+                                        style: TextStyle(
+                                            color: widget.isMe
+                                                ? Colors.white
+                                                : Colors.black,
+                                            fontSize: 14))
+                                    : Text(widget.audioDuration,
+                                        style: TextStyle(
+                                            color: widget.isMe
+                                                ? Colors.white
+                                                : Colors.black,
+                                            fontSize: 14))
+                                : SizedBox(),
                           ])),
                   Padding(
                       padding: EdgeInsets.fromLTRB(4, 2, 4, 2),

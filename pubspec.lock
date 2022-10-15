@@ -496,6 +496,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_audio_waveforms:
+    dependency: "direct main"
+    description:
+      name: flutter_audio_waveforms
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.1+6"
   flutter_chat_types:
     dependency: transitive
     description:
@@ -940,6 +947,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.4.1"
+  just_waveform:
+    dependency: "direct main"
+    description:
+      name: just_waveform
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.3"
   justino_icons:
     dependency: "direct main"
     description:

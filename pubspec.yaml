@@ -88,6 +88,8 @@ dependencies:
   flutter_sound: ^8.3.9
   audioplayers: ^1.1.1
   duration_picker: ^1.0.1
+  flutter_audio_waveforms: ^1.2.1+6
+  just_waveform: ^0.0.3
 
 
   
