@@ -58,6 +58,11 @@ class ChatPageState extends State<ChatPage>
     });
     playSubscription =
         audioPlayer.setSubscriptionDuration(const Duration(milliseconds: 500));
+
+    // audioPlayer.onProgress!.listen((e) {
+    //   var maxDuration = e.duration.inMilliseconds.toDouble();
+    //   if (maxDuration <= 0) maxDuration = 0.0;
+    // });
   }
 
   @override
@@ -313,6 +318,7 @@ class ChatPageState extends State<ChatPage>
                                             ['audioDuration'],
                                         isPlayerReady: isPlayerReady,
                                         audioPlayer: audioPlayer,
+                                        audioRecorder: audioRecorder,
                                       ),
                                     ]);
                                   },
@@ -324,6 +330,7 @@ class ChatPageState extends State<ChatPage>
                       ChatField(
                         requestID: widget.requestID,
                         audioRecorder: audioRecorder,
+                        audioPlayer: audioPlayer,
                         isRecorderReady: isRecorderReady,
                       ),
                     ])));
@@ -344,7 +351,8 @@ class Chat extends StatefulWidget {
       img,
       audioDuration,
       isPlayerReady,
-      audioPlayer;
+      audioPlayer,
+      audioRecorder;
 
   const Chat(
       {Key? key,
@@ -356,7 +364,8 @@ class Chat extends StatefulWidget {
       required this.audio,
       required this.audioDuration,
       required this.isPlayerReady,
-      required this.audioPlayer})
+      required this.audioPlayer,
+      required this.audioRecorder})
       : super(key: key);
 
   @override
@@ -379,21 +388,46 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
 
   Future<void> playAudio(var path) async {
     //! when playing new audio, must wait for the previous to stop
-    assert(widget.isPlayerReady && widget.audioPlayer.isStopped);
+    assert(widget.isPlayerReady);
     // && audioRecorder.isStopped );
     if (widget.audioPlayer.isPlaying) {
-      await widget.audioPlayer.stopPlayer();
-    }
-    widget.audioPlayer.startPlayer(
-        fromURI: path,
-        whenFinished: () {
-          setState(() {
-            isPlaying = false;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(
+                'Please stop the played audio currently, or wait until it is stopped.'),
+            action: SnackBarAction(
+              label: 'Dismiss',
+              disabledTextColor: Colors.white,
+              textColor: Colors.white,
+              onPressed: () {},
+            )),
+      );
+      // await widget.audioPlayer.stopPlayer();
+    } else if (widget.audioRecorder.isRecording) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Please wait until the recorder is stopped.'),
+            action: SnackBarAction(
+              label: 'Dismiss',
+              disabledTextColor: Colors.white,
+              textColor: Colors.white,
+              onPressed: () {},
+            )),
+      );
+    } else {
+      widget.audioPlayer.startPlayer(
+          fromURI: path,
+          whenFinished: () {
+            setState(() {
+              isPlaying = false;
+            });
           });
-        });
-    setState(() {
-      isPlaying = true;
-    });
+      setState(() {
+        isPlaying = true;
+      });
+    }
   }
 
   Future<void> stopPlayer() async {
@@ -538,9 +572,10 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
 
 //! chat text field
 class ChatField extends StatefulWidget {
-  final requestID, audioRecorder, isRecorderReady;
+  final requestID, audioRecorder, audioPlayer, isRecorderReady;
   const ChatField(
       {required this.requestID,
+      required this.audioPlayer,
       required this.audioRecorder,
       required this.isRecorderReady,
       Key? key})
@@ -602,10 +637,25 @@ class ChatFieldState extends State<ChatField>
                                   onPressed: () async {
                                     if (!widget.isRecorderReady) {
                                       return;
+                                    } else if (widget.audioPlayer.isPlaying) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content: Text(
+                                                'To start recording, please stop the audio currently playing or wait until it is stopped.'),
+                                            action: SnackBarAction(
+                                              label: 'Dismiss',
+                                              disabledTextColor: Colors.white,
+                                              textColor: Colors.white,
+                                              onPressed: () {},
+                                            )),
+                                      );
+                                    } else {
+                                      await widget.audioRecorder.startRecorder(
+                                          toFile: const Uuid().v4());
+                                      setRecording(true);
                                     }
-                                    await widget.audioRecorder.startRecorder(
-                                        toFile: const Uuid().v4());
-                                    setRecording(true);
                                   },
                                 ),
                                 IconButton(

@@ -493,7 +493,7 @@ class UserProfileState extends State<userProfile>
 
                                   final expirationDate = DateTime(
                                           year, month, day, hours, minutes)
-                                      .add(new Duration(
+                                      .add(Duration(
                                           hours: int.parse(duration.substring(
                                               0, duration.indexOf(':'))),
                                           minutes: int.parse(duration.substring(
