@@ -308,10 +308,12 @@ class AwnRequestFormState extends State<AwnRequestForm> {
               '*indicates required fields',
               style: TextStyle(fontSize: 15),
             )),
+            
             /*title*/ Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 6),
               child: Text('What help do you need?*'),
             ),
+            
             Container(
                 padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                 child: TextFormField(

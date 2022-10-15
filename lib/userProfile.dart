@@ -425,6 +425,7 @@ class UserProfileState extends State<userProfile>
           .orderBy('date_ymd')
           .snapshots();
     }
+
     return Container(
         height: double.infinity,
         child: Column(children: [
@@ -471,6 +472,38 @@ class UserProfileState extends State<userProfile>
                                     ? getStatus(data.docs[index]['status'],
                                         data.docs[index]['docId'])
                                     : data.docs[index]['status'];
+
+                                var isRequestActive = false;
+                                if (data.docs[index]['status'] == 'Approved') {
+                                  var duration = data.docs[index]['duration'];
+                                  print('total duration: $duration');
+
+                                  var dateTime = data.docs[index]['date_ymd'];
+                                  final now = DateTime.now();
+                                  var year =
+                                      int.parse(dateTime.substring(0, 4));
+                                  var month =
+                                      int.parse(dateTime.substring(5, 7));
+                                  var day =
+                                      int.parse(dateTime.substring(8, 10));
+                                  var hours =
+                                      int.parse(dateTime.substring(11, 13));
+                                  var minutes =
+                                      int.parse(dateTime.substring(14));
+
+                                  final expirationDate = DateTime(
+                                          year, month, day, hours, minutes)
+                                      .add(new Duration(
+                                          hours: int.parse(duration.substring(
+                                              0, duration.indexOf(':'))),
+                                          minutes: int.parse(duration.substring(
+                                              duration.indexOf(':') + 1))));
+                                  isRequestActive = expirationDate.isAfter(now);
+
+                                  print(
+                                      "expirationDate $expirationDate $isRequestActive");
+                                }
+
                                 return FutureBuilder(
                                     future: getLocationAsString(
                                         latitude, longitude),
@@ -541,8 +574,8 @@ class UserProfileState extends State<userProfile>
                                                                                   )))),
                                                                       Spacer(),
                                                                       Visibility(
-                                                                          visible: status ==
-                                                                              'Approved',
+                                                                          visible:
+                                                                              isRequestActive,
                                                                           child:
                                                                               IconButton(
                                                                             icon:
@@ -550,7 +583,7 @@ class UserProfileState extends State<userProfile>
                                                                             iconSize:
                                                                                 25,
                                                                             color:
-                                                                                const Color(0xFF39d6ce), //Color.fromARGB(255, 149, 204, 250),
+                                                                                const Color(0xFF39d6ce),
                                                                             onPressed:
                                                                                 () {
                                                                               Navigator.push(
@@ -572,8 +605,6 @@ class UserProfileState extends State<userProfile>
                                                                               Alignment.topRight,
                                                                           margin:
                                                                               const EdgeInsets.only(top: 5),
-                                                                          // width:
-                                                                          //     80,
                                                                           child: Text(
                                                                               status,
                                                                               style: TextStyle(

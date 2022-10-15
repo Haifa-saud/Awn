@@ -59,6 +59,17 @@ class Place extends StatelessWidget {
           .snapshots();
     }
 
+    var color;
+    if (status == 'Declined') {
+      color = Colors.red.shade100;
+    } else if (status == 'Pending') {
+      color = Colors.orange.shade100;
+    } else if (status == 'Approved') {
+      color = Colors.green.shade100;
+    } else {
+      color = Colors.white;
+    }
+
     return Container(
         height: double.infinity,
         child: Column(
@@ -130,7 +141,7 @@ class Place extends StatelessWidget {
                                               splashColor: Colors.transparent,
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                    color: Colors.white,
+                                                    color: color,
                                                     boxShadow: const [
                                                       BoxShadow(
                                                           blurRadius: 32,
@@ -300,12 +311,13 @@ class Place extends StatelessWidget {
             latitude = data['latitude'];
             longitude = data['longitude'];
             isLocSet = latitude == '' ? false : true;
+
             return DraggableScrollableSheet(
                 maxChildSize: 1,
                 minChildSize: 0.9,
                 initialChildSize: 1,
                 builder: (_, controller) => Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(20))),
