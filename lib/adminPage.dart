@@ -186,7 +186,12 @@ class _AdminPage extends State<adminPage> with TickerProviderStateMixin {
                           return Center(child: CircularProgressIndicator());
                         } else {
                           return Column(children: [
-                            Place(category: '', status: 'Pending', userId: '')
+                            Place(
+                              category: '',
+                              status: 'Pending',
+                              userId: '',
+                              userName: '',
+                            )
                           ]);
                         }
                       },

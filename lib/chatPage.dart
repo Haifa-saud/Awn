@@ -579,6 +579,7 @@ class ChatFieldState extends State<ChatField>
               ? Expanded(
                   child: TextField(
                     controller: _controller,
+                    maxLines: null,
                     textCapitalization: TextCapitalization.sentences,
                     autocorrect: true,
                     enableSuggestions: true,

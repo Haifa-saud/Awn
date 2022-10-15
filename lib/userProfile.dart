@@ -864,11 +864,20 @@ class UserProfileState extends State<userProfile>
                         child:
                             TabBarView(controller: _tabController, children: [
                           Place(
-                              userId: userId, category: '', status: 'Declined'),
+                              userId: userId,
+                              category: '',
+                              status: 'Declined',
+                              userName: userData['name']),
                           Place(
-                              userId: userId, category: '', status: 'Pending'),
+                              userId: userId,
+                              category: '',
+                              status: 'Pending',
+                              userName: userData['name']),
                           Place(
-                              userId: userId, category: '', status: 'Approved'),
+                              userId: userId,
+                              category: '',
+                              status: 'Approved',
+                              userName: userData['name']),
                         ])))
               ]);
             }

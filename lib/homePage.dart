@@ -4,6 +4,8 @@ import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
 import 'package:awn/services/placeWidget.dart';
 import 'package:awn/services/sendNotification.dart';
+import 'package:awn/services/myGlobal.dart';
+
 import 'package:awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -202,9 +204,10 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                                         String cate = ((document.data()
                                             as Map)['category']);
                                         return Place(
-                                            userId: '',
+                                            userId: userData['id'],
                                             category: cate,
-                                            status: '');
+                                            status: '',
+                                            userName: userData['name']);
                                       }).toList(),
                                     )))
                           ]);
@@ -238,7 +241,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                       PageRouteBuilder(
                         pageBuilder: (context, animation1, animation2) =>
                             addPost(userType: userData['Type']),
-                            // comments(),
+                        // comments(),
                         transitionDuration: const Duration(seconds: 1),
                         reverseTransitionDuration: Duration.zero,
                       ),

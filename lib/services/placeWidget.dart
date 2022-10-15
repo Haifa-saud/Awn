@@ -1,20 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'myGlobal.dart' as globals;
 
 class Place extends StatelessWidget {
   Place(
       {Key? key,
       required this.userId,
       required this.category,
-      required this.status});
+      required this.status,
+      required this.userName});
+
   final userId;
   final category;
   final status;
+  final userName;
 
   @override
   Widget build(BuildContext context) {
@@ -266,7 +272,6 @@ class Place extends StatelessWidget {
   }
 
   Widget buildPlace(placeID, var isAdmin, var status) {
-    print('status $status');
     late GoogleMapController myController;
     Set<Marker> getMarker(lat, lng) {
       return <Marker>{
@@ -334,14 +339,15 @@ class Place extends StatelessWidget {
                                     child: Row(children: [
                                       Text(data['name'],
                                           style: const TextStyle(fontSize: 25)),
-                                      Spacer(),
+                                      const Spacer(),
                                       InkWell(
                                           onTap: () => Navigator.pop(context),
                                           child: CircleAvatar(
                                               backgroundColor:
                                                   Colors.grey.shade400,
                                               radius: 18,
-                                              child: Icon(Icons.arrow_downward,
+                                              child: const Icon(
+                                                  Icons.arrow_downward,
                                                   color: Colors.white))),
                                     ]))),
                             pinned: true,
@@ -356,7 +362,7 @@ class Place extends StatelessWidget {
                           SliverToBoxAdapter(
                               child: Padding(
                                   padding:
-                                      const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                                      const EdgeInsets.fromLTRB(15, 5, 15, 30),
                                   child: Column(children: [
                                     /*category*/ Align(
                                         alignment: Alignment.centerLeft,
@@ -606,12 +612,13 @@ class Place extends StatelessWidget {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                                Spacer(),
+                                                const Spacer(),
                                                 ElevatedButton(
-                                                  style: ElevatedButton
-                                                      .styleFrom(
-                                                          fixedSize: Size(
-                                                              120, 50),
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          fixedSize:
+                                                              const Size(
+                                                                  120, 50),
                                                           backgroundColor:
                                                               Colors.green
                                                                   .shade300,
@@ -633,13 +640,14 @@ class Place extends StatelessWidget {
                                                                   .green
                                                                   .shade300,
                                                               width: 1)),
-                                                  child: Text('Approve'),
+                                                  child: const Text('Approve'),
                                                   onPressed: () {}, //!for haifa
                                                 ),
-                                                SizedBox(width: 15),
+                                                const SizedBox(width: 15),
                                                 ElevatedButton(
                                                   style: ElevatedButton.styleFrom(
-                                                      fixedSize: Size(120, 50),
+                                                      fixedSize: const Size(
+                                                          120, 50),
                                                       backgroundColor: Colors
                                                           .red.shade300,
                                                       foregroundColor: Colors
@@ -654,10 +662,10 @@ class Place extends StatelessWidget {
                                                           color: Colors
                                                               .red.shade300,
                                                           width: 1)),
-                                                  child: Text('Deny'),
+                                                  child: const Text('Deny'),
                                                   onPressed: () {}, //!for haifa
                                                 ),
-                                                Spacer(),
+                                                const Spacer(),
                                               ])
                                         : (status == 'Approved'
                                             ? /*comment*/ Align(
@@ -671,222 +679,16 @@ class Place extends StatelessWidget {
                                                     const Text(
                                                       'Comments',
                                                     ),
-                                                    TextField(
-                                                      // controller: _controller,
-                                                      textCapitalization:
-                                                          TextCapitalization
-                                                              .sentences,
-                                                      autocorrect: true,
-                                                      enableSuggestions: true,
-                                                      onChanged: (text) {
-                                                        // if (_controller.text.trim() != "") {
-                                                        //   setIcons(false);
-                                                        // } else {
-                                                        //   // setIcons(true);
-                                                        // }
-                                                      },
-                                                      decoration:
-                                                          InputDecoration(
-                                                        suffixIcon: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .end,
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              IconButton(
-                                                                icon: const Icon(
-                                                                    Icons.send),
-                                                                color: const Color(
-                                                                    0xFF39d6ce),
-                                                                iconSize: 30,
-                                                                onPressed: () {
-                                                                  // _controller.text
-                                                                  //         .trim()
-                                                                  //         .isEmpty
-                                                                  //     ? null
-                                                                  //     : sendMessage(
-                                                                  //         _controller
-                                                                  //             .text,
-                                                                  //         '',
-                                                                  //         '',
-                                                                  //         '');
-                                                                  // setIcons(true);
-                                                                },
-                                                              ),
-                                                              const SizedBox(
-                                                                  width: 10),
-                                                            ]),
-                                                        filled: true,
-                                                        fillColor:
-                                                            Colors.grey.shade50,
-                                                        labelText:
-                                                            'Share your experiences...',
-                                                        border: OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        100.0),
-                                                            borderSide: BorderSide(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade400)),
-                                                        contentPadding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                20, 20, 20, 20),
-                                                        focusedBorder: OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        100.0),
-                                                            borderSide: const BorderSide(
-                                                                color: const Color(
-                                                                    0xFF39d6ce),
-                                                                width: 2)),
-                                                        floatingLabelStyle:
-                                                            const TextStyle(
-                                                                fontSize: 22,
-                                                                color: Color(
-                                                                    0xFF39d6ce)),
-                                                        helperStyle:
-                                                            const TextStyle(
-                                                                fontSize: 14),
-                                                      ),
-                                                    ),
+                                                    const SizedBox(height: 10),
+                                                    CommentField(
+                                                        placeID: placeID,
+                                                        userID: userId,
+                                                        userName: userName),
                                                     const SizedBox(height: 7),
-                                                    StreamBuilder<dynamic>(
-                                                        stream:
-                                                            FirebaseFirestore
-                                                                .instance
-                                                                .collection(
-                                                                    "Comments")
-                                                                .snapshots(),
-                                                        builder: (context,
-                                                            snapshot) {
-                                                          if (!snapshot
-                                                              .hasData) {
-                                                            return Text(
-                                                                "this post has no comments");
-                                                          } else {
-                                                            final comment_Data =
-                                                                snapshot.data;
-                                                            return ListView
-                                                                .builder(
-                                                                    shrinkWrap:
-                                                                        true,
-                                                                    physics:
-                                                                        const BouncingScrollPhysics(),
-                                                                    reverse:
-                                                                        true,
-                                                                    itemCount:
-                                                                        comment_Data!
-                                                                            .size,
-                                                                    itemBuilder:
-                                                                        (context,
-                                                                            index) {
-                                                                      return Padding(
-                                                                          padding: const EdgeInsets.symmetric(
-                                                                              horizontal:
-                                                                                  10.0,
-                                                                              vertical:
-                                                                                  16),
-                                                                          child:
-                                                                              Stack(children: [
-                                                                            Container(
-                                                                              width: 600,
-                                                                              margin: const EdgeInsets.only(top: 12),
-                                                                              padding: const EdgeInsets.all(1),
-                                                                              decoration: BoxDecoration(
-                                                                                  color: Colors
-                                                                                      .white,
-                                                                                  boxShadow: const [
-                                                                                    BoxShadow(blurRadius: 32, color: Colors.black45, spreadRadius: -8)
-                                                                                  ],
-                                                                                  borderRadius: BorderRadius.circular(15)),
-                                                                              child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, mainAxisSize: MainAxisSize.max, children: [
-                                                                                Padding(
-                                                                                  padding: const EdgeInsets.fromLTRB(8, 1, 1, 1),
-                                                                                  child: Column(
-                                                                                    children: [
-                                                                                      Padding(
-                                                                                          padding: const EdgeInsets.fromLTRB(6, 10, 15, 15),
-                                                                                          child: Stack(children: [
-                                                                                            Align(
-                                                                                                alignment: Alignment.topLeft,
-                                                                                                child: Container(
-                                                                                                    width: 235,
-                                                                                                    child: Align(
-                                                                                                        alignment: Alignment.topLeft,
-                                                                                                        child: Text(
-                                                                                                          comment_Data.docs[index]['name'],
-                                                                                                          style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
-                                                                                                          textAlign: TextAlign.left,
-                                                                                                        )))),
-                                                                                          ])),
-                                                                                      //comment
-                                                                                      Align(
-                                                                                          alignment: Alignment.topLeft,
-                                                                                          child: Padding(
-                                                                                            padding: const EdgeInsets.fromLTRB(6, 0, 0, 10),
-                                                                                            child: Flexible(
-                                                                                              child: Text(comment_Data.docs[index]['text'], style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 17)),
-                                                                                            ),
-                                                                                          )),
-
-                                                                                      Padding(
-                                                                                        padding: const EdgeInsets.fromLTRB(6, 0, 0, 0),
-                                                                                        child: Row(
-                                                                                          mainAxisAlignment: MainAxisAlignment.start,
-                                                                                          children: [
-                                                                                            Padding(
-                                                                                              padding: const EdgeInsets.only(left: 0),
-                                                                                              child: Row(
-                                                                                                children: [
-                                                                                                  Text(comment_Data.docs[index]['date'],
-                                                                                                      style: const TextStyle(
-                                                                                                        fontSize: 13,
-                                                                                                        fontWeight: FontWeight.w400,
-                                                                                                      )),
-                                                                                                ],
-                                                                                              ),
-                                                                                            ),
-                                                                                            Align(
-                                                                                                alignment: Alignment.centerRight,
-                                                                                                child: Padding(
-                                                                                                    padding: const EdgeInsets.only(left: 0),
-                                                                                                    child: Visibility(
-                                                                                                        visible: comment_Data.docs[index]['UserID'] == "User5",
-                                                                                                        child: IconButton(
-                                                                                                          iconSize: 30,
-                                                                                                          icon: const Icon(
-                                                                                                            Icons.delete,
-                                                                                                          ),
-                                                                                                          onPressed: () {
-                                                                                                            // delete_comm
-                                                                                                            //     .doc('id') // <-- Doc ID to be deleted.
-                                                                                                            //     .delete() // <-- Delete
-                                                                                                            //     .then((_) => print('Deleted'))
-                                                                                                            //     .catchError((error) =>
-                                                                                                            //         print('Delete failed: $error'));
-                                                                                                          },
-                                                                                                        ))))
-                                                                                          ],
-                                                                                        ),
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                ),
-                                                                              ]),
-                                                                            )
-                                                                          ]));
-                                                                    });
-                                                          }
-                                                        }),
+                                                    Comments(placeID)
                                                   ],
                                                 ))
-                                            : Text('')),
+                                            : const Text('')),
                                   ]))),
                         ],
                       )
@@ -896,11 +698,387 @@ class Place extends StatelessWidget {
           }
         });
   }
-  // var showIcons = true;
-  //   void setIcons(bool isTyping) {
-  //   setState(() {
-  //     showIcons = isTyping;
-  //   });
-  // }
 
+  Widget Comments(placeID) {
+    var comments = FirebaseFirestore.instance.collection("Comments");
+    return StreamBuilder<dynamic>(
+        // Wedd addition
+        stream: comments
+            .where('placeID', isEqualTo: placeID)
+            .orderBy('date', descending: false)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Text("This post has no comments");
+          } else {
+            final comment_Data = snapshot.data;
+            return ListView.builder(
+                shrinkWrap: true,
+                physics: const BouncingScrollPhysics(),
+                reverse: true,
+                itemCount: comment_Data.size,
+                itemBuilder: (context, index) {
+                  return Padding(
+                      padding: const EdgeInsets.fromLTRB(1, 1, 1, 1),
+                      child: Stack(children: [
+                        Container(
+                          width: 600,
+                          margin: const EdgeInsets.only(top: 12),
+                          padding: const EdgeInsets.all(1),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: const [
+                                BoxShadow(
+                                    blurRadius: 32,
+                                    color: Colors.black45,
+                                    spreadRadius: -8)
+                              ],
+                              borderRadius: BorderRadius.circular(15)),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                /*user name*/ Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(6, 10, 15, 10),
+                                  child: Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                        comment_Data.docs[index]['name'],
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 16),
+                                        textAlign: TextAlign.left,
+                                      )),
+                                ),
+                                /*comment*/ Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(6, 5, 6, 5),
+                                  child: Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Text(
+                                        comment_Data.docs[index]['text'],
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 17)),
+                                  ),
+                                ),
+                                /*date, delete*/ Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(6, 0, 6, 0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 10, 0, 10),
+                                        child: Text(
+                                            DateFormat('d MMM y, hh:mm a')
+                                                .format(DateTime
+                                                    .fromMillisecondsSinceEpoch(
+                                                        comment_Data.docs[index]
+                                                            ['date']))
+                                                .toString(),
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w400,
+                                            )),
+                                      ),
+                                      const Spacer(),
+                                      Visibility(
+                                          visible: comment_Data.docs[index]
+                                                  ['UserID'] ==
+                                              userId,
+                                          child: IconButton(
+                                            iconSize: 25,
+                                            icon: const Icon(
+                                              Icons.delete_forever,
+                                            ),
+                                            color: Colors.red,
+                                            onPressed: () {
+                                              //Wedd addition
+                                              showDialog(
+                                                context: context,
+                                                builder: (ctx) => AlertDialog(
+                                                  title: const Text(
+                                                      "Are You Sure ?"),
+                                                  content: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: const [
+                                                        Text(
+                                                          "Are You Sure You want to delete your comment?",
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                        ),
+                                                        Align(
+                                                            alignment: Alignment
+                                                                .centerLeft,
+                                                            child: Text(
+                                                              "\n*This action can't be undone",
+                                                              style: TextStyle(
+                                                                  fontSize: 16,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w300),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .left,
+                                                            ))
+                                                      ]),
+                                                  actions: <Widget>[
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(ctx).pop();
+                                                      },
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(14),
+                                                        child: const Text(
+                                                            "Cancel"),
+                                                      ),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        FocusScope.of(context)
+                                                            .unfocus();
+                                                        FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                "Comments")
+                                                            .doc(comment_Data
+                                                                    .docs[index]
+                                                                ['commentID'])
+                                                            .delete()
+                                                            .then((_) {
+                                                          WidgetsBinding
+                                                              .instance
+                                                              .addPostFrameCallback(
+                                                            (_) => ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                                    SnackBar(
+                                                              content: Text(
+                                                                  'Comment is deleted'),
+                                                              behavior:
+                                                                  SnackBarBehavior
+                                                                      .floating,
+                                                              action:
+                                                                  SnackBarAction(
+                                                                label:
+                                                                    'Dismiss',
+                                                                disabledTextColor:
+                                                                    Colors
+                                                                        .white,
+                                                                textColor:
+                                                                    Colors
+                                                                        .white,
+                                                                onPressed: () {
+                                                                  //Do whatever you want
+                                                                },
+                                                              ),
+                                                            )),
+                                                          );
+                                                          print(
+                                                              "success!, document deleted");
+                                                        });
+                                                        Navigator.of(ctx).pop();
+                                                      },
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(14),
+                                                        child: const Text(
+                                                            "Delete",
+                                                            style: TextStyle(
+                                                                color: Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        164,
+                                                                        10,
+                                                                        10))),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ))
+                                    ],
+                                  ),
+                                ),
+                              ]),
+                        )
+                      ]));
+                });
+          }
+        });
+  }
+}
+
+//! chat text field
+class CommentField extends StatefulWidget {
+  final placeID, userID, userName;
+  const CommentField(
+      {required this.placeID,
+      required this.userID,
+      required this.userName,
+      Key? key})
+      : super(key: key);
+
+  @override
+  State<CommentField> createState() => CommentFieldState();
+}
+
+class CommentFieldState extends State<CommentField>
+    with SingleTickerProviderStateMixin {
+  TextEditingController comment = TextEditingController();
+
+  bool showIcons = true;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        color: Colors.white,
+        padding: const EdgeInsets.all(8),
+        child: Row(children: <Widget>[
+          Expanded(
+            child: TextField(
+              autofocus: false,
+              controller: comment,
+              maxLines: null,
+              maxLength: 120,
+              textCapitalization: TextCapitalization.sentences,
+              autocorrect: true,
+              enableSuggestions: true,
+              onChanged: (text) {
+                if (comment.text.trim() != "") {
+                  setIcons(false);
+                } else {
+                  setIcons(true);
+                }
+              },
+              decoration: InputDecoration(
+                suffixIcon: showIcons
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          IconButton(
+                            icon: const Icon(Icons.camera_alt_outlined),
+                            onPressed: () {
+                              // sendImage(ImageSource.camera);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.insert_photo_outlined),
+                            onPressed: () {
+                              // sendImage(ImageSource.gallery);
+                            },
+                          ),
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                            IconButton(
+                              icon: const Icon(Icons.send),
+                              color: Colors.blue,
+                              iconSize: 30,
+                              onPressed: () {
+                                comment.text.trim().isEmpty
+                                    ? null
+                                    : AddCommentToDB();
+                                setIcons(true);
+                              },
+                            ),
+                            const SizedBox(width: 10),
+                          ]),
+                labelText: 'Share your experience...',
+                labelStyle: const TextStyle(fontSize: 18),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue, width: 2),
+                ),
+                enabledBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                ),
+                contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+              ),
+            ),
+          )
+        ]));
+  }
+
+  void setIcons(bool isTyping) {
+    setState(() {
+      showIcons = isTyping;
+    });
+  }
+
+//! Firebase
+  Future<void> sendImage(var imgSource) async {
+    // String imagePath = '';
+    // File? imageDB;
+    // String strImg = '';
+    // await Permission.photos.request();
+    // var permissionStatus = await Permission.photos.status;
+    // if (permissionStatus.isGranted) {
+    //   XFile? img = await ImagePicker().pickImage(source: imgSource);
+    //   File imagee = File(img!.path);
+    //   imagePath = imagee.toString();
+    //   imageDB = imagee;
+    //   File image = imageDB;
+    //   final storage =
+    //       FirebaseStorage.instance.ref().child('postsImage/${image}');
+    //   strImg = Path.basename(image.path);
+    //   UploadTask uploadTask = storage.putFile(image);
+    //   TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+    //   imagePath = await (await uploadTask).ref.getDownloadURL();
+    //   sendMessage('', imagePath, '', '');
+    // }
+  }
+
+  void AddCommentToDB() async {
+    CollectionReference Post_comment =
+        FirebaseFirestore.instance.collection('Comments');
+
+    var docReference = await Post_comment.add({
+      'UserID': widget.userID,
+      'commentID': '',
+      'date': DateTime.now().millisecondsSinceEpoch,
+      'name': widget.userName,
+      'text': comment.text,
+      'placeID': widget.placeID
+    });
+
+    var dataId = docReference.id;
+    Post_comment.doc(dataId).update({'commentID': dataId});
+    print("Document written with ID: ${docReference.id}");
+    comment.clear();
+    FocusScope.of(context).unfocus();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Comment is deleted'),
+      behavior: SnackBarBehavior.floating,
+      action: SnackBarAction(
+        label: 'Dismiss',
+        disabledTextColor: Colors.white,
+        textColor: Colors.white,
+        onPressed: () {
+          //Do whatever you want
+        },
+      ),
+    ));
+  }
 }
