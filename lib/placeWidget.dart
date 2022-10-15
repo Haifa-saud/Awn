@@ -6,7 +6,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
 import 'package:url_launcher/url_launcher.dart';
-//wedd addition
 import 'myGlobal.dart' as globals;
 
 class Place extends StatelessWidget {
@@ -15,6 +14,7 @@ class Place extends StatelessWidget {
       required this.userId,
       required this.category,
       required this.status});
+
   final userId;
   final category;
   final status;
@@ -30,8 +30,6 @@ class Place extends StatelessWidget {
   }
 
   Widget placesList(String cate, String status, String userId) {
-    //Wedd addition / For reem
-    commenter = userId;
     var isAdmin = false;
     Stream<QuerySnapshot> list =
         FirebaseFirestore.instance.collection('posts').snapshots();
@@ -679,7 +677,7 @@ class Place extends StatelessWidget {
                                                     ),
                                                     TextField(
                                                       //Wedd addition
-                                                      controller: comment ,
+                                                      controller: comment,
                                                       textCapitalization:
                                                           TextCapitalization
                                                               .sentences,
@@ -867,7 +865,7 @@ class Place extends StatelessWidget {
                                                                                                 child: Padding(
                                                                                                     padding: const EdgeInsets.only(left: 0),
                                                                                                     child: Visibility(
-                                                                                                        visible: comment_Data.docs[index]['UserID'] == commenter,
+                                                                                                        visible: comment_Data.docs[index]['UserID'] == userId,
                                                                                                         child: IconButton(
                                                                                                           iconSize: 30,
                                                                                                           icon: const Icon(
@@ -934,7 +932,8 @@ class Place extends StatelessWidget {
           }
         });
   }
-   //Wedd addition - every thing below
+
+  //Wedd addition - every thing below
   Future<void> addToDB() async {
     CollectionReference Post_comment =
         FirebaseFirestore.instance.collection('Comments');
@@ -943,9 +942,11 @@ class Place extends StatelessWidget {
     DocumentReference docReference = await Post_comment.add({
       'commentID': '',
       'date': actualDate,
-      'name': globals.User_name ,
+      //user name
+      'name': globals.User_name,
       'text': comment,
       'UserID': userId,
+      //place id
       'PostID': Place_id
     });
     dataId = docReference.id;
@@ -956,7 +957,8 @@ class Place extends StatelessWidget {
     Place_id = '';
   }
 }
-var commenter, commenter_name, Place_id;
+
+var commenter_name, Place_id;
 var now = DateTime.now();
 var formatterDate = DateFormat('MMM d, h:mm a');
 String actualDate = formatterDate.format(now);
