@@ -87,6 +87,7 @@ dependencies:
   grouped_list: ^5.1.2
   flutter_sound: ^8.3.9
   audioplayers: ^1.1.1
+  duration_picker: ^1.0.1
 
 
   

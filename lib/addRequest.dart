@@ -1,6 +1,7 @@
 import 'package:awn/addPost.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
+import 'package:duration_picker/duration_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -292,6 +293,8 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     }
   }
 
+  var selectedDuration;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -404,22 +407,41 @@ class AwnRequestFormState extends State<AwnRequestForm> {
             ),
 
             Container(
-              padding: const EdgeInsets.fromLTRB(6, 8, 6, 12),
-              child: TextFormField(
-                controller: durationController,
-                decoration: const InputDecoration(
-                  hintText: 'E.g. For about 2 hours',
-                ),
-                // onChanged: (value) {duration = value;},
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      (value.trim()).isEmpty) {
-                    return 'Please enter the duration';
-                  }
-                },
-              ),
-            ),
+                padding: const EdgeInsets.fromLTRB(6, 8, 6, 12),
+                child: TextFormField(
+                  readOnly: true,
+                  controller: durationController,
+                  onTap: () async {
+                    selectedDuration = await showDurationPicker(
+                        context: context,
+                        initialTime: const Duration(minutes: 0),
+                        snapToMins: 5.0);
+                    String twoDigits(int n) => n.toString().padLeft(0);
+                    durationController.text =
+                        '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
+                  },
+                  decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.schedule, size: 25),
+                      onPressed: () async {
+                        selectedDuration = await showDurationPicker(
+                            context: context,
+                            initialTime: const Duration(minutes: 0),
+                            snapToMins: 5.0);
+                        String twoDigits(int n) => n.toString().padLeft(0);
+                        durationController.text =
+                            '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
+                      },
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        (value.trim()).isEmpty) {
+                      return 'Please specify a duration';
+                    }
+                  },
+                )),
 
             //description
             Container(
@@ -557,14 +579,9 @@ class AwnRequestFormState extends State<AwnRequestForm> {
   Future<void> addToDB() async {
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
-    // print('============================================');
-    // print('userId');
-    //  print(userId);
 
-    CollectionReference requests = FirebaseFirestore.instance
-        // .collection("userData")
-        // .doc(userId)
-        .collection('requests');
+    CollectionReference requests =
+        FirebaseFirestore.instance.collection('requests');
     DocumentReference docReference = await requests.add({
       'title': titleController.text,
       'date_ymd': getDateTimeSelected(), //getDate
