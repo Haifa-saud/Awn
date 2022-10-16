@@ -85,7 +85,8 @@ class _requestPageState extends State<requestPage> {
     TextEditingController durationController = TextEditingController();
     TextEditingController descController = TextEditingController();
 
-    bool edit = false;
+    bool isPending = false;
+
     Future<String> getLocationAsString(var lat, var lng) async {
       List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
       return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
@@ -93,7 +94,7 @@ class _requestPageState extends State<requestPage> {
 
     final Stream<QuerySnapshot> reqDetails = FirebaseFirestore.instance
         .collection('requests')
-        .where('docId', isEqualTo: 'M32xPzJr2eeJwuahgpcA')
+        .where('docId', isEqualTo: widget.reqID)
         .snapshots();
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
@@ -136,10 +137,18 @@ class _requestPageState extends State<requestPage> {
                                   data.docs[index]['duration'].toString();
                               descController.text =
                                   data.docs[index]['description'].toString();
+
+                              isPending =
+                                  data.docs[index]['status'] == 'Pending'
+                                      ? true
+                                      : false;
+
                               return Container(
-                                  margin: EdgeInsets.fromLTRB(5, 12, 5, 0),
+                                  width: 600,
+                                  margin: const EdgeInsets.only(top: 12),
+                                  padding: const EdgeInsets.all(1),
                                   decoration: BoxDecoration(
-                                      //color: Colors.white,
+                                      color: Colors.white,
                                       boxShadow: const [
                                         BoxShadow(
                                             blurRadius: 32,
@@ -147,8 +156,7 @@ class _requestPageState extends State<requestPage> {
                                             spreadRadius: -8)
                                       ],
                                       borderRadius: BorderRadius.circular(15)),
-                                  child: Card(
-                                      child: Column(
+                                  child: Column(
                                     children: [
                                       ///edit
 
@@ -219,47 +227,157 @@ class _requestPageState extends State<requestPage> {
                                               ' ${data.docs[index]['title']}',
                                               textAlign: TextAlign.left,
                                             ),
-                                            InkWell(
-                                              child: Container(
-                                                alignment: Alignment.topRight,
-                                                margin: EdgeInsets.only(top: 5),
-                                                // padding: EdgeInsets.only(right: 0),
-                                                child: Text('Edit',
-                                                    //   overflow:
-                                                    //   TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        background: Paint()
-                                                          ..strokeWidth = 20.0
-                                                          ..color =
-                                                              Colors.blueGrey
-                                                          ..style =
-                                                              PaintingStyle
-                                                                  .stroke
-                                                          ..strokeJoin =
-                                                              StrokeJoin.round,
-                                                        fontSize: 17,
-                                                        fontWeight:
-                                                            FontWeight.w500)),
-                                              ),
-                                              onTap: (() {
-                                                setState(() {
-                                                  edit = true;
-                                                  var title;
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            editRequest(
-                                                          userType:
-                                                              'Special Need User',
+                                            Visibility(
+                                                visible: isPending,
+                                                child: Column(children: [
+                                                  InkWell(
+                                                    child: Container(
+                                                      alignment:
+                                                          Alignment.topRight,
+                                                      margin: EdgeInsets.only(
+                                                          top: 5),
+                                                      // padding: EdgeInsets.only(right: 0),
+                                                      child: Text('Edit',
+                                                          //   overflow:
+                                                          //   TextOverflow.ellipsis,
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              background:
+                                                                  Paint()
+                                                                    ..strokeWidth =
+                                                                        20.0
+                                                                    ..color = Colors
+                                                                        .blueGrey
+                                                                    ..style =
+                                                                        PaintingStyle
+                                                                            .stroke
+                                                                    ..strokeJoin =
+                                                                        StrokeJoin
+                                                                            .round,
+                                                              fontSize: 17,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500)),
+                                                    ),
+                                                    onTap: (() {
+                                                      setState(() {
+                                                        // edit = true;
+                                                        //  var title;
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) => editRequest(
+                                                                  userType:
+                                                                      "Special Need User",
+                                                                  docId: data.docs[
+                                                                          index]
+                                                                      ['docId'],
+                                                                  date_ymd: data
+                                                                              .docs[
+                                                                          index]
+                                                                      [
+                                                                      'date_ymd']),
+                                                            ));
+                                                      });
+                                                      //  editReq();
+                                                      //     print(edit);
+                                                    }),
+                                                  ),
+                                                  InkWell(
+                                                    child: Container(
+                                                      alignment:
+                                                          Alignment.topRight,
+                                                      margin: EdgeInsets.only(
+                                                          top: 20),
+                                                      // padding: EdgeInsets.only(right: 0),
+                                                      child: Text('Delete',
+                                                          //   overflow:
+                                                          //   TextOverflow.ellipsis,
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              background:
+                                                                  Paint()
+                                                                    ..strokeWidth =
+                                                                        20.0
+                                                                    ..color = Colors
+                                                                        .red
+                                                                        .shade300
+                                                                    ..style =
+                                                                        PaintingStyle
+                                                                            .stroke
+                                                                    ..strokeJoin =
+                                                                        StrokeJoin
+                                                                            .round,
+                                                              fontSize: 17,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500)),
+                                                    ),
+                                                    onTap: (() {
+                                                      // deletRequest(
+                                                      //     docId:
+                                                      //         data.docs[index]
+                                                      //             ['docId']);
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (ctx) =>
+                                                            AlertDialog(
+                                                          // title: const Text(
+                                                          //   "Logout",
+                                                          //   textAlign: TextAlign.left,
+                                                          // ),
+                                                          content: const Text(
+                                                            "Are you sure you want to withdraw your request",
+                                                            textAlign:
+                                                                TextAlign.left,
+                                                          ),
+                                                          actions: <Widget>[
+                                                            // cancle button
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        ctx)
+                                                                    .pop();
+                                                              },
+                                                              child: Container(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(14),
+                                                                child: const Text(
+                                                                    "Cancel"),
+                                                              ),
+                                                            ),
+                                                            //log in ok button
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                deletRequest(
+                                                                    docId: data
+                                                                            .docs[
+                                                                        index]);
+                                                              },
+                                                              child: Container(
+                                                                //color: Color.fromARGB(255, 164, 20, 20),
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(14),
+                                                                child: const Text(
+                                                                    "Delete",
+                                                                    style: TextStyle(
+                                                                        color: Color.fromARGB(
+                                                                            255,
+                                                                            164,
+                                                                            10,
+                                                                            10))),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
-                                                      ));
-                                                });
-                                                //  editReq();
-                                                //     print(edit);
-                                              }),
-                                            )
+                                                      );
+                                                    }),
+                                                  )
+                                                ]))
                                           ])),
 
                                       // Container(
@@ -287,13 +405,14 @@ class _requestPageState extends State<requestPage> {
                                         child: Row(
                                           children: [
                                             Icon(Icons.calendar_today,
-                                                size: 20, color: Colors.red),
+                                                size: 20,
+                                                color: Colors.red.shade200),
                                             Text(
                                                 ' ${data.docs[index]['date_dmy']}',
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
+                                                style: const TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.w400,
+                                                )),
                                             Padding(
                                               padding:
                                                   EdgeInsets.only(left: 60),
@@ -301,13 +420,15 @@ class _requestPageState extends State<requestPage> {
                                                 children: [
                                                   Icon(Icons.schedule,
                                                       size: 20,
-                                                      color: Colors.red),
+                                                      color:
+                                                          Colors.red.shade300),
                                                   Text(
                                                       ' ${data.docs[index]['time']}',
-                                                      style: TextStyle(
-                                                          fontSize: 17,
-                                                          fontWeight:
-                                                              FontWeight.w500)),
+                                                      style: const TextStyle(
+                                                        fontSize: 17,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                      )),
                                                 ],
                                               ),
                                             ),
@@ -324,10 +445,10 @@ class _requestPageState extends State<requestPage> {
                                             //     size: 20, color: Colors.red),
                                             Text(
                                                 'Duration: ${data.docs[index]['duration']}',
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
+                                                style: const TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.w400,
+                                                )),
                                           ],
                                         ),
                                       ),
@@ -344,10 +465,10 @@ class _requestPageState extends State<requestPage> {
                                                   'Description: ${data.docs[index]['description']}',
                                                   //   overflow:
                                                   //   TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
+                                                  style: const TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w400,
+                                                  )),
                                             ),
                                           ],
                                         ),
@@ -389,7 +510,8 @@ class _requestPageState extends State<requestPage> {
                                                 children: [
                                                   Icon(Icons.location_pin,
                                                       size: 20,
-                                                      color: Colors.red),
+                                                      color:
+                                                          Colors.red.shade300),
                                                   Flexible(
                                                       child: Text(reqLoc!,
                                                           style: TextStyle(
@@ -401,22 +523,8 @@ class _requestPageState extends State<requestPage> {
                                               ))),
                                       // buildTextField(
                                       //     'title', data.docs[index]['title']),
-                                      Visibility(
-                                          visible: edit,
-                                          child: Column(
-                                            children: [
-                                              buildTextField('Title',
-                                                  data.docs[index]['title']),
-                                              buildTextField('Duration',
-                                                  data.docs[index]['duration']),
-                                              buildTextField(
-                                                  'Description',
-                                                  data.docs[index]
-                                                      ['description']),
-                                            ],
-                                          ))
                                     ],
-                                  )));
+                                  ));
                             } else {
                               return const Center(
                                   child: CircularProgressIndicator());
@@ -492,6 +600,13 @@ class _requestPageState extends State<requestPage> {
       ),
     );
   }
+}
+
+Future<void> deletRequest({required docId}) async {
+  FirebaseFirestore.instance
+      .collection('requests')
+      .doc(docId.toString())
+      .delete();
 }
 
 Future<void> updateDB(docId) async {

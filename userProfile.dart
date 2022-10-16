@@ -478,6 +478,7 @@ class UserProfileState extends State<userProfile>
                                     ? getStatus(data.docs[index]['status'],
                                         data.docs[index]['docId'])
                                     : data.docs[index]['status'];
+
                                 return FutureBuilder(
                                     future: getLocationAsString(
                                         latitude, longitude),

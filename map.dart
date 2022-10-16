@@ -13,7 +13,14 @@ import 'main.dart';
 class maps extends StatefulWidget {
   final String dataId;
   final String typeOfRequest;
-  const maps({Key? key, required this.dataId, required this.typeOfRequest})
+  final double? latitude;
+  final double? longitude;
+  const maps(
+      {Key? key,
+      required this.dataId,
+      required this.typeOfRequest,
+      this.latitude,
+      this.longitude})
       : super(key: key);
 
   @override
@@ -75,7 +82,24 @@ class _MyStatefulWidgetState extends State<maps> {
   late final NotificationService notificationService;
   @override
   void initState() {
-    getCurrentPosition();
+    if (widget.typeOfRequest == 'E') {
+      setState(() {
+        position = Position.fromMap(
+            {'latitude': widget.latitude, 'longitude': widget.longitude});
+        markers.add(Marker(
+          markerId: MarkerId(
+              position.latitude.toString() + position.longitude.toString()),
+          position: LatLng(position.latitude, position.longitude),
+          infoWindow: const InfoWindow(
+            title: 'Institution Location ',
+          ),
+          icon: BitmapDescriptor.defaultMarker,
+          draggable: true,
+        ));
+      });
+    } else {
+      getCurrentPosition();
+    }
 
     addPost = widget.typeOfRequest == 'P' ? true : false;
     if (addPost) {
