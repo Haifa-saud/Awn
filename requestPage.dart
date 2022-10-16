@@ -9,11 +9,12 @@ import 'editRequest.dart';
 import 'mapsPage.dart';
 
 class requestPage extends StatefulWidget {
-  //final String userType;
+  final String userType;
   final String reqID;
   // const editRequest({Key? key, required this.userType, required this.reqID})
   //     : super(key: key);
-  const requestPage({Key? key, required this.reqID}) : super(key: key);
+  const requestPage({Key? key, required this.reqID, required this.userType})
+      : super(key: key);
 
   @override
   State<requestPage> createState() => _requestPageState();
@@ -86,6 +87,7 @@ class _requestPageState extends State<requestPage> {
     TextEditingController descController = TextEditingController();
 
     bool isPending = false;
+    bool isSN = false;
 
     Future<String> getLocationAsString(var lat, var lng) async {
       List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
@@ -142,7 +144,9 @@ class _requestPageState extends State<requestPage> {
                                   data.docs[index]['status'] == 'Pending'
                                       ? true
                                       : false;
-
+                              isSN = widget.userType == 'Special Need User'
+                                  ? true
+                                  : false;
                               return Container(
                                   width: 600,
                                   margin: const EdgeInsets.only(top: 12),
@@ -320,6 +324,7 @@ class _requestPageState extends State<requestPage> {
                                                       //     docId:
                                                       //         data.docs[index]
                                                       //             ['docId']);
+
                                                       showDialog(
                                                         context: context,
                                                         builder: (ctx) =>
@@ -349,13 +354,17 @@ class _requestPageState extends State<requestPage> {
                                                                     "Cancel"),
                                                               ),
                                                             ),
-                                                            //log in ok button
+                                                            //delete button
                                                             TextButton(
                                                               onPressed: () {
+                                                                print(
+                                                                    'brefor delet');
                                                                 deletRequest(
                                                                     docId: data
                                                                             .docs[
                                                                         index]);
+                                                                print(
+                                                                    'after delet');
                                                               },
                                                               child: Container(
                                                                 //color: Color.fromARGB(255, 164, 20, 20),
@@ -607,6 +616,7 @@ Future<void> deletRequest({required docId}) async {
       .collection('requests')
       .doc(docId.toString())
       .delete();
+  print(docId.toString());
 }
 
 Future<void> updateDB(docId) async {

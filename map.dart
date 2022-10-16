@@ -1,3 +1,4 @@
+import 'package:awn/editRequest.dart';
 import 'package:awn/services/sendNotification.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -37,7 +38,8 @@ class _MyStatefulWidgetState extends State<maps> {
 
   String DBId = ' ';
   bool addPost = true;
-  String collName = ' ', sucessMsg = '';
+  bool editRequest = false;
+  String collName = ' ', sucessMsg = '', title = '';
   BorderRadius border = BorderRadius.circular(0);
 
   void getCurrentPosition() async {
@@ -102,14 +104,22 @@ class _MyStatefulWidgetState extends State<maps> {
     }
 
     addPost = widget.typeOfRequest == 'P' ? true : false;
+    editRequest = widget.typeOfRequest == 'E' ? true : false;
     if (addPost) {
+      title = "Add Location";
       collName = 'posts';
       border = const BorderRadius.only(
         topRight: Radius.circular(30),
         bottomRight: Radius.circular(30),
       );
       sucessMsg = 'Place is added successfully';
+    } else if (editRequest) {
+      title = "Update Location";
+      collName = 'requests';
+      border = BorderRadius.circular(30);
+      sucessMsg = 'Request is updated successfully';
     } else {
+      title = "Add Location";
       collName = 'requests';
       border = BorderRadius.circular(30);
       sucessMsg = 'Request is sent successfully';
@@ -136,7 +146,18 @@ class _MyStatefulWidgetState extends State<maps> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text("Add Location"), automaticallyImplyLeading: false),
+          // leading: Visibility(
+          //     visible: editRequest,
+          //     child: IconButton(
+          //         icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          //         onPressed: () => Navigator.of(context).pop())),
+          title: Text(title),
+          leading: Visibility(
+              visible: editRequest,
+              child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+                  onPressed: () => Navigator.of(context).pop())),
+          automaticallyImplyLeading: false),
       body: Stack(
         children: <Widget>[
           GoogleMap(
@@ -247,7 +268,7 @@ class _MyStatefulWidgetState extends State<maps> {
                       ),
                     ),
                     Container(
-                      width: 140,
+                      width: 150,
                       // margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                       decoration: BoxDecoration(
                         boxShadow: [
@@ -278,7 +299,7 @@ class _MyStatefulWidgetState extends State<maps> {
                             fontSize: 18,
                           ),
                         ),
-                        child: const Text('Add Location'),
+                        child: Text(title),
                       ),
                     ),
                   ]),

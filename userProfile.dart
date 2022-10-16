@@ -699,6 +699,8 @@ class UserProfileState extends State<userProfile>
                                                             reqID:
                                                                 data.docs[index]
                                                                     ['docId'],
+                                                            userType:
+                                                                widget.userType,
                                                           ),
                                                         ));
                                                   })
