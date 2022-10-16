@@ -24,7 +24,9 @@ String name_edit = '',
     phone_edit = '',
     bio_edit = '',
     gender_edit = '',
-    date_edit = '';
+    date_edit = '',
+    DOB_edit = '';
+
 var gender_index = 1;
 bool Editing = false;
 bool Viewing = true;
@@ -82,7 +84,12 @@ class profileState extends State<profile> {
               userData = snapshot.data as Map<String, dynamic>;
               var isF = userData['gender'] == "Female" ? 1 : 0;
               genderIndex(isF);
+              name_edit = userData['name'];
+              email_edit = userData['Email'];
+              phone_edit = userData['phone number'];
+              bio_edit = userData['bio'];
               date_edit = userData['DOB'];
+              DateTime iniDOB = DateTime.parse(userData['DOB']);
               return SingleChildScrollView(
                   child: Form(
                 key: _formKey,
@@ -160,9 +167,53 @@ class profileState extends State<profile> {
                                 }
                               },
                             ),
+                            const SizedBox(
+                              height: 25,
+                            ),
+                            //DOB field
+                            TextFormField(
+                              enabled: Editing,
+                              controller: TextEditingController()
+                                ..text = DOB_edit.substring(0, 10),
+                              readOnly: true,
+                              //onChanged: (text) => {DOB_edit = text},
+                              onTap: () async {
+                                DateTime? newDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: iniDOB,
+                                  firstDate: DateTime(1922),
+                                  lastDate: DateTime(2122),
+                                );
+                                if (newDate != null) {
+                                  print(newDate);
+                                  iniDOB = newDate;
+                                  DOB_edit = newDate.toString().substring(0,
+                                      10); //get the picked date in the format => 2022-07-04 00:00:00.000
+                                  setState(() {
+                                    //set foratted date to TextField value.
+                                  });
+                                } else {
+                                  print("Date is not selected");
+                                }
+                              },
+                              decoration: const InputDecoration(
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Color(0xFF06283D)),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.blue),
+                                ),
+                                contentPadding: EdgeInsets.only(bottom: 3),
+                                labelText: 'Date Of Birth',
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.always,
+                              ),
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                            ),
                           ],
                         )),
-                    buildTextField('Date of Birth', userData['DOB']),
 
                     //Gender fields
                     Visibility(
@@ -241,7 +292,7 @@ class profileState extends State<profile> {
                                   borderSide: BorderSide(color: Colors.blue),
                                 ),
                                 contentPadding: EdgeInsets.only(bottom: 3),
-                                labelText: 'Phone number',
+                                labelText: 'Phone Number',
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
                               ),
@@ -394,32 +445,33 @@ class profileState extends State<profile> {
                               children: [
                                 ElevatedButton(
                                   onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (ctx) => AlertDialog(
-                                        title: const Text("Are You Sure ?"),
-                                        content: const Text(
-                                          "Are You Sure You want to Save changes ?",
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(ctx).pop();
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.all(14),
-                                              child: const Text("cancel",
-                                                  style: TextStyle(
-                                                      color: Color.fromARGB(
-                                                          255, 194, 98, 98))),
-                                            ),
+                                    if (_formKey.currentState!.validate()) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                          title: const Text("Are You Sure ?"),
+                                          content: const Text(
+                                            "Are You Sure You want to Save changes ?",
+                                            textAlign: TextAlign.center,
                                           ),
-                                          TextButton(
-                                            onPressed: () {
-                                              print(name_edit);
-                                              if (_formKey.currentState!
-                                                  .validate()) {
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(ctx).pop();
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(14),
+                                                child: const Text("cancel",
+                                                    style: TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 194, 98, 98))),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                print(name_edit);
+
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
                                                   const SnackBar(
@@ -427,23 +479,24 @@ class profileState extends State<profile> {
                                                           'Changes have been Saved !')),
                                                 );
                                                 UpdateDB();
-                                              }
-                                              setState(() {
-                                                Editing = false;
-                                                Viewing = true;
-                                              });
-                                              Navigator.of(ctx).pop();
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.all(14),
-                                              child: const Text(
-                                                "Save",
+                                                setState(() {
+                                                  Editing = false;
+                                                  Viewing = true;
+                                                });
+                                                Navigator.of(ctx).pop();
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(14),
+                                                child: const Text(
+                                                  "Save",
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
+                                          ],
+                                        ),
+                                      );
+                                    }
                                   },
                                   child: const Text('Save',
                                       style: TextStyle(fontSize: 20)),
@@ -536,7 +589,7 @@ class profileState extends State<profile> {
                 ),
               ));
             } else {
-              return const Text('');
+              return const Text('Good Bye !');
             }
           }),
     );
@@ -544,10 +597,9 @@ class profileState extends State<profile> {
 
   Widget buildTextField(String labelText, String placeholder) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 12, 30, 12),
+      padding: const EdgeInsets.fromLTRB(30, 12, 30, 22),
       child: TextField(
         enabled: Editing,
-        maxLength: 180,
         minLines: 1,
         maxLines: 6,
         decoration: InputDecoration(
@@ -567,7 +619,7 @@ class profileState extends State<profile> {
             floatingLabelBehavior: FloatingLabelBehavior.always,
             hintText: placeholder,
             hintStyle: const TextStyle(
-              fontSize: 16,
+              fontSize: 18,
               color: Colors.black,
             )),
       ),
@@ -588,6 +640,5 @@ class profileState extends State<profile> {
       'DOB': date_edit
     });
     print('profile edited');
-    
   }
 }
