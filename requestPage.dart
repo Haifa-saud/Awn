@@ -300,17 +300,26 @@ class _requestPageState extends State<requestPage> {
                                                         Navigator.push(
                                                             context,
                                                             MaterialPageRoute(
-                                                              builder: (context) => editRequest(
-                                                                  userType:
-                                                                      "Special Need User",
-                                                                  docId: data.docs[
-                                                                          index]
-                                                                      ['docId'],
-                                                                  date_ymd: data
-                                                                              .docs[
-                                                                          index]
-                                                                      [
-                                                                      'date_ymd']),
+                                                              builder:
+                                                                  (context) =>
+                                                                      editRequest(
+                                                                userType:
+                                                                    "Special Need User",
+                                                                docId: data.docs[
+                                                                        index]
+                                                                    ['docId'],
+                                                                date_ymd: data
+                                                                            .docs[
+                                                                        index][
+                                                                    'date_ymd'],
+                                                                title: data.docs[
+                                                                        index]
+                                                                    ['title'],
+                                                                discription: data
+                                                                            .docs[
+                                                                        index][
+                                                                    'description'],
+                                                              ),
                                                             ));
                                                       });
                                                       //  editReq();
@@ -355,6 +364,8 @@ class _requestPageState extends State<requestPage> {
                                                       //                 .w500)),
                                                     ),
                                                     onTap: (() {
+                                                      String docId = data
+                                                          .docs[index]['docId'];
                                                       // deletRequest(
                                                       //     docId:
                                                       //         data.docs[index]
@@ -392,14 +403,14 @@ class _requestPageState extends State<requestPage> {
                                                             //delete button
                                                             TextButton(
                                                               onPressed: () {
-                                                                print(
-                                                                    'brefor delet');
                                                                 deletRequest(
-                                                                    docId: data
-                                                                            .docs[
-                                                                        index]);
-                                                                print(
-                                                                    'after delet');
+                                                                    docId);
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .popUntil(
+                                                                        (route) =>
+                                                                            route.isFirst);
+                                                                ConfermationDelet();
                                                               },
                                                               child: Container(
                                                                 //color: Color.fromARGB(255, 164, 20, 20),
@@ -438,29 +449,7 @@ class _requestPageState extends State<requestPage> {
                                                               251,
                                                               253)),
                                                     ),
-                                                    onTap: (() {
-                                                      setState(() {
-                                                        // edit = true;
-                                                        //  var title;
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) => editRequest(
-                                                                  userType:
-                                                                      "Special Need User",
-                                                                  docId: data.docs[
-                                                                          index]
-                                                                      ['docId'],
-                                                                  date_ymd: data
-                                                                              .docs[
-                                                                          index]
-                                                                      [
-                                                                      'date_ymd']),
-                                                            ));
-                                                      });
-                                                      //  editReq();
-                                                      //     print(edit);
-                                                    }),
+                                                    onTap: (() {}),
                                                   ),
                                                 ]))
                                           ])),
@@ -685,14 +674,22 @@ class _requestPageState extends State<requestPage> {
       ),
     );
   }
+
+  void ConfermationDelet() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Awn request has been deleted"),
+      ),
+    );
+  }
 }
 
-Future<void> deletRequest({required docId}) async {
-  FirebaseFirestore.instance
-      .collection('requests')
-      .doc(docId.toString())
-      .delete();
-  print(docId.toString());
+Future<void> deletRequest(docId) async {
+  final db =
+      FirebaseFirestore.instance.collection('requests').doc(docId.toString());
+  db.delete();
+
+  print(docId);
 }
 
 Future<void> updateDB(docId) async {
