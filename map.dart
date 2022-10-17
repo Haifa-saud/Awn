@@ -117,7 +117,7 @@ class _MyStatefulWidgetState extends State<maps> {
       title = "Update Location";
       collName = 'requests';
       border = BorderRadius.circular(30);
-      sucessMsg = 'Request is updated successfully';
+      sucessMsg = 'Location is updated successfully';
     } else {
       title = "Add Location";
       collName = 'requests';
@@ -292,7 +292,10 @@ class _MyStatefulWidgetState extends State<maps> {
                       child: ElevatedButton(
                         onPressed: () {
                           updateDB();
-                          backToHomePage();
+                          if (editRequest) {
+                            backToEditPage();
+                          } else
+                            backToHomePage();
                         },
                         style: ElevatedButton.styleFrom(
                           textStyle: const TextStyle(
@@ -370,5 +373,14 @@ class _MyStatefulWidgetState extends State<maps> {
         reverseTransitionDuration: Duration.zero,
       ),
     );
+  }
+
+  void backToEditPage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(sucessMsg),
+      ),
+    );
+    Navigator.of(context).pop();
   }
 }
