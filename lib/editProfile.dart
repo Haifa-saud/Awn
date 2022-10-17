@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,14 +26,35 @@ String name_edit = '',
     phone_edit = '',
     bio_edit = '',
     gender_edit = '',
-    DOB_edit = '';
-
-var gender_index = 1;
+    DOB_edit = '',
+    Dis_edit = '';
+bool blind = false;
+bool mute = false;
+bool deaf = false;
+bool physical = false;
+bool other = false;
+String typeId = "";
+var gender_index = 1, outDate;
 bool Editing = false;
 bool Viewing = true;
 
 class profileState extends State<profile> {
-  void genderIndex(int n) {
+  void clearBool() {
+    DisabilityType.doc('HearingImpaired').update({'Checked': false});
+    DisabilityType.doc('PhysicallyImpaired').update({'Checked': false});
+    DisabilityType.doc('VisuallyImpaired').update({'Checked': false});
+    DisabilityType.doc('VocallyImpaired').update({'Checked': false});
+    DisabilityType.doc('Other').update({'Checked': false});
+    blind = false;
+    mute = false;
+    deaf = false;
+    physical = false;
+    other = false;
+    typeId = "";
+    Dis_edit = '';
+  }
+
+  void genderIndex(int n, String D) {
     if (n == 1) {
       gender_edit = 'Female';
       gender_index = 1;
@@ -39,6 +62,7 @@ class profileState extends State<profile> {
       gender_edit = 'Male';
       gender_index = 0;
     }
+    outDate = D;
   }
 
   Future<Map<String, dynamic>> readUserData() => FirebaseFirestore.instance
@@ -51,6 +75,13 @@ class profileState extends State<profile> {
           return doc.data() as Map<String, dynamic>;
         },
       );
+  CollectionReference DisabilityType =
+      FirebaseFirestore.instance.collection('UserDisabilityType');
+
+  Stream<QuerySnapshot> UserDis = FirebaseFirestore.instance
+      .collection('UserDisabilityType')
+      .orderBy("order")
+      .snapshots();
 
   @override
   Widget build(BuildContext context) {
@@ -81,13 +112,23 @@ class profileState extends State<profile> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
               userData = snapshot.data as Map<String, dynamic>;
+              bool isVolunteer = false;
+              bool isSpecial = false;
+              String dis = '';
+              if (userData['Type'] == "Volunteer") {
+                isVolunteer = true;
+              } else {
+                isSpecial = true;
+                dis = userData['Disability'];
+                dis = dis.substring(0, (dis.length - 1));
+              }
               var isF = userData['gender'] == "Female" ? 1 : 0;
-              genderIndex(isF);
               name_edit = userData['name'];
               email_edit = userData['Email'];
               phone_edit = userData['phone number'];
               bio_edit = userData['bio'];
               DOB_edit = userData['DOB'];
+              genderIndex(isF, DOB_edit);
               DateTime iniDOB = DateTime.parse(userData['DOB']);
               return SingleChildScrollView(
                   child: Form(
@@ -98,10 +139,10 @@ class profileState extends State<profile> {
                   children: [
                     //Form(
                     const SizedBox(
-                      height: 15,
+                      height: 25,
                     ),
                     Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 12, 30, 22),
+                        padding: const EdgeInsets.fromLTRB(30, 12, 30, 12),
                         child: Column(
                           children: [
                             //name field
@@ -134,7 +175,7 @@ class profileState extends State<profile> {
                               },
                             ),
                             const SizedBox(
-                              height: 25,
+                              height: 30,
                             ),
                             //Email field
                             TextFormField(
@@ -167,35 +208,38 @@ class profileState extends State<profile> {
                               },
                             ),
                             const SizedBox(
-                              height: 25,
+                              height: 30,
                             ),
                             //DOB field
                             TextFormField(
                               enabled: Editing,
                               controller: TextEditingController()
-                                ..text = DOB_edit,
+                                ..text = outDate,
                               readOnly: true,
-                              onChanged: (text) => {DOB_edit = text},
+                              onChanged: (text) => {
+                                outDate = text,
+                                iniDOB = DateTime.parse(text)
+                              },
                               onTap: () async {
                                 DateTime? newDate = await showDatePicker(
                                   context: context,
                                   initialDate: iniDOB,
                                   firstDate: DateTime(1922),
-                                  lastDate: DateTime(2122),
+                                  lastDate: DateTime.now(),
                                 );
                                 if (newDate != null) {
-                                  print(newDate);
-                                  iniDOB = newDate;
-                                  DOB_edit = newDate.toString().substring(0,
-                                      10); //get the picked date in the format => 2022-07-04 00:00:00.000
                                   setState(() {
-                                    //set foratted date to TextField value.
+                                    outDate = DateFormat('yyyy-MM-dd')
+                                        .format(newDate);
+                                    print(newDate);
+                                    iniDOB = newDate;
+                                    DOB_edit = outDate;
                                   });
                                 } else {
                                   print("Date is not selected");
                                 }
                               },
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 enabledBorder: UnderlineInputBorder(
                                   borderSide:
                                       BorderSide(color: Color(0xFF06283D)),
@@ -205,11 +249,14 @@ class profileState extends State<profile> {
                                 ),
                                 contentPadding: EdgeInsets.only(bottom: 3),
                                 labelText: 'Date Of Birth',
+                                hintText: DOB_edit,
+                                hintStyle: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                ),
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
                               ),
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
                             ),
                           ],
                         )),
@@ -268,7 +315,7 @@ class profileState extends State<profile> {
                           ],
                         )),
                     Padding(
-                        padding: const EdgeInsets.fromLTRB(30, 12, 30, 22),
+                        padding: const EdgeInsets.fromLTRB(30, 12, 30, 0),
                         child: Column(
                           children: [
                             //phone number field
@@ -305,34 +352,160 @@ class profileState extends State<profile> {
                                 }
                               },
                             ),
-                            const SizedBox(
-                              height: 25,
+                            Visibility(
+                              visible: isVolunteer,
+                              child: const SizedBox(
+                                height: 30,
+                              ),
                             ),
                             //bio field
-                            TextFormField(
-                              enabled: Editing,
-                              controller: TextEditingController()
-                                ..text = userData['bio'],
-                              onChanged: (text) => {bio_edit = text},
-                              maxLength: 180,
-                              minLines: 1,
-                              maxLines: 6,
-                              decoration: const InputDecoration(
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Color(0xFF06283D)),
+                            Visibility(
+                              visible: isVolunteer,
+                              child: TextFormField(
+                                enabled: Editing,
+                                controller: TextEditingController()
+                                  ..text = userData['bio'],
+                                onChanged: (text) => {bio_edit = text},
+                                maxLength: 180,
+                                minLines: 1,
+                                maxLines: 6,
+                                decoration: const InputDecoration(
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Color(0xFF06283D)),
+                                  ),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.blue),
+                                  ),
+                                  contentPadding: EdgeInsets.only(bottom: 3),
+                                  labelText: 'Bio',
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
                                 ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue),
-                                ),
-                                contentPadding: EdgeInsets.only(bottom: 3),
-                                labelText: 'Bio',
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.always,
                               ),
                             ),
                           ],
                         )),
+                    Visibility(
+                      visible: isSpecial && Viewing,
+                      child: buildTextField('Disability', dis),
+                    ),
+                    Visibility(
+                        visible: isSpecial && Editing,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                                padding: EdgeInsets.fromLTRB(30, 0, 0, 10),
+                                child: Text(
+                                  'Type OF Disability',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                )),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(10, 0, 0, 22),
+                              child: StreamBuilder<QuerySnapshot>(
+                                  stream: DisabilityType.snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return const Text("Loading");
+                                    } else {
+                                      return Column(
+                                        children: snapshot.data!.docs
+                                            .map((DocumentSnapshot document) {
+                                          //check User disablitiy
+                                          if (userData['Disability']
+                                              .contains('Vocally')) {
+                                            DisabilityType.doc(
+                                                    'VocallyImpaired')
+                                                .update({'Checked': true});
+                                            mute = true;
+                                          }
+                                          if (userData['Disability']
+                                              .contains('Visually')) {
+                                            DisabilityType.doc(
+                                                    'VisuallyImpaired')
+                                                .update({'Checked': true});
+                                            blind = true;
+                                          }
+                                          if (userData['Disability']
+                                              .contains('Hearing')) {
+                                            DisabilityType.doc(
+                                                    'HearingImpaired')
+                                                .update({'Checked': true});
+                                            deaf = true;
+                                          }
+                                          if (userData['Disability']
+                                              .contains('Physically')) {
+                                            DisabilityType.doc(
+                                                    'PhysicallyImpaired')
+                                                .update({'Checked': true});
+                                            physical = true;
+                                          }
+                                          if (userData['Disability']
+                                              .contains('Other')) {
+                                            DisabilityType.doc('Other')
+                                                .update({'Checked': true});
+                                            other = true;
+                                          }
+                                          return Container(
+                                              child: CheckboxListTile(
+                                            value: (document.data()
+                                                as Map)['Checked'],
+                                            onChanged: (bool? newValue) {
+                                              typeId = (document.data()
+                                                      as Map)['Type']
+                                                  .replaceAll(' ', '');
+                                              DisabilityType.doc(typeId).update(
+                                                  {'Checked': newValue});
+                                              if ((document.data()
+                                                      as Map)['Type'] ==
+                                                  'Visually Impaired') {
+                                                blind = !blind;
+                                              }
+                                              if ((document.data()
+                                                      as Map)['Type'] ==
+                                                  'Vocally Impaired') {
+                                                mute = !mute;
+                                              }
+                                              if ((document.data()
+                                                      as Map)['Type'] ==
+                                                  'Hearing Impaired') {
+                                                deaf = !deaf;
+                                              }
+                                              if ((document.data()
+                                                      as Map)['Type'] ==
+                                                  'Physically Impaired') {
+                                                physical = !physical;
+                                              }
+                                              if ((document.data()
+                                                      as Map)['Type'] ==
+                                                  'Other') {
+                                                other = !other;
+                                              }
+                                            },
+                                            title: Text(
+                                                (document.data()
+                                                    as Map)['Type'],
+                                                style: const TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                        FontWeight.normal)),
+                                            controlAffinity:
+                                                ListTileControlAffinity.leading,
+                                          ));
+                                        }).toList(),
+                                      );
+                                    }
+                                  }),
+                            ),
+                          ],
+                        )),
+                    //disability checkBox
 
                     //Editing buttons :
                     Visibility(
@@ -407,7 +580,7 @@ class profileState extends State<profile> {
                                               TextButton(
                                                 onPressed: () {
                                                   FirebaseFirestore.instance
-                                                      .collection("Comments")
+                                                      .collection("users")
                                                       .doc(userData['id'])
                                                       .delete()
                                                       .then((_) {
@@ -469,8 +642,6 @@ class profileState extends State<profile> {
                                             ),
                                             TextButton(
                                               onPressed: () {
-                                                print(name_edit);
-
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
                                                   const SnackBar(
@@ -533,6 +704,7 @@ class profileState extends State<profile> {
                                           TextButton(
                                             onPressed: () {
                                               setState(() {
+                                                clearBool();
                                                 Editing = false;
                                                 Viewing = true;
                                               });
@@ -626,6 +798,11 @@ class profileState extends State<profile> {
   }
 
   Future<void> UpdateDB() async {
+    if (blind == true) Dis_edit += " Visually Impaired,";
+    if (mute == true) Dis_edit += " Vocally Impaired,";
+    if (deaf == true) Dis_edit += " Hearing Impaired,";
+    if (physical == true) Dis_edit += " Physically Impaired,";
+    if (other == true) Dis_edit += " Other,";
     print('will be added to db');
     var Edit_info = FirebaseFirestore.instance
         .collection('users')
@@ -636,8 +813,10 @@ class profileState extends State<profile> {
       'phone number': phone_edit,
       'Email': email_edit,
       'bio': bio_edit,
-      'DOB': DOB_edit
+      'DOB': outDate,
+      'Disability': Dis_edit
     });
     print('profile edited');
+    clearBool();
   }
 }
