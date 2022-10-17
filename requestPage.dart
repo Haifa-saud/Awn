@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:awn/addRequest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,8 +7,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 
+import 'addPost.dart';
 import 'editRequest.dart';
 import 'mapsPage.dart';
+import 'services/appWidgets.dart';
 
 class requestPage extends StatefulWidget {
   final String userType;
@@ -21,6 +25,7 @@ class requestPage extends StatefulWidget {
 }
 
 class _requestPageState extends State<requestPage> {
+  int _selectedIndex = 2;
   @override
   Widget build(BuildContext context) {
     Future<String> getLocationAsString(var lat, var lng) async {
@@ -38,47 +43,120 @@ class _requestPageState extends State<requestPage> {
     //     );
 
     return Scaffold(
-        appBar: AppBar(
-          bottom: PreferredSize(
-              preferredSize: Size.fromHeight(1.0),
-              child: Padding(
-                  padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-                  child: Container(
-                    color: Colors.grey,
-                    height: 1.0,
-                  ))),
-          title: const Text('Awn Requests'),
-          automaticallyImplyLeading: false,
-          // actions: <Widget>[
-          //   Padding(
-          //       padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-          //       child: FutureBuilder(
-          //           //  future: storage.downloadURL('logo.png'),
-          //           builder:
-          //               (BuildContext context, AsyncSnapshot<String> snapshot) {
-          //         if (snapshot.connectionState == ConnectionState.done &&
-          //             snapshot.hasData) {
-          //           return Center(
-          //             child: Image.network(
-          //               snapshot.data!,
-          //               fit: BoxFit.cover,
-          //               width: 40,
-          //               height: 40,
-          //             ),
-          //           );
-          //         }
-          //         if (snapshot.connectionState == ConnectionState.waiting ||
-          //             !snapshot.hasData) {
-          //           return Center(
-          //               child: CircularProgressIndicator(
-          //             color: Colors.blue,
-          //           ));
-          //         }
-          //         return Container();
-          //       }))
-          // ],
+      appBar: AppBar(
+        bottom: PreferredSize(
+            preferredSize: Size.fromHeight(1.0),
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                child: Container(
+                  color: Colors.grey,
+                  height: 1.0,
+                ))),
+        actions: <Widget>[
+          Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+              child: FutureBuilder(
+                  future: storage.downloadURL('logo.png'),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done &&
+                        snapshot.hasData) {
+                      return Center(
+                        child: Image.network(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
+                          width: 40,
+                          height: 40,
+                        ),
+                      );
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting ||
+                        !snapshot.hasData) {
+                      return Center(
+                          child: CircularProgressIndicator(
+                        color: Colors.blue,
+                      ));
+                    }
+                    return Container();
+                  }))
+        ],
+        title: const Text('Awn Requests'),
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+            onPressed: () => Navigator.of(context).pop()),
+        automaticallyImplyLeading: false,
+        // actions: <Widget>[
+        //   Padding(
+        //       padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+        //       child: FutureBuilder(
+        //           //  future: storage.downloadURL('logo.png'),
+        //           builder:
+        //               (BuildContext context, AsyncSnapshot<String> snapshot) {
+        //         if (snapshot.connectionState == ConnectionState.done &&
+        //             snapshot.hasData) {
+        //           return Center(
+        //             child: Image.network(
+        //               snapshot.data!,
+        //               fit: BoxFit.cover,
+        //               width: 40,
+        //               height: 40,
+        //             ),
+        //           );
+        //         }
+        //         if (snapshot.connectionState == ConnectionState.waiting ||
+        //             !snapshot.hasData) {
+        //           return Center(
+        //               child: CircularProgressIndicator(
+        //             color: Colors.blue,
+        //           ));
+        //         }
+        //         return Container();
+        //       }))
+        // ],
+      ),
+      body: requestdetails(),
+      floatingActionButton: FloatingActionButton(
+        child: Container(
+          width: 60,
+          height: 60,
+          child: const Icon(
+            Icons.add,
+            size: 40,
+          ),
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              stops: [0.0, 1.0],
+              colors: [
+                Colors.blue,
+                Color(0xFF39d6ce),
+              ],
+            ),
+          ),
         ),
-        body: requestdetails());
+        onPressed: () {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  addPost(userType: widget.userType),
+              transitionDuration: Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      bottomNavigationBar: BottomNavBar(
+        onPress: (int value) => setState(() {
+          _selectedIndex = value;
+        }),
+        userType: widget.userType,
+        currentI: 3,
+      ),
+    );
   }
 
   Widget requestdetails() {
@@ -162,107 +240,58 @@ class _requestPageState extends State<requestPage> {
                                       borderRadius: BorderRadius.circular(15)),
                                   child: Column(
                                     children: [
-                                      ///edit
-
-                                      // ///title
-                                      // Container(
-                                      //   padding: const EdgeInsets.fromLTRB(
-                                      //       6, 12, 6, 6),
-                                      //   child: Text(
-                                      //     'Title',
-                                      //     textAlign: TextAlign.left,
-                                      //   ),
-                                      // ),
-                                      // Container(
-                                      //     padding: const EdgeInsets.fromLTRB(
-                                      //         6, 12, 6, 12),
-                                      //     child: TextFormField(
-                                      //       maxLength: 20,
-                                      //       controller: titleController,
-                                      //       decoration: const InputDecoration(
-                                      //         hintText:
-                                      //             'E.g. Help with shopping',
-                                      //       ),
-                                      //       // onChanged: (value) {title = value; },
-                                      //       validator: (value) {
-                                      //         if (value == null ||
-                                      //             value.isEmpty ||
-                                      //             (value.trim()).isEmpty) {
-                                      //           // double s = checkCurrentTime();
-                                      //           return 'Please enter a title '; //s.toString()
-                                      //         }
-                                      //         return null;
-                                      //       },
-                                      //     )),
-                                      // //duration
-                                      // Container(
-                                      //   padding:
-                                      //       EdgeInsets.fromLTRB(6, 35, 6, 8),
-                                      //   child: Text('Duration*'),
-                                      // ),
-
-                                      // Container(
-                                      //   padding: const EdgeInsets.fromLTRB(
-                                      //       6, 8, 6, 12),
-                                      //   child: TextFormField(
-                                      //     controller: durationController,
-                                      //     decoration: const InputDecoration(
-                                      //       hintText: 'E.g. For about 2 hours',
-                                      //     ),
-                                      //     // onChanged: (value) {duration = value;},
-                                      //     validator: (value) {
-                                      //       if (value == null ||
-                                      //           value.isEmpty ||
-                                      //           (value.trim()).isEmpty) {
-                                      //         return 'Please enter the duration';
-                                      //       }
-                                      //     },
-                                      //   ),
-                                      // ),
-
                                       //view
 
                                       //title
                                       Padding(
                                           padding: EdgeInsets.fromLTRB(
                                               10, 10, 15, 15),
-                                          child: Stack(children: [
-                                            Text(
-                                              ' ${data.docs[index]['title']}',
-                                              textAlign: TextAlign.left,
-                                            ),
+                                          child: Row(children: [
+                                            Padding(
+                                                padding:
+                                                    EdgeInsets.only(right: 0),
+                                                child: Text(
+                                                  ' ${data.docs[index]['title']}',
+                                                  textAlign: TextAlign.left,
+                                                )),
                                             Visibility(
                                                 visible: isPending,
-                                                child: Column(children: [
+                                                child: Row(children: [
                                                   InkWell(
                                                     child: Container(
-                                                      alignment:
-                                                          Alignment.topRight,
+                                                      // alignment:
+                                                      //     Alignment.centerRight,
                                                       margin: EdgeInsets.only(
                                                           top: 5),
-                                                      // padding: EdgeInsets.only(right: 0),
-                                                      child: Text('Edit',
-                                                          //   overflow:
-                                                          //   TextOverflow.ellipsis,
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              background:
-                                                                  Paint()
-                                                                    ..strokeWidth =
-                                                                        20.0
-                                                                    ..color = Colors
-                                                                        .blueGrey
-                                                                    ..style =
-                                                                        PaintingStyle
-                                                                            .stroke
-                                                                    ..strokeJoin =
-                                                                        StrokeJoin
-                                                                            .round,
-                                                              fontSize: 17,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500)),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 7),
+                                                      child: Icon(Icons.edit,
+                                                          size: 30,
+                                                          color:
+                                                              Colors.blueGrey),
+                                                      // Text('Edit',
+                                                      //     //   overflow:
+                                                      //     //   TextOverflow.ellipsis,
+                                                      //     style: TextStyle(
+                                                      //         color:
+                                                      //             Colors.white,
+                                                      //         background:
+                                                      //             Paint()
+                                                      //               ..strokeWidth =
+                                                      //                   20.0
+                                                      //               ..color = Colors
+                                                      //                   .blueGrey
+                                                      //               ..style =
+                                                      //                   PaintingStyle
+                                                      //                       .stroke
+                                                      //               ..strokeJoin =
+                                                      //                   StrokeJoin
+                                                      //                       .round,
+                                                      //         fontSize: 17,
+                                                      //         fontWeight:
+                                                      //             FontWeight
+                                                      //                 .w500)),
                                                     ),
                                                     onTap: (() {
                                                       setState(() {
@@ -290,34 +319,40 @@ class _requestPageState extends State<requestPage> {
                                                   ),
                                                   InkWell(
                                                     child: Container(
-                                                      alignment:
-                                                          Alignment.topRight,
+                                                      // alignment:
+                                                      //     Alignment.topRight,
                                                       margin: EdgeInsets.only(
-                                                          top: 20),
-                                                      // padding: EdgeInsets.only(right: 0),
-                                                      child: Text('Delete',
-                                                          //   overflow:
-                                                          //   TextOverflow.ellipsis,
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              background:
-                                                                  Paint()
-                                                                    ..strokeWidth =
-                                                                        20.0
-                                                                    ..color = Colors
-                                                                        .red
-                                                                        .shade300
-                                                                    ..style =
-                                                                        PaintingStyle
-                                                                            .stroke
-                                                                    ..strokeJoin =
-                                                                        StrokeJoin
-                                                                            .round,
-                                                              fontSize: 17,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500)),
+                                                          top: 5),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 7),
+                                                      child: Icon(Icons.delete,
+                                                          size: 30,
+                                                          color: Colors
+                                                              .red.shade300),
+                                                      // Text('Delete',
+                                                      //     //   overflow:
+                                                      //     //   TextOverflow.ellipsis,
+                                                      //     style: TextStyle(
+                                                      //         color:
+                                                      //             Colors.white,
+                                                      //         background:
+                                                      //             Paint()
+                                                      //               ..strokeWidth =
+                                                      //                   20.0
+                                                      //               ..color = Colors
+                                                      //                   .red
+                                                      //                   .shade300
+                                                      //               ..style =
+                                                      //                   PaintingStyle
+                                                      //                       .stroke
+                                                      //               ..strokeJoin =
+                                                      //                   StrokeJoin
+                                                      //                       .round,
+                                                      //         fontSize: 17,
+                                                      //         fontWeight:
+                                                      //             FontWeight
+                                                      //                 .w500)),
                                                     ),
                                                     onTap: (() {
                                                       // deletRequest(
@@ -385,7 +420,48 @@ class _requestPageState extends State<requestPage> {
                                                         ),
                                                       );
                                                     }),
-                                                  )
+                                                  ),
+                                                  InkWell(
+                                                    child: Container(
+                                                      // alignment:
+                                                      //     Alignment.centerRight,
+                                                      margin: EdgeInsets.only(
+                                                          top: 5),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 7),
+                                                      child: Icon(Icons.chat,
+                                                          size: 30,
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              111,
+                                                              251,
+                                                              253)),
+                                                    ),
+                                                    onTap: (() {
+                                                      setState(() {
+                                                        // edit = true;
+                                                        //  var title;
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) => editRequest(
+                                                                  userType:
+                                                                      "Special Need User",
+                                                                  docId: data.docs[
+                                                                          index]
+                                                                      ['docId'],
+                                                                  date_ymd: data
+                                                                              .docs[
+                                                                          index]
+                                                                      [
+                                                                      'date_ymd']),
+                                                            ));
+                                                      });
+                                                      //  editReq();
+                                                      //     print(edit);
+                                                    }),
+                                                  ),
                                                 ]))
                                           ])),
 

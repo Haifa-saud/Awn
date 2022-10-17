@@ -323,7 +323,9 @@ class _EditRequestState extends State<editRequest> {
     String userId = user.uid;
     final now = DateTime.now();
     // editReq() {}
-    return Column(children: [
+    return Form(
+        // key: _formKey,
+        child: Column(children: [
       Expanded(
           child: Container(
               padding: const EdgeInsets.symmetric(vertical: 20),
@@ -399,6 +401,12 @@ class _EditRequestState extends State<editRequest> {
                                                   const EdgeInsets.fromLTRB(
                                                       6, 12, 6, 12),
                                               child: TextFormField(
+                                                // onChanged: (value) {
+                                                //   setState(() {
+                                                //     titleController.text =
+                                                //         value;
+                                                //   });
+                                                // },
                                                 maxLength: 20,
                                                 controller: titleController,
                                                 decoration:
@@ -961,7 +969,7 @@ class _EditRequestState extends State<editRequest> {
                   );
                 },
               )))
-    ]);
+    ]));
   }
 
   void Confermation() {
