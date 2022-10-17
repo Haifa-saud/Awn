@@ -27,7 +27,7 @@ String name_edit = '',
     bio_edit = '',
     gender_edit = '',
     DOB_edit = '',
-    Dis_edit = '';
+    Dis_edit = ' ';
 bool blind = false;
 bool mute = false;
 bool deaf = false;
@@ -63,6 +63,29 @@ class profileState extends State<profile> {
       gender_index = 0;
     }
     outDate = D;
+  }
+
+  void user_disablitiy(String dis) {
+    if (dis.contains('Vocally')) {
+      DisabilityType.doc('VocallyImpaired').update({'Checked': true});
+      mute = true;
+    }
+    if (dis.contains('Visually')) {
+      DisabilityType.doc('VisuallyImpaired').update({'Checked': true});
+      blind = true;
+    }
+    if (dis.contains('Hearing')) {
+      DisabilityType.doc('HearingImpaired').update({'Checked': true});
+      deaf = true;
+    }
+    if (dis.contains('Physically')) {
+      DisabilityType.doc('PhysicallyImpaired').update({'Checked': true});
+      physical = true;
+    }
+    if (dis.contains('Other')) {
+      DisabilityType.doc('Other').update({'Checked': true});
+      other = true;
+    }
   }
 
   Future<Map<String, dynamic>> readUserData() => FirebaseFirestore.instance
@@ -121,6 +144,7 @@ class profileState extends State<profile> {
                 isSpecial = true;
                 dis = userData['Disability'];
                 dis = dis.substring(0, (dis.length - 1));
+                user_disablitiy(dis);
               }
               var isF = userData['gender'] == "Female" ? 1 : 0;
               name_edit = userData['name'];
@@ -418,40 +442,7 @@ class profileState extends State<profile> {
                                         children: snapshot.data!.docs
                                             .map((DocumentSnapshot document) {
                                           //check User disablitiy
-                                          if (userData['Disability']
-                                              .contains('Vocally')) {
-                                            DisabilityType.doc(
-                                                    'VocallyImpaired')
-                                                .update({'Checked': true});
-                                            mute = true;
-                                          }
-                                          if (userData['Disability']
-                                              .contains('Visually')) {
-                                            DisabilityType.doc(
-                                                    'VisuallyImpaired')
-                                                .update({'Checked': true});
-                                            blind = true;
-                                          }
-                                          if (userData['Disability']
-                                              .contains('Hearing')) {
-                                            DisabilityType.doc(
-                                                    'HearingImpaired')
-                                                .update({'Checked': true});
-                                            deaf = true;
-                                          }
-                                          if (userData['Disability']
-                                              .contains('Physically')) {
-                                            DisabilityType.doc(
-                                                    'PhysicallyImpaired')
-                                                .update({'Checked': true});
-                                            physical = true;
-                                          }
-                                          if (userData['Disability']
-                                              .contains('Other')) {
-                                            DisabilityType.doc('Other')
-                                                .update({'Checked': true});
-                                            other = true;
-                                          }
+
                                           return Container(
                                               child: CheckboxListTile(
                                             value: (document.data()
@@ -503,9 +494,136 @@ class profileState extends State<profile> {
                                     }
                                   }),
                             ),
+                            StreamBuilder<dynamic>(
+                                stream: UserDis,
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Text("         Nope !");
+                                  } else {
+                                    final dis_Data = snapshot.data;
+                                    return ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: const BouncingScrollPhysics(),
+                                        reverse: true,
+                                        itemCount: dis_Data!.size,
+                                        itemBuilder: (context, index) {
+                                          return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10.0,
+                                                      vertical: 16),
+                                              child: CheckboxListTile(
+                                                value: dis_Data.docs[index]
+                                                    ['Checked'],
+                                                onChanged: (bool? newValue) {
+                                                  dis_Data.docs[index].update(
+                                                      {'Checked': newValue});
+                                                  if (dis_Data.docs[index]
+                                                          ['Type'] ==
+                                                      'Visually Impaired') {
+                                                    blind = !blind;
+                                                  }
+                                                  if (dis_Data.docs[index]
+                                                          ['Type'] ==
+                                                      'Vocally Impaired') {
+                                                    mute = !mute;
+                                                  }
+                                                  if (dis_Data.docs[index]
+                                                          ['Type'] ==
+                                                      'Hearing Impaired') {
+                                                    deaf = !deaf;
+                                                  }
+                                                  if (dis_Data.docs[index]
+                                                          ['Type'] ==
+                                                      'Physically Impaired') {
+                                                    physical = !physical;
+                                                  }
+                                                  if (dis_Data.docs[index]
+                                                          ['Type'] ==
+                                                      'Other') {
+                                                    other = !other;
+                                                  }
+                                                },
+                                                title: Text(
+                                                    dis_Data.docs[index]
+                                                        ['Type'],
+                                                    style: const TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.normal)),
+                                                controlAffinity:
+                                                    ListTileControlAffinity
+                                                        .leading,
+                                              ));
+                                        });
+                                  }
+                                }), //disability checkBox try 2 !!
+                            StreamBuilder<dynamic>(
+                                stream: UserDis,
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Text("         Nope !");
+                                  } else {
+                                    final dis_Data = snapshot.data;
+                                    return ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: const BouncingScrollPhysics(),
+                                        reverse: true,
+                                        itemCount: dis_Data!.size,
+                                        itemBuilder: (context, index) {
+                                          return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10.0,
+                                                      vertical: 16),
+                                              child: CheckboxListTile(
+                                                value: dis_Data.docs[index]
+                                                    ['Checked'],
+                                                onChanged: (bool? newValue) {
+                                                  dis_Data.docs[index].update(
+                                                      {'Checked': newValue});
+                                                  if (dis_Data.docs[index]
+                                                          ['Type'] ==
+                                                      'Visually Impaired') {
+                                                    blind = !blind;
+                                                  }
+                                                  if (dis_Data.docs[index]
+                                                          ['Type'] ==
+                                                      'Vocally Impaired') {
+                                                    mute = !mute;
+                                                  }
+                                                  if (dis_Data.docs[index]
+                                                          ['Type'] ==
+                                                      'Hearing Impaired') {
+                                                    deaf = !deaf;
+                                                  }
+                                                  if (dis_Data.docs[index]
+                                                          ['Type'] ==
+                                                      'Physically Impaired') {
+                                                    physical = !physical;
+                                                  }
+                                                  if (dis_Data.docs[index]
+                                                          ['Type'] ==
+                                                      'Other') {
+                                                    other = !other;
+                                                  }
+                                                },
+                                                title: Text(
+                                                    dis_Data.docs[index]
+                                                        ['Type'],
+                                                    style: const TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.normal)),
+                                                controlAffinity:
+                                                    ListTileControlAffinity
+                                                        .leading,
+                                              ));
+                                        });
+                                  }
+                                }),
                           ],
                         )),
-                    //disability checkBox
 
                     //Editing buttons :
                     Visibility(
@@ -760,7 +878,7 @@ class profileState extends State<profile> {
                 ),
               ));
             } else {
-              return const Text('Good Bye !');
+              return const Text('Loading !');
             }
           }),
     );
