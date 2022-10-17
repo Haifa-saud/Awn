@@ -1,3 +1,4 @@
+import 'package:awn/editRequest.dart';
 import 'package:awn/services/sendNotification.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,7 +14,14 @@ import 'main.dart';
 class maps extends StatefulWidget {
   final String dataId;
   final String typeOfRequest;
-  const maps({Key? key, required this.dataId, required this.typeOfRequest})
+  final double? latitude;
+  final double? longitude;
+  const maps(
+      {Key? key,
+      required this.dataId,
+      required this.typeOfRequest,
+      this.latitude,
+      this.longitude})
       : super(key: key);
 
   @override
@@ -30,7 +38,8 @@ class _MyStatefulWidgetState extends State<maps> {
 
   String DBId = ' ';
   bool addPost = true;
-  String collName = ' ', sucessMsg = '';
+  bool editRequest = false;
+  String collName = ' ', sucessMsg = '', title = '';
   BorderRadius border = BorderRadius.circular(0);
 
   void getCurrentPosition() async {
@@ -75,17 +84,42 @@ class _MyStatefulWidgetState extends State<maps> {
   late final NotificationService notificationService;
   @override
   void initState() {
-    getCurrentPosition();
+    if (widget.typeOfRequest == 'E') {
+      setState(() {
+        position = Position.fromMap(
+            {'latitude': widget.latitude, 'longitude': widget.longitude});
+        markers.add(Marker(
+          markerId: MarkerId(
+              position.latitude.toString() + position.longitude.toString()),
+          position: LatLng(position.latitude, position.longitude),
+          infoWindow: const InfoWindow(
+            title: 'Institution Location ',
+          ),
+          icon: BitmapDescriptor.defaultMarker,
+          draggable: true,
+        ));
+      });
+    } else {
+      getCurrentPosition();
+    }
 
     addPost = widget.typeOfRequest == 'P' ? true : false;
+    editRequest = widget.typeOfRequest == 'E' ? true : false;
     if (addPost) {
+      title = "Add Location";
       collName = 'posts';
       border = const BorderRadius.only(
         topRight: Radius.circular(30),
         bottomRight: Radius.circular(30),
       );
       sucessMsg = 'Place is added successfully';
+    } else if (editRequest) {
+      title = "Update Location";
+      collName = 'requests';
+      border = BorderRadius.circular(30);
+      sucessMsg = 'Request is updated successfully';
     } else {
+      title = "Add Location";
       collName = 'requests';
       border = BorderRadius.circular(30);
       sucessMsg = 'Request is sent successfully';
@@ -112,7 +146,18 @@ class _MyStatefulWidgetState extends State<maps> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text("Add Location"), automaticallyImplyLeading: false),
+          // leading: Visibility(
+          //     visible: editRequest,
+          //     child: IconButton(
+          //         icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          //         onPressed: () => Navigator.of(context).pop())),
+          title: Text(title),
+          leading: Visibility(
+              visible: editRequest,
+              child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+                  onPressed: () => Navigator.of(context).pop())),
+          automaticallyImplyLeading: false),
       body: Stack(
         children: <Widget>[
           GoogleMap(
@@ -223,7 +268,7 @@ class _MyStatefulWidgetState extends State<maps> {
                       ),
                     ),
                     Container(
-                      width: 140,
+                      width: 150,
                       // margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                       decoration: BoxDecoration(
                         boxShadow: [
@@ -254,7 +299,7 @@ class _MyStatefulWidgetState extends State<maps> {
                             fontSize: 18,
                           ),
                         ),
-                        child: const Text('Add Location'),
+                        child: Text(title),
                       ),
                     ),
                   ]),

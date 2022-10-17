@@ -204,10 +204,12 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                                         String cate = ((document.data()
                                             as Map)['category']);
                                         return Place(
-                                            userId: userData['id'],
-                                            category: cate,
-                                            status: '',
-                                            userName: userData['name']);
+                                          userId: userData['id'],
+                                          category: cate,
+                                          status: '',
+                                          userName: userData['name'],
+                                          userType: userData['Type'],
+                                        );
                                       }).toList(),
                                     )))
                           ]);

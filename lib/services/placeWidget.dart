@@ -1,3 +1,4 @@
+import 'package:awn/addPost.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,24 +8,32 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'appWidgets.dart';
 import 'myGlobal.dart' as globals;
 
-class Place extends StatelessWidget {
+class Place extends StatefulWidget {
   Place(
       {Key? key,
       required this.userId,
       required this.category,
       required this.status,
-      required this.userName});
+      required this.userName,
+      required this.userType});
 
   final userId;
   final category;
   final status;
   final userName;
+  final userType;
 
   @override
+  State<Place> createState() => PlaceState();
+}
+
+class PlaceState extends State<Place> {
+  @override
   Widget build(BuildContext context) {
-    return placesList(category, status, userId);
+    return placesList(widget.category, widget.status, widget.userId);
   }
 
   Future<String> getLocationAsString(var lat, var lng) async {
@@ -70,216 +79,225 @@ class Place extends StatelessWidget {
       color = Colors.white;
     }
 
-    return Container(
-        height: double.infinity,
-        child: Column(
-          children: [
-            //! places list
-            Expanded(
-                child: Container(
-                    height: double.infinity,
-                    child: StreamBuilder<QuerySnapshot>(
-                        stream: list,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.hasError) {
-                            return const Text('Something went wrong');
-                          }
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                          if (!snapshot.hasData) {
-                            return const Center(
-                                child: Text('No available posts'));
-                          }
-                          if (snapshot.data == null ||
-                              snapshot.data!.docs.isEmpty) {
-                            return const Center(
-                                child: Text('There is no places currently',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 17)));
-                          } else {
-                            final data = snapshot.requireData;
-                            return ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: data.size,
-                                itemBuilder: (context, index) {
-                                  if (data.docs[index]['latitude'] != '') {
-                                    double latitude = double.parse(
-                                        '${data.docs[index]['latitude']}');
-                                    double longitude = double.parse(
-                                        '${data.docs[index]['longitude']}');
+    return Scaffold(
+      body: Container(
+          height: double.infinity,
+          child: Column(
+            children: [
+              //! places list
+              Expanded(
+                  child: Container(
+                      height: double.infinity,
+                      child: StreamBuilder<QuerySnapshot>(
+                          stream: list,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<QuerySnapshot> snapshot) {
+                            if (snapshot.hasError) {
+                              return const Text('Something went wrong');
+                            }
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+                            if (!snapshot.hasData) {
+                              return const Center(
+                                  child: Text('No available posts'));
+                            }
+                            if (snapshot.data == null ||
+                                snapshot.data!.docs.isEmpty) {
+                              return const Center(
+                                  child: Text('There is no places currently',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 17)));
+                            } else {
+                              final data = snapshot.requireData;
+                              return ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: data.size,
+                                  itemBuilder: (context, index) {
+                                    if (data.docs[index]['latitude'] != '') {
+                                      double latitude = double.parse(
+                                          '${data.docs[index]['latitude']}');
+                                      double longitude = double.parse(
+                                          '${data.docs[index]['longitude']}');
 
-                                    return FutureBuilder(
-                                      future: getLocationAsString(
-                                          latitude, longitude),
-                                      builder: (context, snap) {
-                                        if (snap.hasData) {
-                                          var reqLoc = snap.data;
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 24,
-                                                right: 24,
-                                                top: 8,
-                                                bottom: 16),
-                                            child: InkWell(
-                                              onTap: () => showModalBottomSheet(
-                                                  isScrollControlled: true,
-                                                  backgroundColor:
-                                                      Colors.transparent,
-                                                  context: context,
-                                                  builder: (context) =>
-                                                      buildPlace(
-                                                          data.docs[index]
-                                                              ['docId'],
-                                                          isAdmin,
-                                                          data.docs[index]
-                                                              ['status'])),
-                                              splashColor: Colors.transparent,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                    color: color,
-                                                    boxShadow: const [
-                                                      BoxShadow(
-                                                          blurRadius: 32,
-                                                          color: Colors.black45,
-                                                          spreadRadius: -8)
-                                                    ],
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15)),
-                                                child: Stack(
-                                                  children: <Widget>[
-                                                    Column(
-                                                      children: <Widget>[
-                                                        ClipRRect(
-                                                            borderRadius:
-                                                                const BorderRadius
-                                                                    .only(
-                                                              topLeft: Radius
-                                                                  .circular(
-                                                                      16.0),
-                                                              topRight: Radius
-                                                                  .circular(
-                                                                      16.0),
-                                                            ),
-                                                            child: AspectRatio(
-                                                              aspectRatio: 2,
-                                                              child:
-                                                                  Image.network(
+                                      return FutureBuilder(
+                                        future: getLocationAsString(
+                                            latitude, longitude),
+                                        builder: (context, snap) {
+                                          if (snap.hasData) {
+                                            var reqLoc = snap.data;
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 24,
+                                                  right: 24,
+                                                  top: 8,
+                                                  bottom: 16),
+                                              child: InkWell(
+                                                onTap: () =>
+                                                    showModalBottomSheet(
+                                                        isScrollControlled:
+                                                            true,
+                                                        backgroundColor:
+                                                            Colors.transparent,
+                                                        context: context,
+                                                        builder: (context) =>
+                                                            buildPlace(
                                                                 data.docs[index]
-                                                                    ['img'],
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                errorBuilder: (BuildContext
-                                                                        context,
-                                                                    Object
-                                                                        exception,
-                                                                    StackTrace?
-                                                                        stackTrace) {
-                                                                  return const Text(
-                                                                      'Image could not be load');
-                                                                },
+                                                                    ['docId'],
+                                                                isAdmin,
+                                                                data.docs[index]
+                                                                    [
+                                                                    'status'])),
+                                                splashColor: Colors.transparent,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      color: color,
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                            blurRadius: 32,
+                                                            color:
+                                                                Colors.black45,
+                                                            spreadRadius: -8)
+                                                      ],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15)),
+                                                  child: Stack(
+                                                    children: <Widget>[
+                                                      Column(
+                                                        children: <Widget>[
+                                                          ClipRRect(
+                                                              borderRadius:
+                                                                  const BorderRadius
+                                                                      .only(
+                                                                topLeft: Radius
+                                                                    .circular(
+                                                                        16.0),
+                                                                topRight: Radius
+                                                                    .circular(
+                                                                        16.0),
                                                               ),
-                                                            )),
-                                                        Container(
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
+                                                              child:
+                                                                  AspectRatio(
+                                                                aspectRatio: 2,
+                                                                child: Image
+                                                                    .network(
+                                                                  data.docs[
+                                                                          index]
+                                                                      ['img'],
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  errorBuilder: (BuildContext
+                                                                          context,
+                                                                      Object
+                                                                          exception,
+                                                                      StackTrace?
+                                                                          stackTrace) {
+                                                                    return const Text(
+                                                                        'Image could not be load');
+                                                                  },
+                                                                ),
+                                                              )),
+                                                          Container(
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: <
+                                                                  Widget>[
+                                                                Expanded(
+                                                                  child:
+                                                                      Container(
+                                                                          child:
+                                                                              Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.fromLTRB(
+                                                                            13,
+                                                                            8,
+                                                                            0,
+                                                                            8),
+                                                                    child: Text(
+                                                                      data.docs[
+                                                                              index]
+                                                                          [
+                                                                          'name'],
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .left,
+                                                                      style:
+                                                                          const TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.w600,
+                                                                        fontSize:
+                                                                            20,
+                                                                      ),
+                                                                    ),
+                                                                  )),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          Row(
                                                             crossAxisAlignment:
                                                                 CrossAxisAlignment
+                                                                    .center,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
                                                                     .start,
                                                             children: <Widget>[
-                                                              Expanded(
-                                                                child: Container(
-                                                                    child: Padding(
+                                                              Padding(
                                                                   padding:
                                                                       const EdgeInsets
                                                                               .fromLTRB(
                                                                           13,
-                                                                          8,
                                                                           0,
-                                                                          8),
+                                                                          0,
+                                                                          15),
                                                                   child: Text(
                                                                     data.docs[
                                                                             index]
                                                                         [
-                                                                        'name'],
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .left,
-                                                                    style:
-                                                                        const TextStyle(
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600,
-                                                                      fontSize:
-                                                                          20,
-                                                                    ),
-                                                                  ),
-                                                                )),
+                                                                        'category'],
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            14,
+                                                                        color: Colors
+                                                                            .grey
+                                                                            .withOpacity(0.8)),
+                                                                  )),
+                                                              const SizedBox(
+                                                                width: 4,
                                                               ),
                                                             ],
                                                           ),
-                                                        ),
-                                                        Row(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: <Widget>[
-                                                            Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                            .fromLTRB(
-                                                                        13,
-                                                                        0,
-                                                                        0,
-                                                                        15),
-                                                                child: Text(
-                                                                  data.docs[
-                                                                          index]
-                                                                      [
-                                                                      'category'],
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          14,
-                                                                      color: Colors
-                                                                          .grey
-                                                                          .withOpacity(
-                                                                              0.8)),
-                                                                )),
-                                                            const SizedBox(
-                                                              width: 4,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          );
-                                        } else {
-                                          return const Center(child: Text(''));
-                                        }
-                                      },
-                                    );
-                                  } else {
-                                    return const Center(child: Text(''));
-                                  }
-                                });
-                          }
-                        })))
-          ],
-        ));
+                                            );
+                                          } else {
+                                            return const Center(
+                                                child: Text(''));
+                                          }
+                                        },
+                                      );
+                                    } else {
+                                      return const Center(child: Text(''));
+                                    }
+                                  });
+                            }
+                          })))
+            ],
+          )),
+    );
   }
 
   Widget buildPlace(placeID, var isAdmin, var status) {
@@ -303,412 +321,483 @@ class Place extends StatelessWidget {
           },
         );
 
-    return FutureBuilder<Map<String, dynamic>>(
-        future: getPlaceData(placeID),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            data = snapshot.data as Map<String, dynamic>;
-            latitude = data['latitude'];
-            longitude = data['longitude'];
-            isLocSet = latitude == '' ? false : true;
+    return Scaffold(
+      body: FutureBuilder<Map<String, dynamic>>(
+          future: getPlaceData(placeID),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              data = snapshot.data as Map<String, dynamic>;
+              latitude = data['latitude'];
+              longitude = data['longitude'];
+              isLocSet = latitude == '' ? false : true;
 
-            return DraggableScrollableSheet(
-                maxChildSize: 1,
-                minChildSize: 0.9,
-                initialChildSize: 1,
-                builder: (_, controller) => Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(20))),
-                    child: Stack(children: [
-                      const Positioned(
-                          width: 50,
-                          height: 50,
-                          top: 10,
-                          left: 10,
-                          child:
-                              Icon(Icons.navigate_before_outlined, size: 60)),
-                      CustomScrollView(
-                        controller: controller,
-                        slivers: [
-                          SliverAppBar(
-                            toolbarHeight: 60,
-                            automaticallyImplyLeading: false,
-                            bottom: PreferredSize(
-                                preferredSize: const Size.fromHeight(20),
-                                child: Container(
-                                    decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(40.0),
-                                        topRight: Radius.circular(40.0),
-                                      ),
-                                    ),
-                                    width: double.maxFinite,
-                                    padding: const EdgeInsets.fromLTRB(
-                                        16, 25, 15, 5),
-                                    child: Row(children: [
-                                      Text(data['name'],
-                                          style: const TextStyle(fontSize: 25)),
-                                      const Spacer(),
-                                      InkWell(
-                                          onTap: () => Navigator.pop(context),
-                                          child: CircleAvatar(
-                                              backgroundColor:
-                                                  Colors.grey.shade400,
-                                              radius: 18,
-                                              child: const Icon(
-                                                  Icons.arrow_downward,
-                                                  color: Colors.white))),
-                                    ]))),
-                            pinned: true,
-                            expandedHeight: 300,
-                            flexibleSpace: FlexibleSpaceBar(
-                                background: Image.network(
-                              data['img'],
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            )),
-                          ),
-                          SliverToBoxAdapter(
-                              child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(15, 5, 15, 30),
-                                  child: Column(children: [
-                                    /*category*/ Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          data['category'],
-                                          style: const TextStyle(
-                                              wordSpacing: 2,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w400),
-                                        )),
-                                    const SizedBox(height: 20),
-                                    /*description*/ Visibility(
-                                        visible: data['description'] != '',
-                                        child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                const Text('About'),
-                                                const SizedBox(height: 7),
-                                                ReadMoreText(
-                                                  data['description'],
-                                                  textAlign: TextAlign.justify,
-                                                  style: const TextStyle(
-                                                      wordSpacing: 2,
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.w400),
-                                                  trimLines: 4,
-                                                  trimMode: TrimMode.Line,
-                                                  trimCollapsedText:
-                                                      'View more',
-                                                  trimExpandedText: 'View less',
-                                                  moreStyle: const TextStyle(
-                                                      color: Colors.blue,
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      decoration: TextDecoration
-                                                          .underline),
-                                                  lessStyle: const TextStyle(
-                                                      color: Colors.blue,
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      decoration: TextDecoration
-                                                          .underline),
-                                                ),
-                                              ],
-                                            ))),
-                                    const SizedBox(height: 35),
-                                    /*phone number, website, location*/ Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue.shade50,
-                                          border: Border.all(
-                                            color: Colors.blue.shade50,
-                                            width: 1,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(15),
+              return DraggableScrollableSheet(
+                  maxChildSize: 1,
+                  minChildSize: 0.9,
+                  initialChildSize: 1,
+                  builder: (_, controller) => Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20))),
+                      child: Stack(children: [
+                        const Positioned(
+                            width: 50,
+                            height: 50,
+                            top: 10,
+                            left: 10,
+                            child:
+                                Icon(Icons.navigate_before_outlined, size: 60)),
+                        CustomScrollView(
+                          controller: controller,
+                          slivers: [
+                            SliverAppBar(
+                              toolbarHeight: 60,
+                              automaticallyImplyLeading: false,
+                              bottom: PreferredSize(
+                                  preferredSize: const Size.fromHeight(20),
+                                  child: Container(
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(40.0),
+                                          topRight: Radius.circular(40.0),
                                         ),
-                                        padding: const EdgeInsets.all(6),
-                                        child: Row(children: [
-                                          Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                /*location*/ Visibility(
-                                                    visible: isLocSet,
-                                                    child: FutureBuilder(
-                                                        future:
-                                                            getLocationAsString(
-                                                                double.parse(
-                                                                    latitude),
-                                                                double.parse(
-                                                                    longitude)),
-                                                        builder:
-                                                            (context, snap) {
-                                                          if (snap.hasData) {
-                                                            var reqLoc =
-                                                                snap.data;
-                                                            return Row(
-                                                              children: [
-                                                                const Padding(
-                                                                    padding: EdgeInsets
-                                                                        .fromLTRB(
-                                                                            0,
-                                                                            0,
-                                                                            6,
-                                                                            40),
-                                                                    child: Icon(
-                                                                      Icons
-                                                                          .location_on_outlined,
-                                                                      size: 25,
-                                                                      // color: Colors
-                                                                      //     .white
-                                                                    )),
-                                                                SizedBox(
-                                                                    width: 150,
-                                                                    child: Text(
-                                                                        reqLoc!,
-                                                                        style:
-                                                                            const TextStyle(
-                                                                          fontSize:
-                                                                              16,
-                                                                          fontWeight:
-                                                                              FontWeight.w400,
-                                                                          // color: Colors
-                                                                          //     .white
-                                                                        )))
-                                                              ],
-                                                            );
-                                                          } else {
-                                                            return const Text(
-                                                                '');
-                                                          }
-                                                        })),
-                                                const SizedBox(height: 30),
-                                                /*website*/ Visibility(
-                                                  visible:
-                                                      data['Website'] != '',
-                                                  child: InkWell(
-                                                      child:
-                                                          Row(children: const [
-                                                        Padding(
-                                                            padding: EdgeInsets
-                                                                .fromLTRB(
-                                                                    0, 0, 8, 0),
-                                                            child: FaIcon(
-                                                                FontAwesomeIcons
-                                                                    .globe,
-                                                                // color: Colors.white,
-                                                                size: 22)),
-                                                        Text('Website',
-                                                            style: TextStyle(
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              decoration:
-                                                                  TextDecoration
-                                                                      .underline,
-                                                              // color: Colors.white
-                                                            )),
-                                                      ]),
-                                                      onTap: () => launchUrl(
-                                                          Uri.parse(data[
-                                                              'Website']))),
-                                                ),
-                                                const SizedBox(height: 30),
-                                                /*phone number*/ Visibility(
-                                                  visible:
-                                                      data['Phone number'] !=
-                                                          '',
-                                                  child: InkWell(
-                                                      child: Row(children: [
-                                                        const Padding(
-                                                            padding: EdgeInsets
-                                                                .fromLTRB(
-                                                                    0, 0, 6, 0),
-                                                            child: Icon(
-                                                              Icons
-                                                                  .call_outlined,
-                                                              // color: Colors.white
-                                                            )),
-                                                        Text(
-                                                            data[
-                                                                'Phone number'],
-                                                            style:
-                                                                const TextStyle(
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              decoration:
-                                                                  TextDecoration
-                                                                      .underline,
-                                                              // color: Colors.white
-                                                            )),
-                                                      ]),
-                                                      onTap: () => launchUrl(
-                                                          Uri.parse(
-                                                              "tel:+9 66553014247"))),
-                                                ),
-                                                const SizedBox(height: 50),
-                                              ]),
-                                          Container(
-                                              margin: const EdgeInsets.fromLTRB(
-                                                  6, 0, 0, 0),
-                                              width: 180,
-                                              height: 250,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                boxShadow: const [
-                                                  BoxShadow(
-                                                      color: Colors.black12,
-                                                      blurRadius: 5)
+                                      ),
+                                      width: double.maxFinite,
+                                      padding: const EdgeInsets.fromLTRB(
+                                          16, 25, 15, 5),
+                                      child: Row(children: [
+                                        Text(data['name'],
+                                            style:
+                                                const TextStyle(fontSize: 25)),
+                                        const Spacer(),
+                                        InkWell(
+                                            onTap: () => Navigator.pop(context),
+                                            child: CircleAvatar(
+                                                backgroundColor:
+                                                    Colors.grey.shade400,
+                                                radius: 18,
+                                                child: const Icon(
+                                                    Icons.arrow_downward,
+                                                    color: Colors.white))),
+                                      ]))),
+                              pinned: true,
+                              expandedHeight: 300,
+                              flexibleSpace: FlexibleSpaceBar(
+                                  background: Image.network(
+                                data['img'],
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              )),
+                            ),
+                            SliverToBoxAdapter(
+                                child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        15, 5, 15, 30),
+                                    child: Column(children: [
+                                      /*category*/ Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            data['category'],
+                                            style: const TextStyle(
+                                                wordSpacing: 2,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w400),
+                                          )),
+                                      const SizedBox(height: 20),
+                                      /*description*/ Visibility(
+                                          visible: data['description'] != '',
+                                          child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  const Text('About'),
+                                                  const SizedBox(height: 7),
+                                                  ReadMoreText(
+                                                    data['description'],
+                                                    textAlign:
+                                                        TextAlign.justify,
+                                                    style: const TextStyle(
+                                                        wordSpacing: 2,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                    trimLines: 4,
+                                                    trimMode: TrimMode.Line,
+                                                    trimCollapsedText:
+                                                        'View more',
+                                                    trimExpandedText:
+                                                        'View less',
+                                                    moreStyle: const TextStyle(
+                                                        color: Colors.blue,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .underline),
+                                                    lessStyle: const TextStyle(
+                                                        color: Colors.blue,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .underline),
+                                                  ),
                                                 ],
-                                              ),
-                                              child: ClipRRect(
+                                              ))),
+                                      const SizedBox(height: 35),
+                                      /*phone number, website, location*/ Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.blue.shade50,
+                                            border: Border.all(
+                                              color: Colors.blue.shade50,
+                                              width: 1,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                          padding: const EdgeInsets.all(6),
+                                          child: Row(children: [
+                                            Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  /*location*/ Visibility(
+                                                      visible: isLocSet,
+                                                      child: FutureBuilder(
+                                                          future:
+                                                              getLocationAsString(
+                                                                  double.parse(
+                                                                      latitude),
+                                                                  double.parse(
+                                                                      longitude)),
+                                                          builder:
+                                                              (context, snap) {
+                                                            if (snap.hasData) {
+                                                              var reqLoc =
+                                                                  snap.data;
+                                                              return Row(
+                                                                children: [
+                                                                  const Padding(
+                                                                      padding: EdgeInsets
+                                                                          .fromLTRB(
+                                                                              0,
+                                                                              0,
+                                                                              6,
+                                                                              40),
+                                                                      child:
+                                                                          Icon(
+                                                                        Icons
+                                                                            .location_on_outlined,
+                                                                        size:
+                                                                            25,
+                                                                        // color: Colors
+                                                                        //     .white
+                                                                      )),
+                                                                  SizedBox(
+                                                                      width:
+                                                                          150,
+                                                                      child: Text(
+                                                                          reqLoc!,
+                                                                          style:
+                                                                              const TextStyle(
+                                                                            fontSize:
+                                                                                16,
+                                                                            fontWeight:
+                                                                                FontWeight.w400,
+                                                                            // color: Colors
+                                                                            //     .white
+                                                                          )))
+                                                                ],
+                                                              );
+                                                            } else {
+                                                              return const Text(
+                                                                  '');
+                                                            }
+                                                          })),
+                                                  const SizedBox(height: 30),
+                                                  /*website*/ Visibility(
+                                                    visible:
+                                                        data['Website'] != '',
+                                                    child: InkWell(
+                                                        child: Row(
+                                                            children: const [
+                                                              Padding(
+                                                                  padding: EdgeInsets
+                                                                      .fromLTRB(
+                                                                          0,
+                                                                          0,
+                                                                          8,
+                                                                          0),
+                                                                  child: FaIcon(
+                                                                      FontAwesomeIcons
+                                                                          .globe,
+                                                                      // color: Colors.white,
+                                                                      size:
+                                                                          22)),
+                                                              Text('Website',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    decoration:
+                                                                        TextDecoration
+                                                                            .underline,
+                                                                    // color: Colors.white
+                                                                  )),
+                                                            ]),
+                                                        onTap: () => launchUrl(
+                                                            Uri.parse(data[
+                                                                'Website']))),
+                                                  ),
+                                                  const SizedBox(height: 30),
+                                                  /*phone number*/ Visibility(
+                                                    visible:
+                                                        data['Phone number'] !=
+                                                            '',
+                                                    child: InkWell(
+                                                        child: Row(children: [
+                                                          const Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .fromLTRB(
+                                                                          0,
+                                                                          0,
+                                                                          6,
+                                                                          0),
+                                                              child: Icon(
+                                                                Icons
+                                                                    .call_outlined,
+                                                                // color: Colors.white
+                                                              )),
+                                                          Text(
+                                                              data[
+                                                                  'Phone number'],
+                                                              style:
+                                                                  const TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                decoration:
+                                                                    TextDecoration
+                                                                        .underline,
+                                                                // color: Colors.white
+                                                              )),
+                                                        ]),
+                                                        onTap: () => launchUrl(
+                                                            Uri.parse(
+                                                                "tel:+9 66553014247"))),
+                                                  ),
+                                                  const SizedBox(height: 50),
+                                                ]),
+                                            Container(
+                                                margin:
+                                                    const EdgeInsets.fromLTRB(
+                                                        6, 0, 0, 0),
+                                                width: 180,
+                                                height: 250,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
                                                   borderRadius:
                                                       BorderRadius.circular(10),
-                                                  child: Container(
-                                                      decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            width: 0,
-                                                            color: Colors
-                                                                .blue.shade50),
-                                                      ),
-                                                      child: GoogleMap(
-                                                        markers: getMarker(
-                                                            double.parse(
-                                                                latitude),
-                                                            double.parse(
-                                                                longitude)),
-                                                        mapType: MapType.normal,
-                                                        initialCameraPosition:
-                                                            CameraPosition(
-                                                          target: LatLng(
+                                                  boxShadow: const [
+                                                    BoxShadow(
+                                                        color: Colors.black12,
+                                                        blurRadius: 5)
+                                                  ],
+                                                ),
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    child: Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          border: Border.all(
+                                                              width: 0,
+                                                              color: Colors.blue
+                                                                  .shade50),
+                                                        ),
+                                                        child: GoogleMap(
+                                                          markers: getMarker(
                                                               double.parse(
                                                                   latitude),
                                                               double.parse(
                                                                   longitude)),
-                                                          zoom: 12.0,
-                                                        ),
-                                                        onMapCreated:
-                                                            (GoogleMapController
-                                                                controller) {
-                                                          myController =
-                                                              controller;
-                                                        },
-                                                      )))),
-                                        ])),
-                                    isAdmin
-                                        ? const SizedBox(height: 25)
-                                        : const SizedBox(height: 35),
-                                    isAdmin
-                                        ? Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                                const Spacer(),
-                                                ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                          fixedSize:
-                                                              const Size(
-                                                                  120, 50),
-                                                          backgroundColor:
-                                                              Colors.green
-                                                                  .shade300,
-                                                          foregroundColor: Colors
-                                                              .white,
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  17,
-                                                                  15,
-                                                                  17,
-                                                                  15),
-                                                          textStyle:
-                                                              const TextStyle(
-                                                            fontSize: 18,
+                                                          mapType:
+                                                              MapType.normal,
+                                                          initialCameraPosition:
+                                                              CameraPosition(
+                                                            target: LatLng(
+                                                                double.parse(
+                                                                    latitude),
+                                                                double.parse(
+                                                                    longitude)),
+                                                            zoom: 12.0,
                                                           ),
-                                                          side: BorderSide(
-                                                              color: Colors
-                                                                  .green
-                                                                  .shade300,
-                                                              width: 1)),
-                                                  child: const Text('Approve'),
-                                                  onPressed: () {}, //!for haifa
-                                                ),
-                                                const SizedBox(width: 15),
-                                                ElevatedButton(
-                                                  style: ElevatedButton.styleFrom(
-                                                      fixedSize: const Size(
-                                                          120, 50),
-                                                      backgroundColor: Colors
-                                                          .red.shade300,
-                                                      foregroundColor: Colors
-                                                          .white,
-                                                      padding: const EdgeInsets
-                                                              .fromLTRB(
-                                                          17, 15, 17, 15),
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              fontSize: 18),
-                                                      side: BorderSide(
-                                                          color: Colors
-                                                              .red.shade300,
-                                                          width: 1)),
-                                                  child: const Text('Deny'),
-                                                  onPressed: () {}, //!for haifa
-                                                ),
-                                                const Spacer(),
-                                              ])
-                                        : (status == 'Approved'
-                                            ? /*comment*/ Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Text(
-                                                      'Comments',
-                                                    ),
-                                                    const SizedBox(height: 10),
-                                                    CommentField(
-                                                        placeID: placeID,
-                                                        userID: userId,
-                                                        userName: userName),
-                                                    const SizedBox(height: 7),
-                                                    Comments(placeID)
-                                                  ],
-                                                ))
-                                            : const Text('')),
-                                  ]))),
-                        ],
-                      )
-                    ])));
-          } else {
-            return const Text('');
-          }
-        });
+                                                          onMapCreated:
+                                                              (GoogleMapController
+                                                                  controller) {
+                                                            myController =
+                                                                controller;
+                                                          },
+                                                        )))),
+                                          ])),
+                                      isAdmin
+                                          ? const SizedBox(height: 25)
+                                          : const SizedBox(height: 35),
+                                      isAdmin
+                                          ? Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                  const Spacer(),
+                                                  ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                            fixedSize: const Size(
+                                                                120, 50),
+                                                            backgroundColor: Colors
+                                                                .green.shade300,
+                                                            foregroundColor:
+                                                                Colors.white,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .fromLTRB(
+                                                                    17,
+                                                                    15,
+                                                                    17,
+                                                                    15),
+                                                            textStyle:
+                                                                const TextStyle(
+                                                              fontSize: 18,
+                                                            ),
+                                                            side: BorderSide(
+                                                                color: Colors
+                                                                    .green
+                                                                    .shade300,
+                                                                width: 1)),
+                                                    child:
+                                                        const Text('Approve'),
+                                                    onPressed:
+                                                        () {}, //!for haifa
+                                                  ),
+                                                  const SizedBox(width: 15),
+                                                  ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                        fixedSize: const Size(
+                                                            120, 50),
+                                                        backgroundColor: Colors
+                                                            .red.shade300,
+                                                        foregroundColor:
+                                                            Colors.white,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .fromLTRB(
+                                                                17, 15, 17, 15),
+                                                        textStyle:
+                                                            const TextStyle(
+                                                                fontSize: 18),
+                                                        side: BorderSide(
+                                                            color: Colors
+                                                                .red.shade300,
+                                                            width: 1)),
+                                                    child: const Text('Deny'),
+                                                    onPressed:
+                                                        () {}, //!for haifa
+                                                  ),
+                                                  const Spacer(),
+                                                ])
+                                          : (status == 'Approved'
+                                              ? /*comment*/ Align(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      const Text(
+                                                        'Comments',
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 10),
+                                                      CommentField(
+                                                          placeID: placeID,
+                                                          userID: widget.userId,
+                                                          userName:
+                                                              widget.userName),
+                                                      const SizedBox(height: 7),
+                                                      Comments(placeID)
+                                                    ],
+                                                  ))
+                                              : const Text('')),
+                                    ]))),
+                          ],
+                        )
+                      ])));
+            } else {
+              return const Text('');
+            }
+          }),
+      // floatingActionButton: FloatingActionButton(
+      //   child: Container(
+      //     width: 60,
+      //     height: 60,
+      //     decoration: const BoxDecoration(
+      //       shape: BoxShape.circle,
+      //       gradient: LinearGradient(
+      //         begin: Alignment.topLeft,
+      //         end: Alignment.bottomRight,
+      //         stops: [0.0, 1.0],
+      //         colors: [
+      //           Colors.blue,
+      //           Color(0xFF39d6ce),
+      //         ],
+      //       ),
+      //     ),
+      //     child: const Icon(
+      //       Icons.add,
+      //       size: 40,
+      //     ),
+      //   ),
+      //   onPressed: () {
+      //     Navigator.pushReplacement(
+      //       context,
+      //       PageRouteBuilder(
+      //         pageBuilder: (context, animation1, animation2) => addPost(
+      //           userType: widget.userType,
+      //         ),
+      //         // comments(),
+      //         transitionDuration: const Duration(seconds: 1),
+      //         reverseTransitionDuration: Duration.zero,
+      //       ),
+      //     );
+      //   },
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      // bottomNavigationBar: BottomNavBar(
+      //   onPress: (int value) {},
+      //   userType: widget.userType,
+      //   currentI: 0,
+      // ),
+    );
   }
 
   Widget Comments(placeID) {
@@ -800,7 +889,7 @@ class Place extends StatelessWidget {
                                       Visibility(
                                           visible: comment_Data.docs[index]
                                                   ['UserID'] ==
-                                              userId,
+                                              widget.userId,
                                           child: IconButton(
                                             iconSize: 25,
                                             icon: const Icon(

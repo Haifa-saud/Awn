@@ -191,6 +191,7 @@ class _AdminPage extends State<adminPage> with TickerProviderStateMixin {
                               status: 'Pending',
                               userId: '',
                               userName: '',
+                              userType: userData['Type'],
                             )
                           ]);
                         }
