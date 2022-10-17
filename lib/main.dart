@@ -94,17 +94,16 @@ class _MyApp extends State<MyApp> {
               color: const Color(0xFF06283D),
               letterSpacing: 1,
               fontSize: 19.0), //the text field label
-          subtitle2: TextStyle(
-              wordSpacing: 3,
-              letterSpacing: 1,
-              fontSize: 120.0), //the text field
+          // subtitle2: TextStyle(
+          //     wordSpacing: 3,
+          //     letterSpacing: 1,
+          //     fontSize: 120.0), //the text field
 
           button: TextStyle(
             wordSpacing: 3,
             letterSpacing: 1,
             fontSize: 17,
             fontWeight: FontWeight.w500,
-            // decoration: TextDecoration.underline
           ), //the button text
         ),
         inputDecorationTheme: InputDecorationTheme(

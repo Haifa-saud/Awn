@@ -10,6 +10,7 @@ import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -19,6 +20,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:workmanager/workmanager.dart';
 import 'chatPage.dart';
 import 'services/firebase_options.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:toggle_switch/toggle_switch.dart';
+
+import 'services/userInfo.dart';
 
 class userProfile extends StatefulWidget {
   const userProfile({Key? key, required this.userType}) : super(key: key);
@@ -283,69 +288,11 @@ class UserProfileState extends State<userProfile>
     );
   } // end of class
 
-//! My info
+//! My Info
   Widget myInfo(var userData) {
-    var userName = userData['name'];
-    bool isVolunteer = false;
-    bool isSpecial = false;
-    String dis = '';
-    if (userData['Type'] == "Volunteer") {
-      isVolunteer = true;
-    } else {
-      isSpecial = true;
-      dis = userData['Disability'];
-      dis = dis.substring(0, (dis.length - 1));
-    }
-    return Scaffold(
-        body: SingleChildScrollView(
-            child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 15,
-        ),
-        buildTextField('Name', userData['name']),
-        buildTextField('Date of Birth', userData['DOB']),
-        buildTextField('Gender', userData['gender']),
-        buildTextField('Email', userData['Email']),
-        buildTextField('Phone Number', userData['phone number']),
-        Visibility(
-          visible: isVolunteer,
-          child: buildTextField('Bio', userData['bio']),
-        ),
-        Visibility(
-            visible: isSpecial, child: buildTextField('Disability', dis)),
-      ],
-    )));
-  }
-
-  Widget buildTextField(String labelText, String placeholder) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 12, 30, 22),
-      child: TextField(
-        enabled: false,
-        maxLength: 180,
-        minLines: 1,
-        maxLines: 6,
-        decoration: InputDecoration(
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF06283D)),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.blue),
-            ),
-            contentPadding: const EdgeInsets.only(bottom: 3),
-            labelText: labelText,
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            hintText: placeholder,
-            hintStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            )),
-      ),
-    );
+    Widget widget = MyInfo(user: userData);
+    // setState(() {});
+    return widget;
   }
 
 //! My requests

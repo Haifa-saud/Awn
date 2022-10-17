@@ -1,26 +1,17 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_sound/flutter_sound.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:just_waveform/just_waveform.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:path/path.dart' as Path;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:grouped_list/grouped_list.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:sticky_grouped_list/sticky_grouped_list.dart';
-import 'package:flutter_sound/flutter_sound.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
@@ -64,11 +55,6 @@ class ChatPageState extends State<ChatPage>
     });
     playSubscription =
         audioPlayer.setSubscriptionDuration(const Duration(milliseconds: 500));
-
-    // audioPlayer.onProgress!.listen((e) {
-    //   var maxDuration = e.duration.inMilliseconds.toDouble();
-    //   if (maxDuration <= 0) maxDuration = 0.0;
-    // });
   }
 
   @override
@@ -123,6 +109,17 @@ class ChatPageState extends State<ChatPage>
       },
     );
     return user;
+  }
+
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  speak(String text) async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1);
+    await flutterTts.speak(text);
+
+    await flutterTts.awaitSpeakCompletion(true);
   }
 
   @override
@@ -194,8 +191,8 @@ class ChatPageState extends State<ChatPage>
                                   physics: const BouncingScrollPhysics(),
                                   reverse: true,
                                   itemCount: messages.size,
+                                  padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
                                   itemBuilder: (context, index) {
-                                    // unreadMessages = false;
                                     showOnce = true;
                                     if (messages.docs[index]['author'] !=
                                             currentUser.uid &&
@@ -222,7 +219,8 @@ class ChatPageState extends State<ChatPage>
                                       Center(
                                         child: unreadMessages && !showOnce
                                             ? Container(
-                                                margin: EdgeInsets.all(10),
+                                                margin:
+                                                    const EdgeInsets.all(10),
                                                 padding:
                                                     const EdgeInsets.fromLTRB(
                                                         8, 6, 8, 6),
@@ -235,8 +233,9 @@ class ChatPageState extends State<ChatPage>
                                                   borderRadius:
                                                       BorderRadius.circular(12),
                                                 ),
-                                                child: Text('UNREAD MESSAGES',
-                                                    style: const TextStyle(
+                                                child: const Text(
+                                                    'UNREAD MESSAGES',
+                                                    style: TextStyle(
                                                         fontSize: 15,
                                                         fontWeight:
                                                             FontWeight.normal)),
@@ -245,9 +244,11 @@ class ChatPageState extends State<ChatPage>
                                       ),
                                       Center(
                                         child: upcomingMessageDate !=
-                                                currentDate
+                                                    currentDate &&
+                                                messages.size != 1
                                             ? Container(
-                                                margin: EdgeInsets.all(10),
+                                                margin:
+                                                    const EdgeInsets.all(12),
                                                 padding:
                                                     const EdgeInsets.fromLTRB(
                                                         8, 6, 8, 6),
@@ -265,19 +266,23 @@ class ChatPageState extends State<ChatPage>
                                                         .format(DateTime
                                                             .fromMillisecondsSinceEpoch(
                                                                 messages.docs[
-                                                                        index][
+                                                                        index]
+                                                                    [
                                                                     'createdAt'])),
-                                                    style: const TextStyle(
+                                                    style: TextStyle(
                                                         fontSize: 15,
                                                         fontWeight:
-                                                            FontWeight.normal)),
+                                                            FontWeight.normal,
+                                                        color: Colors
+                                                            .grey.shade600)),
                                               )
                                             : const SizedBox(height: 0),
                                       ),
                                       Center(
                                           child: index == messages.size - 1
                                               ? Container(
-                                                  margin: EdgeInsets.all(10),
+                                                  margin:
+                                                      const EdgeInsets.all(12),
                                                   padding:
                                                       const EdgeInsets.fromLTRB(
                                                           8, 6, 8, 6),
@@ -309,24 +314,40 @@ class ChatPageState extends State<ChatPage>
                                                                   .shade600)),
                                                 )
                                               : const SizedBox(height: 0)),
-                                      Chat(
-                                        message: messages.docs[index]['text'],
-                                        isMe: messages.docs[index]['author'] ==
-                                            currentUser.uid,
-                                        time:
-                                            DateTime.fromMillisecondsSinceEpoch(
-                                          messages.docs[index]['createdAt'],
+                                      CupertinoContextMenu(
+                                        actions: [
+                                          CupertinoContextMenuAction(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                              speak(
+                                                  messages.docs[index]['text']);
+                                            },
+                                            trailingIcon: CupertinoIcons.play,
+                                            child: const Text(
+                                              "Play",
+                                            ),
+                                          )
+                                        ],
+                                        child: Chat(
+                                          message: messages.docs[index]['text'],
+                                          isMe: messages.docs[index]
+                                                  ['author'] ==
+                                              currentUser.uid,
+                                          time: DateTime
+                                              .fromMillisecondsSinceEpoch(
+                                            messages.docs[index]['createdAt'],
+                                          ),
+                                          isRead: messages.docs[index]['read'],
+                                          img: messages.docs[index]['img'],
+                                          audio: messages.docs[index]['audio'],
+                                          audioDuration: messages.docs[index]
+                                              ['audioDuration'],
+                                          isPlayerReady: isPlayerReady,
+                                          isPlaying: isPlaying,
+                                          audioPlayer: audioPlayer,
+                                          audioRecorder: audioRecorder,
                                         ),
-                                        isRead: messages.docs[index]['read'],
-                                        img: messages.docs[index]['img'],
-                                        audio: messages.docs[index]['audio'],
-                                        audioDuration: messages.docs[index]
-                                            ['audioDuration'],
-                                        isPlayerReady: isPlayerReady,
-                                        isPlaying: isPlaying,
-                                        audioPlayer: audioPlayer,
-                                        audioRecorder: audioRecorder,
-                                      ),
+                                      )
                                     ]);
                                   },
                                 );
@@ -398,7 +419,7 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
   Future<void> playAudio(var path) async {
     //! when playing new audio, must wait for the previous to stop
     assert(widget.isPlayerReady);
-    // && audioRecorder.isStopped );
+    // && audioRecorder.isStopped);
     if (widget.audioPlayer.isPlaying) {
       // widget.audioPlayer.stopPlayer();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -417,7 +438,7 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             backgroundColor: Colors.red,
-            content: Text('Please wait until the recorder is stopped.'),
+            content: const Text('Please wait until the recorder is stopped.'),
             action: SnackBarAction(
               label: 'Dismiss',
               disabledTextColor: Colors.white,
@@ -431,6 +452,7 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
           whenFinished: () {
             setState(() {
               widget.isPlaying = false;
+              position = Duration.zero;
             });
             cancelPlayerSubscriptions();
           });
@@ -463,17 +485,6 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
     });
   }
 
-  // Future<void> seek(double d) async {
-  //   await widget.audioPlayer.seekToPlayer(Duration(milliseconds: d.floor()));
-  //   await setPos(d);
-  //   if (d > duration.toDouble()) {
-  //     d = duration;
-  //   }
-  //   setState(() {
-  //     position = d;
-  //   });
-
-  // }
   @override
   Widget build(BuildContext context) {
     const radius = Radius.circular(12);
@@ -483,9 +494,10 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
             widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: <Widget>[
           Container(
-            margin: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+            margin: const EdgeInsets.fromLTRB(10, 4, 10, 4),
             constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.8),
+                maxWidth: MediaQuery.of(context).size.width * 0.8,
+                minWidth: 120),
             decoration: widget.isMe
                 ? BoxDecoration(
                     gradient: const LinearGradient(
@@ -548,6 +560,10 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
                                                       size: 35)),
                                               onPressed: () async {
                                                 stopPlayer();
+                                                setState(() {
+                                                  position = Duration.zero;
+                                                });
+                                                cancelPlayerSubscriptions();
                                               })
                                           : IconButton(
                                               icon: (widget.isMe
@@ -559,19 +575,64 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
                                               onPressed: () async {
                                                 playAudio(widget.audio);
                                               }),
-                                      Slider(
-                                          activeColor: Colors.white,
-                                          inactiveColor: Colors.grey.shade300,
-                                          thumbColor: Colors.white,
-                                          value: position.inSeconds.toDouble(),
-                                          min: 0,
-                                          max: duration.inSeconds.toDouble(),
-                                          onChanged: (double value) async {
-                                            final position = Duration(
-                                                seconds: value.toInt());
-                                            await widget.audioPlayer
-                                                .seekToPlayer(position);
-                                          }),
+                                      Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            SizedBox(height: 28),
+                                            SliderTheme(
+                                                data: SliderThemeData(
+                                                  overlayShape:
+                                                      SliderComponentShape
+                                                          .noOverlay,
+                                                  trackHeight: 1.5,
+                                                  activeTrackColor: widget.isMe
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                  inactiveTrackColor:
+                                                      Colors.grey.shade300,
+                                                  thumbColor: widget.isMe
+                                                      ? Colors.white
+                                                      : Colors.black,
+                                                  thumbShape:
+                                                      const RoundSliderThumbShape(
+                                                          enabledThumbRadius:
+                                                              6),
+                                                ),
+                                                child: Slider(
+                                                    value: position.inSeconds
+                                                        .toDouble(),
+                                                    min: 0,
+                                                    max: duration.inSeconds
+                                                        .toDouble(),
+                                                    onChanged:
+                                                        (double value) async {
+                                                      final position = Duration(
+                                                          seconds:
+                                                              value.toInt());
+                                                      await widget.audioPlayer
+                                                          .seekToPlayer(
+                                                              position);
+                                                    })),
+                                            SizedBox(height: 6),
+                                            widget.isPlaying
+                                                ? Text(
+                                                    '${position.inMinutes.remainder(60)}:${position.inSeconds.remainder(60)}',
+                                                    style: TextStyle(
+                                                        color: widget.isMe
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontSize: 14),
+                                                    textAlign: TextAlign.right,
+                                                  )
+                                                : Text(widget.audioDuration,
+                                                    style: TextStyle(
+                                                        color: widget.isMe
+                                                            ? Colors.white
+                                                            : Colors.black,
+                                                        fontSize: 14)),
+                                          ]),
                                     ])),
                             /*text*/ Visibility(
                                 visible: widget.message != '',
@@ -581,48 +642,45 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
                                       color: widget.isMe
                                           ? Colors.white
                                           : Colors.black,
-                                      fontSize: 18),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
                                   textAlign: widget.isMe
                                       ? TextAlign.end
                                       : TextAlign.start,
                                 )),
-                            widget.audio != ''
-                                ? widget.isPlaying
-                                    ? Text(
-                                        '${position.inMinutes.remainder(60)}:${position.inSeconds.remainder(60)}',
-                                        style: TextStyle(
-                                            color: widget.isMe
-                                                ? Colors.white
-                                                : Colors.black,
-                                            fontSize: 14))
-                                    : Text(widget.audioDuration,
-                                        style: TextStyle(
-                                            color: widget.isMe
-                                                ? Colors.white
-                                                : Colors.black,
-                                            fontSize: 14))
-                                : SizedBox(),
                           ])),
                   Padding(
-                      padding: EdgeInsets.fromLTRB(4, 2, 4, 2),
-                      child: Row(mainAxisSize: MainAxisSize.min, children: [
-                        /*time*/ Text(
-                          DateFormat('hh:mm a').format(widget.time).toString(),
-                          style: TextStyle(
-                              color: widget.isMe
-                                  ? Colors.grey.shade200
-                                  : Colors.grey,
-                              fontSize: 11,
-                              wordSpacing: 1),
-                        ),
-                        const SizedBox(width: 2),
-                        /*read/unread*/ Visibility(
-                            visible: widget.isMe,
-                            child: Icon(
-                                widget.isRead ? Icons.done_all : Icons.done,
-                                color: Colors.grey.shade200,
-                                size: 14)),
-                      ]))
+                      padding: const EdgeInsets.fromLTRB(4, 2, 6, 6),
+                      child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            /*time*/ Align(
+                                alignment: Alignment.topRight,
+                                child: Text(
+                                  DateFormat('hh:mm a')
+                                      .format(widget.time)
+                                      .toString(),
+                                  style: TextStyle(
+                                      color: widget.isMe
+                                          ? Colors.grey.shade200
+                                          : Colors.grey,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 11,
+                                      wordSpacing: 0.2,
+                                      letterSpacing: 0.1),
+                                )),
+                            Visibility(
+                                visible: widget.isMe,
+                                child: const SizedBox(width: 2)),
+                            /*read/unread*/ Visibility(
+                                visible: widget.isMe,
+                                child: Icon(
+                                    widget.isRead ? Icons.done_all : Icons.done,
+                                    color: Colors.grey.shade200,
+                                    size: 14)),
+                          ]))
                 ]),
           )
         ]);
@@ -666,7 +724,7 @@ class ChatFieldState extends State<ChatField>
 
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
       child: Row(
         children: <Widget>[
           !showRecording
@@ -692,7 +750,7 @@ class ChatFieldState extends State<ChatField>
                               children: <Widget>[
                                 IconButton(
                                   icon: const Icon(Icons.mic),
-                                  focusColor: const Color(0xFF39d6ce),
+                                  focusColor: Colors.blue,
                                   onPressed: () async {
                                     if (!widget.isRecorderReady) {
                                       return;
@@ -701,7 +759,7 @@ class ChatFieldState extends State<ChatField>
                                           .showSnackBar(
                                         SnackBar(
                                             backgroundColor: Colors.red,
-                                            content: Text(
+                                            content: const Text(
                                                 'To start recording, please stop the audio currently playing or wait until it is stopped.'),
                                             action: SnackBarAction(
                                               label: 'Dismiss',
@@ -737,7 +795,7 @@ class ChatFieldState extends State<ChatField>
                               children: [
                                   IconButton(
                                     icon: const Icon(Icons.send),
-                                    color: const Color(0xFF39d6ce),
+                                    color: Colors.blue,
                                     iconSize: 30,
                                     onPressed: () {
                                       _controller.text.trim().isEmpty
@@ -750,75 +808,97 @@ class ChatFieldState extends State<ChatField>
                                   const SizedBox(width: 10),
                                 ]),
                       filled: true,
-                      fillColor: Colors.grey.shade50,
+                      fillColor: Colors.grey.shade200,
                       labelText: 'Message...',
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(100.0),
+                          borderSide: BorderSide(color: Colors.grey.shade50)),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey.shade400)),
+                          borderSide: BorderSide(color: Colors.blue.shade50)),
                       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(100.0),
-                          borderSide: const BorderSide(
-                              color: const Color(0xFF39d6ce), width: 2)),
-                      floatingLabelStyle: const TextStyle(
-                          fontSize: 22, color: Color(0xFF39d6ce)),
+                          borderSide:
+                              const BorderSide(color: Colors.blue, width: 2)),
+                      floatingLabelStyle:
+                          const TextStyle(fontSize: 22, color: Colors.blue),
                       helperStyle: const TextStyle(fontSize: 14),
                     ),
                   ),
                 )
               : Expanded(
-                  child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    const Divider(height: 5, color: Colors.grey, thickness: 4),
-                    IconButton(
-                      icon: const Icon(Icons.delete_forever),
-                      color: Colors.red,
-                      iconSize: 33,
-                      onPressed: () {
-                        widget.audioRecorder.stopRecorder();
-                        setRecording(false);
-                      },
-                    ),
-                    const Spacer(),
-                    StreamBuilder<RecordingDisposition>(
-                      stream: widget.audioRecorder.onProgress,
-                      builder: (context, snapshot) {
-                        var duration = snapshot.hasData
-                            ? snapshot.data!.duration
-                            : Duration.zero;
-                        String twoDigits(int n) => n.toString().padLeft(0);
-                        var twoDigitMinutes =
-                            twoDigits(duration.inMinutes.remainder(60));
-                        var twoDigitSeconds =
-                            twoDigits(duration.inSeconds.remainder(60));
-                        duration = Duration.zero;
-                        recorderDuration = '$twoDigitMinutes:$twoDigitSeconds';
-                        return Text('$twoDigitMinutes:$twoDigitSeconds');
-                      },
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.send),
-                      color: const Color(0xFF39d6ce),
-                      iconSize: 33,
-                      onPressed: () async {
-                        if (widget.audioRecorder.isRecording) {
-                          if (!widget.isRecorderReady) {
-                            return;
-                          }
-                          final path =
-                              await widget.audioRecorder.stopRecorder();
-                          audioFile = File(path!);
-                          print("Recorded Audio: $audioFile");
-                          sendAudioMessage(recorderDuration);
-                        }
-                        setRecording(false);
-                      },
-                    ),
-                  ],
-                ))
+                  child: AnimatedOpacity(
+                      curve: Curves.fastOutSlowIn,
+                      opacity: showRecording ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 500),
+                      child: Container(
+                          padding: const EdgeInsets.fromLTRB(9, 5, 9, 5),
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              border: Border.all(
+                                width: 1,
+                                color: Colors.grey.shade100,
+                              ),
+                              borderRadius: BorderRadius.circular(100)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisSize: MainAxisSize.max,
+                            children: <Widget>[
+                              const Divider(
+                                  height: 5, color: Colors.grey, thickness: 4),
+                              IconButton(
+                                icon: const Icon(Icons.delete_forever),
+                                color: Colors.red,
+                                iconSize: 33,
+                                onPressed: () {
+                                  widget.audioRecorder.stopRecorder();
+                                  setRecording(false);
+                                },
+                              ),
+                              const Spacer(),
+                              StreamBuilder<RecordingDisposition>(
+                                stream: widget.audioRecorder.onProgress,
+                                builder: (context, snapshot) {
+                                  var duration = snapshot.hasData
+                                      ? snapshot.data!.duration
+                                      : Duration.zero;
+                                  String twoDigits(int n) =>
+                                      n.toString().padLeft(0);
+                                  var twoDigitMinutes = twoDigits(
+                                      duration.inMinutes.remainder(60));
+                                  var twoDigitSeconds = twoDigits(
+                                      duration.inSeconds.remainder(60));
+                                  duration = Duration.zero;
+                                  recorderDuration =
+                                      '$twoDigitMinutes:$twoDigitSeconds';
+                                  return Text(
+                                      '$twoDigitMinutes:$twoDigitSeconds',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w400));
+                                },
+                              ),
+                              const Spacer(),
+                              IconButton(
+                                icon: const Icon(Icons.send),
+                                color: Colors.blue,
+                                iconSize: 33,
+                                onPressed: () async {
+                                  if (widget.audioRecorder.isRecording) {
+                                    if (!widget.isRecorderReady) {
+                                      return;
+                                    }
+                                    final path = await widget.audioRecorder
+                                        .stopRecorder();
+                                    audioFile = File(path!);
+                                    print("Recorded Audio: $audioFile");
+                                    sendAudioMessage(recorderDuration);
+                                  }
+                                  setRecording(false);
+                                },
+                              ),
+                            ],
+                          ))))
         ],
       ),
     );

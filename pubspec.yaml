@@ -90,6 +90,7 @@ dependencies:
   duration_picker: ^1.0.1
   flutter_audio_waveforms: ^1.2.1+6
   just_waveform: ^0.0.3
+  toggle_switch: ^2.0.1
 
 
   
