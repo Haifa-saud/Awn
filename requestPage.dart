@@ -319,6 +319,10 @@ class _requestPageState extends State<requestPage> {
                                                                             .docs[
                                                                         index][
                                                                     'description'],
+                                                                duartion: data
+                                                                            .docs[
+                                                                        index][
+                                                                    'duration'],
                                                               ),
                                                             ));
                                                       });

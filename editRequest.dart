@@ -19,6 +19,7 @@ class editRequest extends StatefulWidget {
   final String date_ymd;
   final String title;
   final String discription;
+  final String duartion;
   //final String reqID;
   // const editRequest({Key? key, required this.userType, required this.reqID})
   //     : super(key: key);
@@ -28,7 +29,8 @@ class editRequest extends StatefulWidget {
       required this.docId,
       required this.date_ymd,
       required this.title,
-      required this.discription})
+      required this.discription,
+      required this.duartion})
       : super(key: key);
 
   @override
@@ -46,6 +48,7 @@ class _EditRequestState extends State<editRequest> {
     super.initState();
     titleController = TextEditingController(text: widget.title);
     descController = TextEditingController(text: widget.discription);
+    durationController = TextEditingController(text: widget.duartion);
   }
 
   int _selectedIndex = 2;
@@ -368,7 +371,7 @@ class _EditRequestState extends State<editRequest> {
                           builder: (context, snap) {
                             if (snap.hasData) {
                               var reqLoc = snap.data;
-                              //       selectedDuration = data.docs[index]['duration'];
+                              selectedDuration = durationController;
                               // var title = data.docs[index]['title'];
                               // titleController.text =
                               //     data.docs[index]['title'].toString();
