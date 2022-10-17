@@ -24,7 +24,6 @@ String name_edit = '',
     phone_edit = '',
     bio_edit = '',
     gender_edit = '',
-    date_edit = '',
     DOB_edit = '';
 
 var gender_index = 1;
@@ -88,7 +87,7 @@ class profileState extends State<profile> {
               email_edit = userData['Email'];
               phone_edit = userData['phone number'];
               bio_edit = userData['bio'];
-              date_edit = userData['DOB'];
+              DOB_edit = userData['DOB'];
               DateTime iniDOB = DateTime.parse(userData['DOB']);
               return SingleChildScrollView(
                   child: Form(
@@ -174,9 +173,9 @@ class profileState extends State<profile> {
                             TextFormField(
                               enabled: Editing,
                               controller: TextEditingController()
-                                ..text = DOB_edit.substring(0, 10),
+                                ..text = DOB_edit,
                               readOnly: true,
-                              //onChanged: (text) => {DOB_edit = text},
+                              onChanged: (text) => {DOB_edit = text},
                               onTap: () async {
                                 DateTime? newDate = await showDatePicker(
                                   context: context,
@@ -637,7 +636,7 @@ class profileState extends State<profile> {
       'phone number': phone_edit,
       'Email': email_edit,
       'bio': bio_edit,
-      'DOB': date_edit
+      'DOB': DOB_edit
     });
     print('profile edited');
   }
