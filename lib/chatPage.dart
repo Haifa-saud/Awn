@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -110,7 +111,6 @@ class ChatPageState extends State<ChatPage>
     );
     return user;
   }
-
 
   final FlutterTts flutterTts = FlutterTts();
 
@@ -314,40 +314,73 @@ class ChatPageState extends State<ChatPage>
                                                                   .shade600)),
                                                 )
                                               : const SizedBox(height: 0)),
-                                      CupertinoContextMenu(
-                                        actions: [
-                                          CupertinoContextMenuAction(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                              speak(
-                                                  messages.docs[index]['text']);
-                                            },
-                                            trailingIcon: CupertinoIcons.play,
-                                            child: const Text(
-                                              "Play",
+                                      messages.docs[index]['text'] != ''
+                                          ? CupertinoContextMenu(
+                                              actions: [
+                                                  CupertinoContextMenuAction(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      speak(messages.docs[index]
+                                                          ['text']);
+                                                    },
+                                                    trailingIcon:
+                                                        CupertinoIcons.play,
+                                                    child: const Text(
+                                                      "Play",
+                                                    ),
+                                                  )
+                                                ],
+                                              child: SingleChildScrollView(
+                                                child: Chat(
+                                                  message: messages.docs[index]
+                                                      ['text'],
+                                                  isMe: messages.docs[index]
+                                                          ['author'] ==
+                                                      currentUser.uid,
+                                                  time: DateTime
+                                                      .fromMillisecondsSinceEpoch(
+                                                    messages.docs[index]
+                                                        ['createdAt'],
+                                                  ),
+                                                  isRead: messages.docs[index]
+                                                      ['read'],
+                                                  img: messages.docs[index]
+                                                      ['img'],
+                                                  audio: messages.docs[index]
+                                                      ['audio'],
+                                                  audioDuration:
+                                                      messages.docs[index]
+                                                          ['audioDuration'],
+                                                  isPlayerReady: isPlayerReady,
+                                                  isPlaying: isPlaying,
+                                                  audioPlayer: audioPlayer,
+                                                  audioRecorder: audioRecorder,
+                                                ),
+                                              ))
+                                          : Chat(
+                                              message: messages.docs[index]
+                                                  ['text'],
+                                              isMe: messages.docs[index]
+                                                      ['author'] ==
+                                                  currentUser.uid,
+                                              time: DateTime
+                                                  .fromMillisecondsSinceEpoch(
+                                                messages.docs[index]
+                                                    ['createdAt'],
+                                              ),
+                                              isRead: messages.docs[index]
+                                                  ['read'],
+                                              img: messages.docs[index]['img'],
+                                              audio: messages.docs[index]
+                                                  ['audio'],
+                                              audioDuration: messages
+                                                  .docs[index]['audioDuration'],
+                                              isPlayerReady: isPlayerReady,
+                                              isPlaying: isPlaying,
+                                              audioPlayer: audioPlayer,
+                                              audioRecorder: audioRecorder,
                                             ),
-                                          )
-                                        ],
-                                        child: Chat(
-                                          message: messages.docs[index]['text'],
-                                          isMe: messages.docs[index]
-                                                  ['author'] ==
-                                              currentUser.uid,
-                                          time: DateTime
-                                              .fromMillisecondsSinceEpoch(
-                                            messages.docs[index]['createdAt'],
-                                          ),
-                                          isRead: messages.docs[index]['read'],
-                                          img: messages.docs[index]['img'],
-                                          audio: messages.docs[index]['audio'],
-                                          audioDuration: messages.docs[index]
-                                              ['audioDuration'],
-                                          isPlayerReady: isPlayerReady,
-                                          isPlaying: isPlaying,
-                                          audioPlayer: audioPlayer,
-                                          audioRecorder: audioRecorder,
-                                        ),
-                                      )
                                     ]);
                                   },
                                 );
@@ -718,115 +751,198 @@ class ChatFieldState extends State<ChatField>
     super.dispose();
   }
 
+  bool previewImage = false;
+  var imagePath;
+
   @override
   Widget build(BuildContext context) {
     var recorderDuration;
-
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
       child: Row(
         children: <Widget>[
           !showRecording
-              ? Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    maxLines: null,
-                    textCapitalization: TextCapitalization.sentences,
-                    autocorrect: true,
-                    enableSuggestions: true,
-                    onChanged: (text) {
-                      if (_controller.text.trim() != "") {
-                        setIcons(false);
-                      } else {
-                        setIcons(true);
-                      }
-                    },
-                    decoration: InputDecoration(
-                      suffixIcon: showIcons
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.min,
+              ? (previewImage
+                  ? Expanded(
+                      child: Container(
+                          padding: const EdgeInsets.fromLTRB(9, 5, 9, 5),
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              border: Border.all(
+                                width: 1,
+                                color: Colors.grey.shade100,
+                              ),
+                              borderRadius: BorderRadius.circular(100)),
+                          child: Column(children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
+                                Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                                    child: Image.memory(
+                                      imagePath,
+                                      fit: BoxFit.cover,
+                                      width: 300,
+                                      height: 200,
+                                      errorBuilder: (BuildContext context,
+                                          Object exception,
+                                          StackTrace? stackTrace) {
+                                        print('error');
+                                        return const Text(
+                                            'Image could not be load');
+                                      },
+                                    )),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
                               children: <Widget>[
                                 IconButton(
-                                  icon: const Icon(Icons.mic),
-                                  focusColor: Colors.blue,
+                                  icon: const Icon(Icons.delete_forever),
+                                  color: Colors.red,
+                                  iconSize: 33,
+                                  onPressed: () {},
+                                ),
+                                // const Spacer(),
+
+                                IconButton(
+                                  icon: const Icon(Icons.send),
+                                  color: Colors.blue,
+                                  iconSize: 33,
                                   onPressed: () async {
-                                    if (!widget.isRecorderReady) {
-                                      return;
-                                    } else if (widget.audioPlayer.isPlaying) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                            backgroundColor: Colors.red,
-                                            content: const Text(
-                                                'To start recording, please stop the audio currently playing or wait until it is stopped.'),
-                                            action: SnackBarAction(
-                                              label: 'Dismiss',
-                                              disabledTextColor: Colors.white,
-                                              textColor: Colors.white,
-                                              onPressed: () {},
-                                            )),
-                                      );
-                                    } else {
-                                      await widget.audioRecorder.startRecorder(
-                                          toFile: const Uuid().v4());
-                                      setRecording(true);
+                                    if (widget.audioRecorder.isRecording) {
+                                      if (!widget.isRecorderReady) {
+                                        return;
+                                      }
+                                      final path = await widget.audioRecorder
+                                          .stopRecorder();
+                                      audioFile = File(path!);
                                     }
                                   },
                                 ),
-                                IconButton(
-                                  icon: const Icon(Icons.camera_alt_outlined),
-                                  onPressed: () {
-                                    sendImage(ImageSource.camera);
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.insert_photo_outlined),
-                                  onPressed: () {
-                                    sendImage(ImageSource.gallery);
-                                  },
-                                ),
                               ],
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.send),
-                                    color: Colors.blue,
-                                    iconSize: 30,
-                                    onPressed: () {
-                                      _controller.text.trim().isEmpty
-                                          ? null
-                                          : sendMessage(
-                                              _controller.text, '', '', '');
-                                      setIcons(true);
-                                    },
-                                  ),
-                                  const SizedBox(width: 10),
-                                ]),
-                      filled: true,
-                      fillColor: Colors.grey.shade200,
-                      labelText: 'Message...',
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.grey.shade50)),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide: BorderSide(color: Colors.blue.shade50)),
-                      contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(100.0),
-                          borderSide:
-                              const BorderSide(color: Colors.blue, width: 2)),
-                      floatingLabelStyle:
-                          const TextStyle(fontSize: 22, color: Colors.blue),
-                      helperStyle: const TextStyle(fontSize: 14),
-                    ),
-                  ),
-                )
+                            ),
+                          ])))
+                  : Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        maxLines: null,
+                        textCapitalization: TextCapitalization.sentences,
+                        autocorrect: true,
+                        enableSuggestions: true,
+                        onChanged: (text) {
+                          if (_controller.text.trim() != "") {
+                            setIcons(false);
+                          } else {
+                            setIcons(true);
+                          }
+                        },
+                        decoration: InputDecoration(
+                          suffixIcon: showIcons
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    IconButton(
+                                      icon: const Icon(Icons.mic),
+                                      focusColor: Colors.blue,
+                                      onPressed: () async {
+                                        if (!widget.isRecorderReady) {
+                                          return;
+                                        } else if (widget
+                                            .audioPlayer.isPlaying) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                backgroundColor: Colors.red,
+                                                content: const Text(
+                                                    'To start recording, please stop the audio currently playing or wait until it is stopped.'),
+                                                action: SnackBarAction(
+                                                  label: 'Dismiss',
+                                                  disabledTextColor:
+                                                      Colors.white,
+                                                  textColor: Colors.white,
+                                                  onPressed: () {},
+                                                )),
+                                          );
+                                        } else {
+                                          await widget.audioRecorder
+                                              .startRecorder(
+                                                  toFile: const Uuid().v4());
+                                          setRecording(true);
+                                        }
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon:
+                                          const Icon(Icons.camera_alt_outlined),
+                                      onPressed: () {
+                                        sendImageCamera(ImageSource.camera);
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                          Icons.insert_photo_outlined),
+                                      onPressed: () async {
+                                        // imagePath = await PickImage(
+                                        //     ImageSource.gallery);
+                                        var img = await PickImage(
+                                            ImageSource.gallery);
+                                        setState(() {
+                                          imagePath = img;
+                                          previewImage = true;
+                                        });
+                                        print(imagePath);
+                                        // sendImage(ImageSource.gallery);
+                                      },
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.send),
+                                        color: Colors.blue,
+                                        iconSize: 30,
+                                        onPressed: () {
+                                          _controller.text.trim().isEmpty
+                                              ? null
+                                              : sendMessage(
+                                                  _controller.text, '', '', '');
+                                          setIcons(true);
+                                        },
+                                      ),
+                                      const SizedBox(width: 10),
+                                    ]),
+                          filled: true,
+                          fillColor: Colors.grey.shade200,
+                          labelText: 'Message...',
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(100.0),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade50)),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(100.0),
+                              borderSide:
+                                  BorderSide(color: Colors.blue.shade50)),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(100.0),
+                              borderSide: const BorderSide(
+                                  color: Colors.blue, width: 2)),
+                          floatingLabelStyle:
+                              const TextStyle(fontSize: 22, color: Colors.blue),
+                          helperStyle: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ))
               : Expanded(
                   child: AnimatedOpacity(
                       curve: Curves.fastOutSlowIn,
@@ -898,7 +1014,18 @@ class ChatFieldState extends State<ChatField>
                                 },
                               ),
                             ],
-                          ))))
+                          )))),
+          // previewImage
+          //     ? Image.memory(
+          //         imagePath,
+          //         fit: BoxFit.cover,
+          //         errorBuilder: (BuildContext context, Object exception,
+          //             StackTrace? stackTrace) {
+          //           print('error');
+          //           return const Text('Image could not be load');
+          //         },
+          //       )
+          //     : Container(),
         ],
       ),
     );
@@ -931,7 +1058,49 @@ class ChatFieldState extends State<ChatField>
     sendMessage('', '', urlDownload, duration);
   }
 
-  Future<void> sendImage(var imgSource) async {
+  Future<Uint8List> PickImage(var imgSource) async {
+    Uint8List text = new Uint8List(3);
+    await Permission.photos.request();
+    var permissionStatus = await Permission.photos.status;
+    if (permissionStatus.isGranted) {
+      var img = await ImagePicker().pickImage(source: imgSource);
+      Uint8List imageData = await img!.readAsBytes();
+      return imageData;
+      // Image.network(
+      //   img!.path,
+      //   fit: BoxFit.cover,
+      //   errorBuilder:
+      //       (BuildContext context, Object exception, StackTrace? stackTrace) {
+      //     return const Text('Image could not be load');
+      //   },
+      // );
+    }
+    return text;
+  }
+
+  Future<void> sendImageGallery(var imgSource) async {
+    String imagePath = '';
+    File? imageDB;
+    String strImg = '';
+    await Permission.photos.request();
+    var permissionStatus = await Permission.photos.status;
+    if (permissionStatus.isGranted) {
+      XFile? img = await ImagePicker().pickImage(source: imgSource);
+      File imagee = File(img!.path);
+      imagePath = imagee.toString();
+      imageDB = imagee;
+      File image = imageDB;
+      final storage =
+          FirebaseStorage.instance.ref().child('postsImage/${image}');
+      strImg = Path.basename(image.path);
+      UploadTask uploadTask = storage.putFile(image);
+      TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+      imagePath = await (await uploadTask).ref.getDownloadURL();
+      sendMessage('', imagePath, '', '');
+    }
+  }
+
+  Future<void> sendImageCamera(var imgSource) async {
     String imagePath = '';
     File? imageDB;
     String strImg = '';

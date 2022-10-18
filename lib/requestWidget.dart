@@ -293,14 +293,20 @@ class _requestPageState extends State<requestPage> {
                                                   MaterialPageRoute(
                                                     builder: (context) =>
                                                         editRequest(
-                                                            userType:
-                                                                "Special Need User",
-                                                            docId:
-                                                                data.docs[index]
-                                                                    ['docId'],
-                                                            date_ymd: data
-                                                                    .docs[index]
-                                                                ['date_ymd']),
+                                                      userType:
+                                                          "Special Need User",
+                                                      docId: data.docs[index]
+                                                          ['docId'],
+                                                      date_ymd: data.docs[index]
+                                                          ['date_ymd'],
+                                                      discription:
+                                                          data.docs[index]
+                                                              ['description'],
+                                                      duartion: data.docs[index]
+                                                          ['duration'],
+                                                      title: data.docs[index]
+                                                          ['title'],
+                                                    ),
                                                   ));
                                             });
                                           }),
@@ -339,10 +345,11 @@ class _requestPageState extends State<requestPage> {
                                                   TextButton(
                                                     onPressed: () {
                                                       print('brefor delet');
-                                                      deletRequest(
+                                                      deleteRequest(
                                                           docId:
                                                               data.docs[index]);
                                                       print('after delet');
+                                                      Navigator.of(ctx).pop();
                                                     },
                                                     child: Container(
                                                       //color: Color.fromARGB(255, 164, 20, 20),
@@ -377,7 +384,7 @@ class _requestPageState extends State<requestPage> {
                                         ),
                                       ]))
                                 ]),
-                                ]),
+                              ]),
                               SizedBox(height: 30),
                               Row(
                                   // mainAxisAlignment:
@@ -725,70 +732,6 @@ class _requestPageState extends State<requestPage> {
     ]);
   }
 
-  Widget myInfo(var userData) {
-    var userName = userData['name'];
-    bool isVolunteer = false;
-    bool isSpecial = false;
-    String dis = '';
-    if (userData['Type'] == "Volunteer") {
-      isVolunteer = true;
-    } else {
-      isSpecial = true;
-      dis = userData['Disability'];
-      dis = dis.substring(0, (dis.length - 1));
-    }
-    return Scaffold(
-        body: SingleChildScrollView(
-            child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 15,
-        ),
-        buildTextField('Name', userData['name']),
-        buildTextField('Date of Birth', userData['DOB']),
-        buildTextField('Gender', userData['gender']),
-        buildTextField('Email', userData['Email']),
-        buildTextField('Phone Number', userData['phone number']),
-        Visibility(
-          visible: isVolunteer,
-          child: buildTextField('Bio', userData['bio']),
-        ),
-        Visibility(
-            visible: isSpecial, child: buildTextField('Disability', dis)),
-      ],
-    )));
-  }
-
-  Widget buildTextField(String labelText, String placeholder) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 12, 30, 22),
-      child: TextField(
-        enabled: true,
-        maxLength: 180,
-        minLines: 1,
-        maxLines: 6,
-        decoration: InputDecoration(
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF06283D)),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.blue),
-            ),
-            contentPadding: const EdgeInsets.only(bottom: 3),
-            labelText: labelText,
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            hintText: placeholder,
-            hintStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            )),
-      ),
-    );
-  }
-
   Color getColor(String stat) {
     if (stat == 'Approved')
       return Colors.green.shade300;
@@ -817,11 +760,16 @@ class _requestPageState extends State<requestPage> {
   }
 }
 
-Future<void> deletRequest({required docId}) async {
+Future<void> deleteRequest({required docId}) async {
   FirebaseFirestore.instance
       .collection('requests')
       .doc(docId.toString())
-      .delete();
+      .delete()
+      .then((_) => print('Deleted'))
+      .catchError((error) => print('Delete failed: $error'));
+      
+  print(docId);
+  print('docId');
   print(docId.toString());
 }
 

@@ -70,6 +70,7 @@ class MyInfoState extends State<MyInfo> {
   TextEditingController genderController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController bioController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
 
   var _formKey;
   var userData;
@@ -83,6 +84,7 @@ class MyInfoState extends State<MyInfo> {
     genderController.text = userData['gender'];
     phoneController.text = userData['phone number'];
     bioController.text = userData['bio'];
+    dateController.text = userData['DOB'];
 
     _formKey = GlobalKey<FormState>();
     super.initState();
@@ -102,8 +104,6 @@ class MyInfoState extends State<MyInfo> {
   Widget build(BuildContext context) {
     var isF = genderController.text == "Female" ? 1 : 0;
 
-    bio_edit = userData['bio'];
-    DOB_edit = userData['DOB'];
     genderIndex(isF);
 
     DateTime iniDOB = DateTime.parse(userData['DOB']); //ذي اللي تطلع ايرور ؟
@@ -186,50 +186,44 @@ class MyInfoState extends State<MyInfo> {
                     height: 30,
                   ),
                   //DOB field
-
-                  //wedd's new datepicker
-                  // TextFormField(
-                  //   readOnly: !isEditing,
-                  //   enabled: isEditing,
-                  //   controller: TextEditingController()..text = outDate,
-                  //   onChanged: (text) =>
-                  //       {outDate = text, iniDOB = DateTime.parse(text)},
-                  //   onTap: () async {
-                  //     DateTime? newDate = await showDatePicker(
-                  //       context: context,
-                  //       initialDate: iniDOB,
-                  //       firstDate: DateTime(1922),
-                  //       lastDate: DateTime.now(),
-                  //     );
-                  //     if (newDate != null) {
-                  //       setState(() {
-                  //         outDate = DateFormat('yyyy-MM-dd').format(newDate);
-                  //         print(newDate);
-                  //         iniDOB = newDate;
-                  //         DOB_edit = outDate;
-                  //       });
-                  //     } else {
-                  //       print("Date is not selected");
-                  //     }
-                  //   },
-                  //   decoration: InputDecoration(
-                  //     enabledBorder: UnderlineInputBorder(
-                  //       borderSide: BorderSide(color: Color(0xFF06283D)),
-                  //     ),
-                  //     focusedBorder: UnderlineInputBorder(
-                  //       borderSide: BorderSide(color: Colors.blue),
-                  //     ),
-                  //     contentPadding: EdgeInsets.only(bottom: 3),
-                  //     labelText: 'Date Of Birth',
-                  //     hintText: DOB_edit,
-                  //     hintStyle: const TextStyle(
-                  //       fontSize: 18,
-                  //       color: Colors.black,
-                  //     ),
-                  //     floatingLabelBehavior: FloatingLabelBehavior.always,
-                  //   ),
-                  // ),
-
+                  TextFormField(
+                    enabled: isEditing,
+                    controller: dateController,
+                    onTap: () async {
+                      DateTime? newDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.parse(dateController.text),
+                        firstDate: DateTime(1922),
+                        lastDate: DateTime.now(),
+                      );
+                      if (newDate != null) {
+                        setState(() {
+                          dateController.text =
+                              DateFormat('yyyy-MM-dd').format(newDate);
+                          print(newDate);
+                          iniDOB = newDate;
+                        });
+                      } else {
+                        print("Date is not selected");
+                      }
+                    },
+                    decoration: InputDecoration(
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xFF06283D)),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                      contentPadding: EdgeInsets.only(bottom: 3),
+                      labelText: 'Date Of Birth',
+                      hintText: outDate,
+                      hintStyle: const TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                    ),
+                  ),
                   //Gender fields
                   !isEditing
                       ? TextFormField(
@@ -661,14 +655,27 @@ class MyInfoState extends State<MyInfo> {
       'phone number': phoneController.text,
       'Email': emailController.text,
       'bio': bioController.text,
-      // 'DOB': outDate,
+      'DOB': dateController.text,
       //'Disability': Dis_edit
     });
-
-    // userCredential.user.updateEmail('newyou@domain.example');
+    print(emailController.text);
+    // resetEmail(emailController.text);
 
     print('profile edited');
     clearBool();
+  }
+
+  Future resetEmail(String newEmail) async {
+    var message;
+    User firebaseUser = FirebaseAuth.instance.currentUser!;
+    print(firebaseUser);
+    print('no update');
+    firebaseUser.updateEmail(newEmail).then((value) {
+      message = 'Success';
+      print('message' + message);
+    }).catchError((onError) => message = 'error');
+    // print('message' + message);
+    return message;
   }
 
   Widget buildTextField(String labelText, String placeholder) {

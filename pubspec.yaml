@@ -83,13 +83,8 @@ dependencies:
   open_filex: ^4.1.1
   path_provider: ^2.0.11
   uuid: ^3.0.6
-  sticky_grouped_list: ^3.1.0
-  grouped_list: ^5.1.2
   flutter_sound: ^8.3.9
-  audioplayers: ^1.1.1
   duration_picker: ^1.0.1
-  flutter_audio_waveforms: ^1.2.1+6
-  just_waveform: ^0.0.3
   toggle_switch: ^2.0.1
 
 
