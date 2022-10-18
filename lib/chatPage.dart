@@ -191,7 +191,8 @@ class ChatPageState extends State<ChatPage>
                                   physics: const BouncingScrollPhysics(),
                                   reverse: true,
                                   itemCount: messages.size,
-                                  padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 0, 0, 20),
                                   itemBuilder: (context, index) {
                                     showOnce = true;
                                     if (messages.docs[index]['author'] !=
@@ -613,7 +614,7 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
                                               CrossAxisAlignment.start,
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            SizedBox(height: 28),
+                                            const SizedBox(height: 28),
                                             SliderTheme(
                                                 data: SliderThemeData(
                                                   overlayShape:
@@ -648,7 +649,7 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
                                                           .seekToPlayer(
                                                               position);
                                                     })),
-                                            SizedBox(height: 6),
+                                            const SizedBox(height: 6),
                                             widget.isPlaying
                                                 ? Text(
                                                     '${position.inMinutes.remainder(60)}:${position.inSeconds.remainder(60)}',
@@ -752,7 +753,7 @@ class ChatFieldState extends State<ChatField>
   }
 
   bool previewImage = false;
-  var imagePath;
+  var imagePath, memoryPath;
 
   @override
   Widget build(BuildContext context) {
@@ -766,67 +767,111 @@ class ChatFieldState extends State<ChatField>
               ? (previewImage
                   ? Expanded(
                       child: Container(
-                          padding: const EdgeInsets.fromLTRB(9, 5, 9, 5),
+                          height: 285,
+                          padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
                           decoration: BoxDecoration(
                               color: Colors.grey.shade200,
                               border: Border.all(
-                                width: 1,
+                                width: 0,
                                 color: Colors.grey.shade100,
                               ),
-                              borderRadius: BorderRadius.circular(100)),
-                          child: Column(children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children: <Widget>[
-                                Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                    child: Image.memory(
-                                      imagePath,
-                                      fit: BoxFit.cover,
-                                      width: 300,
-                                      height: 200,
-                                      errorBuilder: (BuildContext context,
-                                          Object exception,
-                                          StackTrace? stackTrace) {
-                                        print('error');
-                                        return const Text(
-                                            'Image could not be load');
+                              borderRadius: BorderRadius.circular(15)),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Row(
+                                    // crossAxisAlignment:
+                                    //     CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                          alignment: Alignment.topLeft,
+                                          height: 215,
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade200,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            boxShadow: const [
+                                              BoxShadow(
+                                                  color: Colors.black12,
+                                                  blurRadius: 5)
+                                            ],
+                                          ),
+                                          child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        width: 0,
+                                                        color: Colors
+                                                            .blue.shade50),
+                                                  ),
+                                                  child: Image.memory(
+                                                    memoryPath,
+                                                    fit: BoxFit.contain,
+                                                    // width: 200,
+                                                    // height: 200,
+                                                    errorBuilder:
+                                                        (BuildContext context,
+                                                            Object exception,
+                                                            StackTrace?
+                                                                stackTrace) {
+                                                      print('error');
+                                                      return const Text(
+                                                          'Image could not be load');
+                                                    },
+                                                  ))))
+                                    ]),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: <Widget>[
+                                    const SizedBox(width: 5),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete_forever),
+                                      color: Colors.red,
+                                      iconSize: 33,
+                                      onPressed: () {
+                                        setState(() {
+                                          previewImage = false;
+                                        });
                                       },
-                                    )),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children: <Widget>[
-                                IconButton(
-                                  icon: const Icon(Icons.delete_forever),
-                                  color: Colors.red,
-                                  iconSize: 33,
-                                  onPressed: () {},
+                                    ),
+                                    const Spacer(),
+                                    // GestureDetector(
+                                    //   child: const CircleAvatar(
+                                    //       backgroundColor:
+                                    //           Colors.blue, //Color(0xffE6E6E6),
+                                    //       radius: 25,
+                                    //       child: Icon(Icons.send,
+                                    //           size: 33,
+                                    //           color:
+                                    //               Colors.white //Color(0xffCCCCCC),
+                                    //           )),
+                                    //   onTap: () async {
+                                    //     print('tapped');
+                                    //     sendImage(imagePath);
+                                    //     setState(() {
+                                    //       previewImage = false;
+                                    //     });
+                                    //   },
+                                    // ),
+                                    IconButton(
+                                      icon: const Icon(Icons.send),
+                                      color: Colors.blue,
+                                      iconSize: 33,
+                                      onPressed: () async {
+                                        sendImage(imagePath);
+                                        setState(() {
+                                          previewImage = false;
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(width: 5),
+                                  ],
                                 ),
-                                // const Spacer(),
-
-                                IconButton(
-                                  icon: const Icon(Icons.send),
-                                  color: Colors.blue,
-                                  iconSize: 33,
-                                  onPressed: () async {
-                                    if (widget.audioRecorder.isRecording) {
-                                      if (!widget.isRecorderReady) {
-                                        return;
-                                      }
-                                      final path = await widget.audioRecorder
-                                          .stopRecorder();
-                                      audioFile = File(path!);
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                          ])))
+                              ])))
                   : Expanded(
                       child: TextField(
                         controller: _controller,
@@ -880,24 +925,27 @@ class ChatFieldState extends State<ChatField>
                                     IconButton(
                                       icon:
                                           const Icon(Icons.camera_alt_outlined),
-                                      onPressed: () {
-                                        sendImageCamera(ImageSource.camera);
+                                      onPressed: () async {
+                                        List img =
+                                            await PickImage(ImageSource.camera);
+                                        setState(() {
+                                          imagePath = img[0];
+                                          memoryPath = img[1];
+                                          previewImage = true;
+                                        });
                                       },
                                     ),
                                     IconButton(
                                       icon: const Icon(
                                           Icons.insert_photo_outlined),
                                       onPressed: () async {
-                                        // imagePath = await PickImage(
-                                        //     ImageSource.gallery);
-                                        var img = await PickImage(
+                                        List img = await PickImage(
                                             ImageSource.gallery);
                                         setState(() {
-                                          imagePath = img;
+                                          imagePath = img[0];
+                                          memoryPath = img[1];
                                           previewImage = true;
                                         });
-                                        print(imagePath);
-                                        // sendImage(ImageSource.gallery);
                                       },
                                     ),
                                   ],
@@ -924,11 +972,11 @@ class ChatFieldState extends State<ChatField>
                           fillColor: Colors.grey.shade200,
                           labelText: 'Message...',
                           enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(100.0),
+                              borderRadius: BorderRadius.circular(15.0),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade50)),
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(100.0),
+                              borderRadius: BorderRadius.circular(15.0),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade50)),
                           contentPadding:
@@ -990,7 +1038,7 @@ class ChatFieldState extends State<ChatField>
                                       '$twoDigitMinutes:$twoDigitSeconds';
                                   return Text(
                                       '$twoDigitMinutes:$twoDigitSeconds',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.w400));
                                 },
                               ),
@@ -1015,17 +1063,6 @@ class ChatFieldState extends State<ChatField>
                               ),
                             ],
                           )))),
-          // previewImage
-          //     ? Image.memory(
-          //         imagePath,
-          //         fit: BoxFit.cover,
-          //         errorBuilder: (BuildContext context, Object exception,
-          //             StackTrace? stackTrace) {
-          //           print('error');
-          //           return const Text('Image could not be load');
-          //         },
-          //       )
-          //     : Container(),
         ],
       ),
     );
@@ -1045,6 +1082,7 @@ class ChatFieldState extends State<ChatField>
 
 //! Firebase
   File? audioFile;
+  // XFile? imageChat;
 
   Future sendAudioMessage(var duration) async {
     final audio = File(audioFile!.path);
@@ -1058,24 +1096,36 @@ class ChatFieldState extends State<ChatField>
     sendMessage('', '', urlDownload, duration);
   }
 
-  Future<Uint8List> PickImage(var imgSource) async {
-    Uint8List text = new Uint8List(3);
+  Future<List<dynamic>> PickImage(var imgSource) async {
+    List<dynamic> imageList = <dynamic>[];
+    Uint8List text = Uint8List(3);
     await Permission.photos.request();
     var permissionStatus = await Permission.photos.status;
     if (permissionStatus.isGranted) {
-      var img = await ImagePicker().pickImage(source: imgSource);
-      Uint8List imageData = await img!.readAsBytes();
-      return imageData;
-      // Image.network(
-      //   img!.path,
-      //   fit: BoxFit.cover,
-      //   errorBuilder:
-      //       (BuildContext context, Object exception, StackTrace? stackTrace) {
-      //     return const Text('Image could not be load');
-      //   },
-      // );
+      var imageChat = await ImagePicker().pickImage(source: imgSource);
+      Uint8List imageData = await imageChat!.readAsBytes();
+      imageList.add(imageChat);
+      imageList.add(imageData);
+      return imageList;
     }
     return text;
+  }
+
+  Future<void> sendImage(var imageChat) async {
+    String imagePath = '';
+    File? imageDB;
+    String strImg = '';
+
+    File imagee = File(imageChat!.path);
+    imagePath = imagee.toString();
+    imageDB = imagee;
+    File image = imageDB;
+    final storage = FirebaseStorage.instance.ref().child('postsImage/${image}');
+    strImg = Path.basename(image.path);
+    UploadTask uploadTask = storage.putFile(image);
+    TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+    imagePath = await (await uploadTask).ref.getDownloadURL();
+    sendMessage('', imagePath, '', '');
   }
 
   Future<void> sendImageGallery(var imgSource) async {
