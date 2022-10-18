@@ -4,8 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
 import 'addPost.dart';
@@ -324,6 +327,17 @@ class _EditRequestState extends State<editRequest> {
   }
 
   Widget requestdetails() {
+    late GoogleMapController myController;
+    Set<Marker> getMarker(lat, lng) {
+      return <Marker>{
+        Marker(
+            markerId: const MarkerId(''),
+            position: LatLng(lat, lng),
+            icon: BitmapDescriptor.defaultMarker,
+            infoWindow: const InfoWindow(title: 'location'))
+      };
+    }
+
     bool edit = false;
     var selectedDuration;
     Future<String> getLocationAsString(var lat, var lng) async {
@@ -589,6 +603,11 @@ class _EditRequestState extends State<editRequest> {
 //  getTime( selectedTime)
                                           //duration
                                           Container(
+                                            padding: EdgeInsets.fromLTRB(
+                                                6, 35, 6, 6),
+                                            child: Text('Duration'),
+                                          ),
+                                          Container(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
                                                       6, 8, 6, 12),
@@ -719,6 +738,7 @@ class _EditRequestState extends State<editRequest> {
                                               },
                                             ),
                                           ),
+                                          /*location*/
                                           Container(
                                             padding: EdgeInsets.fromLTRB(
                                                 6, 25, 6, 8),
@@ -727,6 +747,54 @@ class _EditRequestState extends State<editRequest> {
                                                     fontWeight:
                                                         FontWeight.bold)),
                                           ),
+                                          Container(
+                                              // width: 180,
+                                              height: 250,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                              ),
+                                              child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  child: Container(
+                                                      child: GoogleMap(
+                                                    gestureRecognizers: Set()
+                                                      ..add(Factory<
+                                                              TapGestureRecognizer>(
+                                                          () => Gesture(() {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder: (context) => maps(
+                                                                          dataId: data.docs[index]
+                                                                              [
+                                                                              'docId'],
+                                                                          typeOfRequest:
+                                                                              'E',
+                                                                          latitude: double.parse(data.docs[index]
+                                                                              [
+                                                                              'latitude']),
+                                                                          longitude:
+                                                                              double.parse(data.docs[index]['longitude'])),
+                                                                    ));
+                                                              }))),
+                                                    markers: getMarker(
+                                                        latitude, longitude),
+                                                    mapType: MapType.normal,
+                                                    initialCameraPosition:
+                                                        CameraPosition(
+                                                      target: LatLng(
+                                                          latitude, longitude),
+                                                      zoom: 12.0,
+                                                    ),
+                                                    onMapCreated:
+                                                        (GoogleMapController
+                                                            controller) {
+                                                      myController = controller;
+                                                    },
+                                                  )))),
                                           Padding(
                                               padding: EdgeInsets.fromLTRB(
                                                   0, 0, 0, 8),
@@ -1067,3 +1135,24 @@ class _EditRequestState extends State<editRequest> {
 //   });
 // }
 
+class Gesture extends TapGestureRecognizer {
+  Function _test;
+
+  Gesture(this._test);
+
+  @override
+  void resolve(GestureDisposition disposition) {
+    super.resolve(disposition);
+    this._test();
+  }
+
+  @override
+  // TODO: implement debugDescription
+  String get debugDescription => throw UnimplementedError();
+
+  @override
+  bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
+    // TODO: implement isFlingGesture
+    throw UnimplementedError();
+  }
+}
