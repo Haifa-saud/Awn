@@ -27,18 +27,22 @@ String name_edit = '',
     bio_edit = '',
     gender_edit = '',
     DOB_edit = '',
-    Dis_edit = ' ';
+    Dis_edit = '';
+//For diability
 bool blind = false;
 bool mute = false;
 bool deaf = false;
 bool physical = false;
 bool other = false;
+//***************** */
+
 String typeId = "";
 var gender_index = 1, outDate;
 bool Editing = false;
 bool Viewing = true;
 
 class profileState extends State<profile> {
+  //For disablitiy
   void clearBool() {
     DisabilityType.doc('HearingImpaired').update({'Checked': false});
     DisabilityType.doc('PhysicallyImpaired').update({'Checked': false});
@@ -53,6 +57,7 @@ class profileState extends State<profile> {
     typeId = "";
     Dis_edit = '';
   }
+  //*************** */
 
   void genderIndex(int n, String D) {
     if (n == 1) {
@@ -65,6 +70,11 @@ class profileState extends State<profile> {
     outDate = D;
   }
 
+  void seting_outDate(String newDate) {
+    outDate = newDate;
+  }
+
+//For Disablitiy
   void user_disablitiy(String dis) {
     if (dis.contains('Vocally')) {
       DisabilityType.doc('VocallyImpaired').update({'Checked': true});
@@ -87,6 +97,7 @@ class profileState extends State<profile> {
       other = true;
     }
   }
+  //****************** */
 
   Future<Map<String, dynamic>> readUserData() => FirebaseFirestore.instance
           .collection('users')
@@ -98,13 +109,24 @@ class profileState extends State<profile> {
           return doc.data() as Map<String, dynamic>;
         },
       );
+  //For Disablitiy
   CollectionReference DisabilityType =
       FirebaseFirestore.instance.collection('UserDisabilityType');
-
+  //****************** */
+  //
+//For Disablitiy 2 run time error when updating
   Stream<QuerySnapshot> UserDis = FirebaseFirestore.instance
       .collection('UserDisabilityType')
-      .orderBy("order")
+      //.orderBy("order")
       .snapshots();
+  TextEditingController dateController = new TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    // super.initState();
+    // dateController.text = userData['DOB'];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,10 +163,12 @@ class profileState extends State<profile> {
               if (userData['Type'] == "Volunteer") {
                 isVolunteer = true;
               } else {
+                //For Disablitiy
                 isSpecial = true;
                 dis = userData['Disability'];
                 dis = dis.substring(0, (dis.length - 1));
                 user_disablitiy(dis);
+                //************ */
               }
               var isF = userData['gender'] == "Female" ? 1 : 0;
               name_edit = userData['name'];
@@ -234,11 +258,12 @@ class profileState extends State<profile> {
                             const SizedBox(
                               height: 30,
                             ),
+
                             //DOB field
                             TextFormField(
                               enabled: Editing,
-                              controller: TextEditingController()
-                                ..text = outDate,
+                              // controller: TextEditingController()
+                              //   ..text = outDate,
                               readOnly: true,
                               onChanged: (text) => {
                                 outDate = text,
@@ -253,11 +278,14 @@ class profileState extends State<profile> {
                                 );
                                 if (newDate != null) {
                                   setState(() {
+                                    seting_outDate(DateFormat('yyyy-MM-dd')
+                                        .format(newDate));
                                     outDate = DateFormat('yyyy-MM-dd')
                                         .format(newDate);
                                     print(newDate);
                                     iniDOB = newDate;
                                     DOB_edit = outDate;
+                                    print(DOB_edit);
                                   });
                                 } else {
                                   print("Date is not selected");
@@ -273,7 +301,7 @@ class profileState extends State<profile> {
                                 ),
                                 contentPadding: EdgeInsets.only(bottom: 3),
                                 labelText: 'Date Of Birth',
-                                hintText: DOB_edit,
+                                hintText: outDate,
                                 hintStyle: const TextStyle(
                                   fontSize: 18,
                                   color: Colors.black,
@@ -410,6 +438,7 @@ class profileState extends State<profile> {
                             ),
                           ],
                         )),
+                    //For Disablitiy
                     Visibility(
                       visible: isSpecial && Viewing,
                       child: buildTextField('Disability', dis),
@@ -441,8 +470,6 @@ class profileState extends State<profile> {
                                       return Column(
                                         children: snapshot.data!.docs
                                             .map((DocumentSnapshot document) {
-                                          //check User disablitiy
-
                                           return Container(
                                               child: CheckboxListTile(
                                             value: (document.data()
@@ -494,134 +521,72 @@ class profileState extends State<profile> {
                                     }
                                   }),
                             ),
-                            StreamBuilder<dynamic>(
-                                stream: UserDis,
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Text("         Nope !");
-                                  } else {
-                                    final dis_Data = snapshot.data;
-                                    return ListView.builder(
-                                        shrinkWrap: true,
-                                        physics: const BouncingScrollPhysics(),
-                                        reverse: true,
-                                        itemCount: dis_Data!.size,
-                                        itemBuilder: (context, index) {
-                                          return Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 10.0,
-                                                      vertical: 16),
-                                              child: CheckboxListTile(
-                                                value: dis_Data.docs[index]
-                                                    ['Checked'],
-                                                onChanged: (bool? newValue) {
-                                                  dis_Data.docs[index].update(
-                                                      {'Checked': newValue});
-                                                  if (dis_Data.docs[index]
-                                                          ['Type'] ==
-                                                      'Visually Impaired') {
-                                                    blind = !blind;
-                                                  }
-                                                  if (dis_Data.docs[index]
-                                                          ['Type'] ==
-                                                      'Vocally Impaired') {
-                                                    mute = !mute;
-                                                  }
-                                                  if (dis_Data.docs[index]
-                                                          ['Type'] ==
-                                                      'Hearing Impaired') {
-                                                    deaf = !deaf;
-                                                  }
-                                                  if (dis_Data.docs[index]
-                                                          ['Type'] ==
-                                                      'Physically Impaired') {
-                                                    physical = !physical;
-                                                  }
-                                                  if (dis_Data.docs[index]
-                                                          ['Type'] ==
-                                                      'Other') {
-                                                    other = !other;
-                                                  }
-                                                },
-                                                title: Text(
-                                                    dis_Data.docs[index]
-                                                        ['Type'],
-                                                    style: const TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.normal)),
-                                                controlAffinity:
-                                                    ListTileControlAffinity
-                                                        .leading,
-                                              ));
-                                        });
-                                  }
-                                }), //disability checkBox try 2 !!
-                            StreamBuilder<dynamic>(
-                                stream: UserDis,
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Text("         Nope !");
-                                  } else {
-                                    final dis_Data = snapshot.data;
-                                    return ListView.builder(
-                                        shrinkWrap: true,
-                                        physics: const BouncingScrollPhysics(),
-                                        reverse: true,
-                                        itemCount: dis_Data!.size,
-                                        itemBuilder: (context, index) {
-                                          return Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 10.0,
-                                                      vertical: 16),
-                                              child: CheckboxListTile(
-                                                value: dis_Data.docs[index]
-                                                    ['Checked'],
-                                                onChanged: (bool? newValue) {
-                                                  dis_Data.docs[index].update(
-                                                      {'Checked': newValue});
-                                                  if (dis_Data.docs[index]
-                                                          ['Type'] ==
-                                                      'Visually Impaired') {
-                                                    blind = !blind;
-                                                  }
-                                                  if (dis_Data.docs[index]
-                                                          ['Type'] ==
-                                                      'Vocally Impaired') {
-                                                    mute = !mute;
-                                                  }
-                                                  if (dis_Data.docs[index]
-                                                          ['Type'] ==
-                                                      'Hearing Impaired') {
-                                                    deaf = !deaf;
-                                                  }
-                                                  if (dis_Data.docs[index]
-                                                          ['Type'] ==
-                                                      'Physically Impaired') {
-                                                    physical = !physical;
-                                                  }
-                                                  if (dis_Data.docs[index]
-                                                          ['Type'] ==
-                                                      'Other') {
-                                                    other = !other;
-                                                  }
-                                                },
-                                                title: Text(
-                                                    dis_Data.docs[index]
-                                                        ['Type'],
-                                                    style: const TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.normal)),
-                                                controlAffinity:
-                                                    ListTileControlAffinity
-                                                        .leading,
-                                              ));
-                                        });
-                                  }
-                                }),
+                            //******&*&*&*&*&*&*&*&**&*&*&*&*&*&*&*&*&*&*&* */
+                            //disability checkBox 2 !!
+                            // StreamBuilder<dynamic>(
+                            //     stream: UserDis,
+                            //     builder: (context, snapshot) {
+                            //       if (!snapshot.hasData) {
+                            //         return Text("         Nope !");
+                            //       } else {
+                            //         final dis_Data = snapshot.data;
+                            //         return ListView.builder(
+                            //             shrinkWrap: true,
+                            //             physics: const BouncingScrollPhysics(),
+                            //             reverse: true,
+                            //             itemCount: dis_Data!.size,
+                            //             itemBuilder: (context, index) {
+                            //               return Padding(
+                            //                   padding:
+                            //                       const EdgeInsets.symmetric(
+                            //                           horizontal: 10.0,
+                            //                           vertical: 16),
+                            //                   child: CheckboxListTile(
+                            //                     value: dis_Data.docs[index]
+                            //                         ['Checked'],
+                            //                     onChanged: (bool? newValue) {
+                            //                       dis_Data.docs[index].update(
+                            //                           {'Checked': newValue});
+                            //                       if (dis_Data.docs[index]
+                            //                               ['Type'] ==
+                            //                           'Visually Impaired') {
+                            //                         blind = !blind;
+                            //                       }
+                            //                       if (dis_Data.docs[index]
+                            //                               ['Type'] ==
+                            //                           'Vocally Impaired') {
+                            //                         mute = !mute;
+                            //                       }
+                            //                       if (dis_Data.docs[index]
+                            //                               ['Type'] ==
+                            //                           'Hearing Impaired') {
+                            //                         deaf = !deaf;
+                            //                       }
+                            //                       if (dis_Data.docs[index]
+                            //                               ['Type'] ==
+                            //                           'Physically Impaired') {
+                            //                         physical = !physical;
+                            //                       }
+                            //                       if (dis_Data.docs[index]
+                            //                               ['Type'] ==
+                            //                           'Other') {
+                            //                         other = !other;
+                            //                       }
+                            //                     },
+                            //                     title: Text(
+                            //                         dis_Data.docs[index]
+                            //                             ['Type'],
+                            //                         style: const TextStyle(
+                            //                             fontSize: 18,
+                            //                             fontWeight:
+                            //                                 FontWeight.normal)),
+                            //                     controlAffinity:
+                            //                         ListTileControlAffinity
+                            //                             .leading,
+                            //                   ));
+                            //             });
+                            //       }
+                            //     }),
                           ],
                         )),
 
@@ -735,56 +700,77 @@ class profileState extends State<profile> {
                               children: [
                                 ElevatedButton(
                                   onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (ctx) => AlertDialog(
-                                          title: const Text("Are You Sure ?"),
-                                          content: const Text(
-                                            "Are You Sure You want to Save changes ?",
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(ctx).pop();
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(14),
-                                                child: const Text("cancel",
-                                                    style: TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 194, 98, 98))),
-                                              ),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  const SnackBar(
-                                                      content: Text(
-                                                          'Changes have been Saved !')),
-                                                );
-                                                UpdateDB();
-                                                setState(() {
-                                                  Editing = false;
-                                                  Viewing = true;
-                                                });
-                                                Navigator.of(ctx).pop();
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(14),
-                                                child: const Text(
-                                                  "Save",
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                    //For Disablitiy
+                                    if (blind == false &&
+                                        mute == false &&
+                                        deaf == false &&
+                                        other == false &&
+                                        physical == false &&
+                                        isSpecial == true) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Please choose a disablitity'),
+                                          backgroundColor: Colors.deepOrange,
                                         ),
                                       );
+                                    } else {
+                                      if (_formKey.currentState!.validate()) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (ctx) => AlertDialog(
+                                            title: const Text("Are You Sure ?"),
+                                            content: const Text(
+                                              "Are You Sure You want to Save changes ?",
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(ctx).pop();
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(14),
+                                                  child: const Text("cancel",
+                                                      style: TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              194,
+                                                              98,
+                                                              98))),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                        content: Text(
+                                                            'Changes have been Saved !')),
+                                                  );
+                                                  UpdateDB();
+                                                  setState(() {
+                                                    Editing = false;
+                                                    Viewing = true;
+                                                  });
+                                                  Navigator.of(ctx).pop();
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(14),
+                                                  child: const Text(
+                                                    "Save",
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }
                                     }
+                                    //*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*
                                   },
                                   child: const Text('Save',
                                       style: TextStyle(fontSize: 20)),
@@ -916,11 +902,13 @@ class profileState extends State<profile> {
   }
 
   Future<void> UpdateDB() async {
+    //For Disablitiy
     if (blind == true) Dis_edit += " Visually Impaired,";
     if (mute == true) Dis_edit += " Vocally Impaired,";
     if (deaf == true) Dis_edit += " Hearing Impaired,";
     if (physical == true) Dis_edit += " Physically Impaired,";
     if (other == true) Dis_edit += " Other,";
+    //*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&
     print('will be added to db');
     var Edit_info = FirebaseFirestore.instance
         .collection('users')
@@ -931,7 +919,8 @@ class profileState extends State<profile> {
       'phone number': phone_edit,
       'Email': email_edit,
       'bio': bio_edit,
-      'DOB': outDate,
+      'DOB': DOB_edit,
+      //For Disablitiy
       'Disability': Dis_edit
     });
     print('profile edited');
