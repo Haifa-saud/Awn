@@ -780,8 +780,6 @@ class ChatFieldState extends State<ChatField>
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Row(
-                                    // crossAxisAlignment:
-                                    //     CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Container(

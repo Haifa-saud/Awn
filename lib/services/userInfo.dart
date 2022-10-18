@@ -1,24 +1,9 @@
-import 'package:awn/addPost.dart';
-import 'package:awn/login.dart';
-import 'package:awn/mapsPage.dart';
-import 'package:awn/services/appWidgets.dart';
-import 'package:awn/services/firebase_storage_services.dart';
-import 'package:awn/services/placeWidget.dart';
-import 'package:awn/services/sendNotification.dart';
-import 'package:awn/viewRequests.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:readmore/readmore.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:workmanager/workmanager.dart';
-import 'firebase_options.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
@@ -30,39 +15,9 @@ class MyInfo extends StatefulWidget {
   MyInfoState createState() => MyInfoState();
 }
 
-//Wedd changes
-String name_edit = '',
-    email_edit = '',
-    phone_edit = '',
-    bio_edit = '',
-    gender_edit = '',
-    DOB_edit = '',
-    Dis_edit = '';
-bool blind = false;
-bool mute = false;
-bool deaf = false;
-bool physical = false;
-bool other = false;
-String typeId = "";
-
 var outDate;
 
 bool isEditing = false;
-bool Viewing = true;
-void clearBool() {
-  // DisabilityType.doc('HearingImpaired').update({'Checked': false});
-  // DisabilityType.doc('PhysicallyImpaired').update({'Checked': false});
-  // DisabilityType.doc('VisuallyImpaired').update({'Checked': false});
-  // DisabilityType.doc('VocallyImpaired').update({'Checked': false});
-  // DisabilityType.doc('Other').update({'Checked': false});
-  blind = false;
-  mute = false;
-  deaf = false;
-  physical = false;
-  other = false;
-  typeId = "";
-  Dis_edit = '';
-}
 
 class MyInfoState extends State<MyInfo> {
   TextEditingController nameController = TextEditingController();
@@ -71,10 +26,65 @@ class MyInfoState extends State<MyInfo> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController bioController = TextEditingController();
   TextEditingController dateController = TextEditingController();
+  TextEditingController disabilityController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  var DisabilityType;
+
+  String gender_edit = '', Dis_edit = '';
+  bool blind = false;
+  bool mute = false;
+  bool deaf = false;
+  bool physical = false;
+  bool other = false;
+  String typeId = "";
+  bool getPassword = false;
 
   var _formKey;
   var userData;
   var gender_index = 1;
+  var isSpecial, dis;
+
+  void clearBool() {
+    blind = false;
+    mute = false;
+    deaf = false;
+    physical = false;
+    other = false;
+    typeId = "";
+    Dis_edit = '';
+    dis = "";
+    getPassword = false;
+    passwordController.text = '';
+  }
+
+  void user_disablitiy(String dis) {
+    if (dis.contains('Vocally')) {
+      mute = true;
+    } else {
+      mute = false;
+    }
+    if (dis.contains('Visually')) {
+      blind = true;
+    } else {
+      blind = false;
+    }
+    if (dis.contains('Hearing')) {
+      deaf = true;
+    } else {
+      deaf = false;
+    }
+    if (dis.contains('Physically')) {
+      physical = true;
+    } else {
+      physical = false;
+    }
+    if (dis.contains('Other')) {
+      other = true;
+    } else {
+      other = false;
+    }
+  }
 
   @override
   initState() {
@@ -85,6 +95,15 @@ class MyInfoState extends State<MyInfo> {
     phoneController.text = userData['phone number'];
     bioController.text = userData['bio'];
     dateController.text = userData['DOB'];
+    disabilityController.text = userData['Disability'];
+
+    DisabilityType = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userData['id'])
+        .collection('UserDisabilityType');
+
+    isSpecial = false;
+    isEditing = false;
 
     _formKey = GlobalKey<FormState>();
     super.initState();
@@ -102,11 +121,17 @@ class MyInfoState extends State<MyInfo> {
 
   @override
   Widget build(BuildContext context) {
+    DisabilityType = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userData['id'])
+        .collection('UserDisabilityType');
+
+    user_disablitiy(disabilityController.text);
+
+    print(dis);
     var isF = genderController.text == "Female" ? 1 : 0;
-
     genderIndex(isF);
-
-    DateTime iniDOB = DateTime.parse(userData['DOB']); //ذي اللي تطلع ايرور ؟
+    DateTime iniDOB = DateTime.parse(userData['DOB']);
 
     return Scaffold(
         body: SingleChildScrollView(
@@ -137,15 +162,22 @@ class MyInfoState extends State<MyInfo> {
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blue),
                       ),
+                      errorBorder: UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 2.0)),
+                      focusedErrorBorder: UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 2.0)),
                       contentPadding: EdgeInsets.only(bottom: 3),
                       labelText: 'Name',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                     ),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      if (value != null &&
-                          value.length < 2 &&
-                          value.trim() == '') {
+                      if ((value != null && value.length < 2) ||
+                          value == null ||
+                          value.isEmpty ||
+                          (value.trim()).isEmpty) {
                         return "Enter a valid name";
                       } else {
                         return null;
@@ -160,6 +192,17 @@ class MyInfoState extends State<MyInfo> {
                     readOnly: !isEditing,
                     enabled: isEditing,
                     controller: emailController,
+                    onChanged: (value) {
+                      if (userData['Email'] != value) {
+                        setState(() {
+                          getPassword = true;
+                        });
+                      } else if (userData['Email'] == value) {
+                        setState(() {
+                          getPassword = false;
+                        });
+                      }
+                    },
                     decoration: const InputDecoration(
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Color(0xFF06283D)),
@@ -167,6 +210,12 @@ class MyInfoState extends State<MyInfo> {
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blue),
                       ),
+                      errorBorder: UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 2.0)),
+                      focusedErrorBorder: UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 2.0)),
                       contentPadding: EdgeInsets.only(bottom: 3),
                       labelText: 'Email',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -185,6 +234,55 @@ class MyInfoState extends State<MyInfo> {
                   const SizedBox(
                     height: 30,
                   ),
+
+                  //Password
+                  Visibility(
+                      visible: getPassword && isEditing,
+                      child: TextFormField(
+                        controller: passwordController,
+                        decoration: const InputDecoration(
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF06283D)),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
+                          errorBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 2.0)),
+                          focusedErrorBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 2.0)),
+                          contentPadding: EdgeInsets.only(bottom: 3),
+                          labelText: 'Password',
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                        ),
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (email) {
+                          if (email != null &&
+                              !EmailValidator.validate(email) &&
+                              email.trim() == '') {
+                            return "Enter a valid email";
+                          } else {
+                            return null;
+                          }
+                        },
+                      )),
+                  Visibility(
+                    visible: getPassword && isEditing,
+                    child: const SizedBox(height: 15),
+                  ),
+                  Visibility(
+                      visible: getPassword && isEditing,
+                      child: const Text(
+                          'Please enter your password to update your email.',
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.normal))),
+                  Visibility(
+                    visible: getPassword && isEditing,
+                    child: const SizedBox(height: 30),
+                  ),
+
                   //DOB field
                   TextFormField(
                     enabled: isEditing,
@@ -207,23 +305,28 @@ class MyInfoState extends State<MyInfo> {
                         print("Date is not selected");
                       }
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Color(0xFF06283D)),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blue),
                       ),
+                      errorBorder: UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 2.0)),
+                      focusedErrorBorder: UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 2.0)),
                       contentPadding: EdgeInsets.only(bottom: 3),
-                      labelText: 'Date Of Birth',
-                      hintText: outDate,
-                      hintStyle: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
+                      labelText: 'Date of Birth',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                     ),
                   ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+
                   //Gender fields
                   !isEditing
                       ? TextFormField(
@@ -237,6 +340,12 @@ class MyInfoState extends State<MyInfo> {
                             focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.blue),
                             ),
+                            errorBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 2.0)),
+                            focusedErrorBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 2.0)),
                             contentPadding: EdgeInsets.only(bottom: 3),
                             labelText: 'Gender',
                             floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -253,7 +362,7 @@ class MyInfoState extends State<MyInfo> {
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.blue,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.w400,
                                   ),
                                   textAlign: TextAlign.left,
                                 )),
@@ -294,6 +403,7 @@ class MyInfoState extends State<MyInfo> {
                   const SizedBox(
                     height: 30,
                   ),
+
                   //phone number field
                   TextFormField(
                     enabled: isEditing,
@@ -311,6 +421,12 @@ class MyInfoState extends State<MyInfo> {
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.blue),
                       ),
+                      errorBorder: UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 2.0)),
+                      focusedErrorBorder: UnderlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 2.0)),
                       contentPadding: EdgeInsets.only(bottom: 3),
                       labelText: 'Phone Number',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -325,8 +441,131 @@ class MyInfoState extends State<MyInfo> {
                     },
                   ),
                   const SizedBox(
-                    height: 25,
+                    height: 12,
                   ),
+
+                  //disability
+                  Visibility(
+                    visible: userData['Type'] != "Volunteer" && !isEditing,
+                    child: TextFormField(
+                      enabled: false,
+                      controller: disabilityController,
+                      maxLines: null,
+                      decoration: const InputDecoration(
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF06283D)),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
+                          contentPadding: EdgeInsets.only(bottom: 3),
+                          labelText: 'Type of Disability',
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          hintStyle: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          )),
+                    ),
+                  ),
+                  Visibility(
+                      visible: userData['Type'] != "Volunteer" && isEditing,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Padding(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child: Text(
+                                'Type of Disability',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                textAlign: TextAlign.left,
+                              )),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            child: StreamBuilder<QuerySnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(userData['id'])
+                                    .collection('UserDisabilityType')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  } else {
+                                    return Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: snapshot.data!.docs
+                                          .map((DocumentSnapshot document) {
+                                        return Container(
+                                            child: CheckboxListTile(
+                                          contentPadding:
+                                              EdgeInsets.fromLTRB(0, 0, 50, 0),
+                                          value: (document.data()
+                                              as Map)['Checked'],
+                                          onChanged: (bool? newValue) {
+                                            typeId =
+                                                (document.data() as Map)['Type']
+                                                    .replaceAll(' ', '');
+                                            DisabilityType.doc(typeId)
+                                                .update({'Checked': newValue});
+                                            if ((document.data()
+                                                    as Map)['Type'] ==
+                                                'Visually Impaired') {
+                                              blind = !blind;
+                                              print('blind: $blind');
+                                            }
+                                            if ((document.data()
+                                                    as Map)['Type'] ==
+                                                'Vocally Impaired') {
+                                              mute = !mute;
+                                              print('mute: $mute');
+                                            }
+                                            if ((document.data()
+                                                    as Map)['Type'] ==
+                                                'Hearing Impaired') {
+                                              deaf = !deaf;
+                                              print('deaf: $deaf');
+                                            }
+                                            if ((document.data()
+                                                    as Map)['Type'] ==
+                                                'Physically Impaired') {
+                                              physical = !physical;
+                                              print('physical: $physical');
+                                            }
+                                            if ((document.data()
+                                                    as Map)['Type'] ==
+                                                'Other') {
+                                              other = !other;
+                                              print('other: $other');
+                                            }
+                                          },
+                                          title: Text(
+                                              (document.data() as Map)['Type'],
+                                              style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight:
+                                                      FontWeight.normal)),
+                                          controlAffinity:
+                                              ListTileControlAffinity.leading,
+                                        ));
+                                      }).toList(),
+                                    );
+                                  }
+                                }),
+                          ),
+                        ],
+                      )),
+                  Visibility(
+                      visible: userData['Type'] != 'Volunteer',
+                      child: const SizedBox(
+                        height: 30,
+                      )),
+
                   //bio field
                   Visibility(
                       visible: userData['Type'] == 'Volunteer',
@@ -347,6 +586,11 @@ class MyInfoState extends State<MyInfo> {
                           labelText: 'Bio',
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                         ),
+                      )),
+                  Visibility(
+                      visible: userData['Type'] == 'Volunteer',
+                      child: const SizedBox(
+                        height: 30,
                       )),
 
                   //Edit, delete buttons :
@@ -384,6 +628,7 @@ class MyInfoState extends State<MyInfo> {
                                   setState(() {
                                     isEditing = true;
                                   });
+                                  FocusScope.of(context).unfocus();
                                 },
                                 child: const Text('Edit'),
                               ),
@@ -434,19 +679,23 @@ class MyInfoState extends State<MyInfo> {
                                           },
                                           child: Container(
                                             padding: const EdgeInsets.all(14),
-                                            child: const Text("cancel"),
+                                            child: const Text("Cancel"),
                                           ),
                                         ),
                                         TextButton(
-                                          onPressed: () {
-                                            // FirebaseFirestore.instance
-                                            //     .collection("Comments")
-                                            //     .doc(userData['id'])
-                                            //     .delete()
-                                            //     .then((_) {
-                                            //   print("success!, user deleted");
-                                            // });
+                                          onPressed: () async {
+                                            FirebaseFirestore.instance
+                                                .collection("users")
+                                                .doc(userData['id'])
+                                                .delete()
+                                                .then((_) {
+                                              print("success!, user deleted");
+                                            });
+                                            FirebaseAuth.instance.currentUser!
+                                                .delete();
                                             Navigator.of(ctx).pop();
+                                            await FirebaseAuth.instance
+                                                .signOut();
                                           },
                                           child: Container(
                                             padding: const EdgeInsets.all(14),
@@ -465,9 +714,7 @@ class MyInfoState extends State<MyInfo> {
                             ),
                           ],
                         )
-                      :
-                      //Save and cancel buttons
-                      Row(
+                      : /*Save and cancel buttons*/ Row(
                           children: [
                             Container(
                               margin: const EdgeInsets.all(10),
@@ -497,60 +744,74 @@ class MyInfoState extends State<MyInfo> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (ctx) => AlertDialog(
-                                        title: const Text("Save?"),
-                                        content: const Text(
-                                          "Are You Sure You want to save changes?",
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(ctx).pop();
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.all(14),
-                                              child: const Text("cancel",
-                                                  style: TextStyle(
-                                                      color: Color.fromARGB(
-                                                          255, 194, 98, 98))),
-                                            ),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              print(name_edit);
-                                              print(email_edit);
-                                              print(phone_edit);
-                                              print(outDate);
-                                              print(bio_edit);
-                                              //);
-
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                    content: Text(
-                                                        'Changes has been Saved!')),
-                                              );
-                                              UpdateDB();
-                                              setState(() {
-                                                isEditing = false;
-                                                Viewing = true;
-                                              });
-                                              Navigator.of(ctx).pop();
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.all(14),
-                                              child: const Text(
-                                                "Save",
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                  if (blind == false &&
+                                      mute == false &&
+                                      deaf == false &&
+                                      other == false &&
+                                      physical == false &&
+                                      userData['Type'] != "Volunteer") {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content:
+                                            Text('Please choose a disability'),
+                                        backgroundColor: Colors.deepOrange,
                                       ),
                                     );
+                                  } else {
+                                    if (_formKey.currentState!.validate()) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                          title: const Text("Save?"),
+                                          content: const Text(
+                                            "Are You Sure You want to save changes?",
+                                            textAlign: TextAlign.left,
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(ctx).pop();
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(14),
+                                                child: const Text("Cancel",
+                                                    style: TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 194, 98, 98))),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                      content: Text(
+                                                          'Changes has been Saved!')),
+                                                );
+                                                UpdateDB();
+                                                setState(() {
+                                                  isEditing = false;
+                                                });
+                                                FocusScope.of(context)
+                                                    .unfocus();
+
+                                                Navigator.of(ctx).pop();
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(14),
+                                                child: const Text(
+                                                  "Save",
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
                                   }
                                 },
                                 child: const Text('Save'),
@@ -594,16 +855,32 @@ class MyInfoState extends State<MyInfo> {
                                       title: const Text("Are You Sure ?"),
                                       content: const Text(
                                         "Are You Sure You want to Cancel changes ?",
-                                        textAlign: TextAlign.center,
+                                        textAlign: TextAlign.left,
                                       ),
                                       actions: <Widget>[
                                         TextButton(
                                           onPressed: () {
                                             setState(() {
                                               isEditing = false;
-                                              Viewing = true;
+                                              userData = widget.user;
+                                              getPassword = false;
+                                              nameController.text =
+                                                  userData['name'];
+                                              emailController.text =
+                                                  userData['Email'];
+                                              genderController.text =
+                                                  userData['gender'];
+                                              phoneController.text =
+                                                  userData['phone number'];
+                                              bioController.text =
+                                                  userData['bio'];
+                                              dateController.text =
+                                                  userData['DOB'];
+                                              disabilityController.text =
+                                                  userData['Disability'];
                                             });
                                             Navigator.of(ctx).pop();
+                                            FocusScope.of(context).unfocus();
                                           },
                                           child: Container(
                                             padding: const EdgeInsets.all(14),
@@ -616,6 +893,7 @@ class MyInfoState extends State<MyInfo> {
                                         TextButton(
                                           onPressed: () {
                                             Navigator.of(ctx).pop();
+                                            FocusScope.of(context).unfocus();
                                           },
                                           child: Container(
                                             padding: const EdgeInsets.all(14),
@@ -641,14 +919,38 @@ class MyInfoState extends State<MyInfo> {
   }
 
   Future<void> UpdateDB() async {
-    if (blind == true) Dis_edit += " Visually Impaired,";
-    if (mute == true) Dis_edit += " Vocally Impaired,";
-    if (deaf == true) Dis_edit += " Hearing Impaired,";
-    if (physical == true) Dis_edit += " Physically Impaired,";
-    if (other == true) Dis_edit += " Other,";
+    Dis_edit = '';
+    print('blind: $blind');
+    print('mute: $mute');
+    print('deaf: $deaf');
+    print('physical: $physical');
+    print('other: $other');
+    if (blind == true) Dis_edit += "Visually Impaired, ";
+    if (mute == true) Dis_edit += "Vocally Impaired, ";
+    if (deaf == true) Dis_edit += "Hearing Impaired, ";
+    if (physical == true) Dis_edit += "Physically Impaired, ";
+    if (other == true) Dis_edit += "Other, ";
+    print(Dis_edit);
+    disabilityController.text = Dis_edit;
+
     print(nameController.text);
     var Edit_info =
         FirebaseFirestore.instance.collection('users').doc(widget.user['id']);
+    print(Dis_edit);
+
+    if (emailController.text != userData['Email']) {
+      var user = await FirebaseAuth.instance.currentUser!;
+
+      await user
+          .reauthenticateWithCredential(EmailAuthProvider.credential(
+        email: userData['Email'],
+        password: passwordController.text,
+      ))
+          .then((userCredential) {
+        userCredential.user!.updateEmail(emailController.text);
+      });
+    }
+    passwordController.text = '';
     Edit_info.update({
       'name': nameController.text,
       'gender': genderController.text,
@@ -656,53 +958,10 @@ class MyInfoState extends State<MyInfo> {
       'Email': emailController.text,
       'bio': bioController.text,
       'DOB': dateController.text,
-      //'Disability': Dis_edit
+      'Disability': disabilityController.text
     });
-    print(emailController.text);
-    // resetEmail(emailController.text);
 
     print('profile edited');
     clearBool();
-  }
-
-  Future resetEmail(String newEmail) async {
-    var message;
-    User firebaseUser = FirebaseAuth.instance.currentUser!;
-    print(firebaseUser);
-    print('no update');
-    firebaseUser.updateEmail(newEmail).then((value) {
-      message = 'Success';
-      print('message' + message);
-    }).catchError((onError) => message = 'error');
-    // print('message' + message);
-    return message;
-  }
-
-  Widget buildTextField(String labelText, String placeholder) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 12, 30, 22),
-      child: TextFormField(
-        enabled: false,
-        // maxLength: 180,
-        // minLines: 1,
-        // maxLines: 6,
-        decoration: InputDecoration(
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF06283D)),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.blue),
-            ),
-            contentPadding: const EdgeInsets.only(bottom: 3),
-            labelText: labelText,
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            hintText: placeholder,
-            hintStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            )),
-      ),
-    );
   }
 }

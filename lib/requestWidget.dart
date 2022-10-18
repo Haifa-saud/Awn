@@ -1,3 +1,5 @@
+//
+
 import 'dart:math';
 
 import 'package:awn/addRequest.dart';
@@ -16,6 +18,7 @@ import 'addPost.dart';
 import 'editRequest.dart';
 import 'mapsPage.dart';
 import 'services/appWidgets.dart';
+import 'userProfile.dart';
 
 class requestPage extends StatefulWidget {
   final String userType;
@@ -321,6 +324,8 @@ class _requestPageState extends State<requestPage> {
                                         ),
                                         InkWell(
                                           onTap: (() {
+                                            String docId =
+                                                data.docs[index]['docId'];
                                             showDialog(
                                               context: context,
                                               builder: (ctx) => AlertDialog(
@@ -344,12 +349,21 @@ class _requestPageState extends State<requestPage> {
                                                   //delete button
                                                   TextButton(
                                                     onPressed: () {
-                                                      print('brefor delet');
-                                                      deleteRequest(
-                                                          docId:
-                                                              data.docs[index]);
-                                                      print('after delet');
-                                                      Navigator.of(ctx).pop();
+                                                      deletRequest(docId);
+                                                      // Navigator.of(
+                                                      //         context)
+                                                      //     .popUntil(
+                                                      //         (route) =>
+                                                      //             route.isFirst);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                userProfile(
+                                                                    userType: widget
+                                                                        .userType),
+                                                          ));
+                                                      ConfermationDelet();
                                                     },
                                                     child: Container(
                                                       //color: Color.fromARGB(255, 164, 20, 20),
@@ -758,19 +772,22 @@ class _requestPageState extends State<requestPage> {
     }
     return stat;
   }
+
+  void ConfermationDelet() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Awn request has been deleted"),
+      ),
+    );
+  }
 }
 
-Future<void> deleteRequest({required docId}) async {
-  FirebaseFirestore.instance
-      .collection('requests')
-      .doc(docId.toString())
-      .delete()
-      .then((_) => print('Deleted'))
-      .catchError((error) => print('Delete failed: $error'));
-      
+Future<void> deletRequest(docId) async {
+  final db =
+      FirebaseFirestore.instance.collection('requests').doc(docId.toString());
+  db.delete();
+
   print(docId);
-  print('docId');
-  print(docId.toString());
 }
 
 Future<void> updateDB(docId) async {

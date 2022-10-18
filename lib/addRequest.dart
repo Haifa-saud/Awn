@@ -308,12 +308,12 @@ class AwnRequestFormState extends State<AwnRequestForm> {
               '*indicates required fields',
               style: TextStyle(fontSize: 15),
             )),
-            
+
             /*title*/ Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 6),
               child: Text('What help do you need?*'),
             ),
-            
+
             Container(
                 padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                 child: TextFormField(
@@ -341,39 +341,47 @@ class AwnRequestFormState extends State<AwnRequestForm> {
             ),
 
             //date picker
-            Container(
-              padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _selectDate(context);
-                      showDate = true;
-                    },
-                    style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.blue,
-                        backgroundColor: Colors.white,
-                        padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
-                        textStyle: const TextStyle(
-                          fontSize: 18,
-                        ),
-                        side:
-                            BorderSide(color: Colors.grey.shade400, width: 1)),
-                    child: const Text('Update Date'),
-                  ),
-                  showDate
-                      ? Container(
-                          margin: EdgeInsets.only(right: 50),
-                          child: Text(getDate_formated()))
-                      // DateFormat('yyyy/MM/dd').format(selectedDate)
-                      : const SizedBox(),
-                ],
+            Row(children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _selectDate(context);
+                        showDate = true;
+                      },
+                      style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          backgroundColor: Colors.transparent,
+                          padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
+                          textStyle: const TextStyle(
+                            fontSize: 18,
+                          ),
+                          side: BorderSide(
+                              color: Colors.grey.shade400, width: 1)),
+                      child: showDate
+                          ? Row(
+                              children: [
+                                Container(
+                                    margin: EdgeInsets.only(right: 10),
+                                    child: Text(getDate_formated()
+                                        //   data.docs[index]
+                                        //    ['date_dmy']
+                                        )),
+                                Icon(Icons.calendar_today,
+                                    size: 25, color: Colors.grey.shade600),
+                              ],
+                            )
+                          : const SizedBox(),
+                      //  const Text('Edit Date'),
+                    ),
+                  ],
+                ),
               ),
-            ),
-
-            //time picker
-            Container(
+              //time picker
+              Container(
                 padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -384,23 +392,34 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                         showTime = true;
                       },
                       style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.blue,
-                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                          backgroundColor: Colors.transparent,
                           padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
                           textStyle: const TextStyle(
                             fontSize: 18,
                           ),
                           side: BorderSide(
                               color: Colors.grey.shade400, width: 1)),
-                      child: const Text('Update Time'),
+                      child: showDate
+                          ? Row(
+                              children: [
+                                Container(
+                                    margin: EdgeInsets.only(right: 10),
+                                    child: Text(getTime(selectedTime)
+                                        //   data.docs[index]
+                                        //    ['date_dmy']
+                                        )),
+                                Icon(Icons.schedule,
+                                    size: 25, color: Colors.grey.shade600),
+                              ],
+                            )
+                          : const SizedBox(),
+                      //  const Text('Edit Date'),
                     ),
-                    showTime
-                        ? Container(
-                            margin: EdgeInsets.only(right: 50),
-                            child: Text(getTime(selectedTime)))
-                        : const SizedBox(),
                   ],
-                )),
+                ),
+              )
+            ]),
 
             //duration
             Container(

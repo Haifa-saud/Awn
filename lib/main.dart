@@ -66,7 +66,7 @@ class _MyApp extends State<MyApp> {
         scaffoldBackgroundColor: const Color(0xFFfcfffe),
         appBarTheme: const AppBarTheme(
           titleTextStyle: TextStyle(
-              wordSpacing: 3,  
+              wordSpacing: 3,
               letterSpacing: 1,
               color: const Color(0xFF06283D),
               fontSize: 22,
@@ -93,7 +93,7 @@ class _MyApp extends State<MyApp> {
               wordSpacing: 3,
               color: const Color(0xFF06283D),
               letterSpacing: 1,
-              fontSize: 19.0), //the text field label
+              fontSize: 18.0), //the text field label
           // subtitle2: TextStyle(
           //     wordSpacing: 3,
           //     letterSpacing: 1,
