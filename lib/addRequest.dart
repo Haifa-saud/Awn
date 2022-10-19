@@ -79,28 +79,6 @@ class _AddRequestState extends State<addRequest> {
                   }))
         ],
         title: const Text('Request Awn', textAlign: TextAlign.center),
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () => showDialog<String>(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-              content: const Text('Discard the changes you made?'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Keep editing'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    clearForm();
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
-                  child: const Text('Discard'),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
       body: AwnRequestForm(),
       floatingActionButton: FloatingActionButton(

@@ -44,12 +44,15 @@ class PlaceState extends State<Place> {
   Widget placesList(String cate, String status, String userId) {
     var isAdmin = false;
     Stream<QuerySnapshot> list =
-        FirebaseFirestore.instance.collection('posts').snapshots();
+        FirebaseFirestore.instance.collection('posts')
+        .where('status', isEqualTo: 'Approved')
+        .snapshots();
     if (cate != 'All' && cate != '') {
       //home page
       list = FirebaseFirestore.instance
           .collection('posts')
           .where('category', isEqualTo: cate)
+          .where('status', isEqualTo: 'Approved')
           .snapshots();
     }
     if (status != '' && userId != '') {
@@ -58,13 +61,6 @@ class PlaceState extends State<Place> {
           .collection('posts')
           .where('status', isEqualTo: status)
           .where('userId', isEqualTo: userId)
-          .snapshots();
-    } else if (status != '') {
-      //admin page
-      isAdmin = true;
-      list = FirebaseFirestore.instance
-          .collection('posts')
-          .where('status', isEqualTo: status)
           .snapshots();
     }
 
@@ -336,7 +332,7 @@ class PlaceState extends State<Place> {
                   minChildSize: 0.9,
                   initialChildSize: 1,
                   builder: (_, controller) => Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           color: Colors.white,
                           borderRadius:
                               BorderRadius.vertical(top: Radius.circular(20))),
@@ -599,8 +595,9 @@ class PlaceState extends State<Place> {
                                                               )),
                                                         ]),
                                                         onTap: () => launchUrl(
-                                                            Uri.parse(
-                                                                "tel:+9 66553014247"))),
+                                                            Uri.parse("tel:" +
+                                                                data[
+                                                                    'Phone number']))),
                                                   ),
                                                   const SizedBox(height: 50),
                                                 ]),
@@ -693,8 +690,20 @@ class PlaceState extends State<Place> {
                                                                 width: 1)),
                                                     child:
                                                         const Text('Approve'),
-                                                    onPressed:
-                                                        () {}, //!for haifa
+                                                    onPressed: () {
+                                                      String docId =
+                                                          data['docId'];
+                                                      updateDBA(docId);
+
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                              "the place has been approved"),
+                                                        ),
+                                                      );
+                                                    }, //!for haifa
                                                   ),
                                                   const SizedBox(width: 15),
                                                   ElevatedButton(
@@ -717,8 +726,20 @@ class PlaceState extends State<Place> {
                                                                 .red.shade300,
                                                             width: 1)),
                                                     child: const Text('Deny'),
-                                                    onPressed:
-                                                        () {}, //!for haifa
+                                                    onPressed: () {
+                                                      String docId =
+                                                          data['docId'];
+                                                      updateDBD(docId);
+
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                              "the place has been denied"),
+                                                        ),
+                                                      );
+                                                    }, //!for haifa
                                                   ),
                                                   const Spacer(),
                                                 ])
@@ -803,7 +824,6 @@ class PlaceState extends State<Place> {
   Widget Comments(placeID) {
     var comments = FirebaseFirestore.instance.collection("Comments");
     return StreamBuilder<dynamic>(
-        // Wedd addition
         stream: comments
             .where('placeID', isEqualTo: placeID)
             .orderBy('date', descending: false)
@@ -825,7 +845,7 @@ class PlaceState extends State<Place> {
                         Container(
                           width: 600,
                           margin: const EdgeInsets.only(top: 12),
-                          padding: const EdgeInsets.all(1),
+                          padding: const EdgeInsets.fromLTRB(5, 1, 5, 1),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               boxShadow: const [
@@ -960,7 +980,7 @@ class PlaceState extends State<Place> {
                                                                     .of(context)
                                                                 .showSnackBar(
                                                                     SnackBar(
-                                                              content: Text(
+                                                              content: const Text(
                                                                   'Comment is deleted'),
                                                               behavior:
                                                                   SnackBarBehavior
@@ -1076,18 +1096,18 @@ class CommentFieldState extends State<CommentField>
                         mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          IconButton(
-                            icon: const Icon(Icons.camera_alt_outlined),
-                            onPressed: () {
-                              // sendImage(ImageSource.camera);
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.insert_photo_outlined),
-                            onPressed: () {
-                              // sendImage(ImageSource.gallery);
-                            },
-                          ),
+                          // IconButton(
+                          //   icon: const Icon(Icons.camera_alt_outlined),
+                          //   onPressed: () {
+                          //     // sendImage(ImageSource.camera);
+                          //   },
+                          // ),
+                          // IconButton(
+                          //   icon: const Icon(Icons.insert_photo_outlined),
+                          //   onPressed: () {
+                          //     // sendImage(ImageSource.gallery);
+                          //   },
+                          // ),
                         ],
                       )
                     : Row(
@@ -1170,7 +1190,7 @@ class CommentFieldState extends State<CommentField>
     comment.clear();
     FocusScope.of(context).unfocus();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Comment is deleted'),
+      content: const Text('Comment is added successfully'),
       behavior: SnackBarBehavior.floating,
       action: SnackBarAction(
         label: 'Dismiss',
@@ -1182,4 +1202,18 @@ class CommentFieldState extends State<CommentField>
       ),
     ));
   }
+}
+
+Future<void> updateDBA(docId) async {
+  final postID = FirebaseFirestore.instance.collection('posts').doc(docId);
+  postID.update({
+    'status': 'Approved',
+  });
+}
+
+Future<void> updateDBD(docId) async {
+  final postID = FirebaseFirestore.instance.collection('posts').doc(docId);
+  postID.update({
+    'status': 'Denied',
+  });
 }

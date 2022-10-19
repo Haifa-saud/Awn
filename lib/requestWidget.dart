@@ -86,39 +86,11 @@ class _requestPageState extends State<requestPage> {
                     return Container();
                   }))
         ],
-        title: const Text('Awn Requests'),
+        title: const Text('Awn Request'),
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
             onPressed: () => Navigator.of(context).pop()),
         automaticallyImplyLeading: false,
-        // actions: <Widget>[
-        //   Padding(
-        //       padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-        //       child: FutureBuilder(
-        //           //  future: storage.downloadURL('logo.png'),
-        //           builder:
-        //               (BuildContext context, AsyncSnapshot<String> snapshot) {
-        //         if (snapshot.connectionState == ConnectionState.done &&
-        //             snapshot.hasData) {
-        //           return Center(
-        //             child: Image.network(
-        //               snapshot.data!,
-        //               fit: BoxFit.cover,
-        //               width: 40,
-        //               height: 40,
-        //             ),
-        //           );
-        //         }
-        //         if (snapshot.connectionState == ConnectionState.waiting ||
-        //             !snapshot.hasData) {
-        //           return Center(
-        //               child: CircularProgressIndicator(
-        //             color: Colors.blue,
-        //           ));
-        //         }
-        //         return Container();
-        //       }))
-        // ],
       ),
       body: requestdetails(),
       floatingActionButton: FloatingActionButton(
@@ -160,7 +132,7 @@ class _requestPageState extends State<requestPage> {
           _selectedIndex = value;
         }),
         userType: widget.userType,
-        currentI: 3,
+        currentI: widget.userType == 'Volunteer' ? 2 : 3,
       ),
     );
   }
@@ -183,6 +155,8 @@ class _requestPageState extends State<requestPage> {
 
     bool isPending = false;
     bool isSN = false;
+    bool isVol = false;
+    bool viewAcceptButtom = true;
 
     Future<String> getLocationAsString(var lat, var lng) async {
       List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
@@ -196,6 +170,10 @@ class _requestPageState extends State<requestPage> {
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
     final now = DateTime.now();
+
+    setAccept() {
+      viewAcceptButtom = false;
+    }
 
     return Column(children: [
       Expanded(
@@ -263,9 +241,12 @@ class _requestPageState extends State<requestPage> {
                       var userID = !isSN
                           ? data.docs[index]['userID']
                           : data.docs[index]['VolID'];
+
+                      isVol = widget.userType == 'Volunteer' ? true : false;
+
                       return Container(
                           width: 600,
-                          // margin: const EdgeInsets.only(top: 12),
+                          margin: const EdgeInsets.only(top: 12),
                           padding: const EdgeInsets.fromLTRB(15, 15, 15, 30),
                           decoration: BoxDecoration(
                               color: Colors.white,
@@ -279,126 +260,159 @@ class _requestPageState extends State<requestPage> {
                           child: Column(
                             children: [
                               //title and status
-                              Row(children: [
-                                Row(children: [
-                                  Text(
-                                    '${data.docs[index]['title']}',
-                                    textAlign: TextAlign.left,
-                                  ),
-                                  Visibility(
-                                      visible: isPending,
-                                      child: Row(children: [
-                                        InkWell(
-                                          onTap: (() {
-                                            setState(() {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        editRequest(
-                                                      userType:
-                                                          "Special Need User",
-                                                      docId: data.docs[index]
-                                                          ['docId'],
-                                                      date_ymd: data.docs[index]
-                                                          ['date_ymd'],
-                                                      discription:
-                                                          data.docs[index]
-                                                              ['description'],
-                                                      duartion: data.docs[index]
-                                                          ['duration'],
-                                                      title: data.docs[index]
-                                                          ['title'],
-                                                    ),
-                                                  ));
-                                            });
-                                          }),
-                                          child: Container(
-                                            margin: EdgeInsets.only(top: 5),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 7),
-                                            child: Icon(Icons.edit,
-                                                size: 30,
-                                                color: Colors.blueGrey),
+                              Row(
+                                  // mainAxisAlignment:
+                                  //     MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Row(
+                                        // mainAxisAlignment:
+                                        //     MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Text(
+                                            '${data.docs[index]['title']}',
+                                            textAlign: TextAlign.left,
                                           ),
-                                        ),
-                                        InkWell(
-                                          onTap: (() {
-                                            String docId =
-                                                data.docs[index]['docId'];
-                                            showDialog(
-                                              context: context,
-                                              builder: (ctx) => AlertDialog(
-                                                content: const Text(
-                                                  "Are you sure you want to withdraw your request ?",
-                                                  textAlign: TextAlign.left,
+                                        ]),
+                                    Spacer(),
+                                    Visibility(
+                                        visible: isPending && isSN,
+                                        child: Row(children: [
+                                          InkWell(
+                                            onTap: (() {
+                                              setState(() {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          editRequest(
+                                                        userType:
+                                                            "Special Need User",
+                                                        docId: data.docs[index]
+                                                            ['docId'],
+                                                        date_ymd:
+                                                            data.docs[index]
+                                                                ['date_ymd'],
+                                                        discription:
+                                                            data.docs[index]
+                                                                ['description'],
+                                                        duartion:
+                                                            data.docs[index]
+                                                                ['duration'],
+                                                        title: data.docs[index]
+                                                            ['title'],
+                                                      ),
+                                                    ));
+                                              });
+                                            }),
+                                            child: Container(
+                                              margin: EdgeInsets.only(top: 5),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 7),
+                                              child: Icon(Icons.edit,
+                                                  size: 30,
+                                                  color: Colors.blueGrey),
+                                            ),
+                                          ),
+                                          InkWell(
+                                            onTap: (() {
+                                              String docId =
+                                                  data.docs[index]['docId'];
+                                              showDialog(
+                                                context: context,
+                                                builder: (ctx) => AlertDialog(
+                                                  content: const Text(
+                                                    "Are you sure you want to withdraw your request ?",
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                  actions: <Widget>[
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(ctx).pop();
+                                                      },
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(14),
+                                                        child: const Text(
+                                                            "Cancel"),
+                                                      ),
+                                                    ),
+                                                    //delete button
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        deletRequest(docId);
+                                                        // Navigator.of(
+                                                        //         context)
+                                                        //     .popUntil(
+                                                        //         (route) =>
+                                                        //             route.isFirst);
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  userProfile(
+                                                                      userType:
+                                                                          widget
+                                                                              .userType),
+                                                            ));
+                                                        ConfermationDelet();
+                                                      },
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(14),
+                                                        child: const Text(
+                                                            "Withdraw",
+                                                            style: TextStyle(
+                                                                color: Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        164,
+                                                                        10,
+                                                                        10))),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                                actions: <Widget>[
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      Navigator.of(ctx).pop();
-                                                    },
-                                                    child: Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              14),
-                                                      child:
-                                                          const Text("Cancel"),
-                                                    ),
-                                                  ),
-                                                  //delete button
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      deletRequest(docId);
-                                                      // Navigator.of(
-                                                      //         context)
-                                                      //     .popUntil(
-                                                      //         (route) =>
-                                                      //             route.isFirst);
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                userProfile(
-                                                                    userType: widget
-                                                                        .userType),
-                                                          ));
-                                                      ConfermationDelet();
-                                                    },
-                                                    child: Container(
-                                                      //color: Color.fromARGB(255, 164, 20, 20),
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              14),
-                                                      child: const Text(
-                                                          "Delete",
-                                                          style: TextStyle(
-                                                              color: Color
-                                                                  .fromARGB(
-                                                                      255,
-                                                                      164,
-                                                                      10,
-                                                                      10))),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          }),
-                                          child: Container(
-                                            // alignment:
-                                            //     Alignment.topRight,
-                                            margin: EdgeInsets.only(top: 5),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 7),
-                                            child: Icon(Icons.delete,
-                                                size: 30,
-                                                color: Colors.red.shade300),
+                                              );
+                                            }),
+                                            child: Container(
+                                              // alignment:
+                                              //     Alignment.topRight,
+                                              margin: EdgeInsets.only(top: 5),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 7),
+                                              child: Icon(Icons.delete,
+                                                  size: 30,
+                                                  color: Colors.red.shade300),
+                                            ),
                                           ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                        ])),
+                                    Visibility(
+                                      visible: isSN,
+                                      child: Container(
+                                        alignment: Alignment.topRight,
+                                        margin: const EdgeInsets.only(
+                                          top: 5,
                                         ),
-                                      ]))
-                                ]),
-                              ]),
+                                        child: Text(data.docs[index]['status'],
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                background: Paint()
+                                                  ..strokeWidth = 18.0
+                                                  ..color = getColor(data
+                                                      .docs[index]['status'])
+                                                  ..style = PaintingStyle.stroke
+                                                  ..strokeJoin =
+                                                      StrokeJoin.round,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w500)),
+                                      ),
+                                    ),
+                                  ]),
                               SizedBox(height: 30),
                               Row(
                                   // mainAxisAlignment:
@@ -494,7 +508,6 @@ class _requestPageState extends State<requestPage> {
                                       ))),
                               const SizedBox(height: 30),
                               Container(
-                                  // width: 180,
                                   height: 250,
                                   decoration: BoxDecoration(
                                     color: Colors.white,
@@ -564,82 +577,86 @@ class _requestPageState extends State<requestPage> {
                                           return Align(
                                             alignment: Alignment.center,
                                             child: Container(
+                                                height: 50,
                                                 padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        9, 5, 9, 5),
+                                                    const EdgeInsets.all(6),
                                                 decoration: BoxDecoration(
-                                                    color: Colors.grey.shade200,
+                                                    color: Colors.blue.shade50,
                                                     border: Border.all(
                                                       width: 1,
                                                       color:
-                                                          Colors.grey.shade100,
+                                                          Colors.blue.shade50,
                                                     ),
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            15)),
+                                                            10)),
                                                 child: Row(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
                                                   mainAxisSize:
                                                       MainAxisSize.max,
                                                   children: <Widget>[
-                                                    // SizedBox(width: 25),
                                                     Text(
-                                                        !isSN
+                                                        widget.userType !=
+                                                                'Special Need User'
                                                             ? 'Special Need User:'
                                                             : 'Volunteer:',
                                                         style: const TextStyle(
-                                                          fontSize: 18,
-                                                          // color: Colors.blue,
+                                                          fontSize: 17,
                                                           fontWeight:
                                                               FontWeight.w500,
+                                                          wordSpacing: 0.1,
+                                                          letterSpacing: 0.1,
                                                         )),
                                                     const SizedBox(height: 7),
                                                     Text(
                                                         ' ${userData!['name']}',
                                                         style: const TextStyle(
                                                           fontSize: 17,
-                                                          // color: Colors.blue,
                                                           fontWeight:
                                                               FontWeight.w400,
+                                                          wordSpacing: 0.1,
+                                                          letterSpacing: 0.1,
                                                         )),
-                                                    SizedBox(width: 15),
+                                                    // SizedBox(width: 5),
+                                                    Spacer(),
                                                     Visibility(
                                                         visible:
                                                             isRequestActive,
-                                                        // child: CircleAvatar(
-                                                        //     backgroundColor:
-                                                        //         Colors.white,
-                                                        //     // .shade200,
-                                                        //     // const Color(
-                                                        //     //     0xFF39d6ce), //Color(0xffE6E6E6),
-                                                        //     radius: 25,
-                                                        child: IconButton(
-                                                          icon: const Icon(Icons
-                                                              .chat_outlined),
-                                                          iconSize: 25,
-                                                          color: Colors.blue,
-                                                          onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              PageRouteBuilder(
-                                                                pageBuilder: (context,
-                                                                        animation1,
-                                                                        animation2) =>
-                                                                    ChatPage(
-                                                                        requestID:
-                                                                            data.docs[index]['docId']),
-                                                                transitionDuration:
-                                                                    const Duration(
-                                                                        seconds:
-                                                                            1),
-                                                                reverseTransitionDuration:
-                                                                    Duration
-                                                                        .zero,
-                                                              ),
-                                                            );
-                                                          },
-                                                        )),
+                                                        child: CircleAvatar(
+                                                            backgroundColor:
+                                                                Colors.white,
+                                                            // .shade200,
+                                                            // const Color(
+                                                            //     0xFF39d6ce), //Color(0xffE6E6E6),
+                                                            radius: 22,
+                                                            child: IconButton(
+                                                              icon: const Icon(Icons
+                                                                  .chat_outlined),
+                                                              iconSize: 25,
+                                                              color:
+                                                                  Colors.blue,
+                                                              onPressed: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  PageRouteBuilder(
+                                                                    pageBuilder: (context,
+                                                                            animation1,
+                                                                            animation2) =>
+                                                                        ChatPage(
+                                                                            requestID:
+                                                                                data.docs[index]['docId']),
+                                                                    transitionDuration:
+                                                                        const Duration(
+                                                                            seconds:
+                                                                                1),
+                                                                    reverseTransitionDuration:
+                                                                        Duration
+                                                                            .zero,
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ))),
                                                   ],
                                                 )),
                                           );
@@ -650,89 +667,40 @@ class _requestPageState extends State<requestPage> {
                                         }
                                       })
                                   : SizedBox(height: 0),
-                              //edit and delete
-                              // data.docs[index]['status'] == 'Pending'
-                              //     ? Center(
-                              //         child: Row(
-                              //         mainAxisAlignment:
-                              //             MainAxisAlignment.center,
-                              //         crossAxisAlignment:
-                              //             CrossAxisAlignment.center,
-                              //         children: [
-                              //           Container(
-                              //             // margin: const EdgeInsets.fromLTRB(
-                              //             //     10, 10, 10, 10),
-                              //             width: 150,
-                              //             decoration: BoxDecoration(
-                              //               boxShadow: const [
-                              //                 BoxShadow(
-                              //                     color: Colors.black26,
-                              //                     offset: Offset(0, 4),
-                              //                     blurRadius: 5.0)
-                              //               ],
-                              //               gradient: const LinearGradient(
-                              //                 begin: Alignment.topLeft,
-                              //                 end: Alignment.bottomRight,
-                              //                 stops: [0.0, 1.0],
-                              //                 colors: [
-                              //                   Colors.blue,
-                              //                   Color(0xFF39d6ce),
-                              //                 ],
-                              //               ),
-                              //               borderRadius:
-                              //                   BorderRadius.circular(30),
-                              //             ),
-                              //             child: ElevatedButton(
-                              //               style: ElevatedButton.styleFrom(
-                              //                 textStyle: const TextStyle(
-                              //                   fontSize: 18,
-                              //                 ),
-                              //               ),
-                              //               onPressed: () {
-                              //                 setState(() {});
-                              //               },
-                              //               child: const Text('Edit'),
-                              //             ),
-                              //           ),
-                              //           const SizedBox(
-                              //             width: 20,
-                              //           ),
-                              //           Container(
-                              //             // margin: const EdgeInsets.fromLTRB(
-                              //             //     10, 10, 10, 10),
-                              //             width: 150,
-                              //             decoration: BoxDecoration(
-                              //               boxShadow: const [
-                              //                 BoxShadow(
-                              //                     color: Colors.black26,
-                              //                     offset: Offset(0, 4),
-                              //                     blurRadius: 5.0)
-                              //               ],
-                              //               gradient: const LinearGradient(
-                              //                 begin: Alignment.topLeft,
-                              //                 end: Alignment.bottomRight,
-                              //                 stops: [0.0, 1.0],
-                              //                 colors: [
-                              //                   Colors.blue,
-                              //                   Color(0xFF39d6ce),
-                              //                 ],
-                              //               ),
-                              //               borderRadius:
-                              //                   BorderRadius.circular(30),
-                              //             ),
-                              //             child: ElevatedButton(
-                              //               style: ElevatedButton.styleFrom(
-                              //                 textStyle: const TextStyle(
-                              //                   fontSize: 18,
-                              //                 ),
-                              //               ),
-                              //               onPressed: () {},
-                              //               child: const Text('Withdraw'),
-                              //             ),
-                              //           ),
-                              //         ],
-                              //       ))
-                              //     : SizedBox(),
+
+                              Visibility(
+                                visible: isVol & viewAcceptButtom,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      width: 100,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          String docId =
+                                              data.docs[index]['docId'];
+
+                                          updateDB(docId);
+                                          Confermation();
+                                          setAccept();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                          backgroundColor:
+                                              Colors.green.shade400,
+                                          padding: const EdgeInsets.fromLTRB(
+                                              17, 13, 17, 13),
+                                          textStyle:
+                                              const TextStyle(fontSize: 17),
+                                        ),
+                                        child: const Text('Accept'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
                             ],
                           ));
                     } else {
@@ -744,6 +712,14 @@ class _requestPageState extends State<requestPage> {
         },
       )))
     ]);
+  }
+
+  void Confermation() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Awn request has been accepted"),
+      ),
+    );
   }
 
   Color getColor(String stat) {

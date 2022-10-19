@@ -150,7 +150,7 @@ class ChatPageState extends State<ChatPage>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 15, 0, 2),
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 2),
                               child: Text(
                                 userData['name'],
                               ),
@@ -779,48 +779,43 @@ class ChatFieldState extends State<ChatField>
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                          alignment: Alignment.topLeft,
-                                          height: 215,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade200,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            boxShadow: const [
-                                              BoxShadow(
-                                                  color: Colors.black12,
-                                                  blurRadius: 5)
-                                            ],
-                                          ),
-                                          child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              child: Container(
-                                                  decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        width: 0,
-                                                        color: Colors
-                                                            .blue.shade50),
-                                                  ),
-                                                  child: Image.memory(
-                                                    memoryPath,
-                                                    fit: BoxFit.contain,
-                                                    // width: 200,
-                                                    // height: 200,
-                                                    errorBuilder:
-                                                        (BuildContext context,
-                                                            Object exception,
-                                                            StackTrace?
-                                                                stackTrace) {
-                                                      print('error');
-                                                      return const Text(
-                                                          'Image could not be load');
-                                                    },
-                                                  ))))
-                                    ]),
+                                Row(mainAxisSize: MainAxisSize.min, children: [
+                                  Container(
+                                      alignment: Alignment.topLeft,
+                                      height: 215,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade200,
+                                        borderRadius: BorderRadius.circular(10),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 5)
+                                        ],
+                                      ),
+                                      child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    width: 0,
+                                                    color: Colors.blue.shade50),
+                                              ),
+                                              child: Image.memory(
+                                                memoryPath,
+                                                fit: BoxFit.contain,
+                                                // width: 200,
+                                                // height: 200,
+                                                errorBuilder: (BuildContext
+                                                        context,
+                                                    Object exception,
+                                                    StackTrace? stackTrace) {
+                                                  print('error');
+                                                  return const Text(
+                                                      'Image could not be load');
+                                                },
+                                              ))))
+                                ]),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   mainAxisSize: MainAxisSize.max,

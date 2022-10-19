@@ -1,5 +1,4 @@
 import 'package:awn/addPost.dart';
-import 'package:awn/comment.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
 import 'package:awn/services/placeWidget.dart';

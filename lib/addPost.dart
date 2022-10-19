@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:regexed_validator/regexed_validator.dart';
 import 'login.dart';
@@ -276,19 +277,16 @@ class _MyStatefulWidgetState extends State<addPost> {
             //website
             Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-              child: Directionality(
-                textDirection: TextDirection.ltr,
-                child: TextFormField(
-                  textAlign: TextAlign.left,
-                  controller: websiteController,
-                  decoration: const InputDecoration(labelText: 'Website'),
-                  validator: (value) {
-                    if (value!.isNotEmpty && !validator.url(value)) {
-                      return 'Please enter a valid website Url';
-                    }
-                    return null;
-                  },
-                ),
+              child: TextFormField(
+                textAlign: TextAlign.left,
+                controller: websiteController,
+                decoration: const InputDecoration(labelText: 'Website'),
+                validator: (value) {
+                  if (value!.isNotEmpty && !validator.url(value)) {
+                    return 'Please enter a valid website Url';
+                  }
+                  return null;
+                },
               ),
             ),
             //phone number
@@ -299,7 +297,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.digitsOnly
                 ],
-                maxLength: 10,
+                // maxLength: 10,
                 textAlign: TextAlign.left,
                 controller: numberController,
                 decoration: const InputDecoration(
@@ -308,9 +306,9 @@ class _MyStatefulWidgetState extends State<addPost> {
                   if (value == null || value.isEmpty) {
                     print('empty');
                   } else {
-                    if (value.length != 10) {
-                      return 'Please enter a phone number of 10 digits';
-                    }
+                    // if (value.length != 10) {
+                    //   return 'Please enter a phone number of 10 digits';
+                    // }
                   }
                 },
               ),
@@ -474,7 +472,9 @@ class _MyStatefulWidgetState extends State<addPost> {
       TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
       imagePath = await (await uploadTask).ref.getDownloadURL();
     }
-
+    DateTime _date = DateTime.now();
+    String date =DateFormat('yyyy-MM-dd HH: mm').format(_date);
+    
     String dataId = '';
     print('will be added to db');
     //add all value without the location
@@ -488,7 +488,9 @@ class _MyStatefulWidgetState extends State<addPost> {
       'Phone number': numberController.text,
       'description': descriptionController.text,
       'userId': FirebaseAuth.instance.currentUser!.uid,
-      'docId': ''
+      'docId': '',
+      'status': 'Pending',
+      'date': date
     });
     dataId = docReference.id;
     posts.doc(dataId).update({'docId': dataId});
