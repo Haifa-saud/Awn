@@ -669,7 +669,7 @@ class _requestPageState extends State<requestPage> {
                                   : SizedBox(height: 0),
 
                               Visibility(
-                                visible: isVol & viewAcceptButtom,
+                                visible: isVol & isPending,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -684,7 +684,7 @@ class _requestPageState extends State<requestPage> {
 
                                           updateDB(docId);
                                           Confermation();
-                                          setAccept();
+                                          // setAccept();
                                         },
                                         style: ElevatedButton.styleFrom(
                                           foregroundColor: Colors.white,

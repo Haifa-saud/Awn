@@ -885,7 +885,7 @@ class MyInfoState extends State<MyInfo> {
   bool other = false;
   String typeId = "";
   bool getPassword = false;
-  bool isAuthValid = true;
+  bool invalidEmail = false;
 
   var _formKey;
   var userData;
@@ -1123,18 +1123,24 @@ class MyInfoState extends State<MyInfo> {
                       child: const SizedBox(height: 15),
                     ),
                     Visibility(
-                        visible: getPassword && isEditing,
+                        visible: getPassword && isEditing && !invalidEmail,
                         child: const Text(
-                            'Please enter your password to update your email.',
+                            'Enter your password to update your email. Please note that you will be logged out automatically after a successful email update',
                             style: TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.normal))),
                     Visibility(
+                        visible: getPassword && isEditing && invalidEmail,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(emailErrorMessage,
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal)),
+                        )),
+                    Visibility(
                       visible: getPassword && isEditing,
                       child: const SizedBox(height: 30),
-                    ),
-                    Visibility(
-                      visible: getPassword && isEditing && !isAuthValid,
-                      child: Text(emailErrorMessage),
                     ),
 
                     //DOB field
@@ -1542,7 +1548,8 @@ class MyInfoState extends State<MyInfo> {
                                         TextButton(
                                           onPressed: () async {
                                             Navigator.of(ctx).pop();
-                                            FirebaseFirestore.instance
+                                            /*SNU request*/ FirebaseFirestore
+                                                .instance
                                                 .collection('requests')
                                                 .get()
                                                 .then((snapshot) {
@@ -1562,6 +1569,67 @@ class MyInfoState extends State<MyInfo> {
                                                 ds.reference.delete().then((_) {
                                                   print("request deleted");
                                                 });
+                                              }
+                                            });
+                                            /*Volunteer request*/ FirebaseFirestore
+                                                .instance
+                                                .collection('requests')
+                                                .get()
+                                                .then((snapshot) {
+                                              List<DocumentSnapshot> allDocs =
+                                                  snapshot.docs;
+                                              List<DocumentSnapshot>
+                                                  filteredDocs = allDocs
+                                                      .where((document) =>
+                                                          (document.data()
+                                                                  as Map<String,
+                                                                      dynamic>)[
+                                                              'VolID'] ==
+                                                          userData['id'])
+                                                      .toList();
+                                              for (DocumentSnapshot ds
+                                                  in filteredDocs) {
+                                                var dateTime = ds['date_ymd'];
+                                                final now = DateTime.now();
+                                                var year = int.parse(
+                                                    dateTime.substring(0, 4));
+                                                var month = int.parse(
+                                                    dateTime.substring(5, 7));
+                                                var day = int.parse(
+                                                    dateTime.substring(8, 10));
+                                                var hours = int.parse(
+                                                    dateTime.substring(11, 13));
+                                                var minutes = int.parse(
+                                                    dateTime.substring(14));
+
+                                                final expirationDate = DateTime(
+                                                    year,
+                                                    month,
+                                                    day,
+                                                    hours,
+                                                    minutes);
+                                                var isRequestActive =
+                                                    expirationDate.isAfter(now);
+
+                                                print(
+                                                    "expirationDate $expirationDate $isRequestActive");
+                                                if (isRequestActive) {
+                                                  ds.reference.update({
+                                                    'status': 'Pending',
+                                                    'VolID': ''
+                                                  }).then((_) {
+                                                    print(
+                                                        "vol request updated");
+                                                  });
+                                                } else {
+                                                  ds.reference.update({
+                                                    'status': 'Expired',
+                                                    'VolID': ''
+                                                  }).then((_) {
+                                                    print(
+                                                        "vol request updated");
+                                                  });
+                                                }
                                               }
                                             });
                                             FirebaseFirestore.instance
@@ -1665,158 +1733,48 @@ class MyInfoState extends State<MyInfo> {
                                     );
                                   } else {
                                     if (_formKey.currentState!.validate()) {
-                                      // if (emailController.text !=
-                                      //     userData['Email']) {
-                                      //   var user = await FirebaseAuth
-                                      //       .instance.currentUser!;
-                                      //   // try {
-                                      //   //   var result = await user
-                                      //   //       .reauthenticateWithCredential(
-                                      //   //           EmailAuthProvider.credential(
-                                      //   //     email: userData['Email'],
-                                      //   //     password: passwordController.text,
-                                      //   //   ));
-                                      //   //   result.user!.updateEmail(
-                                      //   //       emailController.text);
-                                      //   //   showDialog(
-                                      //   //     context: context,
-                                      //   //     builder: (ctx) => AlertDialog(
-                                      //   //       title: const Text("Save?"),
-                                      //   //       content: const Text(
-                                      //   //         "Are You Sure You want to save changes?",
-                                      //   //         textAlign: TextAlign.left,
-                                      //   //       ),
-                                      //   //       actions: <Widget>[
-                                      //   //         TextButton(
-                                      //   //           onPressed: () {
-                                      //   //             Navigator.of(ctx).pop();
-                                      //   //             FocusScope.of(context)
-                                      //   //                 .unfocus();
-                                      //   //           },
-                                      //   //           child: Container(
-                                      //   //             padding:
-                                      //   //                 const EdgeInsets.all(
-                                      //   //                     14),
-                                      //   //             child: const Text("Cancel",
-                                      //   //                 style: TextStyle(
-                                      //   //                     color:
-                                      //   //                         Color.fromARGB(
-                                      //   //                             255,
-                                      //   //                             194,
-                                      //   //                             98,
-                                      //   //                             98))),
-                                      //   //           ),
-                                      //   //         ),
-                                      //   //         TextButton(
-                                      //   //           onPressed: () {
-                                      //   //             ScaffoldMessenger.of(
-                                      //   //                     context)
-                                      //   //                 .showSnackBar(
-                                      //   //               const SnackBar(
-                                      //   //                   content: Text(
-                                      //   //                       'Changes has been Saved!')),
-                                      //   //             );
-                                      //   //             UpdateDB();
-                                      //   //             setState(() {
-                                      //   //               isEditing = false;
-                                      //   //             });
-                                      //   //             FocusScope.of(context)
-                                      //   //                 .unfocus();
-
-                                      //   //             Navigator.of(ctx).pop();
-                                      //   //           },
-                                      //   //           child: Container(
-                                      //   //             padding:
-                                      //   //                 const EdgeInsets.all(
-                                      //   //                     14),
-                                      //   //             child: const Text(
-                                      //   //               "Save",
-                                      //   //             ),
-                                      //   //           ),
-                                      //   //         ),
-                                      //   //       ],
-                                      //   //     ),
-                                      //   //   );
-                                      //   // } catch (error) {
-                                      //   //   print(error);
-                                      //   //   emailErrorMessage = error.toString();
-                                      //   //   isAuthValid = false;
-                                      //   // }
-                                      //   await user
-                                      //       .reauthenticateWithCredential(
-                                      //           EmailAuthProvider.credential(
-                                      //     email: userData['Email'],
-                                      //     password: passwordController.text,
-                                      //   ))
-                                      //       .then((userCredential) {
-                                      //     userCredential.user!
-                                      //         .updateEmail(emailController.text)
-                                      //         .catchError((error) {
-                                      //       setState(() {
-                                      //         emailErrorMessage = 'error';
-
-                                      //         isAuthValid = false;
-                                      //       });
-                                      //     });
-                                      //   });
-                                      // }
-                                      if (true) {
-                                        showDialog(
-                                          context: context,
-                                          builder: (ctx) => AlertDialog(
-                                            title: const Text("Save?"),
-                                            content: const Text(
-                                              "Are You Sure You want to save changes?",
-                                              textAlign: TextAlign.left,
-                                            ),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(ctx).pop();
-                                                  FocusScope.of(context)
-                                                      .unfocus();
-                                                },
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(14),
-                                                  child: const Text("Cancel",
-                                                      style: TextStyle(
-                                                          color: Color.fromARGB(
-                                                              255,
-                                                              194,
-                                                              98,
-                                                              98))),
-                                                ),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                        content: Text(
-                                                            'Changes has been Saved!')),
-                                                  );
-                                                  UpdateDB();
-                                                  setState(() {
-                                                    isEditing = false;
-                                                  });
-                                                  FocusScope.of(context)
-                                                      .unfocus();
-
-                                                  Navigator.of(ctx).pop();
-                                                },
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(14),
-                                                  child: const Text(
-                                                    "Save",
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                          title: const Text("Save?"),
+                                          content: const Text(
+                                            "Are You Sure You want to save changes?",
+                                            textAlign: TextAlign.left,
                                           ),
-                                        );
-                                      }
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(ctx).pop();
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(14),
+                                                child: const Text("Cancel",
+                                                    style: TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 194, 98, 98))),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                UpdateDB();
+                                                Navigator.of(context).pop();
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(14),
+                                                child: const Text(
+                                                  "Save",
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
                                     }
                                   }
                                 },
@@ -1884,6 +1842,8 @@ class MyInfoState extends State<MyInfo> {
                                                   userData['DOB'];
                                               disabilityController.text =
                                                   userData['Disability'];
+                                              invalidEmail = false;
+                                              passwordController.text = '';
                                             });
                                             Navigator.of(ctx).pop();
                                             FocusScope.of(context).unfocus();
@@ -1942,26 +1902,68 @@ class MyInfoState extends State<MyInfo> {
     var Edit_info =
         FirebaseFirestore.instance.collection('users').doc(widget.user['id']);
     var errorMessage = '';
+    emailErrorMessage = '';
 
     if (emailController.text != userData['Email']) {
-      var user = await FirebaseAuth.instance.currentUser!;
-
-      await user
+      var result = await user
           .reauthenticateWithCredential(EmailAuthProvider.credential(
         email: userData['Email'],
         password: passwordController.text,
       ))
-          .then((userCredential) {
-        userCredential.user!
-            .updateEmail(emailController.text)
-            .catchError((error) {
-          errorMessage = error.message;
-          print('error: $error');
+          .catchError((error) {
+        invalidEmail = true;
+        errorMessage = error.message;
+        setState(() {
+          invalidEmail = true;
+          emailErrorMessage =
+              'Invalid password, the authentication failed. Please try again.';
         });
+        print('update catch error: $error');
+        print('update catch errorMessage: $errorMessage');
       });
-    }
-    print('errorMessage: $errorMessage');
-    if (errorMessage == '') {
+      await result.user!.updateEmail(emailController.text).catchError((error) {
+        errorMessage = error.message;
+        setState(() {
+          emailErrorMessage = error.message;
+          invalidEmail = true;
+        });
+        invalidEmail = true;
+        print('update catch error: $error');
+        print('update catch errorMessage: $emailErrorMessage');
+      });
+
+      print('errorMessage outside: $errorMessage $invalidEmail');
+
+      if (!invalidEmail) {
+        passwordController.text = '';
+
+        Edit_info.update({
+          'name': nameController.text,
+          'gender': genderController.text,
+          'phone number': phoneController.text,
+          'Email': emailController.text,
+          'bio': bioController.text,
+          'DOB': dateController.text,
+          'Disability': disabilityController.text
+        });
+        await Navigator.pushNamed(context, '/login');
+
+        setState(() {
+          userName = nameController.text;
+        });
+        widget.onUpdate();
+        invalidEmail = false;
+        print('profile edited');
+        clearBool();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Changes has been Saved!')),
+        );
+        setState(() {
+          isEditing = false;
+        });
+      }
+    } else {
+      // if (emailErrorMessage == '') {
       passwordController.text = '';
       Edit_info.update({
         'name': nameController.text,
@@ -1972,16 +1974,28 @@ class MyInfoState extends State<MyInfo> {
         'DOB': dateController.text,
         'Disability': disabilityController.text
       });
+      //  Navigator.pushNamed(context, '/login');
+      // await FirebaseAuth.instance.signOut();
 
       setState(() {
         userName = nameController.text;
       });
       widget.onUpdate();
-
+      invalidEmail = false;
       print('profile edited');
       clearBool();
-    } else {
-      isEditing = true;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Changes has been Saved!')),
+      );
+      setState(() {
+        isEditing = false;
+      });
+      if (emailController.text != userData['Email']) {
+        await FirebaseAuth.instance.signOut();
+      }
     }
+    // else {
+    //   isEditing = true;
+    // }
   }
 }
