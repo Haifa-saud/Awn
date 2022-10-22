@@ -49,18 +49,6 @@ String password = "";
 String confirm_password = "";
 
 class _registerState extends State<register> {
-  // Future<Map<String, dynamic>> readUserData() => FirebaseFirestore.instance
-  //         .collection('usUserDisabilityTypeers')
-  //         .doc()
-  //         .get()
-  //         .then(
-  //           (DocumentSnapshot doc) {
-  //         print(doc.data() as Map<String, dynamic>);
-  //         return doc.data() as Map<String, dynamic>;
-  //       },
-  //     );
-  // Stream<QuerySnapshot> DisabilityType =
-  //     FirebaseFirestore.instance.collection('UserDisabilityType').snapshots();
   CollectionReference DisabilityType =
       FirebaseFirestore.instance.collection('UserDisabilityType');
   var selectedDisabilityType;
@@ -116,8 +104,8 @@ class _registerState extends State<register> {
     if (selectedDate == null) {
       return 'select date';
     } else {
-      globals.bDay = DateFormat('MMM d, yyyy').format(selectedDate);
-      return DateFormat('MMM d, yyyy').format(selectedDate);
+      globals.bDay = DateFormat('yyyy-MM-dd').format(selectedDate);
+      return DateFormat('yyyy-MM-dd').format(selectedDate);
     }
   }
 
@@ -795,24 +783,6 @@ class _registerState extends State<register> {
     );
   }
 
-  // Future selectFile() async {
-  //   final result = await FilePicker.platform.pickFiles();
-  //   upload = true;
-  //   if (result == null) {
-  //     upload = false;
-  //     return;
-  //   }
-  //   setState(() {
-  //     pickedFile = result.files.first;
-  //     fileDB = File(pickedFile.path!);
-
-  //     // final path = 'User/${pickedFile.name}'; //خليه جالسه اجرب
-  //     // final file = File(pickedFile.path!);
-  //     // final ref = FirebaseStorage.instance.ref().child(path);
-  //     // UploadTask uploadTask = ref.putFile(file);
-  //   });
-  // }
-
   Future signUp() async {
     final isValid = _formKey.currentState!.validate();
     if (!isValid) return;
@@ -865,10 +835,10 @@ bool other = false;*/
     String bio = bioController.text;
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
-    if (blind == true && blind != null) disability += " Blind,";
-    if (mute == true && mute != null) disability += " Mute,";
-    if (deaf == true && deaf != null) disability += " Deaf,";
-    if (physical == true && physical != null) disability += " Physical,";
+    if (blind == true && blind != null) disability += " Visually Impaired,";
+    if (mute == true && mute != null) disability += " Vocally Impaired,";
+    if (deaf == true && deaf != null) disability += " Hearing Impaired,";
+    if (physical == true && physical != null) disability += " Physically Impaired,";
     if (other == true && other != null) disability += " Other,";
     final userRef = db.collection("users").doc(user.uid);
     //final volRef = db.collection("volunteers").doc(user!.uid);

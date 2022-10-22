@@ -1,3 +1,4 @@
+import 'package:awn/adminPage.dart';
 import 'package:awn/homePage.dart';
 import 'package:awn/login.dart';
 import 'package:awn/register.dart';
@@ -28,22 +29,30 @@ Future<void> main() async {
       Workmanager().cancelAll();
       runApp(MyApp(false));
     } else {
+      //! haifa
       if (notificationAppLaunchDetails.didNotificationLaunchApp) {
         var Payload = notificationAppLaunchDetails.payload;
-        runApp(MyApp(true, true, Payload!));
+        runApp(MyApp(true, true, Payload!, false));
+      } else if (user.uid == 'GvQo5Qz5ZnTfQYq5GOhZi22HGCB2') {
+        runApp(MyApp(true, false, '', true));
       } else {
-        runApp(MyApp(true, false));
+        runApp(MyApp(true, false, '', false));
       }
     }
   });
 }
 
 class MyApp extends StatefulWidget {
-  MyApp([this.auth = false, this.notification = false, this.payload = '']);
+  MyApp(
+      [this.auth = false,
+      this.notification = false,
+      this.payload = '',
+      this.isAdmin = false]);
 
   bool auth;
   bool notification;
   String payload;
+  bool isAdmin;
 
   @override
   State<MyApp> createState() => _MyApp();
@@ -58,6 +67,7 @@ class _MyApp extends State<MyApp> {
         '/volunteerPage': (ctx) => const homePage(),
         "/register": (ctx) => const register(),
         "/login": (ctx) => const login(),
+        "/adminPage": (ctx) => const adminPage(),
       },
       debugShowCheckedModeBanner: false,
       title: 'Home Page',
@@ -93,18 +103,17 @@ class _MyApp extends State<MyApp> {
               wordSpacing: 3,
               color: const Color(0xFF06283D),
               letterSpacing: 1,
-              fontSize: 19.0), //the text field label
-          subtitle2: TextStyle(
-              wordSpacing: 3,
-              letterSpacing: 1,
-              fontSize: 120.0), //the text field
+              fontSize: 18.0), //the text field label
+          // subtitle2: TextStyle(
+          //     wordSpacing: 3,
+          //     letterSpacing: 1,
+          //     fontSize: 120.0), //the text field
 
           button: TextStyle(
             wordSpacing: 3,
             letterSpacing: 1,
             fontSize: 17,
             fontWeight: FontWeight.w500,
-            // decoration: TextDecoration.underline
           ), //the button text
         ),
         inputDecorationTheme: InputDecorationTheme(
@@ -144,8 +153,8 @@ class _MyApp extends State<MyApp> {
       home: widget.auth
           ? (widget.notification
               ? viewRequests(userType: 'Volunteer', reqID: widget.payload)
-              : const homePage())
-          : login(),
+              : (widget.isAdmin ? const adminPage() : const homePage()))
+          : const login(),
     );
   }
 }

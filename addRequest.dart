@@ -1,6 +1,7 @@
 import 'package:awn/addPost.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
+import 'package:duration_picker/duration_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -78,28 +79,6 @@ class _AddRequestState extends State<addRequest> {
                   }))
         ],
         title: const Text('Request Awn', textAlign: TextAlign.center),
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () => showDialog<String>(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-              content: const Text('Discard the changes you made?'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Keep editing'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    clearForm();
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
-                  child: const Text('Discard'),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
       body: AwnRequestForm(),
       floatingActionButton: FloatingActionButton(
@@ -292,6 +271,8 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     }
   }
 
+  var selectedDuration;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -305,10 +286,12 @@ class AwnRequestFormState extends State<AwnRequestForm> {
               '*indicates required fields',
               style: TextStyle(fontSize: 15),
             )),
+
             /*title*/ Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 6),
               child: Text('What help do you need?*'),
             ),
+
             Container(
                 padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                 child: TextFormField(
@@ -336,39 +319,47 @@ class AwnRequestFormState extends State<AwnRequestForm> {
             ),
 
             //date picker
-            Container(
-              padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _selectDate(context);
-                      showDate = true;
-                    },
-                    style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.blue,
-                        backgroundColor: Colors.white,
-                        padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
-                        textStyle: const TextStyle(
-                          fontSize: 18,
-                        ),
-                        side:
-                            BorderSide(color: Colors.grey.shade400, width: 1)),
-                    child: const Text('Update Date'),
-                  ),
-                  showDate
-                      ? Container(
-                          margin: EdgeInsets.only(right: 50),
-                          child: Text(getDate_formated()))
-                      // DateFormat('yyyy/MM/dd').format(selectedDate)
-                      : const SizedBox(),
-                ],
+            Row(children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _selectDate(context);
+                        showDate = true;
+                      },
+                      style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          backgroundColor: Colors.transparent,
+                          padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
+                          textStyle: const TextStyle(
+                            fontSize: 18,
+                          ),
+                          side: BorderSide(
+                              color: Colors.grey.shade400, width: 1)),
+                      child: showDate
+                          ? Row(
+                              children: [
+                                Container(
+                                    margin: EdgeInsets.only(right: 10),
+                                    child: Text(getDate_formated()
+                                        //   data.docs[index]
+                                        //    ['date_dmy']
+                                        )),
+                                Icon(Icons.calendar_today,
+                                    size: 25, color: Colors.grey.shade600),
+                              ],
+                            )
+                          : const SizedBox(),
+                      //  const Text('Edit Date'),
+                    ),
+                  ],
+                ),
               ),
-            ),
-
-            //time picker
-            Container(
+              //time picker
+              Container(
                 padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -379,23 +370,34 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                         showTime = true;
                       },
                       style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.blue,
-                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                          backgroundColor: Colors.transparent,
                           padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
                           textStyle: const TextStyle(
                             fontSize: 18,
                           ),
                           side: BorderSide(
                               color: Colors.grey.shade400, width: 1)),
-                      child: const Text('Update Time'),
+                      child: showDate
+                          ? Row(
+                              children: [
+                                Container(
+                                    margin: EdgeInsets.only(right: 10),
+                                    child: Text(getTime(selectedTime)
+                                        //   data.docs[index]
+                                        //    ['date_dmy']
+                                        )),
+                                Icon(Icons.schedule,
+                                    size: 25, color: Colors.grey.shade600),
+                              ],
+                            )
+                          : const SizedBox(),
+                      //  const Text('Edit Date'),
                     ),
-                    showTime
-                        ? Container(
-                            margin: EdgeInsets.only(right: 50),
-                            child: Text(getTime(selectedTime)))
-                        : const SizedBox(),
                   ],
-                )),
+                ),
+              )
+            ]),
 
             //duration
             Container(
@@ -404,22 +406,41 @@ class AwnRequestFormState extends State<AwnRequestForm> {
             ),
 
             Container(
-              padding: const EdgeInsets.fromLTRB(6, 8, 6, 12),
-              child: TextFormField(
-                controller: durationController,
-                decoration: const InputDecoration(
-                  hintText: 'E.g. For about 2 hours',
-                ),
-                // onChanged: (value) {duration = value;},
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      (value.trim()).isEmpty) {
-                    return 'Please enter the duration';
-                  }
-                },
-              ),
-            ),
+                padding: const EdgeInsets.fromLTRB(6, 8, 6, 12),
+                child: TextFormField(
+                  readOnly: true,
+                  controller: durationController,
+                  onTap: () async {
+                    selectedDuration = await showDurationPicker(
+                        context: context,
+                        initialTime: const Duration(minutes: 0),
+                        snapToMins: 5.0);
+                    String twoDigits(int n) => n.toString().padLeft(0);
+                    durationController.text =
+                        '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
+                  },
+                  decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.schedule, size: 25),
+                      onPressed: () async {
+                        selectedDuration = await showDurationPicker(
+                            context: context,
+                            initialTime: const Duration(minutes: 0),
+                            snapToMins: 5.0);
+                        String twoDigits(int n) => n.toString().padLeft(0);
+                        durationController.text =
+                            '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
+                      },
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        (value.trim()).isEmpty) {
+                      return 'Please specify a duration';
+                    }
+                  },
+                )),
 
             //description
             Container(
@@ -557,14 +578,9 @@ class AwnRequestFormState extends State<AwnRequestForm> {
   Future<void> addToDB() async {
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
-    // print('============================================');
-    // print('userId');
-    //  print(userId);
 
-    CollectionReference requests = FirebaseFirestore.instance
-        // .collection("userData")
-        // .doc(userId)
-        .collection('requests');
+    CollectionReference requests =
+        FirebaseFirestore.instance.collection('requests');
     DocumentReference docReference = await requests.add({
       'title': titleController.text,
       'date_ymd': getDateTimeSelected(), //getDate

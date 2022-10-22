@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:regexed_validator/regexed_validator.dart';
 import 'login.dart';
@@ -22,7 +23,6 @@ import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'main.dart';
 
-//! bottom bar done
 class addPost extends StatefulWidget {
   final String userType;
   const addPost({Key? key, required this.userType}) : super(key: key);
@@ -146,10 +146,15 @@ class _MyStatefulWidgetState extends State<addPost> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
           child: ListView(children: <Widget>[
+            Container(
+                child: Text(
+              '*indicates required fields',
+              style: TextStyle(fontSize: 15),
+            )),
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
               child: Text(
-                'Institution Details',
+                'Institution Details*',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -160,8 +165,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                 controller: nameController,
                 maxLength: 25,
                 decoration: const InputDecoration(
-                    labelText: "Name (required)*",
-                    hintText: "E.g. King Saud University"),
+                    labelText: "Name", hintText: "E.g. King Saud University"),
                 validator: (value) {
                   if (value == null ||
                       value.isEmpty ||
@@ -190,7 +194,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                           validator: (value) => value == null
                               ? 'Please select a category.'
                               : null,
-                          hint: const Text('Category (required)*'),
+                          hint: const Text('Category'),
                           items: snapshot.data!.docs
                               .map((DocumentSnapshot document) {
                             return DropdownMenuItem<String>(
@@ -206,7 +210,7 @@ class _MyStatefulWidgetState extends State<addPost> {
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
-                'Institution Image',
+                'Institution Image*',
               ),
             ),
             /*image*/ Column(
@@ -273,19 +277,16 @@ class _MyStatefulWidgetState extends State<addPost> {
             //website
             Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-              child: Directionality(
-                textDirection: TextDirection.ltr,
-                child: TextFormField(
-                  textAlign: TextAlign.left,
-                  controller: websiteController,
-                  decoration: const InputDecoration(labelText: 'Website'),
-                  validator: (value) {
-                    if (value!.isNotEmpty && !validator.url(value)) {
-                      return 'Please enter a valid website Url';
-                    }
-                    return null;
-                  },
-                ),
+              child: TextFormField(
+                textAlign: TextAlign.left,
+                controller: websiteController,
+                decoration: const InputDecoration(labelText: 'Website'),
+                validator: (value) {
+                  if (value!.isNotEmpty && !validator.url(value)) {
+                    return 'Please enter a valid website Url';
+                  }
+                  return null;
+                },
               ),
             ),
             //phone number
@@ -296,7 +297,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.digitsOnly
                 ],
-                maxLength: 10,
+                // maxLength: 10,
                 textAlign: TextAlign.left,
                 controller: numberController,
                 decoration: const InputDecoration(
@@ -305,9 +306,9 @@ class _MyStatefulWidgetState extends State<addPost> {
                   if (value == null || value.isEmpty) {
                     print('empty');
                   } else {
-                    if (value.length != 10) {
-                      return 'Please enter a phone number of 10 digits';
-                    }
+                    // if (value.length != 10) {
+                    //   return 'Please enter a phone number of 10 digits';
+                    // }
                   }
                 },
               ),
@@ -471,7 +472,9 @@ class _MyStatefulWidgetState extends State<addPost> {
       TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
       imagePath = await (await uploadTask).ref.getDownloadURL();
     }
-
+    DateTime _date = DateTime.now();
+    String date =DateFormat('yyyy-MM-dd HH: mm').format(_date);
+    
     String dataId = '';
     print('will be added to db');
     //add all value without the location
@@ -485,7 +488,9 @@ class _MyStatefulWidgetState extends State<addPost> {
       'Phone number': numberController.text,
       'description': descriptionController.text,
       'userId': FirebaseAuth.instance.currentUser!.uid,
-      'docId': ''
+      'docId': '',
+      'status': 'Pending',
+      'date': date
     });
     dataId = docReference.id;
     posts.doc(dataId).update({'docId': dataId});

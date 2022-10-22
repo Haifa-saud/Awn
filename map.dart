@@ -117,7 +117,7 @@ class _MyStatefulWidgetState extends State<maps> {
       title = "Update Location";
       collName = 'requests';
       border = BorderRadius.circular(30);
-      sucessMsg = 'Location is updated successfully';
+      sucessMsg = 'Request location is updated successfully';
     } else {
       title = "Add Location";
       collName = 'requests';

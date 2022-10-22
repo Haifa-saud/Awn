@@ -1,5 +1,6 @@
 import 'package:awn/addRequest.dart';
 import 'package:awn/services/appWidgets.dart';
+import 'package:awn/userProfile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -386,235 +387,186 @@ class _EditRequestState extends State<editRequest> {
                             if (snap.hasData) {
                               var reqLoc = snap.data;
                               selectedDuration = durationController;
-                              // var title = data.docs[index]['title'];
-                              // titleController.text =
-                              //     data.docs[index]['title'].toString();
-
-                              // durationController.text =
-                              //     data.docs[index]['duration'].toString();
-
-                              // descController.text =
-                              //     data.docs[index]['description'].toString();
                               return Form(
-                                  key: _formKey,
-                                  child: Container(
-                                      margin: EdgeInsets.fromLTRB(5, 12, 5, 0),
-                                      decoration: BoxDecoration(
-                                          //color: Colors.white,
-                                          boxShadow: const [
-                                            BoxShadow(
-                                                blurRadius: 32,
-                                                color: Colors.black45,
-                                                spreadRadius: -8)
-                                          ],
-                                          borderRadius:
-                                              BorderRadius.circular(15)),
-                                      child: Card(
-                                          child: Column(
-                                        // mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          ///edit
-
-                                          ///title
-                                          Container(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                6, 12, 6, 6),
-                                            child: Text(
-                                              'Title',
-                                              textAlign: TextAlign.left,
+                                key: _formKey,
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                  child: Column(
+                                    // mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ///title
+                                      Container(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            6, 12, 6, 6),
+                                        child: Text(
+                                          'Title',
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                      Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              6, 12, 6, 12),
+                                          child: TextFormField(
+                                            maxLength: 20,
+                                            controller: titleController,
+                                            decoration: const InputDecoration(
+                                              hintText:
+                                                  'E.g. Help with shopping',
                                             ),
-                                          ),
-                                          Container(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      6, 12, 6, 12),
-                                              child: TextFormField(
-                                                // onChanged: (value) {
-                                                //   setState(() {
-                                                //     titleController.text =
-                                                //         value;
-                                                //   });
-                                                // },
-                                                //      initialValue: title,
-                                                maxLength: 20,
-                                                controller: titleController,
-                                                decoration:
-                                                    const InputDecoration(
-                                                  hintText:
-                                                      'E.g. Help with shopping',
-                                                ),
-                                                // onChanged: (value) {title = value; },
-                                                // onChanged: (value) {
-                                                //   titleController.text = value;
-                                                // },
-                                                validator: (value) {
-                                                  if (value == null ||
-                                                      value.isEmpty ||
-                                                      (value.trim()).isEmpty) {
-                                                    // double s = checkCurrentTime();
-                                                    return 'Please enter a title '; //s.toString()
-                                                  }
-                                                  return null;
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty ||
+                                                  (value.trim()).isEmpty) {
+                                                // double s = checkCurrentTime();
+                                                return 'Please enter a title '; //s.toString()
+                                              }
+                                              return null;
+                                            },
+                                          )),
+
+                                      // time and date
+                                      Container(
+                                        padding:
+                                            EdgeInsets.fromLTRB(6, 35, 6, 6),
+                                        child: Text('Time and Date'),
+                                      ),
+
+                                      //date picker
+                                      Row(children: [
+                                        Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              6, 12, 6, 12),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  _selectDate(context);
+                                                  showDate = true;
                                                 },
-                                              )),
-
-                                          // time and date
-                                          Container(
-                                            padding: EdgeInsets.fromLTRB(
-                                                6, 35, 6, 6),
-                                            child: Text('Time and Date'),
-                                          ),
-
-                                          //date picker
-                                          Row(children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      6, 12, 6, 12),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      _selectDate(context);
-                                                      showDate = true;
-                                                    },
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                            foregroundColor:
-                                                                Colors.black,
-                                                            backgroundColor:
-                                                                Colors.white,
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .fromLTRB(
-                                                                    17,
-                                                                    16,
-                                                                    17,
-                                                                    16),
-                                                            textStyle:
-                                                                const TextStyle(
-                                                              fontSize: 18,
-                                                            ),
-                                                            side: BorderSide(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade400,
-                                                                width: 1)),
-                                                    child: showDate
-                                                        ? Row(
-                                                            children: [
-                                                              Container(
-                                                                  margin: EdgeInsets
-                                                                      .only(
-                                                                          right:
-                                                                              10),
-                                                                  child: Text(
-                                                                      getDate_formated()
-                                                                      //   data.docs[index]
-                                                                      //    ['date_dmy']
-                                                                      )),
-                                                              Icon(
-                                                                  Icons
-                                                                      .calendar_today,
-                                                                  size: 25,
-                                                                  color: Colors
-                                                                      .grey
-                                                                      .shade600),
-                                                            ],
-                                                          )
-                                                        : const SizedBox(),
-                                                    //  const Text('Edit Date'),
-                                                  ),
-                                                ],
+                                                style: ElevatedButton.styleFrom(
+                                                    foregroundColor:
+                                                        Colors.black,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    padding: const EdgeInsets
+                                                            .fromLTRB(
+                                                        17, 16, 17, 16),
+                                                    textStyle: const TextStyle(
+                                                      fontSize: 18,
+                                                    ),
+                                                    side: BorderSide(
+                                                        color: Colors
+                                                            .grey.shade400,
+                                                        width: 1)),
+                                                child: showDate
+                                                    ? Row(
+                                                        children: [
+                                                          Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      right:
+                                                                          10),
+                                                              child: Text(
+                                                                  getDate_formated())),
+                                                          Icon(
+                                                              Icons
+                                                                  .calendar_today,
+                                                              size: 25,
+                                                              color: Colors.grey
+                                                                  .shade600),
+                                                        ],
+                                                      )
+                                                    : const SizedBox(),
                                               ),
-                                            ),
-                                            //time picker
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      6, 12, 6, 12),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  ElevatedButton(
-                                                    onPressed: () {
-                                                      _selectTime(context);
-                                                      showTime = true;
-                                                    },
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                            foregroundColor:
-                                                                Colors.black,
-                                                            backgroundColor:
-                                                                Colors.white,
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .fromLTRB(
-                                                                    17,
-                                                                    16,
-                                                                    17,
-                                                                    16),
-                                                            textStyle:
-                                                                const TextStyle(
-                                                              fontSize: 18,
-                                                            ),
-                                                            side: BorderSide(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade400,
-                                                                width: 1)),
-                                                    child: showDate
-                                                        ? Row(
-                                                            children: [
-                                                              Container(
-                                                                  margin: EdgeInsets
-                                                                      .only(
-                                                                          right:
-                                                                              10),
-                                                                  child: Text(
-                                                                      getTime(
-                                                                          selectedTime)
-                                                                      //   data.docs[index]
-                                                                      //    ['date_dmy']
-                                                                      )),
-                                                              Icon(
-                                                                  Icons
-                                                                      .schedule,
-                                                                  size: 25,
-                                                                  color: Colors
-                                                                      .grey
-                                                                      .shade600),
-                                                            ],
-                                                          )
-                                                        : const SizedBox(),
-                                                    //  const Text('Edit Date'),
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          ]),
-//  getTime( selectedTime)
-                                          //duration
-                                          Container(
-                                            padding: EdgeInsets.fromLTRB(
-                                                6, 35, 6, 6),
-                                            child: Text('Duration'),
+                                            ],
                                           ),
-                                          Container(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      6, 8, 6, 12),
-                                              child: TextFormField(
-                                                readOnly: true,
-                                                controller: durationController,
-                                                onTap: () async {
+                                        ),
+                                        //time picker
+                                        Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              6, 12, 6, 12),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  _selectTime(context);
+                                                  showTime = true;
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    foregroundColor:
+                                                        Colors.black,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    padding: const EdgeInsets
+                                                            .fromLTRB(
+                                                        17, 16, 17, 16),
+                                                    textStyle: const TextStyle(
+                                                      fontSize: 18,
+                                                    ),
+                                                    side: BorderSide(
+                                                        color: Colors
+                                                            .grey.shade400,
+                                                        width: 1)),
+                                                child: showDate
+                                                    ? Row(
+                                                        children: [
+                                                          Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      right:
+                                                                          10),
+                                                              child: Text(getTime(
+                                                                  selectedTime))),
+                                                          Icon(Icons.schedule,
+                                                              size: 25,
+                                                              color: Colors.grey
+                                                                  .shade600),
+                                                        ],
+                                                      )
+                                                    : const SizedBox(),
+                                                //  const Text('Edit Date'),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ]),
+
+                                      //duration
+                                      Container(
+                                        padding:
+                                            EdgeInsets.fromLTRB(6, 35, 6, 6),
+                                        child: Text('Duration'),
+                                      ),
+                                      Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              6, 8, 6, 12),
+                                          child: TextFormField(
+                                            readOnly: true,
+                                            controller: durationController,
+                                            onTap: () async {
+                                              selectedDuration =
+                                                  await showDurationPicker(
+                                                      context: context,
+                                                      initialTime:
+                                                          const Duration(
+                                                              minutes: 0),
+                                                      snapToMins: 5.0);
+                                              String twoDigits(int n) =>
+                                                  n.toString().padLeft(0);
+                                              durationController.text =
+                                                  '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
+                                            },
+                                            decoration: InputDecoration(
+                                              suffixIcon: IconButton(
+                                                icon: const Icon(Icons.schedule,
+                                                    size: 25),
+                                                onPressed: () async {
                                                   selectedDuration =
                                                       await showDurationPicker(
                                                           context: context,
@@ -627,452 +579,357 @@ class _EditRequestState extends State<editRequest> {
                                                   durationController.text =
                                                       '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
                                                 },
-                                                decoration: InputDecoration(
-                                                  suffixIcon: IconButton(
-                                                    icon: const Icon(
-                                                        Icons.schedule,
-                                                        size: 25),
-                                                    onPressed: () async {
-                                                      selectedDuration =
-                                                          await showDurationPicker(
-                                                              context: context,
-                                                              initialTime:
-                                                                  const Duration(
-                                                                      minutes:
-                                                                          0),
-                                                              snapToMins: 5.0);
-                                                      String twoDigits(int n) =>
-                                                          n
-                                                              .toString()
-                                                              .padLeft(0);
-                                                      durationController.text =
-                                                          '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
-                                                    },
-                                                  ),
-                                                ),
-                                                validator: (value) {
-                                                  if (value == null ||
-                                                      value.isEmpty ||
-                                                      (value.trim()).isEmpty) {
-                                                    return 'Please specify a duration';
-                                                  }
-                                                },
-                                              )),
-                                          // Container(
-                                          //   padding: EdgeInsets.fromLTRB(
-                                          //       6, 35, 6, 8),
-                                          //   child: Text('Duration'),
-                                          // ),
-
-                                          // Container(
-                                          //   padding: const EdgeInsets.fromLTRB(
-                                          //       6, 8, 6, 12),
-                                          //   child: TextFormField(
-                                          //     controller: durationController,
-                                          //     decoration: const InputDecoration(
-                                          //       hintText:
-                                          //           'E.g. For about 2 hours',
-                                          //     ),
-                                          //     // onChanged: (value) {duration = value;},
-                                          //     validator: (value) {
-                                          //       if (value == null ||
-                                          //           value.isEmpty ||
-                                          //           (value.trim()).isEmpty) {
-                                          //         return 'Please enter the duration';
-                                          //       }
-                                          //     },
-                                          //   ),
-                                          // ),
-
-                                          //description
-                                          Container(
-                                            padding: EdgeInsets.fromLTRB(
-                                                6, 35, 6, 8),
-                                            child: Text('Description',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                          ),
-
-                                          Container(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                6, 8, 6, 12),
-                                            child: TextFormField(
-                                              controller: descController,
-                                              decoration: InputDecoration(
-                                                hintText:
-                                                    'Describe the help in more details',
-                                                enabledBorder:
-                                                    OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(30.0),
-                                                        borderSide: BorderSide(
-                                                            color: Colors.grey
-                                                                .shade400)),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          30.0),
-                                                  borderSide: BorderSide(
-                                                      color: Colors.blue,
-                                                      width: 2),
-                                                ),
                                               ),
+                                            ),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty ||
+                                                  (value.trim()).isEmpty) {
+                                                return 'Please specify a duration';
+                                              }
+                                            },
+                                          )),
 
-                                              //keyboardType: TextInputType.datetime,
-                                              keyboardType:
-                                                  TextInputType.multiline,
-                                              maxLines: 3,
-                                              maxLength: 150,
-                                              onChanged: (value) {
-                                                description = value;
-                                              },
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty ||
-                                                    (value.trim()).isEmpty) {
-                                                  return 'Please provide a description';
-                                                }
-                                              },
+                                      //description
+                                      Container(
+                                        padding:
+                                            EdgeInsets.fromLTRB(6, 35, 6, 8),
+                                        child: Text('Description',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            6, 8, 6, 12),
+                                        child: TextFormField(
+                                          controller: descController,
+                                          decoration: InputDecoration(
+                                            hintText:
+                                                'Describe the help in more details',
+                                            enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(30.0),
+                                                borderSide: BorderSide(
+                                                    color:
+                                                        Colors.grey.shade400)),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30.0),
+                                              borderSide: BorderSide(
+                                                  color: Colors.blue, width: 2),
                                             ),
                                           ),
-                                          /*location*/
-                                          Container(
-                                            padding: EdgeInsets.fromLTRB(
-                                                6, 25, 6, 8),
-                                            child: Text('Location',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
+
+                                          //keyboardType: TextInputType.datetime,
+                                          keyboardType: TextInputType.multiline,
+                                          maxLines: 3,
+                                          maxLength: 150,
+                                          onChanged: (value) {
+                                            description = value;
+                                          },
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty ||
+                                                (value.trim()).isEmpty) {
+                                              return 'Please provide a description';
+                                            }
+                                          },
+                                        ),
+                                      ),
+
+                                      /*location*/
+                                      Container(
+                                        padding:
+                                            EdgeInsets.fromLTRB(6, 25, 6, 8),
+                                        child: Text('Location',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                      ),
+
+                                      Container(
+                                          // width: 180,
+                                          height: 250,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(15),
                                           ),
-                                          Container(
-                                              // width: 180,
-                                              height: 250,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                              ),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  child: Container(
-                                                      child: GoogleMap(
-                                                    gestureRecognizers: Set()
-                                                      ..add(Factory<
-                                                              TapGestureRecognizer>(
-                                                          () => Gesture(() {
-                                                                Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (context) => maps(
-                                                                          dataId: data.docs[index]
-                                                                              [
-                                                                              'docId'],
-                                                                          typeOfRequest:
-                                                                              'E',
-                                                                          latitude: double.parse(data.docs[index]
+                                          child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              child: Container(
+                                                  child: GoogleMap(
+                                                gestureRecognizers: Set()
+                                                  ..add(Factory<
+                                                          TapGestureRecognizer>(
+                                                      () => Gesture(() {
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (context) => maps(
+                                                                      dataId: data
+                                                                              .docs[index]
+                                                                          [
+                                                                          'docId'],
+                                                                      typeOfRequest:
+                                                                          'E',
+                                                                      latitude: double.parse(
+                                                                          data.docs[index]
                                                                               [
                                                                               'latitude']),
-                                                                          longitude:
-                                                                              double.parse(data.docs[index]['longitude'])),
-                                                                    ));
-                                                              }))),
-                                                    markers: getMarker(
-                                                        latitude, longitude),
-                                                    mapType: MapType.normal,
-                                                    initialCameraPosition:
-                                                        CameraPosition(
-                                                      target: LatLng(
-                                                          latitude, longitude),
-                                                      zoom: 12.0,
-                                                    ),
-                                                    onMapCreated:
-                                                        (GoogleMapController
-                                                            controller) {
-                                                      myController = controller;
-                                                    },
-                                                  )))),
-                                          Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  0, 0, 0, 8),
+                                                                      longitude:
+                                                                          double.parse(
+                                                                              data.docs[index]['longitude'])),
+                                                                ));
+                                                          }))),
+                                                markers: getMarker(
+                                                    latitude, longitude),
+                                                mapType: MapType.normal,
+                                                initialCameraPosition:
+                                                    CameraPosition(
+                                                  target: LatLng(
+                                                      latitude, longitude),
+                                                  zoom: 12.0,
+                                                ),
+                                                onMapCreated:
+                                                    (GoogleMapController
+                                                        controller) {
+                                                  myController = controller;
+                                                },
+                                              )))),
+                                      /*location*/ Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                          child: InkWell(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) => maps(
+                                                          dataId:
+                                                              data.docs[index]
+                                                                  ['docId'],
+                                                          typeOfRequest: 'E',
+                                                          latitude: double.parse(
+                                                              data.docs[index]
+                                                                  ['latitude']),
+                                                          longitude:
+                                                              double.parse(data
+                                                                          .docs[
+                                                                      index][
+                                                                  'longitude'])),
+                                                    ));
+                                              },
                                               child: Row(
                                                 children: [
-                                                  // Icon(Icons.location_pin,
-                                                  //     size: 20,
-                                                  //     color: Colors.red),
                                                   Flexible(
+                                                      // width: 150,
                                                       child: Text(reqLoc!,
                                                           style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize: 17,
-                                                          ))),
-                                                  InkWell(
-                                                    child: Container(
-                                                      alignment:
-                                                          Alignment.topRight,
-                                                      margin: EdgeInsets.only(
-                                                          top: 5, right: 7),
-                                                      // padding: EdgeInsets.only(right: 0),
-                                                      child: Text('Edit',
-                                                          //   overflow:
-                                                          //   TextOverflow.ellipsis,
-                                                          style: TextStyle(
-                                                              color: Colors
-                                                                  .blueGrey,
-                                                              background:
-                                                                  Paint()
-                                                                    ..strokeWidth =
-                                                                        20.0
-                                                                    ..color =
-                                                                        Colors
-                                                                            .white
-                                                                    ..style =
-                                                                        PaintingStyle
-                                                                            .stroke
-                                                                    ..strokeJoin =
-                                                                        StrokeJoin
-                                                                            .round,
-                                                              fontSize: 17,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500)),
-                                                    ),
-                                                    onTap: (() {
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) => maps(
-                                                                dataId: data.docs[
-                                                                        index]
-                                                                    ['docId'],
-                                                                typeOfRequest:
-                                                                    'E',
-                                                                latitude: double.parse(
-                                                                    data.docs[index][
-                                                                        'latitude']),
-                                                                longitude: double
-                                                                    .parse(data
-                                                                            .docs[index]
-                                                                        ['longitude'])),
-                                                          ));
-                                                      //   //latitude:double.parse(
-                                                      // data.docs[index]
-                                                      //     ['latitude'],longitude:double.parse(
-                                                      // data.docs[index]
-                                                      //     ['longitude']
-                                                    }),
-                                                  )
+                                                            // color: Colors
+                                                            //     .grey.shade500,
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                            letterSpacing: 0.1,
+                                                            wordSpacing: 0.1,
+                                                            fontSize: 15,
+                                                            decoration:
+                                                                TextDecoration
+                                                                    .underline,
+                                                          )))
                                                 ],
-                                              )),
-                                          Row(
-                                            children: [
-                                              /*button*/ Container(
-                                                margin:
-                                                    const EdgeInsets.fromLTRB(
-                                                        10, 20, 10, 20),
-                                                width: 150,
-                                                decoration: BoxDecoration(
-                                                  boxShadow: const [
-                                                    BoxShadow(
-                                                        color: Colors.black26,
-                                                        offset: Offset(0, 4),
-                                                        blurRadius: 5.0)
-                                                  ],
-                                                  gradient:
-                                                      const LinearGradient(
-                                                    begin: Alignment.topLeft,
-                                                    end: Alignment.bottomRight,
-                                                    stops: [0.0, 1.0],
-                                                    colors: [
-                                                      Color.fromARGB(
-                                                          255, 122, 146, 166),
-                                                      Color.fromARGB(
-                                                          255, 83, 100, 99),
-                                                    ],
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
+                                              ))),
+
+                                      Center(
+                                          child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          /*button*/ Container(
+                                            width: 150,
+                                            decoration: BoxDecoration(
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                    color: Colors.black26,
+                                                    offset: Offset(0, 4),
+                                                    blurRadius: 5.0)
+                                              ],
+                                              gradient: const LinearGradient(
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                                stops: [0.0, 1.0],
+                                                colors: [
+                                                  Colors.blue,
+                                                  Color(0xFF39d6ce),
+                                                ],
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                textStyle: const TextStyle(
+                                                  fontSize: 18,
                                                 ),
-                                                child: ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    textStyle: const TextStyle(
-                                                      fontSize: 18,
+                                              ),
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (ctx) => AlertDialog(
+                                                    content: const Text(
+                                                      "Discard all edits?",
+                                                      textAlign: TextAlign.left,
                                                     ),
-                                                  ),
-                                                  onPressed: () {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (ctx) =>
-                                                          AlertDialog(
-                                                        // title: const Text(
-                                                        //   "Logout",
-                                                        //   textAlign: TextAlign.left,
-                                                        // ),
-                                                        content: const Text(
-                                                          "Discard all edits?",
-                                                          textAlign:
-                                                              TextAlign.left,
+                                                    actions: <Widget>[
+                                                      // cancle button
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(ctx)
+                                                              .pop();
+                                                        },
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(14),
+                                                          child: const Text(
+                                                              "Cancel"),
                                                         ),
-                                                        actions: <Widget>[
-                                                          // cancle button
-                                                          TextButton(
-                                                            onPressed: () {
-                                                              Navigator.of(ctx)
-                                                                  .pop();
-                                                            },
-                                                            child: Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(14),
-                                                              child: const Text(
-                                                                  "Cancel"),
-                                                            ),
-                                                          ),
-                                                          //ok button
-                                                          TextButton(
-                                                            onPressed:
-                                                                () async {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .popUntil(
-                                                                      (route) =>
-                                                                          route
-                                                                              .isFirst);
-                                                            },
-                                                            child: Container(
-                                                              //color: Color.fromARGB(255, 164, 20, 20),
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(14),
-                                                              child: const Text(
-                                                                  "Discard",
-                                                                  style: TextStyle(
-                                                                      color: Color.fromARGB(
+                                                      ),
+                                                      //ok button
+                                                      TextButton(
+                                                        onPressed: () async {
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        userProfile(
+                                                                  userType: widget
+                                                                      .userType,
+                                                                ),
+                                                              ));
+                                                        },
+                                                        child: Container(
+                                                          //color: Color.fromARGB(255, 164, 20, 20),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(14),
+                                                          child: const Text(
+                                                              "Discard",
+                                                              style: TextStyle(
+                                                                  color: Color
+                                                                      .fromARGB(
                                                                           255,
                                                                           164,
                                                                           10,
                                                                           10))),
-                                                            ),
-                                                          ),
-                                                        ],
+                                                        ),
                                                       ),
-                                                    );
-                                                  },
-                                                  child: const Text('Cancel'),
-                                                ),
-                                              ),
-                                              Container(
-                                                margin:
-                                                    const EdgeInsets.fromLTRB(
-                                                        10, 20, 10, 20),
-                                                width: 150,
-                                                decoration: BoxDecoration(
-                                                  boxShadow: const [
-                                                    BoxShadow(
-                                                        color: Colors.black26,
-                                                        offset: Offset(0, 4),
-                                                        blurRadius: 5.0)
-                                                  ],
-                                                  gradient:
-                                                      const LinearGradient(
-                                                    begin: Alignment.topLeft,
-                                                    end: Alignment.bottomRight,
-                                                    stops: [0.0, 1.0],
-                                                    colors: [
-                                                      Colors.blue,
-                                                      Color(0xFF39d6ce),
                                                     ],
                                                   ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
-                                                ),
-                                                child: ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    textStyle: const TextStyle(
-                                                      fontSize: 18,
-                                                    ),
-                                                  ),
-                                                  onPressed: () {
-                                                    if (_formKey.currentState!
-                                                            .validate() &&
-                                                        checkCurrentTime() <
-                                                            0) {
-                                                      updateDB(data.docs[index]
-                                                          ['docId']);
-                                                      Confermation();
-                                                    } else if (checkCurrentTime() >=
-                                                        0) {
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                        SnackBar(
-                                                          content: Text(
-                                                              'Please select a later time'),
-                                                          backgroundColor:
-                                                              Colors
-                                                                  .red.shade400,
-                                                          margin: EdgeInsets
-                                                              .fromLTRB(
-                                                                  8, 0, 20, 0),
-                                                          behavior:
-                                                              SnackBarBehavior
-                                                                  .floating,
-                                                          action:
-                                                              SnackBarAction(
-                                                            label: 'Dismiss',
-                                                            disabledTextColor:
-                                                                Colors.white,
-                                                            textColor:
-                                                                Colors.white,
-                                                            onPressed: () {
-                                                              //Do whatever you want
-                                                            },
-                                                          ),
-                                                        ),
-                                                      );
-                                                    } else {
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                        SnackBar(
-                                                          content: Text(
-                                                              'Please fill the required fields above'),
-                                                          backgroundColor:
-                                                              Colors
-                                                                  .red.shade400,
-                                                          margin: EdgeInsets
-                                                              .fromLTRB(
-                                                                  8, 0, 20, 0),
-                                                          behavior:
-                                                              SnackBarBehavior
-                                                                  .floating,
-                                                          action:
-                                                              SnackBarAction(
-                                                            label: 'Dismiss',
-                                                            disabledTextColor:
-                                                                Colors.white,
-                                                            textColor:
-                                                                Colors.white,
-                                                            onPressed: () {
-                                                              //Do whatever you want
-                                                            },
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }
-                                                  },
-                                                  child: const Text('Update'),
+                                                );
+                                              },
+                                              child: const Text('Cancel'),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: const EdgeInsets.fromLTRB(
+                                                10, 20, 10, 20),
+                                            width: 150,
+                                            decoration: BoxDecoration(
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                    color: Colors.black26,
+                                                    offset: Offset(0, 4),
+                                                    blurRadius: 5.0)
+                                              ],
+                                              gradient: const LinearGradient(
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                                stops: [0.0, 1.0],
+                                                colors: [
+                                                  Colors.blue,
+                                                  Color(0xFF39d6ce),
+                                                ],
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                textStyle: const TextStyle(
+                                                  fontSize: 18,
                                                 ),
                                               ),
-                                            ],
-                                          )
+                                              onPressed: () {
+                                                if (_formKey.currentState!
+                                                        .validate() &&
+                                                    checkCurrentTime() < 0) {
+                                                  updateDB(data.docs[index]
+                                                      ['docId']);
+                                                  Confermation();
+                                                } else if (checkCurrentTime() >=
+                                                    0) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                          'Please select a later time'),
+                                                      backgroundColor:
+                                                          Colors.red.shade400,
+                                                      margin:
+                                                          EdgeInsets.fromLTRB(
+                                                              8, 0, 20, 0),
+                                                      behavior: SnackBarBehavior
+                                                          .floating,
+                                                      action: SnackBarAction(
+                                                        label: 'Dismiss',
+                                                        disabledTextColor:
+                                                            Colors.white,
+                                                        textColor: Colors.white,
+                                                        onPressed: () {
+                                                          //Do whatever you want
+                                                        },
+                                                      ),
+                                                    ),
+                                                  );
+                                                } else {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                          'Please fill the required fields above'),
+                                                      backgroundColor:
+                                                          Colors.red.shade400,
+                                                      margin:
+                                                          EdgeInsets.fromLTRB(
+                                                              8, 0, 20, 0),
+                                                      behavior: SnackBarBehavior
+                                                          .floating,
+                                                      action: SnackBarAction(
+                                                        label: 'Dismiss',
+                                                        disabledTextColor:
+                                                            Colors.white,
+                                                        textColor: Colors.white,
+                                                        onPressed: () {
+                                                          //Do whatever you want
+                                                        },
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              child: const Text('Update'),
+                                            ),
+                                          ),
                                         ],
-                                      ))));
+                                      ))
+                                    ],
+                                  ),
+                                ),
+                              );
                             } else {
                               return const Center(
                                   child: CircularProgressIndicator());
@@ -1109,6 +966,7 @@ class _EditRequestState extends State<editRequest> {
       'date_dmy': getDate_formated(),
       'time': getTime(selectedTime),
     });
+    Navigator.of(context).pop();
     //clearForm();
   }
 
@@ -1118,22 +976,6 @@ class _EditRequestState extends State<editRequest> {
     descController.clear();
   }
 }
-
-// Future<void> updateDB(docId) async {
-//   final user = FirebaseAuth.instance.currentUser!;
-//   String userId = user.uid;
-// //String docId=
-//   final postID = FirebaseFirestore.instance
-//       // .collection('userData')
-//       // .doc(userId)
-//       .collection('requests')
-//       .doc(docId);
-
-//   postID.update({
-//     'status': 'Approved',
-//     'VolID': userId,
-//   });
-// }
 
 class Gesture extends TapGestureRecognizer {
   Function _test;
