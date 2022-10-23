@@ -36,9 +36,20 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     notificationService = NotificationService();
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
+    getToken();
 
     super.initState();
   }
+
+  //! Local Notification
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    viewRequests(userType: 'Volunteer', reqID: payload)));
+      });
 
   //! FCM
   var fcmToken;
@@ -66,15 +77,6 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
           return doc.data() as Map<String, dynamic>;
         },
       );
-
-  void listenToNotificationStream() =>
-      notificationService.behaviorSubject.listen((payload) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    viewRequests(userType: 'Volunteer', reqID: payload)));
-      });
 
   @override
   Widget build(BuildContext context) {

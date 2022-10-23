@@ -63,9 +63,6 @@ class _loginState extends State<login> {
 
   @override
   Widget build(BuildContext context) {
-    //final Storage storage = Storage();
-    // Get.put(logoController());
-    // logoController _logoController = Get.find();
 
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     final double height = MediaQuery.of(context).size.height;
@@ -382,12 +379,6 @@ class _loginState extends State<login> {
                               Navigator.pushNamed(context, "/register");
                             },
                           text: 'Register',
-
-                          // Navigator.push(
-                          //  context,
-                          //  MaterialPageRoute(
-                          //    builder: (context) =>
-                          //     RegistrationPage()));
 
                           style: TextStyle(
                               decoration: TextDecoration.underline,

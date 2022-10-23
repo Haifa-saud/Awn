@@ -792,7 +792,7 @@ class _registerState extends State<register> {
         password: passwordController.text.trim(),
       );
       UserHelper.saveUser(user);
-      //
+      
       clearForm();
       Navigator.pushNamed(context, "/login");
     } on FirebaseAuthException catch (e) {
@@ -821,12 +821,7 @@ class _registerState extends State<register> {
 class UserHelper {
   static FirebaseFirestore db = FirebaseFirestore.instance;
   static saveUser(User? user) async {
-    //PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    /*blind = false;
-bool mute = false;
-bool deaf = false;
-bool physical = false;
-bool other = false;*/
+
     String email = emailController.text;
     String name = nameController.text;
     String number = numberController.text;
@@ -835,16 +830,16 @@ bool other = false;*/
     String bio = bioController.text;
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
+    
     if (blind == true && blind != null) disability += " Visually Impaired,";
     if (mute == true && mute != null) disability += " Vocally Impaired,";
     if (deaf == true && deaf != null) disability += " Hearing Impaired,";
     if (physical == true && physical != null) disability += " Physically Impaired,";
     if (other == true && other != null) disability += " Other,";
+
     final userRef = db.collection("users").doc(user.uid);
-    //final volRef = db.collection("volunteers").doc(user!.uid);
 
     Map<String, dynamic> userData;
-    // if (group1 == "Volunteer") {
     if (!((await userRef.get()).exists)) {
       await userRef.set({
         "Email": email,
@@ -858,42 +853,5 @@ bool other = false;*/
         "id": userId,
       });
     }
-    // } else if (group1 == "Special Need User") {
-    // if (result.files.first != null){
-    // var len = pickedFile? ?? '0';
-    //   if (fileDB == null) {
-    //     File file = fileDB!;
-    //     //String filePath = Path.basename(file.path);
-
-    //     final path = 'User/${pickedFile.name}';
-    //     // String pickedPath = pickedFile.path == '' ? '' : pickedFile.path;
-    //     // final file = File(pickedFile!.path!);
-    //     // if (result.files.first != null){
-    //     final ref = FirebaseStorage.instance.ref().child(filePath);
-    //     UploadTask uploadTask = ref.putFile(file);
-    //     final user = FirebaseAuth.instance.currentUser!;
-    //     String userId = user.uid;
-    //     // String filePath = Path.basename(file.path);
-    //     TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
-    //     filePath = await (await uploadTask).ref.getDownloadURL();
-    //     if (!((await userRef.get()).exists)) {
-    //       await userRef.set({
-    //         "Email": email,
-    //         "id": userId,
-    //         "Type": group1,
-    //         "Disability": disability,
-    //         "gender": group,
-    //         "name": name,
-    //         "phone number": number,
-    //         "DOB": age,
-    //         //"file": filePath,
-    //       });
-    //     }
-    //     // final userRef = db.collection("users").doc(user!.uid);
-    //     // if (!((await userRef.get()).exists)) {
-    //     //   await userRef.set(userData);
-    //     // }
-    //   }
-    // }
   }
 }
