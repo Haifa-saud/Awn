@@ -761,10 +761,8 @@ class _EditRequestState extends State<editRequest> {
                                                 end: Alignment.bottomRight,
                                                 stops: [0.0, 1.0],
                                                 colors: [
-                                                  Color.fromARGB(
-                                                      255, 122, 146, 166),
-                                                  Color.fromARGB(
-                                                      255, 83, 100, 99),
+                                                  Colors.blue,
+                                                  Color(0xFF39d6ce),
                                                 ],
                                               ),
                                               borderRadius:

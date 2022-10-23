@@ -203,7 +203,7 @@ class _AdminPage extends State<adminPage> with TickerProviderStateMixin {
                     color: Colors.transparent,
                   ),
                   child: Text(
-                    "Declined",
+                    "Denied",
                     style: TextStyle(color: Colors.red.shade300),
                   ),
                 )),
@@ -244,7 +244,7 @@ class _AdminPage extends State<adminPage> with TickerProviderStateMixin {
                   height: MediaQuery.of(context).size.height,
                   padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
                   child: TabBarView(controller: _tabController, children: [
-                    placesList('', 'Declined'),
+                    placesList('', 'Denied'),
                     placesList('', 'Pending'),
                     placesList('', 'Approved'),
                   ])))
@@ -267,7 +267,7 @@ class _AdminPage extends State<adminPage> with TickerProviderStateMixin {
       color = Colors.red.shade100;
       list = FirebaseFirestore.instance
           .collection('posts')
-          .where('status', isEqualTo: 'Declined')
+          .where('status', isEqualTo: 'Denied')
           .snapshots();
     } else if (status == 'Pending') {
       color = Colors.orange.shade100;
@@ -788,7 +788,7 @@ class _AdminPage extends State<adminPage> with TickerProviderStateMixin {
                                     isAdmin
                                         ? const SizedBox(height: 25)
                                         : const SizedBox(height: 35),
-                                    isAdmin
+                                    status == 'Pending'
                                         ? Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
@@ -833,7 +833,7 @@ class _AdminPage extends State<adminPage> with TickerProviderStateMixin {
                                                         .showSnackBar(
                                                       const SnackBar(
                                                         content: Text(
-                                                            "the place has been approved"),
+                                                            "The place has been approved"),
                                                       ),
                                                     );
                                                   }, //!for haifa

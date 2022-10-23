@@ -1112,7 +1112,7 @@ class MyInfoState extends State<MyInfo> {
                             if (email != null &&
                                 !EmailValidator.validate(email) &&
                                 email.trim() == '') {
-                              return "Enter a valid email";
+                              return "Please fill the field";
                             } else {
                               return null;
                             }
@@ -1509,15 +1509,16 @@ class MyInfoState extends State<MyInfo> {
                                       offset: Offset(0, 4),
                                       blurRadius: 5.0)
                                 ],
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  stops: [0.0, 1.0],
-                                  colors: [
-                                    Colors.blue,
-                                    Color(0xFF39d6ce),
-                                  ],
-                                ),
+                                // gradient: const LinearGradient(
+                                //   begin: Alignment.topLeft,
+                                //   end: Alignment.bottomRight,
+                                //   stops: [0.0, 1.0],
+                                //   colors: [
+                                //     Colors.blue,
+                                //     Color(0xFF39d6ce),
+                                //   ],
+                                // ),
+                                color: Colors.red,
                                 borderRadius: BorderRadius.circular(30),
                               ),
                               child: ElevatedButton(
@@ -1616,11 +1617,12 @@ class MyInfoState extends State<MyInfo> {
                                                 if (isRequestActive) {
                                                   ds.reference.update({
                                                     'status': 'Pending',
-                                                    'VolID': ''
+                                                    'VolID': '',
                                                   }).then((_) {
                                                     print(
                                                         "vol request updated");
                                                   });
+                                                  // ds.reference.collection(chat)
                                                 } else {
                                                   ds.reference.update({
                                                     'status': 'Expired',
@@ -1903,6 +1905,7 @@ class MyInfoState extends State<MyInfo> {
         FirebaseFirestore.instance.collection('users').doc(widget.user['id']);
     var errorMessage = '';
     emailErrorMessage = '';
+    invalidEmail = false;
 
     if (emailController.text != userData['Email']) {
       var result = await user

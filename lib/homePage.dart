@@ -7,6 +7,7 @@ import 'package:awn/services/myGlobal.dart';
 
 import 'package:awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
@@ -27,7 +28,6 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
 
   final Storage storage = Storage();
   var userData;
-
   int _selectedIndex = 0;
 
   @override
@@ -38,6 +38,25 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     notificationService.initializePlatformNotifications();
 
     super.initState();
+  }
+
+  //! FCM
+  var fcmToken;
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) {
+      setState(() {
+        fcmToken = token;
+        print('fcmToken: $fcmToken');
+      });
+      saveToken(token!);
+    });
+  }
+
+  void saveToken(String token) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .set({'token': token});
   }
 
   Future<Map<String, dynamic>> readUserData(var id) =>
