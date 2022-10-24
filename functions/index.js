@@ -1,63 +1,81 @@
-// import * as admin from "firebase-admin";
-
 const functions = require("firebase-functions");
-// The Firebase Admin SDK to access Firestore.
 const admin = require("firebase-admin");
 admin.initializeApp();
-// const { a } = require("firebase-admin/app");
 
-// a.initializeApp(functions.config().firebase);
+const fcm = admin.messaging();
 
-// const fcm = admin.messaging();
+exports.sendRequestAcceptanceNotification = functions.firestore
+  .document("requests/{id}")
+  .onUpdate((snapshot, context) => {
+    // return snap.get().then((snapshot) => {
+    //   snapshot.forEach((doc) => {
+    console.log(snapshot.after.data());
+    const requestData = snapshot.after.data();
+    // const previousValue = snapshot.before.data();
+    console.log(requestData);
 
-// exports.sendRequestAcceptanceNotification = functions.admin.firestore()
-//   .document("request/{id}")
-//   .onUpdate((snapshot) => {
-// 	var snapshot = admin
+    const requestStatus = requestData.status;
+    console.log("request status: " + requestStatus);
+    if (requestStatus == "Approved") {
+      const snuID = requestData.userID;
+      admin
+        .firestore()
+        .collection("users")
+        .doc(snuID)
+        .get()
+        .then((snap) => {
+          console.log(snap);
+          if (!snap.exists) {
+            console.log("No such User document!");
+          } else {
+            console.log(snap);
+          }
+        });
+
+      //   else {
+      //         console.log("Document data:", snap.data);
+      //         const token = snap.data.token;
+      //         const payload = {
+      //           notification: {
+      //             title: "from ",
+      //             body: "subject ",
+      //             sound: "default",
+      //           },
+      //         };
+      //         snapshot.ref.set({ title: "it is working" }, { merge: true });
+      //         return fcm.sendToDevice(token, payload);
+      //       }
+      //     });
+      //   });
+    }
+  });
+//   });
+
+// exports.makeUppercase2 = functions.firestore
+//   .document("users/Sm6x7nZbcFSKuBG9maulFkNKvcL2")
+//   .onCreate((snap, context) => {
+//     var snapshot = admin
 //       .firestore()
 //       .collection("users")
 //       .doc("Sm6x7nZbcFSKuBG9maulFkNKvcL2");
-//     const name = admin.snapshot.get("name");
-//     const subject = snapshot.get("status");
-//     const token = snapshot.get("token");
+//     var currData = snap.data();
+//     const newValue = currData.Email;
+//     return snapshot
+//       .get()
+//       .then((doc) => {
+//         if (!doc.exists) {
+//           console.log("No such User document!");
+//           console.log("Document data:", doc.data().Email);
+//         } else {
+//           console.log("Document data:", doc.data());
+//           console.log("Document data:", doc.data().Email);
+//           snap.ref.set({ Email: newValue + "newTest" }, { merge: true });
+//           return true;
+//         }
+//       })
+//       .catch((err) => {
+//         console.log("Error getting document", err);
 
-//     const payload = {
-//       notification: {
-//         title: "from " + name,
-//         body: "subject " + subject,
-//         sound: "default",
-//       },
-//     };
-//     return fcm.sendToDevice(token, payload);
+//         return false;
+//       });
 //   });
-
-exports.makeUppercase = functions.firestore
-  .document("users/Sm6x7nZbcFSKuBG9maulFkNKvcL2")
-  .onCreate((snap, context) => {
-    var snapshot = admin
-      .firestore()
-      .collection("users")
-      .doc("Sm6x7nZbcFSKuBG9maulFkNKvcL2");
-    var currData = snap.data();
-    const newValue = currData.Email;
-    return snapshot
-      .get()
-      .then((doc) => {
-        if (!doc.exists) {
-          console.log("No such User document!");
-          console.log("Document data:", doc.data().Email);
-        } else {
-          console.log("Document data:", doc.data());
-          console.log("Document data:", doc.data().Email);
-          snap.ref.set({ Email: newValue + "newTest" }, { merge: true });
-          return true;
-        }
-      })
-      .catch((err) => {
-        console.log("Error getting document", err);
-
-        return false;
-      });
-
-    // return snap.ref.set({ name: name });
-  });
