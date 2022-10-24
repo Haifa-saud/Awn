@@ -33,10 +33,10 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
   @override
   void initState() {
     userData = readUserData(FirebaseAuth.instance.currentUser!.uid);
+    getToken();
     notificationService = NotificationService();
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
-    getToken();
 
     super.initState();
   }
@@ -52,14 +52,27 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
       });
 
   //! FCM
+
   var fcmToken;
   void getToken() async {
-    await FirebaseMessaging.instance.getToken().then((token) {
+    await FirebaseMessaging.instance.getToken().then((token) async {
       setState(() {
         fcmToken = token;
         print('fcmToken: $fcmToken');
       });
-      saveToken(token!);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({'token': token}, SetOptions(merge: true));
+    });
+
+    await FirebaseMessaging.instance.onTokenRefresh
+        .listen((String token) async {
+      print("New token: $token");
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({'token': token}, SetOptions(merge: true));
     });
   }
 
@@ -67,13 +80,14 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
-        .set({'token': token});
+        .set({'token': token}, SetOptions(merge: true));
   }
 
   Future<Map<String, dynamic>> readUserData(var id) =>
       FirebaseFirestore.instance.collection('users').doc(id).get().then(
         (DocumentSnapshot doc) {
           userData = doc.data() as Map<String, dynamic>;
+          print(userData);
           return doc.data() as Map<String, dynamic>;
         },
       );

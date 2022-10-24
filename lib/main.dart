@@ -3,7 +3,9 @@ import 'package:awn/homePage.dart';
 import 'package:awn/login.dart';
 import 'package:awn/register.dart';
 import 'package:awn/viewRequests.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -12,7 +14,21 @@ import 'services/firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  //! Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  //! FCM
+  FirebaseMessaging.instance.onTokenRefresh.listen((String token) async {
+    print("New token: $token");
+    if(user != null){
+      await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .set({'token': token}, SetOptions(merge: true));
+    }
+  });
+
+  //! Local Notifications
   FlutterLocalNotificationsPlugin notification =
       FlutterLocalNotificationsPlugin();
   var notificationAppLaunchDetails =
@@ -24,6 +40,7 @@ Future<void> main() async {
   } else {
     runApp(MyApp(true, false));
   }
+
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
       Workmanager().cancelAll();
