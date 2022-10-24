@@ -31,7 +31,7 @@ admin.initializeApp();
 //     return fcm.sendToDevice(token, payload);
 //   });
 
-exports.makeUppercase2 = functions.firestore
+exports.makeUppercase = functions.firestore
   .document("users/Sm6x7nZbcFSKuBG9maulFkNKvcL2")
   .onCreate((snap, context) => {
     var snapshot = admin
