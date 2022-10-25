@@ -1,79 +1,114 @@
-// import 'package:firebase_messaging/firebase_messaging.dart';
-// import 'package:flutter/material.dart';
-
-// class pushNotification extends StatefulWidget {
-//   @override
-//   pushNotificationState createState() => pushNotificationState();
-// }
-
-// class pushNotificationState extends State<pushNotification> {
-//   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-
-//   @override
-//   void initState(){
-//     super.initState();
-//     firebaseMessaging.configure(
-
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // TODO: implement build
-//     throw UnimplementedError();
-//   }
-// }
-
+import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class Home extends StatefulWidget {
-  @override
-  _HomeState createState() => _HomeState();
-}
+import 'firebase_options.dart';
+import 'newRequestNotification.dart';
 
-class _HomeState extends State<Home> {
-  String token = '';
-  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+// class FCM {
+//   late FirebaseMessaging messaging;
 
-  @override
-  void initState() {
-    getToken();
+//   /// Create a [AndroidNotificationChannel] for heads up notifications
+//   late AndroidNotificationChannel channel;
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
+//   /// Initialize the [FlutterLocalNotificationsPlugin] package.
+//   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-      if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
-      }
+//   Future initApp() async {
+//     await Firebase.initializeApp(
+//       options: DefaultFirebaseOptions.currentPlatform,
+//     );
+
+//     messaging = FirebaseMessaging.instance;
+
+//     channel = const AndroidNotificationChannel(
+//       'high_importance_channel', // id
+//       'High Importance Notifications', // title
+//       importance: Importance.high,
+//     );
+
+//     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+//     /// Create an Android Notification Channel.
+//     ///
+//     /// We use this channel in the `AndroidManifest.xml` file to override the
+//     /// default FCM channel to enable heads up notifications.
+//     await flutterLocalNotificationsPlugin
+//         .resolvePlatformSpecificImplementation<
+//             AndroidFlutterLocalNotificationsPlugin>()
+//         ?.createNotificationChannel(channel);
+//   }
+
+//   Future subscripeToTopics(String topic) async {
+//     await messaging.subscribeToTopic(topic);
+//   }
+
+//   ///Expire : https://firebase.google.com/docs/cloud-messaging/manage-tokens
+//   // Future<String?> getFCMToken() async {
+//   //   final fcmToken = await messaging.getToken();
+//   //   return fcmToken;
+//   // }
+
+//   // void tokenListener() {
+//   //   messaging.onTokenRefresh.listen((fcmToken) {
+//   //     print("FCM Token dinlemede");
+//   //     // TODO: If necessary send token to application server.
+//   //   }).onError((err) {
+//   //     print(err);
+//   //   });
+//   // }
+
+//   ///Foreground messages
+//   ///
+//   ///To handle messages while your application is in the foreground, listen to the onMessage stream.
+//   void foreGroundMessageListener() {
+//     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+//       RemoteNotification? notification = message.notification;
+//       AndroidNotification? android = message.notification?.android;
+//       if (notification != null && android != null && !kIsWeb) {
+//         flutterLocalNotificationsPlugin.show(
+//           notification.hashCode,
+//           notification.title,
+//           notification.body,
+//           NotificationDetails(
+//             android: AndroidNotificationDetails(
+//               channel.id,
+//               channel.name,
+//               channelDescription: channel.description,
+//               importance: Importance.max,
+//               priority: Priority.high,
+//               ticker: 'ticker',
+//               icon: "@mipmap/ic_launcher",
+//             ),
+//           ),
+//         );
+//       }
+//     });
+
+//     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+//       print('A new onMessageOpenedApp event was published!');
+//     });
+//   }
+// }
+
+class RequestAcceptanceNotification {
+  final NotificationService notificationService = NotificationService();
+
+  Future initApp() async {
+    notificationService.initializePlatformNotifications();
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      print("onMessage");
+      var Title = message.notification!.title == null
+          ? 'no data'
+          : message.notification!.title;
+      var Body = message.notification!.body == null
+          ? 'no data'
+          : message.notification!.body;
+      notificationService.showLocalNotification(
+          id: 0, title: Title!, body: Body!, payload: 'payload');
     });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print("onMessageOpenedApp: $message");
-
-      if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
-      }
-    });
-
-    super.initState();
-  }
-
-  void getToken() async {
-    token = (await firebaseMessaging.getToken())!;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text("Token : $token")),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          print(token);
-        },
-        child: Icon(Icons.print),
-      ),
-    );
   }
 }

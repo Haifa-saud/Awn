@@ -4,7 +4,7 @@ import 'package:awn/requestWidget.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
 import 'package:awn/services/placeWidget.dart';
-import 'package:awn/services/sendNotification.dart';
+import 'package:awn/services/newRequestNotification.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

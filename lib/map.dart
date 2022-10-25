@@ -1,5 +1,5 @@
 import 'package:awn/editRequest.dart';
-import 'package:awn/services/sendNotification.dart';
+import 'package:awn/services/newRequestNotification.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';

@@ -7,11 +7,8 @@ const fcm = admin.messaging();
 exports.sendRequestAcceptanceNotification = functions.firestore
   .document("requests/{id}")
   .onUpdate((snapshot, context) => {
-    // return snap.get().then((snapshot) => {
-    //   snapshot.forEach((doc) => {
     console.log(snapshot.after.data());
     const requestData = snapshot.after.data();
-    // const previousValue = snapshot.before.data();
     console.log(requestData);
 
     const requestStatus = requestData.status;

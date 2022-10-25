@@ -1,10 +1,10 @@
 import 'package:awn/addPost.dart';
+import 'package:awn/services/FCM.dart';
 import 'package:awn/services/appWidgets.dart';
 import 'package:awn/services/firebase_storage_services.dart';
 import 'package:awn/services/placeWidget.dart';
-import 'package:awn/services/sendNotification.dart';
+import 'package:awn/services/newRequestNotification.dart';
 import 'package:awn/services/myGlobal.dart';
-
 import 'package:awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -25,6 +25,8 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
       FirebaseFirestore.instance.collection('postCategory');
 
   late final NotificationService notificationService;
+  late final RequestAcceptanceNotification acceptanceNotification =
+      RequestAcceptanceNotification();
 
   final Storage storage = Storage();
   var userData;
@@ -37,6 +39,9 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     notificationService = NotificationService();
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
+    // setupInteractedMessage();
+
+    acceptanceNotification.initApp();
 
     super.initState();
   }
@@ -52,7 +57,32 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
       });
 
   //! FCM
+  // // It is assumed that all messages contain a data field with the key 'type'
+  // Future<void> setupInteractedMessage() async {
+  //   // Get any messages which caused the application to open from
+  //   // a terminated state.
+  //   RemoteMessage? initialMessage =
+  //       await FirebaseMessaging.instance.getInitialMessage();
 
+  //   // If the message also contains a data property with a "type" of "chat",
+  //   // navigate to a chat screen
+  //   if (initialMessage != null) {
+  //     _handleMessage(initialMessage);
+  //   }
+
+  //   // Also handle any interaction when the app is in the background via a
+  //   // Stream listener
+  //   FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  // }
+
+  // void _handleMessage(RemoteMessage message) {
+  //   if (message != '') {
+  //     Navigator.pushNamed(
+  //       context,
+  //       '/homePage',
+  //     );
+  //   }
+  // }
   var fcmToken;
   void getToken() async {
     await FirebaseMessaging.instance.getToken().then((token) async {

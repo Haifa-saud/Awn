@@ -1,4 +1,4 @@
-import 'package:awn/services/sendNotification.dart';
+import 'package:awn/services/newRequestNotification.dart';
 import 'package:awn/viewRequests.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

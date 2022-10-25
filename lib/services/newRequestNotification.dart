@@ -21,8 +21,6 @@ void callbackDispatcher() {
 
     void onNoticationListener(String? payload) async {
       if (payload != null && payload.isNotEmpty) {
-        print('payload $payload');
-
         Navigator.push(
             GlobalContextService.navigatorKey.currentState!.context,
             MaterialPageRoute(
@@ -33,7 +31,7 @@ void callbackDispatcher() {
 
     bool success = false;
     for (int i = 0; i < 15; i++) {
-      final requests = await FirebaseFirestore.instance
+      await FirebaseFirestore.instance
           .collection("requests")
           .where('notificationStatus', isEqualTo: 'pending')
           .get()
@@ -43,7 +41,6 @@ void callbackDispatcher() {
         for (var doc in event.docs) {
           int notificationID = Random().nextInt(100);
           requests.add(doc.data()["description"]);
-          print('${doc.data()["description"]}');
           notificationService.showLocalNotification(
               id: notificationID,
               title: 'Someone Needs Awn!',
@@ -92,8 +89,8 @@ class NotificationService {
 
   Future<NotificationDetails> _notificationDetails() async {
     AndroidNotificationDetails androidPlatformChannelSpecifics =
-        const AndroidNotificationDetails('1', 'awn requests',
-            channelDescription: 'awn requests added',
+        const AndroidNotificationDetails('1', 'awn',
+            channelDescription: 'awn',
             importance: Importance.max,
             priority: Priority.high,
             playSound: true);
@@ -123,7 +120,6 @@ class NotificationService {
   void selectNotification(String? payload) {
     if (payload != null && payload.isNotEmpty) {
       behaviorSubject.add(payload);
-      print(payload);
     }
   }
 }
