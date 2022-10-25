@@ -1,6 +1,6 @@
-import 'package:awn/services/Utils.dart';
-import 'package:awn/login.dart';
-import 'package:awn/services/firebase_storage_services.dart';
+import 'package:Awn/services/Utils.dart';
+import 'package:Awn/login.dart';
+import 'package:Awn/services/firebase_storage_services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,7 +13,7 @@ import 'dart:io';
 import 'package:email_validator/email_validator.dart';
 import 'services/theme.dart';
 import 'services/myGlobal.dart' as globals;
-import 'package:awn/services/appWidgets.dart';
+import 'package:Awn/services/appWidgets.dart';
 
 class register extends StatefulWidget {
   const register({

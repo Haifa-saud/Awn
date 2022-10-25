@@ -101,6 +101,7 @@ class RequestAcceptanceNotification {
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print("onMessage");
+      print("onMessage $message.notification!.title");
       var Title = message.notification!.title == null
           ? 'no data'
           : message.notification!.title;

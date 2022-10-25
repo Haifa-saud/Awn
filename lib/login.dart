@@ -1,8 +1,8 @@
-import 'package:awn/services/Utils.dart';
-import 'package:awn/register.dart';
-import 'package:awn/services/firebase_storage_services.dart';
-import 'package:awn/services/newRequestNotification.dart';
-import 'package:awn/services/usersModel.dart';
+import 'package:Awn/services/Utils.dart';
+import 'package:Awn/register.dart';
+import 'package:Awn/services/firebase_storage_services.dart';
+import 'package:Awn/services/newRequestNotification.dart';
+import 'package:Awn/services/usersModel.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';

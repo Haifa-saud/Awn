@@ -1,7 +1,7 @@
 // ignore_for_file: camel_case_types
 
-import 'package:awn/login.dart';
-import 'package:awn/services/firebase_storage_services.dart';
+import 'package:Awn/login.dart';
+import 'package:Awn/services/firebase_storage_services.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

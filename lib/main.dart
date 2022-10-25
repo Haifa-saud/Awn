@@ -1,9 +1,9 @@
-import 'package:awn/adminPage.dart';
-import 'package:awn/homePage.dart';
-import 'package:awn/login.dart';
-import 'package:awn/register.dart';
-import 'package:awn/services/FCM.dart';
-import 'package:awn/viewRequests.dart';
+import 'package:Awn/adminPage.dart';
+import 'package:Awn/homePage.dart';
+import 'package:Awn/login.dart';
+import 'package:Awn/register.dart';
+import 'package:Awn/services/FCM.dart';
+import 'package:Awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -48,7 +48,6 @@ Future<void> main() async {
       Workmanager().cancelAll();
       runApp(MyApp(false));
     } else {
-      //! haifa
       if (notificationAppLaunchDetails.didNotificationLaunchApp) {
         var Payload = notificationAppLaunchDetails.payload;
         runApp(MyApp(true, true, Payload!, false));

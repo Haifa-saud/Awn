@@ -2,8 +2,8 @@
 
 import 'dart:math';
 
-import 'package:awn/addRequest.dart';
-import 'package:awn/chatPage.dart';
+import 'package:Awn/addRequest.dart';
+import 'package:Awn/chatPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';

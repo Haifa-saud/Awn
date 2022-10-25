@@ -1,6 +1,6 @@
-import 'package:awn/addPost.dart';
-import 'package:awn/services/appWidgets.dart';
-import 'package:awn/services/firebase_storage_services.dart';
+import 'package:Awn/addPost.dart';
+import 'package:Awn/services/appWidgets.dart';
+import 'package:Awn/services/firebase_storage_services.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'package:intl/intl.dart';
 import 'main.dart';
-import 'package:awn/map.dart';
+import 'package:Awn/map.dart';
 
 //! bottom bar done
 class addRequest extends StatefulWidget {

@@ -1,8 +1,8 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
-import 'package:awn/TextToSpeech.dart';
-import 'package:awn/addPost.dart';
-import 'package:awn/addRequest.dart';
-import 'package:awn/login.dart';
+import 'package:Awn/TextToSpeech.dart';
+import 'package:Awn/addPost.dart';
+import 'package:Awn/addRequest.dart';
+import 'package:Awn/login.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
