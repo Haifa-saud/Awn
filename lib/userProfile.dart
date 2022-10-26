@@ -145,12 +145,12 @@ class UserProfileState extends State<userProfile>
                                       onPressed: () async {
                                         await FirebaseMessaging.instance
                                             .deleteToken();
-                                        await FirebaseFirestore.instance
-                                            .collection('users')
-                                            .doc(FirebaseAuth
-                                                .instance.currentUser!.uid)
-                                            .set({'token': ''},
-                                                SetOptions(merge: true));
+                                        // await FirebaseFirestore.instance
+                                        //     .collection('users')
+                                        //     .doc(FirebaseAuth
+                                        //         .instance.currentUser!.uid)
+                                        //     .set({'token': ''},
+                                        //         SetOptions(merge: true));
                                         await _signOut();
                                       },
                                       child: Container(
