@@ -97,17 +97,21 @@ exports.sendChatNotification = functions.firestore
                 console.log(data);
                 var name = data.data().name;
                 var Title = "New Chat from: " + name;
-                // 	  var Body =
-                // new String(chatData.text).valueOf() ==
-                // new String('').valueOf() ? (new String(chatData.audio).valueOf() ==
-                // new String('').valueOf() ? "Image" : "Audio Chat") : chatData.text;
+                var Body =
+                  new String(chatData.text).valueOf() ==
+                  new String("").valueOf()
+                    ? new String(chatData.audio).valueOf() ==
+                      new String("").valueOf()
+                      ? "Image"
+                      : "Audio Chat"
+                    : chatData.text;
                 const payload = {
                   data: {
                     id: snapshot.ref.id,
                   },
                   notification: {
                     title: Title,
-                    body: "chat",
+                    body: Body,
                     sound: "default",
                   },
                 };
