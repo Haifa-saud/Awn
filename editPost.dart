@@ -26,22 +26,47 @@ import 'main.dart';
 
 class editPost extends StatefulWidget {
   final String userType;
-  const editPost({Key? key, required this.userType}) : super(key: key);
+  final String name;
+  final String number;
+  final String description;
+  final String website;
+  final String category;
+  final String docId;
+  final String oldImg;
+  const editPost(
+      {Key? key,
+      required this.userType,
+      required this.name,
+      required this.number,
+      required this.description,
+      required this.website,
+      required this.category,
+      required this.docId,
+      required this.oldImg})
+      : super(key: key);
 
   @override
   State<editPost> createState() => _MyStatefulWidgetState();
 }
 
-TextEditingController nameController = TextEditingController();
-TextEditingController contactInfoController = TextEditingController();
-TextEditingController descriptionController = TextEditingController();
-TextEditingController numberController = TextEditingController();
-TextEditingController websiteController = TextEditingController();
+// TextEditingController nameController = TextEditingController();
+late TextEditingController nameController;
+//late TextEditingController contactInfoController;
+late TextEditingController descriptionController;
+late TextEditingController numberController;
+late TextEditingController websiteController;
+late var imagectrl;
 
 class _MyStatefulWidgetState extends State<editPost> {
   late final NotificationService notificationService;
   @override
   void initState() {
+    nameController = TextEditingController(text: widget.name);
+    descriptionController = TextEditingController(text: widget.description);
+    numberController = TextEditingController(text: widget.number);
+    websiteController = TextEditingController(text: widget.website);
+    imagectrl = widget.oldImg;
+
     notificationService = NotificationService();
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
@@ -111,36 +136,6 @@ class _MyStatefulWidgetState extends State<editPost> {
         ],
         title: const Text('Edit Place', textAlign: TextAlign.center),
         automaticallyImplyLeading: false,
-        //   leading: IconButton(
-        //     icon: const Icon(Icons.close, color: Colors.black),
-        //     onPressed: () => showDialog<String>(
-        //       context: context,
-        //       builder: (BuildContext context) => AlertDialog(
-        //         content: const Text('Discard the changes you made?'),
-        //         actions: <Widget>[
-        //           TextButton(
-        //             onPressed: () => Navigator.of(context).pop(),
-        //             child: const Text('Keep editing'),
-        //           ),
-        //           TextButton(
-        //             onPressed: () {
-        //               clearForm();
-        //               Navigator.pushReplacement(
-        //                 context,
-        //                 PageRouteBuilder(
-        //                   pageBuilder: (context, animation1, animation2) =>
-        //                       homePage(),
-        //                   transitionDuration: Duration(seconds: 1),
-        //                   reverseTransitionDuration: Duration.zero,
-        //                 ),
-        //               );
-        //             },
-        //             child: const Text('Discard'),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
       ),
       body: Form(
         key: _formKey,
@@ -182,6 +177,7 @@ class _MyStatefulWidgetState extends State<editPost> {
                 child: StreamBuilder<QuerySnapshot>(
                     stream: category.snapshots(),
                     builder: (context, snapshot) {
+                      selectedCategory = widget.category;
                       if (!snapshot.hasData) {
                         return Text("Loading");
                       } else {
@@ -195,7 +191,7 @@ class _MyStatefulWidgetState extends State<editPost> {
                           validator: (value) => value == null
                               ? 'Please select a category.'
                               : null,
-                          hint: const Text('Category'),
+                          // hint: const Text('Category'),
                           items: snapshot.data!.docs
                               .map((DocumentSnapshot document) {
                             return DropdownMenuItem<String>(
@@ -268,6 +264,22 @@ class _MyStatefulWidgetState extends State<editPost> {
                 ),
               ],
             ),
+            ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(16.0)
+                    // topLeft: Radius.circular(16.0),
+                    // topRight: Radius.circular(16.0),
+                    ),
+                child: AspectRatio(
+                  aspectRatio: 2,
+                  child: Image.network(
+                    imagectrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (BuildContext context, Object exception,
+                        StackTrace? stackTrace) {
+                      return const Text('Image could not be load');
+                    },
+                  ),
+                )),
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
@@ -371,7 +383,8 @@ class _MyStatefulWidgetState extends State<editPost> {
                 ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    addToDB();
+                    print(selectedCategory);
+                    updateDB(widget.docId);
                   } else {
                     // ScaffoldMessenger.of(context).showSnackBar(
                     //   SnackBar(
@@ -451,18 +464,20 @@ class _MyStatefulWidgetState extends State<editPost> {
     var permissionStatus = await Permission.photos.status;
     if (permissionStatus.isGranted) {
       XFile? img = await ImagePicker().pickImage(source: ImageSource.gallery);
+
       setState(() {
         File image = File(img!.path);
-        print('Image path $image');
+        //  print('Image path $image');
         imagePath = image.toString();
         imageDB = image;
         editImg = 'Update Image';
+        imagectrl = imagePath;
       });
     }
   }
 
-  Future<void> addToDB() async {
-    CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+  Future<void> updateDB(docId) async {
+    final posts = FirebaseFirestore.instance.collection('posts').doc(docId);
 
     if (imagePath != '') {
       File image = imageDB!;
@@ -479,33 +494,74 @@ class _MyStatefulWidgetState extends State<editPost> {
     String dataId = '';
     print('will be added to db');
     //add all value without the location
-    DocumentReference docReference = await posts.add({
+    posts.update({
       'name': nameController.text,
       'category': selectedCategory,
-      'img': imagePath,
-      'latitude': '',
-      'longitude': '',
+      //  'img': imagePath,
+      // 'latitude': '',
+      // 'longitude': '',
       'Website': websiteController.text,
       'Phone number': numberController.text,
       'description': descriptionController.text,
-      'userId': FirebaseAuth.instance.currentUser!.uid,
-      'docId': '',
-      'status': 'Pending',
-      'date': date
+      // 'userId': FirebaseAuth.instance.currentUser!.uid,
+      // 'docId': '',
+      //  'status': 'Pending',
+      //'date': date
     });
-    dataId = docReference.id;
-    posts.doc(dataId).update({'docId': dataId});
-    print("Document written with ID: ${docReference.id}");
 
-    print('added to db');
-    clearForm();
+    // clearForm();
 
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => maps(dataId: dataId, typeOfRequest: 'P'),
-        ));
+    // Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => maps(dataId: dataId, typeOfRequest: 'P'),
+    //     ));
   }
+  // Future<void> addToDB() async {
+  //   CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+
+  //   if (imagePath != '') {
+  //     File image = imageDB!;
+  //     final storage =
+  //         FirebaseStorage.instance.ref().child('postsImage/${image}');
+  //     strImg = Path.basename(image.path);
+  //     UploadTask uploadTask = storage.putFile(image);
+  //     TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+  //     imagePath = await (await uploadTask).ref.getDownloadURL();
+  //   }
+  //   DateTime _date = DateTime.now();
+  //   String date = DateFormat('yyyy-MM-dd HH: mm').format(_date);
+
+  //   String dataId = '';
+  //   print('will be added to db');
+  //   //add all value without the location
+  //   DocumentReference docReference = await posts.add({
+  //     'name': nameController.text,
+  //     'category': selectedCategory,
+  //     'img': imagePath,
+  //     'latitude': '',
+  //     'longitude': '',
+  //     'Website': websiteController.text,
+  //     'Phone number': numberController.text,
+  //     'description': descriptionController.text,
+  //     'userId': FirebaseAuth.instance.currentUser!.uid,
+  //     'docId': '',
+  //     'status': 'Pending',
+  //     'date': date
+  //   });
+  //   dataId = docReference.id;
+  //   posts.doc(dataId).update({'docId': dataId});
+  //   print("Document written with ID: ${docReference.id}");
+
+  //   print('added to db');
+  //   clearForm();
+
+  //   Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => maps(dataId: dataId, typeOfRequest: 'P'),
+  //       ));
+  // }
 
   void clearForm() {
     nameController.clear();

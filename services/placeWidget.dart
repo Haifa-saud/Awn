@@ -384,6 +384,17 @@ class PlaceState extends State<Place> {
                                                             editPost(
                                                           userType:
                                                               widget.userType,
+                                                          name: data['name'],
+                                                          description: data[
+                                                              'description'],
+                                                          number: data[
+                                                              'Phone number'],
+                                                          website:
+                                                              data['Website'],
+                                                          category:
+                                                              data['category'],
+                                                          docId: data['docId'],
+                                                          oldImg: data['img'],
                                                         ),
                                                       ));
                                                 }),

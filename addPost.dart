@@ -473,8 +473,8 @@ class _MyStatefulWidgetState extends State<addPost> {
       imagePath = await (await uploadTask).ref.getDownloadURL();
     }
     DateTime _date = DateTime.now();
-    String date =DateFormat('yyyy-MM-dd HH: mm').format(_date);
-    
+    String date = DateFormat('yyyy-MM-dd HH: mm').format(_date);
+
     String dataId = '';
     print('will be added to db');
     //add all value without the location
