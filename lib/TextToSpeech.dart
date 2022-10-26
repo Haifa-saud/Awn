@@ -14,7 +14,6 @@ class Tts extends StatefulWidget {
 }
 
 class _TtsState extends State<Tts> {
-  @override
   final FlutterTts flutterTts = FlutterTts();
   final TextEditingController textEditingController = TextEditingController();
   ScrollController _scrollController = ScrollController();
@@ -35,6 +34,8 @@ class _TtsState extends State<Tts> {
       showRed = false;
     });
   }
+
+  
 
   final Storage storage = Storage();
 

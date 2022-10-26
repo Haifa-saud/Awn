@@ -6,22 +6,17 @@ import 'package:Awn/services/firebase_storage_services.dart';
 import 'package:Awn/services/newRequestNotification.dart';
 import 'package:Awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:regexed_validator/regexed_validator.dart';
-import 'login.dart';
-import 'services/firebase_options.dart';
+import 'requestWidget.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path/path.dart' as Path;
-import 'main.dart';
 
 class addPost extends StatefulWidget {
   final String userType;
@@ -50,13 +45,31 @@ class _MyStatefulWidgetState extends State<addPost> {
 
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
+        print(
+            payload.substring(0, payload.indexOf('-')) == 'requestAcceptance');
+
         print(payload);
-        Navigator.push(
+        print(payload.substring(payload.indexOf('-')));
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    viewRequests(userType: 'Volunteer', reqID: payload)));
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
       });
+ 
   final _formKey = GlobalKey<FormState>();
 
   CollectionReference category =
@@ -473,8 +486,8 @@ class _MyStatefulWidgetState extends State<addPost> {
       imagePath = await (await uploadTask).ref.getDownloadURL();
     }
     DateTime _date = DateTime.now();
-    String date =DateFormat('yyyy-MM-dd HH: mm').format(_date);
-    
+    String date = DateFormat('yyyy-MM-dd HH: mm').format(_date);
+
     String dataId = '';
     print('will be added to db');
     //add all value without the location

@@ -53,11 +53,29 @@ class UserProfileState extends State<userProfile>
 
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        Navigator.push(
+        print(
+            payload.substring(0, payload.indexOf('-')) == 'requestAcceptance');
+
+        print(payload);
+        print(payload.substring(payload.indexOf('-')));
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    viewRequests(userType: 'Volunteer', reqID: payload)));
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
       });
 
   Future<Map<String, dynamic>> readUserData(var id) =>

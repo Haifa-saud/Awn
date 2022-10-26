@@ -1,4 +1,5 @@
 import 'addPost.dart';
+import 'requestWidget.dart';
 import 'services/FCM.dart';
 import 'services/appWidgets.dart';
 import 'package:Awn/services/firebase_storage_services.dart';
@@ -36,11 +37,11 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
   void initState() {
     userData = readUserData(FirebaseAuth.instance.currentUser!.uid);
     getToken();
+    acceptanceNotification.initApp();
+
     notificationService = NotificationService();
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
-
-    acceptanceNotification.initApp();
 
     super.initState();
   }
@@ -48,11 +49,29 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
   //! Local Notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        Navigator.push(
+        print(
+            payload.substring(0, payload.indexOf('-')) == 'requestAcceptance');
+
+        print(payload);
+        print(payload.substring(payload.indexOf('-')));
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    viewRequests(userType: 'Volunteer', reqID: payload)));
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
       });
 
   //! FCM
@@ -280,7 +299,6 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                       PageRouteBuilder(
                         pageBuilder: (context, animation1, animation2) =>
                             addPost(userType: userData['Type']),
-                        // comments(),
                         transitionDuration: const Duration(seconds: 1),
                         reverseTransitionDuration: Duration.zero,
                       ),

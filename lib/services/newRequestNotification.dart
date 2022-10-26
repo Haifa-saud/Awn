@@ -9,6 +9,8 @@ import 'package:workmanager/workmanager.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/subjects.dart';
 
+import '../requestWidget.dart';
+
 const task = 'firstTask';
 
 @pragma('vm:entry-point')
@@ -20,12 +22,29 @@ void callbackDispatcher() {
     notificationService.initializePlatformNotifications();
 
     void onNoticationListener(String? payload) async {
+      print(payload);
+
       if (payload != null && payload.isNotEmpty) {
-        Navigator.push(
-            GlobalContextService.navigatorKey.currentState!.context,
-            MaterialPageRoute(
-                builder: ((context) =>
-                    viewRequests(userType: 'Volunteer', reqID: payload))));
+        print(payload);
+
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
+            GlobalContextService.navigatorKey.currentContext!,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-'))),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              GlobalContextService.navigatorKey.currentState!.context,
+              MaterialPageRoute(
+                  builder: ((context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload))));
+        }
       }
     }
 

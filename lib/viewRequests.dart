@@ -5,24 +5,15 @@ import 'package:Awn/services/firebase_storage_services.dart';
 import 'package:Awn/services/newRequestNotification.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'requestWidget.dart';
-import 'services/firebase_options.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:path/path.dart' as Path;
-import 'package:intl/intl.dart';
-import 'main.dart';
+import 'services/localNotification.dart';
 
 class viewRequests extends StatefulWidget {
   final String userType;
-  final String reqID;
-  const viewRequests({Key? key, required this.userType, required this.reqID})
+  String reqID;
+  viewRequests({Key? key, required this.userType, this.reqID = ''})
       : super(key: key);
 
   @override

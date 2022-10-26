@@ -2,6 +2,7 @@ import 'package:Awn/adminPage.dart';
 import 'package:Awn/homePage.dart';
 import 'package:Awn/login.dart';
 import 'package:Awn/register.dart';
+import 'package:Awn/requestWidget.dart';
 import 'package:Awn/services/FCM.dart';
 import 'package:Awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,6 +21,33 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   print('handling message in background');
 }
+
+// Future<void> setupInteractedMessage() async {
+//   RemoteMessage? initialMessage =
+//       await FirebaseMessaging.instance.getInitialMessage();
+//   if (initialMessage != null) {
+//     _handleMessage(initialMessage);
+//   }
+//   FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+// }
+
+// void _handleMessage(RemoteMessage message) {
+//   print('message.data ${message.data}');
+//   print('message.data ${message.data['id']}');
+//   if (user != null) {
+//     Navigator.pushReplacement(
+//       GlobalContextService.navigatorKey.currentContext!,
+//       PageRouteBuilder(
+//         pageBuilder: (context, animation1, animation2) => requestPage(
+//           userType: 'Special Need User',
+//           reqID: message.data['id'],
+//         ),
+//         transitionDuration: const Duration(seconds: 1),
+//         reverseTransitionDuration: Duration.zero,
+//       ),
+//     );
+//   }
+// }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

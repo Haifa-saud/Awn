@@ -10,6 +10,7 @@ import 'package:workmanager/workmanager.dart';
 
 import 'homePage.dart';
 import 'main.dart';
+import 'services/localNotification.dart';
 
 class maps extends StatefulWidget {
   final String dataId;
@@ -126,7 +127,7 @@ class _MyStatefulWidgetState extends State<maps> {
     }
     DBId = widget.dataId;
     notificationService = NotificationService();
-    listenToNotificationStream();
+    // listenToNotificationStream(notificationService);
     notificationService.initializePlatformNotifications();
     super.initState();
   }
