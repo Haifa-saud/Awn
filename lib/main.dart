@@ -11,7 +11,15 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:workmanager/workmanager.dart';
+import 'chatPage.dart';
 import 'services/firebase_options.dart';
+
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  print('handling message in background');
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +36,8 @@ Future<void> main() async {
           .set({'token': token}, SetOptions(merge: true));
     }
   });
- 
+  await FirebaseMessaging.instance.getInitialMessage();
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   //! Local Notifications
   FlutterLocalNotificationsPlugin notification =
@@ -68,9 +77,9 @@ class MyApp extends StatefulWidget {
       this.isAdmin = false]);
 
   bool auth;
+  bool isAdmin;
   bool notification;
   String payload;
-  bool isAdmin;
 
   @override
   State<MyApp> createState() => _MyApp();
@@ -86,6 +95,7 @@ class _MyApp extends State<MyApp> {
         "/register": (ctx) => const register(),
         "/login": (ctx) => const login(),
         "/adminPage": (ctx) => const adminPage(),
+        // "/chatPage": (ctx) => const ChatPage(),
       },
       debugShowCheckedModeBanner: false,
       title: 'Home Page',

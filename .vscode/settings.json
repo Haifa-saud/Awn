@@ -2,5 +2,6 @@
     "cSpell.words": [
         "LTRB",
         "Placemark"
-    ]
+	],
+	"java.configuration.updateBuildConfiguration": "interactive"
 }

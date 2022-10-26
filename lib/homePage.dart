@@ -39,8 +39,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     notificationService = NotificationService();
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
-    // setupInteractedMessage();
-
+ 
     acceptanceNotification.initApp();
 
     super.initState();
@@ -57,32 +56,6 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
       });
 
   //! FCM
-  // // It is assumed that all messages contain a data field with the key 'type'
-  // Future<void> setupInteractedMessage() async {
-  //   // Get any messages which caused the application to open from
-  //   // a terminated state.
-  //   RemoteMessage? initialMessage =
-  //       await FirebaseMessaging.instance.getInitialMessage();
-
-  //   // If the message also contains a data property with a "type" of "chat",
-  //   // navigate to a chat screen
-  //   if (initialMessage != null) {
-  //     _handleMessage(initialMessage);
-  //   }
-
-  //   // Also handle any interaction when the app is in the background via a
-  //   // Stream listener
-  //   FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
-  // }
-
-  // void _handleMessage(RemoteMessage message) {
-  //   if (message != '') {
-  //     Navigator.pushNamed(
-  //       context,
-  //       '/homePage',
-  //     );
-  //   }
-  // }
   var fcmToken;
   void getToken() async {
     await FirebaseMessaging.instance.getToken().then((token) async {
@@ -90,15 +63,6 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
         fcmToken = token;
         print('fcmToken: $fcmToken');
       });
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .set({'token': token}, SetOptions(merge: true));
-    });
-
-    await FirebaseMessaging.instance.onTokenRefresh
-        .listen((String token) async {
-      print("New token: $token");
       await FirebaseFirestore.instance
           .collection('users')
           .doc(FirebaseAuth.instance.currentUser!.uid)

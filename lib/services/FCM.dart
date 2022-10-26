@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'firebase_options.dart';
@@ -98,10 +99,11 @@ class RequestAcceptanceNotification {
 
   Future initApp() async {
     notificationService.initializePlatformNotifications();
+    setupInteractedMessage();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print("onMessage");
-      print("onMessage $message.notification!.title");
+      print("onMessage ${message.notification!.title}");
       var Title = message.notification!.title == null
           ? 'no data'
           : message.notification!.title;
@@ -111,5 +113,33 @@ class RequestAcceptanceNotification {
       notificationService.showLocalNotification(
           id: 0, title: Title!, body: Body!, payload: 'payload');
     });
+  }
+
+  Future<void> setupInteractedMessage() async {
+    // Get any messages which caused the application to open from
+    // a terminated state.
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    // If the message also contains a data property with a "type" of "chat",
+    // navigate to a chat screen
+    if (initialMessage != null) {
+      _handleMessage(initialMessage);
+    }
+
+    // Also handle any interaction when the app is in the background via a
+    // Stream listener
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
+
+  void _handleMessage(RemoteMessage message) {
+    print('message.data ${message.data}');
+    // if (message.data['type'] == 'chat') {
+    //   Navigator.pushNamed(
+    //     context,
+    //     '/',
+    //     arguments: ChatArguments(message),
+    //   );
+    // }
   }
 }
