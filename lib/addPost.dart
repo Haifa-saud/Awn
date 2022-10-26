@@ -3,7 +3,7 @@ import 'package:Awn/homePage.dart';
 import 'package:Awn/map.dart';
 import 'package:Awn/services/appWidgets.dart';
 import 'package:Awn/services/firebase_storage_services.dart';
-import 'package:Awn/services/newRequestNotification.dart';
+import 'package:Awn/services/localNotification.dart';
 import 'package:Awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -34,7 +34,7 @@ TextEditingController numberController = TextEditingController();
 TextEditingController websiteController = TextEditingController();
 
 class _MyStatefulWidgetState extends State<addPost> {
-  late final NotificationService notificationService;
+  NotificationService notificationService = NotificationService();
   @override
   void initState() {
     notificationService = NotificationService();
@@ -47,12 +47,6 @@ class _MyStatefulWidgetState extends State<addPost> {
   //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        print(
-            payload.substring(0, payload.indexOf('-')) == 'requestAcceptance');
-
-        print(payload);
-        print(payload.substring(0, payload.indexOf('-')) == 'chat');
-        print(payload.substring(payload.indexOf('-')));
         if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
           Navigator.pushReplacement(
             context,

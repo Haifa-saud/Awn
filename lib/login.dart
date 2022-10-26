@@ -1,7 +1,7 @@
 import 'package:Awn/services/Utils.dart';
 import 'package:Awn/register.dart';
 import 'package:Awn/services/firebase_storage_services.dart';
-import 'package:Awn/services/newRequestNotification.dart';
+import 'package:Awn/services/localNotification.dart';
 import 'package:Awn/services/usersModel.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';

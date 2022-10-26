@@ -1,10 +1,11 @@
 import 'addPost.dart';
+import 'chatPage.dart';
 import 'requestWidget.dart';
 import 'services/FCM.dart';
 import 'services/appWidgets.dart';
 import 'package:Awn/services/firebase_storage_services.dart';
 import 'package:Awn/services/placeWidget.dart';
-import 'package:Awn/services/newRequestNotification.dart';
+import 'package:Awn/services/localNotification.dart';
 import 'package:Awn/services/myGlobal.dart';
 import 'package:Awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,9 +26,8 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
   CollectionReference category =
       FirebaseFirestore.instance.collection('postCategory');
 
-  late final NotificationService notificationService;
-  late final PushNotification acceptanceNotification =
-      PushNotification();
+  NotificationService notificationService = NotificationService();
+  late final PushNotification acceptanceNotification = PushNotification();
 
   final Storage storage = Storage();
   var userData;
@@ -46,13 +46,14 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     super.initState();
   }
 
-  //! Local Notification
+  //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
         print(
             payload.substring(0, payload.indexOf('-')) == 'requestAcceptance');
 
         print(payload);
+        print(payload.substring(0, payload.indexOf('-')) == 'chat');
         print(payload.substring(payload.indexOf('-')));
         if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
           Navigator.pushReplacement(
@@ -61,6 +62,16 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
               pageBuilder: (context, animation1, animation2) => requestPage(
                   userType: 'Special Need User',
                   reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1)),
               transitionDuration: const Duration(seconds: 1),
               reverseTransitionDuration: Duration.zero,
             ),

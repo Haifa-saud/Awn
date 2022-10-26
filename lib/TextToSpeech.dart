@@ -1,9 +1,14 @@
 import 'package:Awn/addPost.dart';
+import 'package:Awn/requestWidget.dart';
 import 'package:Awn/services/appWidgets.dart';
 import 'package:Awn/services/firebase_storage_services.dart';
+import 'package:Awn/viewRequests.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+
+import 'chatPage.dart';
+import 'services/localNotification.dart';
 
 class Tts extends StatefulWidget {
   final String userType;
@@ -22,6 +27,50 @@ class _TtsState extends State<Tts> {
   String waitMessage = "";
   bool showRed = false;
 
+  NotificationService notificationService = NotificationService();
+
+  @override
+  void initState() {
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
+
+    super.initState();
+  }
+
+  //! tapping local notification
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
+      });
+
   speak(String text) async {
     await flutterTts.setLanguage("en-US");
     await flutterTts.setPitch(1);
@@ -34,8 +83,6 @@ class _TtsState extends State<Tts> {
       showRed = false;
     });
   }
-
-  
 
   final Storage storage = Storage();
 

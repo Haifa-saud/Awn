@@ -4,7 +4,7 @@ import 'package:Awn/requestWidget.dart';
 import 'package:Awn/services/appWidgets.dart';
 import 'package:Awn/services/firebase_storage_services.dart';
 import 'package:Awn/services/placeWidget.dart';
-import 'package:Awn/services/newRequestNotification.dart';
+import 'package:Awn/services/localNotification.dart';
 import 'package:Awn/viewRequests.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,7 +35,7 @@ ScrollController _scrollController = ScrollController();
 
 class UserProfileState extends State<userProfile>
     with TickerProviderStateMixin {
-  late final NotificationService notificationService;
+  NotificationService notificationService = NotificationService();
   final Storage storage = Storage();
   var userData;
   var userId = FirebaseAuth.instance.currentUser!.uid;
@@ -51,13 +51,9 @@ class UserProfileState extends State<userProfile>
     super.initState();
   }
 
+  //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        print(
-            payload.substring(0, payload.indexOf('-')) == 'requestAcceptance');
-
-        print(payload);
-        print(payload.substring(payload.indexOf('-')));
         if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
           Navigator.pushReplacement(
             context,
@@ -65,6 +61,16 @@ class UserProfileState extends State<userProfile>
               pageBuilder: (context, animation1, animation2) => requestPage(
                   userType: 'Special Need User',
                   reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1)),
               transitionDuration: const Duration(seconds: 1),
               reverseTransitionDuration: Duration.zero,
             ),

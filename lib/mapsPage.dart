@@ -1,9 +1,11 @@
-import 'package:Awn/services/newRequestNotification.dart';
+import 'package:Awn/requestWidget.dart';
+import 'package:Awn/services/localNotification.dart';
 import 'package:Awn/viewRequests.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'chatPage.dart';
 import 'services/localNotification.dart';
 
 class MapsPage extends StatefulWidget {
@@ -17,7 +19,7 @@ class MapsPage extends StatefulWidget {
 
 class _MapsPageState extends State<MapsPage> {
   late GoogleMapController myController;
-  late final NotificationService notificationService;
+  NotificationService notificationService = NotificationService();
   @override
   void initState() {
     notificationService = NotificationService();
@@ -26,14 +28,37 @@ class _MapsPageState extends State<MapsPage> {
     super.initState();
   }
 
+  //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        print(payload);
-        Navigator.push(
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    viewRequests(userType: 'Volunteer', reqID: payload)));
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
       });
 
   @override

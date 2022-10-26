@@ -5,7 +5,7 @@ import '../chatPage.dart';
 import '../main.dart';
 import '../requestWidget.dart';
 import 'localNotification.dart';
-import 'newRequestNotification.dart';
+import 'localNotification.dart';
 
 class PushNotification {
   final NotificationService notificationService = NotificationService();

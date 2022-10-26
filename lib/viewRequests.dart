@@ -2,11 +2,12 @@ import 'package:Awn/addPost.dart';
 import 'package:Awn/mapsPage.dart';
 import 'package:Awn/services/appWidgets.dart';
 import 'package:Awn/services/firebase_storage_services.dart';
-import 'package:Awn/services/newRequestNotification.dart';
+import 'package:Awn/services/localNotification.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geocoding/geocoding.dart';
+import 'chatPage.dart';
 import 'requestWidget.dart';
 import 'services/localNotification.dart';
 
@@ -26,7 +27,7 @@ class _AddRequestState extends State<viewRequests> {
     return '${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
   }
 
-  late final NotificationService notificationService;
+  NotificationService notificationService = NotificationService();
   @override
   void initState() {
     if (widget.reqID != '') {
@@ -38,14 +39,37 @@ class _AddRequestState extends State<viewRequests> {
     super.initState();
   }
 
+  //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        print(payload);
-        Navigator.push(
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    viewRequests(userType: 'Volunteer', reqID: payload)));
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
       });
 
   final Stream<QuerySnapshot> requests = FirebaseFirestore.instance

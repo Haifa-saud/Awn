@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:Awn/addRequest.dart';
 import 'package:Awn/chatPage.dart';
+import 'package:Awn/services/localNotification.dart';
 import 'package:Awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,11 +39,48 @@ class requestPage extends StatefulWidget {
 class _requestPageState extends State<requestPage> {
   int _selectedIndex = 2;
   var currentUserID;
+  NotificationService notificationService = NotificationService();
 
   @override
   initState() {
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
     Hive.box("currentPage").put("RequestId", widget.reqID);
   }
+
+  //! tapping local notification
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
+      });
 
   Future<Map<String, dynamic>> readUserData(userID) =>
       FirebaseFirestore.instance.collection('users').doc(userID).get().then(
@@ -50,13 +88,6 @@ class _requestPageState extends State<requestPage> {
           return doc.data() as Map<String, dynamic>;
         },
       );
-  // print(FirebaseAuth.instance.currentUser!.uid);
-  // var id = FirebaseAuth.instance.currentUser!.uid == null
-  //     ? widget.userID
-  //     : FirebaseAuth.instance.currentUser!.uid;
-  // var userData;
-
-  // return userData;
 
   @override
   Widget build(BuildContext context) {

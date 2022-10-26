@@ -18,7 +18,7 @@ import 'main.dart';
 import 'package:Awn/map.dart';
 
 import 'requestWidget.dart';
-import 'services/newRequestNotification.dart';
+import 'services/localNotification.dart';
 
 //! bottom bar done
 class addRequest extends StatefulWidget {
@@ -43,7 +43,7 @@ void clearForm() {
 class _AddRequestState extends State<addRequest> {
   int _selectedIndex = 2;
 
-  late final NotificationService notificationService;
+  NotificationService notificationService = NotificationService();
   @override
   void initState() {
     notificationService = NotificationService();
@@ -56,12 +56,6 @@ class _AddRequestState extends State<addRequest> {
   //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        print(
-            payload.substring(0, payload.indexOf('-')) == 'requestAcceptance');
-
-        print(payload);
-        print(payload.substring(0, payload.indexOf('-')) == 'chat');
-        print(payload.substring(payload.indexOf('-')));
         if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
           Navigator.pushReplacement(
             context,
