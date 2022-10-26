@@ -160,7 +160,6 @@ class UserProfileState extends State<userProfile>
                                         await _signOut();
                                       },
                                       child: Container(
-                                        //color: Color.fromARGB(255, 164, 20, 20),
                                         padding: const EdgeInsets.all(14),
                                         child: const Text("Log out",
                                             style: TextStyle(
