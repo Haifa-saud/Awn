@@ -1,11 +1,12 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import '../chatPage.dart';
 import '../main.dart';
 import '../requestWidget.dart';
 import 'localNotification.dart';
 import 'newRequestNotification.dart';
 
-class RequestAcceptanceNotification {
+class PushNotification {
   final NotificationService notificationService = NotificationService();
 
   Future initApp() async {
@@ -21,11 +22,19 @@ class RequestAcceptanceNotification {
       var Body = message.notification!.body == null
           ? 'no data'
           : message.notification!.body;
-      notificationService.showLocalNotification(
-          id: 0,
-          title: Title!,
-          body: Body!,
-          payload: 'requestAcceptance-${message.data['id']}');
+      if (message.data['type'] == 'requestAcceptance') {
+        notificationService.showLocalNotification(
+            id: 0,
+            title: Title!,
+            body: Body!,
+            payload: 'requestAcceptance-${message.data['id']}');
+      } else {
+        notificationService.showLocalNotification(
+            id: 0,
+            title: Title!,
+            body: Body!,
+            payload: 'chat-${message.data['id']}');
+      }
     });
   }
 
@@ -39,19 +48,28 @@ class RequestAcceptanceNotification {
   }
 
   void _handleMessage(RemoteMessage message) {
-    print('message.data ${message.data}');
-    print('message.data ${message.data['id']}');
-
-    Navigator.pushReplacement(
-      GlobalContextService.navigatorKey.currentContext!,
-      PageRouteBuilder(
-        pageBuilder: (context, animation1, animation2) => requestPage(
-            userType: 'Special Need User',
-            reqID: message.data['id'],
-            userID: message.data['userID']),
-        transitionDuration: const Duration(seconds: 1),
-        reverseTransitionDuration: Duration.zero,
-      ),
-    );
+    if (message.data['type'] == 'requestAcceptance') {
+      Navigator.pushReplacement(
+        GlobalContextService.navigatorKey.currentContext!,
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => requestPage(
+              userType: 'Special Need User',
+              reqID: message.data['id'],
+              userID: message.data['userID']),
+          transitionDuration: const Duration(seconds: 1),
+          reverseTransitionDuration: Duration.zero,
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        GlobalContextService.navigatorKey.currentContext!,
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) =>
+              ChatPage(requestID: message.data['id']),
+          transitionDuration: const Duration(seconds: 1),
+          reverseTransitionDuration: Duration.zero,
+        ),
+      );
+    }
   }
 }

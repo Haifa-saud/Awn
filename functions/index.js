@@ -37,6 +37,7 @@ exports.sendRequestAcceptanceNotification = functions.firestore
               data: {
                 id: requestData.docId,
                 userID: snap.data().id,
+                type: "requestAcceptance",
               },
               notification: {
                 title: "Awn",
@@ -107,7 +108,8 @@ exports.sendChatNotification = functions.firestore
                     : chatData.text;
                 const payload = {
                   data: {
-                    id: snapshot.ref.id,
+                    id: reqID,
+                    type: "chat",
                   },
                   notification: {
                     title: Title,

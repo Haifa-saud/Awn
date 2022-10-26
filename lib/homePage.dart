@@ -26,8 +26,8 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
       FirebaseFirestore.instance.collection('postCategory');
 
   late final NotificationService notificationService;
-  late final RequestAcceptanceNotification acceptanceNotification =
-      RequestAcceptanceNotification();
+  late final PushNotification acceptanceNotification =
+      PushNotification();
 
   final Storage storage = Storage();
   var userData;

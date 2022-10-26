@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:regexed_validator/regexed_validator.dart';
+import 'chatPage.dart';
 import 'requestWidget.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -49,6 +50,7 @@ class _MyStatefulWidgetState extends State<addPost> {
             payload.substring(0, payload.indexOf('-')) == 'requestAcceptance');
 
         print(payload);
+        print(payload.substring(0, payload.indexOf('-')) == 'chat');
         print(payload.substring(payload.indexOf('-')));
         if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
           Navigator.pushReplacement(
@@ -61,6 +63,16 @@ class _MyStatefulWidgetState extends State<addPost> {
               reverseTransitionDuration: Duration.zero,
             ),
           );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
         } else {
           Navigator.push(
               context,
@@ -69,7 +81,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                       viewRequests(userType: 'Volunteer', reqID: payload)));
         }
       });
- 
+
   final _formKey = GlobalKey<FormState>();
 
   CollectionReference category =
