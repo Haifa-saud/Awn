@@ -11,9 +11,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:workmanager/workmanager.dart';
 import 'chatPage.dart';
 import 'services/firebase_options.dart';
+import 'package:hive/hive.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -22,8 +24,13 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('handling message in background');
 }
 
+late Box box;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  var dir = await getApplicationDocumentsDirectory();
+  Hive.init(dir.path);
+  box = await Hive.openBox('currentPage');
   //! Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 

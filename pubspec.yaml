@@ -86,6 +86,7 @@ dependencies:
   flutter_sound: ^8.3.9
   duration_picker: ^1.0.1
   toggle_switch: ^2.0.1
+  hive: ^2.2.3
 
 
   

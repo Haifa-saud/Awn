@@ -13,6 +13,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
 import 'addPost.dart';
@@ -40,7 +41,7 @@ class _requestPageState extends State<requestPage> {
 
   @override
   initState() {
-    currentUserID = FirebaseAuth.instance.currentUser!.uid;
+    Hive.box("currentPage").put("RequestId", widget.reqID);
   }
 
   Future<Map<String, dynamic>> readUserData(userID) =>
@@ -107,6 +108,7 @@ class _requestPageState extends State<requestPage> {
             icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
             onPressed: () {
               if (widget.userType == 'Volunteer') {
+                Hive.box("currentPage").put("RequestId", '');
                 Navigator.pushReplacement(
                   context,
                   PageRouteBuilder(
@@ -117,6 +119,7 @@ class _requestPageState extends State<requestPage> {
                   ),
                 );
               } else {
+                Hive.box("currentPage").put("RequestId", '');
                 Navigator.pushReplacement(
                   context,
                   PageRouteBuilder(
@@ -153,6 +156,7 @@ class _requestPageState extends State<requestPage> {
           ),
         ),
         onPressed: () {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -308,6 +312,8 @@ class _requestPageState extends State<requestPage> {
                                       InkWell(
                                         onTap: (() {
                                           setState(() {
+                                            Hive.box("currentPage")
+                                                .put("RequestId", '');
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
@@ -365,6 +371,8 @@ class _requestPageState extends State<requestPage> {
                                                 TextButton(
                                                   onPressed: () {
                                                     deletRequest(docId);
+                                                    Hive.box("currentPage")
+                                                        .put("RequestId", '');
                                                     Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
@@ -495,6 +503,8 @@ class _requestPageState extends State<requestPage> {
                                   padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                   child: InkWell(
                                       onTap: () {
+                                        Hive.box("currentPage")
+                                            .put("RequestId", '');
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -537,6 +547,9 @@ class _requestPageState extends State<requestPage> {
                                         gestureRecognizers: Set()
                                           ..add(Factory<TapGestureRecognizer>(
                                               () => Gesture(() {
+                                                    Hive.box("currentPage")
+                                                        .put("RequestId", '');
+
                                                     Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
@@ -654,6 +667,11 @@ class _requestPageState extends State<requestPage> {
                                                               color:
                                                                   Colors.blue,
                                                               onPressed: () {
+                                                                Hive.box(
+                                                                        "currentPage")
+                                                                    .put(
+                                                                        "RequestId",
+                                                                        '');
                                                                 Navigator.push(
                                                                   context,
                                                                   PageRouteBuilder(

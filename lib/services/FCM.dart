@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import '../chatPage.dart';
 import '../main.dart';
 import '../requestWidget.dart';
@@ -14,25 +15,27 @@ class PushNotification {
     setupInteractedMessage();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      print("onMessage");
+      print(message.data['type'] == 'requestAcceptance' &&
+          (Hive.box("currentPage").get("RequestId") != message.data['id']));
+      print(message.data['type'] == 'chat' &&
+          Hive.box("currentPage").get("ChatReqId") != message.data['id']);
       print("onMessage ${message.notification!.title}");
-      var Title = message.notification!.title == null
-          ? 'no data'
-          : message.notification!.title;
-      var Body = message.notification!.body == null
-          ? 'no data'
-          : message.notification!.body;
-      if (message.data['type'] == 'requestAcceptance') {
+      var Title = message.notification!.title ?? 'no data';
+      var Body = message.notification!.body ?? 'no data';
+
+      if (message.data['type'] == 'requestAcceptance' &&
+          (Hive.box("currentPage").get("RequestId") != message.data['id'])) {
         notificationService.showLocalNotification(
             id: 0,
-            title: Title!,
-            body: Body!,
+            title: Title,
+            body: Body,
             payload: 'requestAcceptance-${message.data['id']}');
-      } else {
+      } else if (message.data['type'] == 'chat' &&
+          Hive.box("currentPage").get("ChatReqId") != message.data['id']) {
         notificationService.showLocalNotification(
             id: 0,
-            title: Title!,
-            body: Body!,
+            title: Title,
+            body: Body,
             payload: 'chat-${message.data['id']}');
       }
     });

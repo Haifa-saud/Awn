@@ -1,6 +1,7 @@
 import 'package:Awn/addPost.dart';
 import 'package:Awn/services/appWidgets.dart';
 import 'package:Awn/services/firebase_storage_services.dart';
+import 'package:Awn/viewRequests.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +13,12 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'package:intl/intl.dart';
+import 'chatPage.dart';
 import 'main.dart';
 import 'package:Awn/map.dart';
+
+import 'requestWidget.dart';
+import 'services/newRequestNotification.dart';
 
 //! bottom bar done
 class addRequest extends StatefulWidget {
@@ -37,6 +42,55 @@ void clearForm() {
 
 class _AddRequestState extends State<addRequest> {
   int _selectedIndex = 2;
+
+  late final NotificationService notificationService;
+  @override
+  void initState() {
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
+
+    super.initState();
+  }
+
+  //! tapping local notification
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        print(
+            payload.substring(0, payload.indexOf('-')) == 'requestAcceptance');
+
+        print(payload);
+        print(payload.substring(0, payload.indexOf('-')) == 'chat');
+        print(payload.substring(payload.indexOf('-')));
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
+      });
 
   @override
   Widget build(BuildContext context) {

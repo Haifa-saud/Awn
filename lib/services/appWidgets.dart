@@ -7,6 +7,7 @@ import 'package:Awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:hive/hive.dart';
 import '../userProfile.dart';
 import 'package:justino_icons/justino_icons.dart';
 
@@ -55,6 +56,7 @@ class BottomNavBar extends StatelessWidget {
     Future<void> _onItemTapped(int index) async {
       if (userType == 'Special Need User') {
         if (index == 0) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -64,6 +66,7 @@ class BottomNavBar extends StatelessWidget {
             ),
           );
         } else if (index == 1) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -74,6 +77,7 @@ class BottomNavBar extends StatelessWidget {
             ),
           );
         } else if (index == 2) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -84,6 +88,7 @@ class BottomNavBar extends StatelessWidget {
             ),
           );
         } else if (index == 3) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -96,6 +101,7 @@ class BottomNavBar extends StatelessWidget {
         }
       } else if (userType == 'Volunteer') {
         if (index == 0) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -105,6 +111,7 @@ class BottomNavBar extends StatelessWidget {
             ),
           );
         } else if (index == 1) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -115,6 +122,7 @@ class BottomNavBar extends StatelessWidget {
             ),
           );
         } else if (index == 2) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(

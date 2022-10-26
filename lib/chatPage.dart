@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
+import 'package:hive/hive.dart';
 
 class ChatPage extends StatefulWidget {
   final requestID;
@@ -26,6 +27,7 @@ class ChatPage extends StatefulWidget {
 class ChatPageState extends State<ChatPage>
     with SingleTickerProviderStateMixin {
   User currentUser = FirebaseAuth.instance.currentUser!;
+  // late Box box;
 
   //*audio recorder section
   var audioRecorder;
@@ -63,6 +65,7 @@ class ChatPageState extends State<ChatPage>
     initRecorder();
     isPlayerReady = false;
     initPlayer();
+    Hive.box("currentPage").put("ChatReqId", widget.requestID);
     super.initState();
   }
 
@@ -140,7 +143,10 @@ class ChatPageState extends State<ChatPage>
                       leading: IconButton(
                         icon: const Icon(Icons.arrow_back_ios_new,
                             color: Colors.black),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () {
+                          Hive.box("currentPage").put("ChatReqId", '');
+                          Navigator.of(context).pop();
+                        },
                       ),
                       backgroundColor: Colors.white, //(0xFFfcfffe)
                       scrolledUnderElevation: 1,
