@@ -1,4 +1,5 @@
 import 'package:awn/addPost.dart';
+import 'package:awn/editPost.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,8 +44,9 @@ class PlaceState extends State<Place> {
 
   Widget placesList(String cate, String status, String userId) {
     var isAdmin = false;
-    Stream<QuerySnapshot> list =
-        FirebaseFirestore.instance.collection('posts')
+
+    Stream<QuerySnapshot> list = FirebaseFirestore.instance
+        .collection('posts')
         .where('status', isEqualTo: 'Approved')
         .snapshots();
     if (cate != 'All' && cate != '') {
@@ -297,6 +299,7 @@ class PlaceState extends State<Place> {
   }
 
   Widget buildPlace(placeID, var isAdmin, var status) {
+    bool isPending = status == 'Pending' ? true : false;
     late GoogleMapController myController;
     Set<Marker> getMarker(lat, lng) {
       return <Marker>{
@@ -368,6 +371,35 @@ class PlaceState extends State<Place> {
                                             style:
                                                 const TextStyle(fontSize: 25)),
                                         const Spacer(),
+                                        Visibility(
+                                          visible: isPending,
+                                          child: Row(
+                                            children: [
+                                              InkWell(
+                                                onTap: (() {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            editPost(
+                                                          userType:
+                                                              widget.userType,
+                                                        ),
+                                                      ));
+                                                }),
+                                                child: Container(
+                                                  margin:
+                                                      EdgeInsets.only(top: 5),
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 7),
+                                                  child: Icon(Icons.edit,
+                                                      size: 30,
+                                                      color: Colors.blueGrey),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                         InkWell(
                                             onTap: () => Navigator.pop(context),
                                             child: CircleAvatar(
@@ -839,9 +871,69 @@ class PlaceState extends State<Place> {
                 reverse: true,
                 itemCount: comment_Data.size,
                 itemBuilder: (context, index) {
+                  var addImage;
+                  var editImg;
+                  String imagePath;
                   return Padding(
                       padding: const EdgeInsets.fromLTRB(1, 1, 1, 1),
                       child: Stack(children: [
+                        /*image*/ Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: addImage,
+                                  style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.blue,
+                                      backgroundColor: Colors.white,
+                                      padding: const EdgeInsets.fromLTRB(
+                                          17, 16, 17, 16),
+                                      textStyle: const TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                      side: BorderSide(
+                                          color: Colors.grey.shade400,
+                                          width: 1)),
+                                  child: Text(
+                                      editImg == '' ? 'Add Image' : editImg),
+                                ),
+                              ],
+                            ),
+                            Stack(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(8, 8, 0, 4),
+                                  child: Text(
+                                      // imagePath,
+                                      // style: TextStyle(
+                                      //   fontSize: 15,
+                                      // ),
+                                      ''),
+                                ),
+                                Positioned(
+                                  right: 5.0,
+                                  bottom: 5.0,
+                                  child: InkWell(
+                                    child: Icon(
+                                      Icons.remove_circle,
+                                      size: 30,
+                                      color: Colors.red,
+                                    ),
+                                    onTap: () {
+                                      setState(
+                                        () {
+                                          imagePath = '';
+                                          var imageDB = null;
+                                        },
+                                      );
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                         Container(
                           width: 600,
                           margin: const EdgeInsets.only(top: 12),
