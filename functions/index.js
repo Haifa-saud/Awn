@@ -32,6 +32,8 @@ exports.sendRequestAcceptanceNotification = functions.firestore
           var Body = "Your Awn Request: " + Title + " has been Accepted.";
           const payload = {
             notification: {
+              data: { id: requestData.docId },
+              id: requestData.docId,
               title: "Awn",
               body: Body,
               sound: "default",

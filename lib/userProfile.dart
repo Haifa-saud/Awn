@@ -9,6 +9,7 @@ import 'package:Awn/viewRequests.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
@@ -124,6 +125,14 @@ class UserProfileState extends State<userProfile>
                                     //log in ok button
                                     TextButton(
                                       onPressed: () async {
+                                        await FirebaseMessaging.instance
+                                            .deleteToken();
+                                        await FirebaseFirestore.instance
+                                            .collection('users')
+                                            .doc(FirebaseAuth
+                                                .instance.currentUser!.uid)
+                                            .set({'token': ''},
+                                                SetOptions(merge: true));
                                         await _signOut();
                                       },
                                       child: Container(

@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../main.dart';
+import '../requestWidget.dart';
 import 'firebase_options.dart';
 import 'newRequestNotification.dart';
 
@@ -134,12 +136,19 @@ class RequestAcceptanceNotification {
 
   void _handleMessage(RemoteMessage message) {
     print('message.data ${message.data}');
-    // if (message.data['type'] == 'chat') {
-    //   Navigator.pushNamed(
-    //     context,
-    //     '/',
-    //     arguments: ChatArguments(message),
-    //   );
+    print('message.data ${message.data['id']}');
+
+    Navigator.pushReplacement(
+      GlobalContextService.navigatorKey.currentContext!,
+      PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2) => requestPage(
+          userType: 'Special Need User',
+          reqID: message.data['id'],
+        ),
+        transitionDuration: const Duration(seconds: 1),
+        reverseTransitionDuration: Duration.zero,
+      ),
+    );
     // }
   }
 }

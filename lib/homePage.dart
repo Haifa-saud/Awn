@@ -39,7 +39,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     notificationService = NotificationService();
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
- 
+
     acceptanceNotification.initApp();
 
     super.initState();
@@ -63,6 +63,15 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
         fcmToken = token;
         print('fcmToken: $fcmToken');
       });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({'token': token}, SetOptions(merge: true));
+    });
+
+    await FirebaseMessaging.instance.onTokenRefresh
+        .listen((String token) async {
+      print("New token: $token");
       await FirebaseFirestore.instance
           .collection('users')
           .doc(FirebaseAuth.instance.currentUser!.uid)
