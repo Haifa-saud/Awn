@@ -43,8 +43,8 @@ class PlaceState extends State<Place> {
 
   Widget placesList(String cate, String status, String userId) {
     var isAdmin = false;
-    Stream<QuerySnapshot> list =
-        FirebaseFirestore.instance.collection('posts')
+    Stream<QuerySnapshot> list = FirebaseFirestore.instance
+        .collection('posts')
         .where('status', isEqualTo: 'Approved')
         .snapshots();
     if (cate != 'All' && cate != '') {
@@ -859,30 +859,138 @@ class PlaceState extends State<Place> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                /*user name*/ Padding(
+                                Padding(
                                   padding:
-                                      const EdgeInsets.fromLTRB(6, 10, 15, 10),
-                                  child: Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Text(
-                                        comment_Data.docs[index]['name'],
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 16),
-                                        textAlign: TextAlign.left,
-                                      )),
-                                ),
-                                /*comment*/ Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(6, 5, 6, 5),
-                                  child: Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Text(
-                                        comment_Data.docs[index]['text'],
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 17)),
-                                  ),
+                                      const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                  child: Row(children: [
+                                    /*comment*/ Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(6, 0, 6, 5),
+                                      child: Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text(
+                                            comment_Data.docs[index]['text'],
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 17)),
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Visibility(
+                                        visible: comment_Data.docs[index]
+                                                ['UserID'] ==
+                                            widget.userId,
+                                        child: IconButton(
+                                          iconSize: 25,
+                                          icon: const Icon(
+                                            Icons.delete_forever,
+                                          ),
+                                          color: Colors.red,
+                                          onPressed: () {
+                                            //Wedd addition
+                                            showDialog(
+                                              context: context,
+                                              builder: (ctx) => AlertDialog(
+                                                title: const Text(
+                                                    "Are You Sure ?"),
+                                                content: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: const [
+                                                      Text(
+                                                        "Are You Sure You want to delete your comment?",
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                      ),
+                                                      Align(
+                                                          alignment: Alignment
+                                                              .centerLeft,
+                                                          child: Text(
+                                                            "\n*This action can't be undone",
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w300),
+                                                            textAlign:
+                                                                TextAlign.left,
+                                                          ))
+                                                    ]),
+                                                actions: <Widget>[
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(ctx).pop();
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              14),
+                                                      child:
+                                                          const Text("Cancel"),
+                                                    ),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      FocusScope.of(context)
+                                                          .unfocus();
+                                                      FirebaseFirestore.instance
+                                                          .collection(
+                                                              "Comments")
+                                                          .doc(comment_Data
+                                                                  .docs[index]
+                                                              ['commentID'])
+                                                          .delete()
+                                                          .then((_) {
+                                                        WidgetsBinding.instance
+                                                            .addPostFrameCallback(
+                                                          (_) => ScaffoldMessenger
+                                                                  .of(context)
+                                                              .showSnackBar(
+                                                                  SnackBar(
+                                                            content: const Text(
+                                                                'Comment is deleted'),
+                                                            behavior:
+                                                                SnackBarBehavior
+                                                                    .floating,
+                                                            action:
+                                                                SnackBarAction(
+                                                              label: 'Dismiss',
+                                                              disabledTextColor:
+                                                                  Colors.white,
+                                                              textColor:
+                                                                  Colors.white,
+                                                              onPressed: () {
+                                                                //Do whatever you want
+                                                              },
+                                                            ),
+                                                          )),
+                                                        );
+                                                        print(
+                                                            "success!, document deleted");
+                                                      });
+                                                      Navigator.of(ctx).pop();
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              14),
+                                                      child: const Text(
+                                                          "Delete",
+                                                          style: TextStyle(
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      164,
+                                                                      10,
+                                                                      10))),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        )),
+                                  ]),
                                 ),
                                 /*date, delete*/ Padding(
                                   padding:
@@ -890,11 +998,24 @@ class PlaceState extends State<Place> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
+                                      /*user name*/ Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            6, 10, 0, 10),
+                                        child: Align(
+                                            alignment: Alignment.topLeft,
+                                            child: Text(
+                                              comment_Data.docs[index]['name'],
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 13),
+                                              textAlign: TextAlign.left,
+                                            )),
+                                      ),
                                       Padding(
                                         padding: const EdgeInsets.fromLTRB(
                                             0, 10, 0, 10),
                                         child: Text(
-                                            DateFormat('d MMM y, hh:mm a')
+                                            DateFormat(', d MMM y, hh:mm a')
                                                 .format(DateTime
                                                     .fromMillisecondsSinceEpoch(
                                                         comment_Data.docs[index]
@@ -905,127 +1026,7 @@ class PlaceState extends State<Place> {
                                               fontWeight: FontWeight.w400,
                                             )),
                                       ),
-                                      const Spacer(),
-                                      Visibility(
-                                          visible: comment_Data.docs[index]
-                                                  ['UserID'] ==
-                                              widget.userId,
-                                          child: IconButton(
-                                            iconSize: 25,
-                                            icon: const Icon(
-                                              Icons.delete_forever,
-                                            ),
-                                            color: Colors.red,
-                                            onPressed: () {
-                                              //Wedd addition
-                                              showDialog(
-                                                context: context,
-                                                builder: (ctx) => AlertDialog(
-                                                  title: const Text(
-                                                      "Are You Sure ?"),
-                                                  content: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: const [
-                                                        Text(
-                                                          "Are You Sure You want to delete your comment?",
-                                                          textAlign:
-                                                              TextAlign.left,
-                                                        ),
-                                                        Align(
-                                                            alignment: Alignment
-                                                                .centerLeft,
-                                                            child: Text(
-                                                              "\n*This action can't be undone",
-                                                              style: TextStyle(
-                                                                  fontSize: 16,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w300),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .left,
-                                                            ))
-                                                      ]),
-                                                  actions: <Widget>[
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.of(ctx).pop();
-                                                      },
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(14),
-                                                        child: const Text(
-                                                            "Cancel"),
-                                                      ),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        FocusScope.of(context)
-                                                            .unfocus();
-                                                        FirebaseFirestore
-                                                            .instance
-                                                            .collection(
-                                                                "Comments")
-                                                            .doc(comment_Data
-                                                                    .docs[index]
-                                                                ['commentID'])
-                                                            .delete()
-                                                            .then((_) {
-                                                          WidgetsBinding
-                                                              .instance
-                                                              .addPostFrameCallback(
-                                                            (_) => ScaffoldMessenger
-                                                                    .of(context)
-                                                                .showSnackBar(
-                                                                    SnackBar(
-                                                              content: const Text(
-                                                                  'Comment is deleted'),
-                                                              behavior:
-                                                                  SnackBarBehavior
-                                                                      .floating,
-                                                              action:
-                                                                  SnackBarAction(
-                                                                label:
-                                                                    'Dismiss',
-                                                                disabledTextColor:
-                                                                    Colors
-                                                                        .white,
-                                                                textColor:
-                                                                    Colors
-                                                                        .white,
-                                                                onPressed: () {
-                                                                  //Do whatever you want
-                                                                },
-                                                              ),
-                                                            )),
-                                                          );
-                                                          print(
-                                                              "success!, document deleted");
-                                                        });
-                                                        Navigator.of(ctx).pop();
-                                                      },
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(14),
-                                                        child: const Text(
-                                                            "Delete",
-                                                            style: TextStyle(
-                                                                color: Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        164,
-                                                                        10,
-                                                                        10))),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            },
-                                          ))
+                                      // const Spacer(),
                                     ],
                                   ),
                                 ),
