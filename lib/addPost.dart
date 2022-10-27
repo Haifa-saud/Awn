@@ -23,6 +23,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path/path.dart' as Path;
 
+//! DONE !//
 class addPost extends StatefulWidget {
   final String userType;
   const addPost({Key? key, required this.userType}) : super(key: key);
@@ -141,28 +142,56 @@ class _MyStatefulWidgetState extends State<addPost> {
           if (isEdited) {
             alertDialog(nav);
           } else {
-            nav;
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           }
         } else if (index == 1) {
           var nav = Tts(userType: widget.userType);
           if (isEdited) {
             alertDialog(nav);
           } else {
-            nav;
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           }
         } else if (index == 2) {
           var nav = addRequest(userType: widget.userType);
           if (isEdited) {
             alertDialog(nav);
           } else {
-            nav;
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           }
         } else if (index == 3) {
           var nav = userProfile(userType: widget.userType);
           if (isEdited) {
             alertDialog(nav);
           } else {
-            nav;
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           }
         }
       } else if (widget.userType == 'Volunteer') {
@@ -171,21 +200,42 @@ class _MyStatefulWidgetState extends State<addPost> {
           if (isEdited) {
             alertDialog(nav);
           } else {
-            nav;
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           }
         } else if (index == 1) {
           var nav = viewRequests(userType: widget.userType, reqID: '');
           if (isEdited) {
             alertDialog(nav);
           } else {
-            nav;
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           }
         } else if (index == 2) {
           var nav = userProfile(userType: widget.userType);
           if (isEdited) {
             alertDialog(nav);
           } else {
-            nav;
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
           }
         }
       }
@@ -393,7 +443,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                                 color: imgErrorMessage
                                     ? Colors.red
                                     : Colors.grey.shade400,
-                                width: 2)),
+                                width: imgErrorMessage ? 2 : 1)),
                         child: Text(editImg == '' ? 'Add Image' : editImg),
                       ),
                     )

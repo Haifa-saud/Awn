@@ -6,10 +6,10 @@ import 'package:Awn/viewRequests.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-
 import 'chatPage.dart';
 import 'services/localNotification.dart';
 
+//! DONE !//
 class Tts extends StatefulWidget {
   final String userType;
   const Tts({Key? key, required this.userType}) : super(key: key);
@@ -141,11 +141,16 @@ class _TtsState extends State<Tts> {
                         padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                         child: const Text("Let us be your voice!",
                             style: TextStyle(
-                                fontSize: 25, fontWeight: FontWeight.w900)),
+                                fontSize: 22, fontWeight: FontWeight.w900)),
                       )),
                   Container(
+                    alignment: Alignment.topLeft,
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
-                    child: const Text("Start typing so Awn can speak for you"),
+                    child: const Text(
+                      "What would like to say?",
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal, fontSize: 19),
+                    ),
                   ),
                 ]),
                 Align(
@@ -159,6 +164,7 @@ class _TtsState extends State<Tts> {
                     ),
                   ),
                 ),
+                SizedBox(height: 20),
                 textArea(),
                 Padding(
                     padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
@@ -168,9 +174,9 @@ class _TtsState extends State<Tts> {
                             ? const Text(
                                 'Please enter a text to proceed.',
                                 style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 15,
-                                ),
+                                    color: Colors.red,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.normal),
                                 textAlign: TextAlign.left,
                               )
                             : const Text(""))),
@@ -307,10 +313,18 @@ class _TtsState extends State<Tts> {
     var textLength = 0;
     var MaxLength = 250;
 
-    return Container(
-      height: 350,
-      padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-      child: TextFormField(
+    return Stack(children: [
+      Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: const [
+              BoxShadow(blurRadius: 32, color: Colors.black45, spreadRadius: -8)
+            ],
+            borderRadius: BorderRadius.circular(15)),
+        height: 310,
+        // margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+      ),
+      TextFormField(
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.allow(
               RegExp('[ A-Za-z0-9\$_@./#&+-]')) //[0-9a-zA-Z ]
@@ -330,15 +344,18 @@ class _TtsState extends State<Tts> {
           );
         },
         decoration: InputDecoration(
-          fillColor: Color.fromARGB(236, 255, 255, 255),
+          fillColor: Colors.white, //Color.fromARGB(236, 255, 255, 255),
           filled: true,
-          hintText: "What would you like to say?",
+          hintText: "Start typing",
+          errorStyle: TextStyle(fontWeight: FontWeight.normal),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.blue, width: 3)),
+              borderSide: BorderSide(
+                  color: flag1 ? Colors.red : Colors.blue, width: 3)),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.grey.shade700, width: 2)),
+              borderSide: BorderSide(
+                  color: flag1 ? Colors.red : Colors.white, width: 2)),
         ),
         validator: (value) {
           if (value == null || value.isEmpty || (value.trim()).isEmpty) {
@@ -347,6 +364,6 @@ class _TtsState extends State<Tts> {
           return null;
         },
       ),
-    );
+    ]);
   }
 }
