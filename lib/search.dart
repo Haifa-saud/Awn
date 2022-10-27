@@ -25,6 +25,11 @@ class searchState extends State<search> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          centerTitle: false,
+          backgroundColor: Colors.white, //(0xFFfcfffe)
+          automaticallyImplyLeading: false,
+          scrolledUnderElevation: 1,
+          toolbarHeight: 60,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             tooltip: 'Back',
@@ -32,24 +37,28 @@ class searchState extends State<search> {
               setState(() {});
             },
           ),
+          title: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 15, 0, 2),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      if (_searchController.text.trim() != '') {
+                        setState(() {});
+                      } else {
+                        setState(() {});
+                      }
+                    },
+                    decoration: InputDecoration(prefixIcon: Icon(Icons.search)),
+                  ),
+                ),
+              ]),
         ),
         body: Column(
           children: [
-            Padding(
-              padding:
-                  const EdgeInsets.only(left: 30.0, right: 30.0, bottom: 30.0),
-              child: TextField(
-                controller: _searchController,
-                onChanged: (value) {
-                  if (_searchController.text.trim() != '') {
-                    setState(() {});
-                  } else {
-                    setState(() {});
-                  }
-                },
-                decoration: InputDecoration(prefixIcon: Icon(Icons.search)),
-              ),
-            ),
             Expanded(
                 child: StreamBuilder<QuerySnapshot>(
               stream: list,
