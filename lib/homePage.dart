@@ -1,3 +1,4 @@
+import 'Search.dart';
 import 'addPost.dart';
 import 'chatPage.dart';
 import 'requestWidget.dart';
@@ -139,34 +140,51 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
               return Scaffold(
                 appBar: AppBar(
                   actions: <Widget>[
-                    Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                        child: FutureBuilder(
-                            future: storage.downloadURL('logo.png'),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<String> snapshot) {
-                              if (snapshot.connectionState ==
-                                      ConnectionState.done &&
-                                  snapshot.hasData) {
-                                return Center(
-                                  child: Image.network(
-                                    snapshot.data!,
-                                    fit: BoxFit.cover,
-                                    width: 40,
-                                    height: 40,
-                                  ),
-                                );
-                              }
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting ||
-                                  !snapshot.hasData) {
-                                return const Center(
-                                    child: CircularProgressIndicator(
-                                  color: Colors.blue,
-                                ));
-                              }
-                              return Container();
-                            }))
+                    Row(children: [
+                      IconButton(
+                        icon: const Icon(Icons.search),
+                        tooltip: 'Search',
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation1, animation2) =>
+                                  search(),
+                              transitionDuration: const Duration(seconds: 1),
+                              reverseTransitionDuration: Duration.zero,
+                            ),
+                          );
+                        },
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                          child: FutureBuilder(
+                              future: storage.downloadURL('logo.png'),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<String> snapshot) {
+                                if (snapshot.connectionState ==
+                                        ConnectionState.done &&
+                                    snapshot.hasData) {
+                                  return Center(
+                                    child: Image.network(
+                                      snapshot.data!,
+                                      fit: BoxFit.cover,
+                                      width: 40,
+                                      height: 40,
+                                    ),
+                                  );
+                                }
+                                if (snapshot.connectionState ==
+                                        ConnectionState.waiting ||
+                                    !snapshot.hasData) {
+                                  return const Center(
+                                      child: CircularProgressIndicator(
+                                    color: Colors.blue,
+                                  ));
+                                }
+                                return Container();
+                              }))
+                    ])
                   ],
 
                   centerTitle: false,

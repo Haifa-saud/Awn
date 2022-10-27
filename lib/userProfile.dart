@@ -174,7 +174,7 @@ class UserProfileState extends State<userProfile>
                           )),
                     ],
                     centerTitle: false,
-                    backgroundColor: Colors.white, //(0xFFfcfffe),
+                    backgroundColor: Colors.white, 
                     foregroundColor: Colors.black,
                     automaticallyImplyLeading: false,
                     scrolledUnderElevation: 1,

@@ -829,40 +829,38 @@ class ChatFieldState extends State<ChatField>
                               children: [
                                 Row(mainAxisSize: MainAxisSize.min, children: [
                                   Container(
-                                      alignment: Alignment.topLeft,
-                                      height: 215,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade200,
+                                    alignment: Alignment.topLeft,
+                                    height: 215,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade200,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                            color: Colors.black12,
+                                            blurRadius: 5)
+                                      ],
+                                    ),
+                                    child: ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
-                                        boxShadow: const [
-                                          BoxShadow(
-                                              color: Colors.black12,
-                                              blurRadius: 5)
-                                        ],
-                                      ),
-                                      child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          child: Container(
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    width: 0,
-                                                    color: Colors.blue.shade50),
-                                              ),
-                                              child: Image.memory(
-                                                memoryPath,
-                                                fit: BoxFit.contain,
-                                                // width: 200,
-                                                // height: 200,
-                                                errorBuilder: (BuildContext
-                                                        context,
-                                                    Object exception,
-                                                    StackTrace? stackTrace) {
-                                                  print('error');
-                                                  return const Text(
-                                                      'Image could not be load');
-                                                },
-                                              ))))
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  width: 0,
+                                                  color: Colors.blue.shade50),
+                                            ),
+                                            child: Image.memory(
+                                              memoryPath,
+                                              fit: BoxFit.contain,
+                                              errorBuilder:
+                                                  (BuildContext context,
+                                                      Object exception,
+                                                      StackTrace? stackTrace) {
+                                                print('error');
+                                                return const Text(
+                                                    'Image could not be load');
+                                              },
+                                            ))),
+                                  )
                                 ]),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -1123,7 +1121,6 @@ class ChatFieldState extends State<ChatField>
 
 //! Firebase
   File? audioFile;
-  // XFile? imageChat;
 
   Future sendAudioMessage(var duration) async {
     final audio = File(audioFile!.path);
