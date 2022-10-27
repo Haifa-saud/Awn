@@ -863,9 +863,10 @@ class PlaceState extends State<Place> {
                                   padding:
                                       const EdgeInsets.fromLTRB(0, 10, 0, 0),
                                   child: Row(children: [
-                                    /*comment*/ Padding(
+                                    /*comment*/ Flexible(
+                                        child: Padding(
                                       padding:
-                                          const EdgeInsets.fromLTRB(6, 0, 6, 5),
+                                          const EdgeInsets.fromLTRB(6, 0, 6, 0),
                                       child: Align(
                                         alignment: Alignment.topLeft,
                                         child: Text(
@@ -874,8 +875,12 @@ class PlaceState extends State<Place> {
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 17)),
                                       ),
-                                    ),
-                                    Spacer(),
+                                    )),
+                                    // Visibility(
+                                    //     visible: comment_Data.docs[index]
+                                    //             ['UserID'] ==
+                                    //         widget.userId,
+                                    //     child: Spacer()),
                                     Visibility(
                                         visible: comment_Data.docs[index]
                                                 ['UserID'] ==
