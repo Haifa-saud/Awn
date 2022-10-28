@@ -92,8 +92,8 @@ class BottomNavBar extends StatelessWidget {
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) =>
-                  userProfile(userType: userType),
+              pageBuilder: (context, animation1, animation2) => userProfile(
+                  userType: userType, selectedTab: 0, selectedSubTab: 0),
               transitionDuration: Duration(seconds: 1),
               reverseTransitionDuration: Duration.zero,
             ),
@@ -126,8 +126,8 @@ class BottomNavBar extends StatelessWidget {
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) =>
-                  userProfile(userType: userType),
+              pageBuilder: (context, animation1, animation2) => userProfile(
+                  userType: userType, selectedTab: 0, selectedSubTab: 0),
               transitionDuration: Duration(seconds: 1),
               reverseTransitionDuration: Duration.zero,
             ),

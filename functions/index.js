@@ -67,63 +67,69 @@ exports.sendChatNotification = functions.firestore
     console.log(snapshot.ref.id);
 
     var reqID = snapshot.ref.parent.parent.id;
-
-    await admin
-      .firestore()
-      .collection("requests")
-      .doc(reqID)
-      .get()
-      .then(async (snap) => {
-        console.log(snap);
-        if (!snap.exists) {
-          console.log("No such Request document!");
-        } else {
+    if (
+      new String(chatData.text).valueOf() !=
+      new String(
+        "This chat offers Text to Speech service, please long press on the chat to try it."
+      ).valueOf()
+    ) {
+      await admin
+        .firestore()
+        .collection("requests")
+        .doc(reqID)
+        .get()
+        .then(async (snap) => {
           console.log(snap);
+          if (!snap.exists) {
+            console.log("No such Request document!");
+          } else {
+            console.log(snap);
 
-          var receiverID =
-            new String(snap.data().VolID).valueOf() ==
-            new String(chatData.author).valueOf()
-              ? snap.data().userID
-              : snap.data().VolID;
-          await admin
-            .firestore()
-            .collection("users")
-            .doc(receiverID)
-            .get()
-            .then((data) => {
-              console.log(data);
-              if (!snap.exists) {
-                console.log("No such User document!");
-              } else {
+            var receiverID =
+              new String(snap.data().VolID).valueOf() ==
+              new String(chatData.author).valueOf()
+                ? snap.data().userID
+                : snap.data().VolID;
+            await admin
+              .firestore()
+              .collection("users")
+              .doc(receiverID)
+              .get()
+              .then((data) => {
                 console.log(data);
-                var name = data.data().name;
-                var Title = "New Chat from: " + name;
-                var Body =
-                  new String(chatData.text).valueOf() ==
-                  new String("").valueOf()
-                    ? new String(chatData.audio).valueOf() ==
-                      new String("").valueOf()
-                      ? "Image"
-                      : "Audio Chat"
-                    : chatData.text;
-                const payload = {
-                  data: {
-                    id: reqID,
-                    type: "chat",
-                  },
-                  notification: {
-                    title: Title,
-                    body: Body,
-                    sound: "default",
-                  },
-                };
-                console.log(payload);
-                const Token = data.data().token;
-                console.log(Token);
+                if (!snap.exists) {
+                  console.log("No such User document!");
+                } else {
+                  console.log(data);
+                  var name = data.data().name;
+                  var Title = "New Chat from: " + name;
+                  var Body =
+                    new String(chatData.text).valueOf() ==
+                    new String("").valueOf()
+                      ? new String(chatData.audio).valueOf() ==
+                        new String("").valueOf()
+                        ? "Image"
+                        : "Audio Chat"
+                      : chatData.text;
+                  const payload = {
+                    data: {
+                      id: reqID,
+                      type: "chat",
+                    },
+                    notification: {
+                      title: Title,
+                      body: Body,
+                      sound: "default",
+                    },
+                  };
+                  console.log(payload);
+                  const Token = data.data().token;
+                  console.log(Token);
 
-                return fcm.sendToDevice(Token, payload);
-              }
-            });
-        }
-      });
+                  return fcm.sendToDevice(Token, payload);
+                }
+              });
+          }
+        });
+    }
   });

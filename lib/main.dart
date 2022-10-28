@@ -102,8 +102,7 @@ class _MyApp extends State<MyApp> {
         '/volunteerPage': (ctx) => const homePage(),
         "/register": (ctx) => const register(),
         "/login": (ctx) => const login(),
-        "/adminPage": (ctx) => const adminPage(),
-        // "/chatPage": (ctx) => const ChatPage(),
+        "/adminPage": (ctx) => AdminPage(),
       },
       debugShowCheckedModeBanner: false,
       title: 'Home Page',
@@ -189,7 +188,7 @@ class _MyApp extends State<MyApp> {
       home: widget.auth
           ? (widget.notification
               ? viewRequests(userType: 'Volunteer', reqID: widget.payload)
-              : (widget.isAdmin ? const adminPage() : const homePage()))
+              : (widget.isAdmin ? AdminPage() : const homePage()))
           : const login(),
     );
   }

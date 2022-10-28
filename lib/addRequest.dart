@@ -644,12 +644,28 @@ class AwnRequestFormState extends State<AwnRequestForm> {
       'VolID': '',
       'notificationStatus': ''
     });
-    String dataId = docReference.id;
-    requests.doc(dataId).update({'docId': dataId});
+    String reqId = docReference.id;
+    requests.doc(reqId).update({'docId': reqId});
+    DocumentReference chatReference =
+        await requests.doc(reqId).collection('chats').add({
+      'audio': '',
+      'audioDuration': '',
+      'author': userId,
+      'id': '',
+      'img': '',
+      'read': true,
+      'text':
+          'This chat offers Text to Speech service, please long press on the chat to try it.',
+      'createdAt': DateTime.now().millisecondsSinceEpoch,
+    });
+
+    String chatId = chatReference.id;
+    requests.doc(reqId).collection('chats').doc(chatId).update({'id': chatId});
+
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => maps(dataId: dataId, typeOfRequest: 'R'),
+          builder: (context) => maps(dataId: reqId, typeOfRequest: 'R'),
         ));
     clearForm();
   }

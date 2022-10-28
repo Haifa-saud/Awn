@@ -180,7 +180,8 @@ class _MyStatefulWidgetState extends State<addPost> {
             );
           }
         } else if (index == 3) {
-          var nav = userProfile(userType: widget.userType);
+          var nav = userProfile(
+              userType: widget.userType, selectedTab: 0, selectedSubTab: 0);
           if (isEdited) {
             alertDialog(nav);
           } else {
@@ -224,7 +225,8 @@ class _MyStatefulWidgetState extends State<addPost> {
             );
           }
         } else if (index == 2) {
-          var nav = userProfile(userType: widget.userType);
+          var nav = userProfile(
+              userType: widget.userType, selectedTab: 0, selectedSubTab: 0);
           if (isEdited) {
             alertDialog(nav);
           } else {

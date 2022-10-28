@@ -155,7 +155,10 @@ class _requestPageState extends State<requestPage> {
                   context,
                   PageRouteBuilder(
                     pageBuilder: (context, animation1, animation2) =>
-                        userProfile(userType: widget.userType),
+                        userProfile(
+                            userType: widget.userType,
+                            selectedTab: 1,
+                            selectedSubTab: 0),
                     transitionDuration: const Duration(seconds: 1),
                     reverseTransitionDuration: Duration.zero,
                   ),
@@ -240,8 +243,6 @@ class _requestPageState extends State<requestPage> {
         .collection('requests')
         .where('docId', isEqualTo: widget.reqID)
         .snapshots();
-    // final user = FirebaseAuth.instance.currentUser!;
-    // String userId = user.uid;
     final now = DateTime.now();
 
     return Column(children: [
@@ -410,7 +411,11 @@ class _requestPageState extends State<requestPage> {
                                                           builder: (context) =>
                                                               userProfile(
                                                                   userType: widget
-                                                                      .userType),
+                                                                      .userType,
+                                                                  selectedTab:
+                                                                      1,
+                                                                  selectedSubTab:
+                                                                      1),
                                                         ));
                                                     ConfermationDelet();
                                                   },

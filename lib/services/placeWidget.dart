@@ -65,7 +65,7 @@ class PlaceState extends State<Place> {
     }
 
     var color;
-    if (status == 'Declined') {
+    if (status == 'Denied') {
       color = Colors.red.shade100;
     } else if (status == 'Pending') {
       color = Colors.orange.shade100;

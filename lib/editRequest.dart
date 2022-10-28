@@ -847,7 +847,7 @@ class _EditRequestState extends State<editRequest> {
                                                                     (context) =>
                                                                         userProfile(
                                                                   userType: widget
-                                                                      .userType,
+                                                                      .userType, selectedTab: 1, selectedSubTab: 1
                                                                 ),
                                                               ));
                                                         },

@@ -17,7 +17,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 import 'package:hive/hive.dart';
-
 import 'viewRequests.dart';
 
 class ChatPage extends StatefulWidget {
@@ -31,7 +30,6 @@ class ChatPage extends StatefulWidget {
 class ChatPageState extends State<ChatPage>
     with SingleTickerProviderStateMixin {
   User currentUser = FirebaseAuth.instance.currentUser!;
-  // late Box box;
 
   //*audio recorder section
   var audioRecorder;
@@ -172,6 +170,8 @@ class ChatPageState extends State<ChatPage>
     var upcomingMessageDate = '00/00/0000';
     var unreadMessages = false;
     var showOnce = true;
+    const radius = Radius.circular(12);
+    const borderRadius = BorderRadius.all(radius);
 
     return Scaffold(
         body: FutureBuilder<Map<String, dynamic>>(
@@ -216,119 +216,87 @@ class ChatPageState extends State<ChatPage>
                     body: SafeArea(
                         child: Column(children: [
                       Expanded(
-                          child: StreamBuilder<dynamic>(
-                        stream: FirebaseFirestore.instance
-                            .collection('requests')
-                            .doc(widget.requestID)
-                            .collection('chats')
-                            .orderBy('createdAt', descending: true)
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          switch (snapshot.connectionState) {
-                            case ConnectionState.waiting:
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            default:
-                              if (snapshot.hasError) {
-                                return const Text(
-                                    'Something Went Wrong Try later');
-                              } else {
-                                final messages = snapshot.data;
-                                return ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const BouncingScrollPhysics(),
-                                  reverse: true,
-                                  itemCount: messages.size,
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 0, 0, 20),
-                                  itemBuilder: (context, index) {
-                                    showOnce = true;
-                                    if (messages.docs[index]['author'] !=
-                                            currentUser.uid &&
-                                        !messages.docs[index]['read'] &&
-                                        showOnce) {
-                                      unreadMessages = true;
-                                      showOnce = false;
-                                    }
-                                    if (index != messages.size - 1) {
-                                      upcomingMessageDate = DateFormat('d/M/y')
+                        child: StreamBuilder<dynamic>(
+                          stream: FirebaseFirestore.instance
+                              .collection('requests')
+                              .doc(widget.requestID)
+                              .collection('chats')
+                              .orderBy('createdAt', descending: true)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            switch (snapshot.connectionState) {
+                              case ConnectionState.waiting:
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              default:
+                                if (snapshot.hasError) {
+                                  return const Text(
+                                      'Something Went Wrong Try later');
+                                } else {
+                                  final messages = snapshot.data;
+                                  return ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: const BouncingScrollPhysics(),
+                                    reverse: true,
+                                    itemCount: messages.size,
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 0, 0, 20),
+                                    itemBuilder: (context, index) {
+                                      showOnce = true;
+                                      if (messages.docs[index]['author'] !=
+                                              currentUser.uid &&
+                                          !messages.docs[index]['read'] &&
+                                          showOnce) {
+                                        unreadMessages = true;
+                                        showOnce = false;
+                                      }
+                                      if (index != messages.size - 1) {
+                                        upcomingMessageDate =
+                                            DateFormat('d/M/y')
+                                                .format(DateTime
+                                                    .fromMillisecondsSinceEpoch(
+                                                        messages.docs[index + 1]
+                                                            ['createdAt']))
+                                                .toString();
+                                      }
+                                      var currentDate = DateFormat('d/M/y')
                                           .format(DateTime
                                               .fromMillisecondsSinceEpoch(
-                                                  messages.docs[index + 1]
+                                                  messages.docs[index]
                                                       ['createdAt']))
                                           .toString();
-                                    }
-                                    var currentDate = DateFormat('d/M/y')
-                                        .format(
-                                            DateTime.fromMillisecondsSinceEpoch(
-                                                messages.docs[index]
-                                                    ['createdAt']))
-                                        .toString();
-                                    return Column(children: [
-                                      Center(
-                                        child: unreadMessages && !showOnce
-                                            ? Container(
-                                                margin:
-                                                    const EdgeInsets.all(10),
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        8, 6, 8, 6),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.grey.shade100,
-                                                  border: Border.all(
-                                                    width: 0,
-                                                    color: Colors.grey.shade100,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                ),
-                                                child: const Text(
-                                                    'UNREAD MESSAGES',
-                                                    style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.normal)),
-                                              )
-                                            : const SizedBox(height: 0),
-                                      ),
-                                      Center(
-                                        child: upcomingMessageDate !=
-                                                    currentDate &&
-                                                messages.size != 1
-                                            ? Container(
-                                                margin:
-                                                    const EdgeInsets.all(12),
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        8, 6, 8, 6),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.grey.shade100,
-                                                  border: Border.all(
-                                                    width: 0,
-                                                    color: Colors.grey.shade100,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                ),
-                                                child: Text(
-                                                    DateFormat('d MMM y')
-                                                        .format(DateTime
-                                                            .fromMillisecondsSinceEpoch(
-                                                                messages.docs[
-                                                                        index]
-                                                                    [
-                                                                    'createdAt'])),
-                                                    style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        color: Colors
-                                                            .grey.shade600)),
-                                              )
-                                            : const SizedBox(height: 0),
-                                      ),
-                                      Center(
-                                          child: index == messages.size - 1
+                                      return Column(children: [
+                                        // Center(
+                                        //   child: unreadMessages && !showOnce
+                                        //       ? Container(
+                                        //           margin:
+                                        //               const EdgeInsets.all(10),
+                                        //           padding:
+                                        //               const EdgeInsets.fromLTRB(
+                                        //                   8, 6, 8, 6),
+                                        //           decoration: BoxDecoration(
+                                        //             color: Colors.grey.shade100,
+                                        //             border: Border.all(
+                                        //               width: 0,
+                                        //               color: Colors.grey.shade100,
+                                        //             ),
+                                        //             borderRadius:
+                                        //                 BorderRadius.circular(12),
+                                        //           ),
+                                        //           child: const Text(
+                                        //               'UNREAD MESSAGES',
+                                        //               style: TextStyle(
+                                        //                   fontSize: 15,
+                                        //                   fontWeight:
+                                        //                       FontWeight.normal)),
+                                        //         )
+                                        //       : const SizedBox(height: 0),
+                                        // ),
+
+                                        Center(
+                                          child: upcomingMessageDate !=
+                                                      currentDate &&
+                                                  messages.size != 1
                                               ? Container(
                                                   margin:
                                                       const EdgeInsets.all(12),
@@ -362,81 +330,107 @@ class ChatPageState extends State<ChatPage>
                                                               color: Colors.grey
                                                                   .shade600)),
                                                 )
-                                              : const SizedBox(height: 0)),
-                                      messages.docs[index]['text'] != ''
-                                          ? CupertinoContextMenu(
-                                              actions: [
-                                                  CupertinoContextMenuAction(
-                                                    onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                      speak(messages.docs[index]
-                                                          ['text']);
-                                                    },
-                                                    trailingIcon:
-                                                        CupertinoIcons.play,
-                                                    child: const Text(
-                                                      "Play",
+                                              : const SizedBox(height: 0),
+                                        ),
+                                        Center(
+                                            child: index == messages.size - 1
+                                                ? Container(
+                                                    margin:
+                                                        const EdgeInsets.all(
+                                                            12),
+                                                    padding: const EdgeInsets
+                                                        .fromLTRB(8, 6, 8, 6),
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          Colors.grey.shade100,
+                                                      border: Border.all(
+                                                        width: 0,
+                                                        color: Colors
+                                                            .grey.shade100,
+                                                      ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
                                                     ),
+                                                    child: Text(
+                                                        DateFormat('d MMM y')
+                                                            .format(DateTime
+                                                                .fromMillisecondsSinceEpoch(
+                                                                    messages.docs[
+                                                                            index]
+                                                                        [
+                                                                        'createdAt'])),
+                                                        style:
+                                                            TextStyle(
+                                                                fontSize: 15,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade600)),
                                                   )
-                                                ],
-                                              child: SingleChildScrollView(
-                                                child: Chat(
-                                                  message: messages.docs[index]
-                                                      ['text'],
-                                                  isMe: messages.docs[index]
-                                                          ['author'] ==
-                                                      currentUser.uid,
-                                                  time: DateTime
-                                                      .fromMillisecondsSinceEpoch(
-                                                    messages.docs[index]
-                                                        ['createdAt'],
-                                                  ),
-                                                  isRead: messages.docs[index]
-                                                      ['read'],
-                                                  img: messages.docs[index]
-                                                      ['img'],
-                                                  audio: messages.docs[index]
-                                                      ['audio'],
-                                                  audioDuration:
-                                                      messages.docs[index]
-                                                          ['audioDuration'],
-                                                  isPlayerReady: isPlayerReady,
-                                                  isPlaying: isPlaying,
-                                                  audioPlayer: audioPlayer,
-                                                  audioRecorder: audioRecorder,
+                                                : const SizedBox(height: 0)),
+                                        CupertinoContextMenu(
+                                            actions: [
+                                              CupertinoContextMenuAction(
+                                                onPressed: () {
+                                                  var str = messages.docs[index]
+                                                              ['text'] !=
+                                                          ''
+                                                      ? messages.docs[index]
+                                                          ['text']
+                                                      : (messages.docs[index]
+                                                                  ['audio'] !=
+                                                              ''
+                                                          ? 'This is an audio chat'
+                                                          : 'This is an image');
+                                                  Navigator.of(context).pop();
+                                                  speak(str);
+                                                },
+                                                trailingIcon:
+                                                    CupertinoIcons.play,
+                                                child: const Text(
+                                                  "Play",
                                                 ),
-                                              ))
-                                          : Chat(
-                                              message: messages.docs[index]
-                                                  ['text'],
-                                              isMe: messages.docs[index]
-                                                      ['author'] ==
-                                                  currentUser.uid,
-                                              time: DateTime
-                                                  .fromMillisecondsSinceEpoch(
-                                                messages.docs[index]
-                                                    ['createdAt'],
+                                              )
+                                            ],
+                                            // child: SingleChildScrollView(
+                                            child: SingleChildScrollView(
+                                              child: Chat(
+                                                message: messages.docs[index]
+                                                    ['text'],
+                                                isMe: messages.docs[index]
+                                                        ['author'] ==
+                                                    currentUser.uid,
+                                                time: DateTime
+                                                    .fromMillisecondsSinceEpoch(
+                                                  messages.docs[index]
+                                                      ['createdAt'],
+                                                ),
+                                                isRead: messages.docs[index]
+                                                    ['read'],
+                                                img: messages.docs[index]
+                                                    ['img'],
+                                                audio: messages.docs[index]
+                                                    ['audio'],
+                                                audioDuration:
+                                                    messages.docs[index]
+                                                        ['audioDuration'],
+                                                isPlayerReady: isPlayerReady,
+                                                isPlaying: isPlaying,
+                                                audioPlayer: audioPlayer,
+                                                audioRecorder: audioRecorder,
                                               ),
-                                              isRead: messages.docs[index]
-                                                  ['read'],
-                                              img: messages.docs[index]['img'],
-                                              audio: messages.docs[index]
-                                                  ['audio'],
-                                              audioDuration: messages
-                                                  .docs[index]['audioDuration'],
-                                              isPlayerReady: isPlayerReady,
-                                              isPlaying: isPlaying,
-                                              audioPlayer: audioPlayer,
-                                              audioRecorder: audioRecorder,
-                                            ),
-                                    ]);
-                                  },
-                                );
-                              }
-                          }
-                        },
-                      )),
+                                            ))
+                                      ]);
+                                    },
+                                  );
+                                }
+                            }
+                          },
+                        ),
+                      ),
                       ChatField(
                         requestID: widget.requestID,
                         audioRecorder: audioRecorder,
@@ -571,10 +565,11 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     const radius = Radius.circular(12);
     const borderRadius = BorderRadius.all(radius);
-    return Row(
-        mainAxisAlignment:
-            widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-        children: <Widget>[
+    return Material(
+        child: Row(
+            mainAxisAlignment:
+                widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: <Widget>[
           Container(
             margin: const EdgeInsets.fromLTRB(10, 4, 10, 4),
             constraints: BoxConstraints(
@@ -765,7 +760,7 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
                           ]))
                 ]),
           )
-        ]);
+        ]));
   }
 }
 

@@ -23,9 +23,16 @@ import 'package:toggle_switch/toggle_switch.dart';
 var userName = '';
 
 class userProfile extends StatefulWidget {
-  const userProfile({Key? key, required this.userType}) : super(key: key);
+  const userProfile(
+      {Key? key,
+      required this.userType,
+      required this.selectedTab,
+      required this.selectedSubTab})
+      : super(key: key);
 
   final String userType;
+  final int selectedTab;
+  final int selectedSubTab;
 
   @override
   UserProfileState createState() => UserProfileState();
@@ -41,12 +48,21 @@ class UserProfileState extends State<userProfile>
   var userId = FirebaseAuth.instance.currentUser!.uid;
 
   int _selectedIndex = 3;
+  late TabController _mainTabController;
+  late TabController _requestsTabController;
+  late TabController _placesTabController;
 
   @override
   initState() {
     notificationService = NotificationService();
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
+    _mainTabController =
+        TabController(length: 3, vsync: this, initialIndex: widget.selectedTab);
+    _requestsTabController = TabController(
+        length: 2, vsync: this, initialIndex: widget.selectedSubTab);
+    _placesTabController = TabController(
+        length: 3, vsync: this, initialIndex: widget.selectedSubTab);
 
     super.initState();
   }
@@ -94,8 +110,7 @@ class UserProfileState extends State<userProfile>
 
   @override
   Widget build(BuildContext context) {
-    TabController _tabController = TabController(length: 3, vsync: this);
-//! Logout
+    //! Logout
     Future<void> _signOut() async {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         Workmanager().cancelAll();
@@ -174,7 +189,7 @@ class UserProfileState extends State<userProfile>
                           )),
                     ],
                     centerTitle: false,
-                    backgroundColor: Colors.white, 
+                    backgroundColor: Colors.white,
                     foregroundColor: Colors.black,
                     automaticallyImplyLeading: false,
                     scrolledUnderElevation: 1,
@@ -222,7 +237,7 @@ class UserProfileState extends State<userProfile>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TabBar(
-                                controller: _tabController,
+                                controller: _mainTabController,
                                 labelPadding: const EdgeInsets.only(
                                     left: 0.0, right: 0.0),
                                 indicator: const BoxDecoration(
@@ -258,7 +273,7 @@ class UserProfileState extends State<userProfile>
                             width: double.maxFinite,
                             height: MediaQuery.of(context).size.height,
                             child: TabBarView(
-                                controller: _tabController,
+                                controller: _mainTabController,
                                 children: [
                                   myInfo(userData),
                                   MyRequests(isVolunteer),
@@ -313,7 +328,7 @@ class UserProfileState extends State<userProfile>
         currentI: widget.userType == 'Volunteer' ? 2 : 3,
       ),
     );
-  } // end of class
+  }
 
 //! My Info
   Widget myInfo(var userData) {
@@ -783,7 +798,7 @@ class UserProfileState extends State<userProfile>
               return Column(children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   ButtonsTabBar(
-                    controller: _tabController,
+                    controller: _placesTabController,
                     height: 50,
                     radius: 15,
                     buttonMargin: const EdgeInsets.fromLTRB(4, 8, 4, 1),
@@ -811,7 +826,7 @@ class UserProfileState extends State<userProfile>
                           color: Colors.transparent,
                         ),
                         child: Text(
-                          "Declined",
+                          "Denied",
                           style: TextStyle(color: Colors.red.shade300),
                         ),
                       )),
@@ -852,30 +867,31 @@ class UserProfileState extends State<userProfile>
                     child: Container(
                         width: double.maxFinite,
                         height: MediaQuery.of(context).size.height,
-                        child:
-                            TabBarView(controller: _tabController, children: [
-                          Place(
-                            userId: userId,
-                            category: '',
-                            status: 'Declined',
-                            userName: userData['name'],
-                            userType: userData['Type'],
-                          ),
-                          Place(
-                            userId: userId,
-                            category: '',
-                            status: 'Pending',
-                            userName: userData['name'],
-                            userType: userData['Type'],
-                          ),
-                          Place(
-                            userId: userId,
-                            category: '',
-                            status: 'Approved',
-                            userName: userData['name'],
-                            userType: userData['Type'],
-                          ),
-                        ])))
+                        child: TabBarView(
+                            controller: _placesTabController,
+                            children: [
+                              Place(
+                                userId: userId,
+                                category: '',
+                                status: 'Denied',
+                                userName: userData['name'],
+                                userType: userData['Type'],
+                              ),
+                              Place(
+                                userId: userId,
+                                category: '',
+                                status: 'Pending',
+                                userName: userData['name'],
+                                userType: userData['Type'],
+                              ),
+                              Place(
+                                userId: userId,
+                                category: '',
+                                status: 'Approved',
+                                userName: userData['name'],
+                                userType: userData['Type'],
+                              ),
+                            ])))
               ]);
             }
           },
