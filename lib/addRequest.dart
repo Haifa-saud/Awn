@@ -72,7 +72,8 @@ class _AddRequestState extends State<addRequest> {
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation1, animation2) => ChatPage(
-                  requestID: payload.substring(payload.indexOf('-') + 1)),
+                  requestID: payload.substring(payload.indexOf('-') + 1),
+                  fromNotification: true),
               transitionDuration: const Duration(seconds: 1),
               reverseTransitionDuration: Duration.zero,
             ),

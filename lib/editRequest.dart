@@ -55,7 +55,7 @@ class _EditRequestState extends State<editRequest> {
 
   @override
   void initState() {
-     notificationService = NotificationService();
+    notificationService = NotificationService();
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
     super.initState();
@@ -64,7 +64,7 @@ class _EditRequestState extends State<editRequest> {
     durationController = TextEditingController(text: widget.duartion);
   }
 
-    //! tapping local notification
+  //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
         print(
@@ -89,7 +89,8 @@ class _EditRequestState extends State<editRequest> {
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation1, animation2) => ChatPage(
-                  requestID: payload.substring(payload.indexOf('-') + 1)),
+                  requestID: payload.substring(payload.indexOf('-') + 1),
+                  fromNotification: true),
               transitionDuration: const Duration(seconds: 1),
               reverseTransitionDuration: Duration.zero,
             ),
@@ -102,7 +103,6 @@ class _EditRequestState extends State<editRequest> {
                       viewRequests(userType: 'Volunteer', reqID: payload)));
         }
       });
-
 
   int _selectedIndex = 2;
   @override
@@ -843,12 +843,13 @@ class _EditRequestState extends State<editRequest> {
                                                           Navigator.push(
                                                               context,
                                                               MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        userProfile(
-                                                                  userType: widget
-                                                                      .userType, selectedTab: 1, selectedSubTab: 1
-                                                                ),
+                                                                builder: (context) => userProfile(
+                                                                    userType: widget
+                                                                        .userType,
+                                                                    selectedTab:
+                                                                        1,
+                                                                    selectedSubTab:
+                                                                        1),
                                                               ));
                                                         },
                                                         child: Container(

@@ -25,13 +25,14 @@ class login extends StatefulWidget {
 TextEditingController nameController = TextEditingController();
 TextEditingController contactInfoController = TextEditingController();
 TextEditingController descriptionController = TextEditingController();
-final user = FirebaseAuth.instance.currentUser!;
-String userId = user.uid;
+
 bool isVolunteer = false;
 String VolunteerId = '';
 var myList = [];
 
 class _loginState extends State<login> {
+  final user = FirebaseAuth.instance.currentUser!.uid;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -63,19 +64,18 @@ class _loginState extends State<login> {
 
   @override
   Widget build(BuildContext context) {
-
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       key: _scaffoldKey,
       body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-          Colors.cyanAccent.shade100,
-          Colors.white54,
-          Colors.white54,
-          Colors.blue.shade200
-        ], begin: Alignment.topRight, end: Alignment.bottomLeft)),
+        // decoration: BoxDecoration(
+        //     gradient: LinearGradient(colors: [
+        //   Colors.cyanAccent.shade100,
+        //   Colors.white,
+        //   Colors.white,
+        //   Colors.blue.shade200
+        // ], begin: Alignment.topRight, end: Alignment.bottomLeft)),
         margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         padding: const EdgeInsets.only(left: 40, right: 40),
         child: Form(
@@ -134,7 +134,6 @@ class _loginState extends State<login> {
 
                           for (int i = 0; i < AllshopOwners.length; i++) {
                             myList.add(AllshopOwners[i].id);
-                            print(AllshopOwners[i].id);
                           }
                         } else {
                           return const Center(
@@ -310,11 +309,10 @@ class _loginState extends State<login> {
                                   await Workmanager().registerPeriodicTask(
                                       time, 'firstTask',
                                       frequency: const Duration(minutes: 15));
-                                      
                                 } else if (VolunteerId ==
                                     'GvQo5Qz5ZnTfQYq5GOhZi22HGCB2') {
                                   Navigator.pushNamed(context, '/adminPage');
-                                }else {
+                                } else {
                                   VolunteerId = '';
                                   emailController.clear();
                                   passwordController.clear();
@@ -380,7 +378,6 @@ class _loginState extends State<login> {
                               Navigator.pushNamed(context, "/register");
                             },
                           text: 'Register',
-
                           style: TextStyle(
                               decoration: TextDecoration.underline,
                               fontWeight: FontWeight.bold,
@@ -399,7 +396,7 @@ class _loginState extends State<login> {
   Future<String> getUsersList() async {
     try {
       final userCollection = FirebaseFirestore.instance.collection('users');
-      DocumentSnapshot ds = await userCollection.doc(userId).get();
+      DocumentSnapshot ds = await userCollection.doc(user).get();
       globals.userType = ds.get("Type");
       return globals.userType;
     } catch (e) {

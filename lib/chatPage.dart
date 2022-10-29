@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:Awn/requestWidget.dart';
 import 'package:Awn/services/localNotification.dart';
+import 'package:Awn/userProfile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -21,7 +22,9 @@ import 'viewRequests.dart';
 
 class ChatPage extends StatefulWidget {
   final requestID;
-  const ChatPage({required this.requestID, Key? key}) : super(key: key);
+  var fromNotification;
+  ChatPage({required this.requestID, Key? key, this.fromNotification = false})
+      : super(key: key);
 
   @override
   State<ChatPage> createState() => ChatPageState();
@@ -76,7 +79,7 @@ class ChatPageState extends State<ChatPage>
     super.initState();
   }
 
-//! tapping local notification
+  //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
         if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
@@ -95,7 +98,8 @@ class ChatPageState extends State<ChatPage>
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation1, animation2) => ChatPage(
-                  requestID: payload.substring(payload.indexOf('-') + 1)),
+                  requestID: payload.substring(payload.indexOf('-') + 1),
+                  fromNotification: true),
               transitionDuration: const Duration(seconds: 1),
               reverseTransitionDuration: Duration.zero,
             ),
@@ -187,7 +191,24 @@ class ChatPageState extends State<ChatPage>
                             color: Colors.black),
                         onPressed: () {
                           Hive.box("currentPage").put("ChatReqId", '');
-                          Navigator.of(context).pop();
+                          if (widget.fromNotification) {
+                            Navigator.pushReplacement(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation1, animation2) =>
+                                        userProfile(
+                                  userType: 'Special Need User',
+                                  selectedTab: 1,
+                                  selectedSubTab: 0,
+                                ),
+                                transitionDuration: const Duration(seconds: 1),
+                                reverseTransitionDuration: Duration.zero,
+                              ),
+                            );
+                          } else {
+                            Navigator.of(context).pop();
+                          }
                         },
                       ),
                       backgroundColor: Colors.white, //(0xFFfcfffe)

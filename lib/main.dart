@@ -34,6 +34,8 @@ Future<void> main() async {
   //! Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  final user = FirebaseAuth.instance.currentUser!.uid;
+
   //! FCM
   FirebaseMessaging.instance.onTokenRefresh.listen((String token) async {
     print("New token: $token");
@@ -94,6 +96,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyApp extends State<MyApp> {
+  final user = FirebaseAuth.instance.currentUser!.uid;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

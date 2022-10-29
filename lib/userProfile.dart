@@ -56,6 +56,7 @@ class UserProfileState extends State<userProfile>
   initState() {
     notificationService = NotificationService();
     listenToNotificationStream();
+
     notificationService.initializePlatformNotifications();
     _mainTabController =
         TabController(length: 3, vsync: this, initialIndex: widget.selectedTab);
@@ -86,7 +87,8 @@ class UserProfileState extends State<userProfile>
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation1, animation2) => ChatPage(
-                  requestID: payload.substring(payload.indexOf('-') + 1)),
+                  requestID: payload.substring(payload.indexOf('-') + 1),
+                  fromNotification: true),
               transitionDuration: const Duration(seconds: 1),
               reverseTransitionDuration: Duration.zero,
             ),
@@ -982,8 +984,11 @@ class MyInfoState extends State<MyInfo> {
     }
   }
 
+  var user;
   @override
   initState() {
+    user = FirebaseAuth.instance.currentUser!;
+
     userData = widget.user;
     nameController.text = userData['name'];
     emailController.text = userData['Email'];

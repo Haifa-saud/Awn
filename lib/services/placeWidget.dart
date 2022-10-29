@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../editPost.dart';
 import 'appWidgets.dart';
 import 'myGlobal.dart' as globals;
 
@@ -41,7 +42,10 @@ class PlaceState extends State<Place> {
     return '${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
   }
 
+  TextEditingController _searchController = TextEditingController();
+
   Widget placesList(String cate, String status, String userId) {
+    // Wedd : add search controller
     var isAdmin = false;
     Stream<QuerySnapshot> list = FirebaseFirestore.instance
         .collection('posts')
@@ -80,6 +84,65 @@ class PlaceState extends State<Place> {
           height: double.infinity,
           child: Column(
             children: [
+              //Wedd : add a search bar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 15, 0, 2),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) {
+                    if (_searchController.text.trim() != '') {
+                      //searched and specific category
+                      if (cate != 'All') {
+                        setState(() {
+                          list = FirebaseFirestore.instance
+                              .collection('posts')
+                              .where('name',
+                                  arrayContains: _searchController.text)
+                              .where('category', isEqualTo: cate)
+                              .where('status', isEqualTo: 'Approved')
+                              .snapshots();
+                          print(
+                              'list entered searching with specific category');
+                        });
+                        //searched and all categories
+                      } else {
+                        setState(() {
+                          list = FirebaseFirestore.instance
+                              .collection('posts')
+                              .where('name',
+                                  arrayContains: _searchController.text)
+                              .where('status', isEqualTo: 'Approved')
+                              .snapshots();
+                          print('list entered searching with all categories');
+                        });
+                      }
+                      //emptiy search
+                    } else {
+                      //no search specific category
+                      if (cate != 'All') {
+                        setState(() {
+                          list = FirebaseFirestore.instance
+                              .collection('posts')
+                              .where('category', isEqualTo: cate)
+                              .where('status', isEqualTo: 'Approved')
+                              .snapshots();
+                          print('list entered emptiy search specific category');
+                        });
+                        //no search and all categories
+                      } else {
+                        setState(() {
+                          list = FirebaseFirestore.instance
+                              .collection('posts')
+                              .where('status', isEqualTo: 'Approved')
+                              .snapshots();
+                          print('list entered emptiy search all categories');
+                        });
+                      }
+                    }
+                  },
+                  decoration: InputDecoration(prefixIcon: Icon(Icons.search)),
+                ),
+              ),
               //! places list
               Expanded(
                   child: Container(
@@ -297,6 +360,7 @@ class PlaceState extends State<Place> {
   }
 
   Widget buildPlace(placeID, var isAdmin, var status) {
+    bool isPending = status == 'Pending' ? true : false;
     late GoogleMapController myController;
     Set<Marker> getMarker(lat, lng) {
       return <Marker>{
@@ -368,6 +432,48 @@ class PlaceState extends State<Place> {
                                             style:
                                                 const TextStyle(fontSize: 25)),
                                         const Spacer(),
+                                        Visibility(
+                                          visible: isPending,
+                                          child: Row(
+                                            children: [
+                                              InkWell(
+                                                onTap: (() {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            editPost(
+                                                          userType:
+                                                              widget.userType,
+                                                          name: data['name'],
+                                                          description: data[
+                                                              'description'],
+                                                          number: data[
+                                                              'Phone number'],
+                                                          website:
+                                                              data['Website'],
+                                                          category:
+                                                              data['category'],
+                                                          docId: data['docId'],
+                                                          oldImg: data['img'],
+latitude:data['latitude'],
+longitude:data['longitude']
+                                                        ),
+                                                      ));
+                                                }),
+                                                child: Container(
+                                                  margin:
+                                                      EdgeInsets.only(top: 5),
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 7),
+                                                  child: Icon(Icons.edit,
+                                                      size: 30,
+                                                      color: Colors.blueGrey),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                         InkWell(
                                             onTap: () => Navigator.pop(context),
                                             child: CircleAvatar(

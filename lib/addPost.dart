@@ -1,7 +1,6 @@
 import 'package:Awn/addRequest.dart';
 import 'package:Awn/homePage.dart';
 import 'package:Awn/map.dart';
-import 'package:Awn/services/appWidgets.dart';
 import 'package:Awn/services/firebase_storage_services.dart';
 import 'package:Awn/services/localNotification.dart';
 import 'package:Awn/userProfile.dart';
@@ -73,7 +72,8 @@ class _MyStatefulWidgetState extends State<addPost> {
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation1, animation2) => ChatPage(
-                  requestID: payload.substring(payload.indexOf('-') + 1)),
+                  requestID: payload.substring(payload.indexOf('-') + 1),
+                  fromNotification: true),
               transitionDuration: const Duration(seconds: 1),
               reverseTransitionDuration: Duration.zero,
             ),
