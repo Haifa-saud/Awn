@@ -6,7 +6,6 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'main.dart';
 import 'services/Utils.dart';
 
 class forgotPassword extends StatefulWidget {
@@ -20,6 +19,7 @@ final formKey = GlobalKey<FormState>();
 
 class _forgotPasswordState extends State<forgotPassword> {
   final emailController = TextEditingController();
+  bool invalidEmail = false;
 
   @override
   void dispose() {
@@ -30,63 +30,68 @@ class _forgotPasswordState extends State<forgotPassword> {
   final Storage storage = Storage();
   Future resetPassword() async {
     try {
-      FirebaseAuth.instance
+      await FirebaseAuth.instance
           .sendPasswordResetEmail(email: emailController.text.trim());
-      Utils.showSnackBar("Email sent");
+      setState(() {
+        invalidEmail = false;
+      });
+      emailController.text = '';
+      print('Email sent');
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => login(),
+          ));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('The reset password email is sent successfully.')),
+      );
     } on FirebaseAuthException catch (e) {
-      Utils.showSnackBar(e.message);
+      // Utils.showSnackBar(e.message);
+      setState(() {
+        invalidEmail = true;
+      });
+      print('incatch');
+
+      print(e.message);
     }
   }
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
-      // appBar: AppBar(
-      //   leading: IconButton(
-      //     icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-      //     onPressed: () => Navigator.of(context).pop(),
-      //   ),
-      // ),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.blue.shade800),
+          onPressed: () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => login(),
+              )),
+        ),
+      ),
       body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-          Colors.cyanAccent.shade100,
-          Colors.white54,
-          Colors.white54,
-          Colors.blue.shade200
-        ], begin: Alignment.topRight, end: Alignment.bottomLeft)),
-        margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        padding: const EdgeInsets.only(left: 40, right: 40),
+        // decoration: BoxDecoration(
+        //     gradient: LinearGradient(colors: [
+        //   Colors.cyanAccent.shade100,
+        //   Colors.white54,
+        //   Colors.white54,
+        //   Colors.blue.shade200
+        // ], begin: Alignment.topRight, end: Alignment.bottomLeft)),
+        padding: const EdgeInsets.only(left: 20, right: 20),
         child: Center(
           child: Form(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            key: _formKey,
+            child: ListView(
               children: [
                 SizedBox(
-                  height: height * 0.1,
-                ),
-                Container(
-                  alignment: Alignment.topLeft,
-                  child: InkWell(
-                    child: const Icon(
-                      Icons.arrow_back_ios_new,
-                    ),
-                    onTap: () {
-                      //action code when clicked
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            // builder: (context) => MainPage(),
-                            builder: (context) => login(),
-                          ));
-                    },
-                  ),
-                ),
-                SizedBox(
-                  height: height * 0.1,
+                  height: height * 0.2,
                 ),
                 FutureBuilder(
-                    future: storage.downloadURL('logo.png'),
+                    future: storage.downloadURL('logo.jpg'),
                     builder:
                         (BuildContext context, AsyncSnapshot<String> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done &&
@@ -113,17 +118,32 @@ class _forgotPasswordState extends State<forgotPassword> {
                 SizedBox(
                   height: height * 0.05,
                 ),
-                const Text(
-                  "Enter your email to reset your password",
+                Text(
+                  "Forgot Password?",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 95, 94, 94),
+                    color: Colors.blue.shade800,
                   ),
                 ),
                 SizedBox(
-                  height: height * 0.05,
+                  height: height * 0.02,
+                ),
+                Container(
+                    padding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "Please enter your email to receive an email to reset your password.",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey.shade600,
+                      ),
+                    )),
+                SizedBox(
+                  height: height * 0.04,
                 ),
                 TextFormField(
                   controller: emailController,
@@ -148,21 +168,21 @@ class _forgotPasswordState extends State<forgotPassword> {
                   ),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (email) {
-                    if (email != null && !EmailValidator.validate(email)) {
-                      return "Enter a valid email";
-                    } else {
-                      return null;
+                    if (email != null && !EmailValidator.validate(email) ||
+                        (email!.trim()).isEmpty) {
+                      return "Invalid email, please try again.";
+                    } else if (invalidEmail) {
+                      return "Invalid email, please try again.";
                     }
                   },
                 ),
-                const SizedBox(
-                  height: 0.01,
+                SizedBox(
+                  height: height * 0.03,
                 ),
                 Container(
                   // margin: const EdgeInsets.fromLTRB(0, 60, 0, 10),
-                  margin: const EdgeInsets.fromLTRB(50, 30, 50, 10),
+                  // margin: const EdgeInsets.fromLTRB(, 0, 10, 0),
 
-                  padding: const EdgeInsets.fromLTRB(30, 1, 30, 1),
                   decoration: BoxDecoration(
                     boxShadow: const [
                       BoxShadow(
@@ -189,8 +209,8 @@ class _forgotPasswordState extends State<forgotPassword> {
                             borderRadius: BorderRadius.circular(30.0),
                           ),
                         ),
-                        // minimumSize:
-                        //     MaterialStateProperty.all(const Size(50, 50)),
+                        minimumSize:
+                            MaterialStateProperty.all(const Size(450, 50)),
                         backgroundColor:
                             MaterialStateProperty.all(Colors.transparent),
                         shadowColor:
@@ -200,12 +220,14 @@ class _forgotPasswordState extends State<forgotPassword> {
                         'Reset Password',
                         style: TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            // fontWeight: FontWeight.bold,
                             color: Colors.white),
                         textAlign: TextAlign.center,
                       ),
                       onPressed: () {
-                        resetPassword();
+                        if (_formKey.currentState!.validate()) {
+                          resetPassword();
+                        }
                       }),
                 ),
               ],

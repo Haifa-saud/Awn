@@ -34,12 +34,12 @@ Future<void> main() async {
   //! Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  final user = FirebaseAuth.instance.currentUser!.uid;
+  // final user = FirebaseAuth.instance.currentUser!.uid;
 
   //! FCM
   FirebaseMessaging.instance.onTokenRefresh.listen((String token) async {
     print("New token: $token");
-    if (user != null) {
+    if (FirebaseAuth.instance.currentUser!.uid != null) {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -57,49 +57,67 @@ Future<void> main() async {
 
   if (notificationAppLaunchDetails!.didNotificationLaunchApp) {
     var Payload = notificationAppLaunchDetails.payload;
-    runApp(MyApp(true, true, Payload!));
-  } else {
-    runApp(MyApp(true, false));
+    runApp(MyApp(
+        auth: true, notification: true, payload: Payload!, isAdmin: false));
   }
 
+  bool auth = false, notificationB = false, isAdmin = false;
+  String payloadRun = '';
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
       Workmanager().cancelAll();
-      runApp(MyApp(false));
+      auth = false;
+      notificationB = false;
+      payloadRun = "";
+      isAdmin = false;
     } else {
       if (notificationAppLaunchDetails.didNotificationLaunchApp) {
-        var Payload = notificationAppLaunchDetails.payload;
-        runApp(MyApp(true, true, Payload!, false));
+        payloadRun = notificationAppLaunchDetails.payload!;
+        auth = true;
+        notificationB = true;
+        isAdmin = false;
       } else if (user.uid == 'GvQo5Qz5ZnTfQYq5GOhZi22HGCB2') {
-        runApp(MyApp(true, false, '', true));
+        auth = true;
+        notificationB = false;
+        payloadRun = "";
+        isAdmin = true;
       } else {
-        runApp(MyApp(true, false, '', false));
+        auth = true;
+        notificationB = false;
+        payloadRun = "";
+        isAdmin = false;
       }
     }
   });
+
+  runApp(MyApp(
+      auth: auth,
+      notification: notificationB,
+      payload: payloadRun,
+      isAdmin: isAdmin));
 }
 
 class MyApp extends StatefulWidget {
-  MyApp(
-      [this.auth = false,
-      this.notification = false,
-      this.payload = '',
-      this.isAdmin = false]);
+  final bool auth;
+  final bool isAdmin;
+  final bool notification;
+  final String payload;
 
-  bool auth;
-  bool isAdmin;
-  bool notification;
-  String payload;
+  MyApp(
+      {required this.auth,
+      required this.notification,
+      required this.payload,
+      required this.isAdmin});
 
   @override
   State<MyApp> createState() => _MyApp();
 }
 
 class _MyApp extends State<MyApp> {
-  final user = FirebaseAuth.instance.currentUser!.uid;
-
+  // print(widget.auth);
   @override
   Widget build(BuildContext context) {
+    print(widget.auth);
     return MaterialApp(
       routes: {
         '/homePage': (ctx) => const homePage(),
@@ -113,11 +131,11 @@ class _MyApp extends State<MyApp> {
       navigatorKey: GlobalContextService.navigatorKey,
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFfcfffe),
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
           titleTextStyle: TextStyle(
               wordSpacing: 3,
               letterSpacing: 1,
-              color: const Color(0xFF06283D),
+              color: Colors.blue.shade800, //const Color(0xFF06283D),
               fontSize: 22,
               fontWeight: FontWeight.w700),
           scrolledUnderElevation: 1,
@@ -126,12 +144,13 @@ class _MyApp extends State<MyApp> {
           color: Colors.white, // Colors.transparent,
           foregroundColor: Colors.black,
         ),
-        textTheme: const TextTheme(
+        textTheme: TextTheme(
           headline6: TextStyle(
               wordSpacing: 3,
               letterSpacing: 1,
               fontSize: 22.0,
-              color: const Color(0xFF06283D)), //header at the app bar
+              color: Colors
+                  .blue), //const Color(0xFF06283D)), //header at the app bar
           bodyText2: TextStyle(
               wordSpacing: 3,
               color: const Color(0xFF06283D),

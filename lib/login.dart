@@ -31,23 +31,27 @@ String VolunteerId = '';
 var myList = [];
 
 class _loginState extends State<login> {
-  final user = FirebaseAuth.instance.currentUser!.uid;
+  // final user = FirebaseAuth.instance.currentUser!.uid;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _passwordVisible = false;
+  bool invalidData = false;
 
   @override
   void initState() {
     super.initState();
     _passwordVisible = false;
+    invalidData = false;
   }
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+    invalidData = false;
+
     super.dispose();
   }
 
@@ -77,7 +81,7 @@ class _loginState extends State<login> {
         //   Colors.blue.shade200
         // ], begin: Alignment.topRight, end: Alignment.bottomLeft)),
         margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        padding: const EdgeInsets.only(left: 40, right: 40),
+        padding: const EdgeInsets.only(left: 30, right: 30),
         child: Form(
             key: _formKey,
             child: ListView(
@@ -89,7 +93,7 @@ class _loginState extends State<login> {
                       height: height * 0.2,
                     ),
                     FutureBuilder(
-                        future: storage.downloadURL('logo.png'),
+                        future: storage.downloadURL('logo.jpg'),
                         builder: (BuildContext context,
                             AsyncSnapshot<String> snapshot) {
                           if (snapshot.connectionState ==
@@ -118,37 +122,36 @@ class _loginState extends State<login> {
                     SizedBox(
                       height: height * 0.05,
                     ),
-                    StreamBuilder<List<usersModel>>(
-                      stream: readVolunteer(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        if (snapshot.hasError) {
-                          return Text(
-                              'Something went wrong! ${snapshot.error}');
-                        } else if (snapshot.hasData) {
-                          final AllshopOwners = snapshot.data!.toList();
-
-                          for (int i = 0; i < AllshopOwners.length; i++) {
-                            myList.add(AllshopOwners[i].id);
-                          }
-                        } else {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        return const Text('');
-                      },
-                    ),
-                    const Center(
+                    // StreamBuilder<List<usersModel>>(
+                    //   stream: readVolunteer(),
+                    //   builder: (context, snapshot) {
+                    //     if (snapshot.connectionState ==
+                    //         ConnectionState.waiting) {
+                    //       return const Center(
+                    //           child: CircularProgressIndicator());
+                    //     }
+                    //     if (snapshot.hasError) {
+                    //       return Text(
+                    //           'Something went wrong! ${snapshot.error}');
+                    //     } else if (snapshot.hasData) {
+                    //       final AllshopOwners = snapshot.data!.toList();
+                    //       for (int i = 0; i < AllshopOwners.length; i++) {
+                    //         myList.add(AllshopOwners[i].id);
+                    //       }
+                    //     } else {
+                    //       return const Center(
+                    //           child: CircularProgressIndicator());
+                    //     }
+                    //     return const Text('');
+                    //   },
+                    // ),
+                    Center(
                       child: Text(
-                        "Log In",
+                        "Login",
                         style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 95, 94, 94)),
+                            color: Colors.blue.shade900),
                       ),
                     ),
                     SizedBox(
@@ -157,18 +160,30 @@ class _loginState extends State<login> {
                     TextFormField(
                       controller: emailController,
                       decoration: const InputDecoration(
-                        labelText: "Enter Email",
+                        labelText: "Email",
                         hintText: "Email",
                       ),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (email) {
+                        if (email != null && (email.trim()).isEmpty) {
+                          return "Please enter an email.";
+                        }
+                      },
                     ),
                     SizedBox(
-                      height: height * 0.05,
+                      height: 25,
                     ),
                     TextFormField(
                       controller: passwordController,
                       obscureText: !_passwordVisible,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (email) {
+                        if (email != null && (email.trim()).isEmpty) {
+                          return "Please enter a password.";
+                        }
+                      },
                       decoration: InputDecoration(
-                        labelText: "Enter Password",
+                        labelText: "Password",
                         hintText: "Password",
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -205,7 +220,7 @@ class _loginState extends State<login> {
                       ),
                     ),
                     SizedBox(
-                      height: height * 0.01,
+                      height: 10,
                     ),
                     Container(
                       margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
@@ -218,21 +233,33 @@ class _loginState extends State<login> {
                                 builder: (context) => const forgotPassword()),
                           );
                         },
-                        child: const Text(
+                        child: Text(
                           "Forgot password?",
                           style: TextStyle(
-                              color: Colors.grey,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade600,
                               decoration: TextDecoration.underline,
-                              fontSize: 18),
+                              fontSize: 15),
                         ),
                       ),
                     ),
+                    Visibility(
+                        visible: invalidData,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                              'Invalid Email/Password, please try again.',
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal)),
+                        )),
+
                     SizedBox(
-                      height: height * 0.01,
+                      height: height * 0.02,
                     ),
                     Center(
                         child: Container(
-                      margin: const EdgeInsets.fromLTRB(50, 10, 50, 10),
                       decoration: BoxDecoration(
                         boxShadow: const [
                           BoxShadow(
@@ -245,7 +272,7 @@ class _loginState extends State<login> {
                           end: Alignment.bottomRight,
                           stops: [0.0, 1.0],
                           colors: [
-                            Colors.blue,
+                            Color(0xFF2196F3),
                             Colors.cyanAccent,
                           ],
                         ),
@@ -260,21 +287,15 @@ class _loginState extends State<login> {
                               ),
                             ),
                             minimumSize:
-                                MaterialStateProperty.all(const Size(50, 50)),
+                                MaterialStateProperty.all(const Size(450, 50)),
                             backgroundColor:
                                 MaterialStateProperty.all(Colors.transparent),
                             shadowColor:
                                 MaterialStateProperty.all(Colors.transparent),
                           ),
-                          child: const Padding(
-                            padding: EdgeInsets.fromLTRB(50, 10, 50, 10),
-                            child: Text(
-                              'Sign In',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
+                          child: Text(
+                            'Login',
+                            style: TextStyle(fontSize: 20, color: Colors.white),
                           ),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
@@ -322,6 +343,9 @@ class _loginState extends State<login> {
                                 print(e.toString());
                                 if (emailController.text.isNotEmpty &&
                                     passwordController.text.isNotEmpty) {
+                                  setState(() {
+                                    invalidData = true;
+                                  });
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(SnackBar(
                                     content:
@@ -337,41 +361,24 @@ class _loginState extends State<login> {
                                       onPressed: () {},
                                     ),
                                   ));
-                                } else if (emailController.text.isEmpty ||
-                                    passwordController.text.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: const Text(
-                                          'Please fill required fields'),
-                                      backgroundColor: Colors.red.shade400,
-                                      margin:
-                                          const EdgeInsets.fromLTRB(6, 0, 3, 0),
-                                      behavior: SnackBarBehavior.floating,
-                                      action: SnackBarAction(
-                                        label: 'Dismiss',
-                                        disabledTextColor: Colors.white,
-                                        textColor: Colors.white,
-                                        onPressed: () {},
-                                      ),
-                                    ),
-                                  );
                                 }
                               }
                             }
-                            // Utils.showSnackBar("wrong email//password");
                           }),
                     )),
-                    Container(
-                      margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                      //child: Text('Don\'t have an account? Create'),
-                      child: Text.rich(TextSpan(children: [
-                        const TextSpan(
-                          text: "Don\'t have an account? ",
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 95, 94, 94)),
-                        ),
+                    SizedBox(
+                      height: height * 0.02,
+                    ),
+                    Center(
+                        child: Text.rich(
+                      TextSpan(children: [
+                        TextSpan(
+                            text: "Don\'t have an account? ",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade600,
+                            )),
                         TextSpan(
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
@@ -380,11 +387,12 @@ class _loginState extends State<login> {
                           text: 'Register',
                           style: TextStyle(
                               decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).accentColor),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.blue),
                         ),
-                      ])),
-                    ),
+                      ]),
+                    )),
                   ],
                 ),
               ],
@@ -393,25 +401,12 @@ class _loginState extends State<login> {
     );
   }
 
-  Future<String> getUsersList() async {
-    try {
-      final userCollection = FirebaseFirestore.instance.collection('users');
-      DocumentSnapshot ds = await userCollection.doc(user).get();
-      globals.userType = ds.get("Type");
-      return globals.userType;
-    } catch (e) {
-      print(e.toString());
-      return "null";
-    }
-  }
-
   Future signIn() async {
     try {
       final newUser = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      getUsersList();
     } on FirebaseAuthException catch (e) {
       if (emailController.text.isNotEmpty &&
           passwordController.text.isNotEmpty) {
