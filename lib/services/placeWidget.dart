@@ -84,68 +84,11 @@ class PlaceState extends State<Place> {
           height: double.infinity,
           child: Column(
             children: [
-              //Wedd : add a search bar
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 15, 0, 2),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (value) {
-                    if (_searchController.text.trim() != '') {
-                      //searched and specific category
-                      if (cate != 'All') {
-                        setState(() {
-                          list = FirebaseFirestore.instance
-                              .collection('posts')
-                              .where('name',
-                                  arrayContains: _searchController.text)
-                              .where('category', isEqualTo: cate)
-                              .where('status', isEqualTo: 'Approved')
-                              .snapshots();
-                          print(
-                              'list entered searching with specific category');
-                        });
-                        //searched and all categories
-                      } else {
-                        setState(() {
-                          list = FirebaseFirestore.instance
-                              .collection('posts')
-                              .where('name',
-                                  arrayContains: _searchController.text)
-                              .where('status', isEqualTo: 'Approved')
-                              .snapshots();
-                          print('list entered searching with all categories');
-                        });
-                      }
-                      //emptiy search
-                    } else {
-                      //no search specific category
-                      if (cate != 'All') {
-                        setState(() {
-                          list = FirebaseFirestore.instance
-                              .collection('posts')
-                              .where('category', isEqualTo: cate)
-                              .where('status', isEqualTo: 'Approved')
-                              .snapshots();
-                          print('list entered emptiy search specific category');
-                        });
-                        //no search and all categories
-                      } else {
-                        setState(() {
-                          list = FirebaseFirestore.instance
-                              .collection('posts')
-                              .where('status', isEqualTo: 'Approved')
-                              .snapshots();
-                          print('list entered emptiy search all categories');
-                        });
-                      }
-                    }
-                  },
-                  decoration: InputDecoration(prefixIcon: Icon(Icons.search)),
-                ),
-              ),
               //! places list
               Expanded(
                   child: Container(
+                      margin: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                      // color: color,
                       height: double.infinity,
                       child: StreamBuilder<QuerySnapshot>(
                           stream: list,
@@ -441,24 +384,25 @@ class PlaceState extends State<Place> {
                                                   Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            editPost(
-                                                          userType:
-                                                              widget.userType,
-                                                          name: data['name'],
-                                                          description: data[
-                                                              'description'],
-                                                          number: data[
-                                                              'Phone number'],
-                                                          website:
-                                                              data['Website'],
-                                                          category:
-                                                              data['category'],
-                                                          docId: data['docId'],
-                                                          oldImg: data['img'],
-latitude:data['latitude'],
-longitude:data['longitude']
-                                                        ),
+                                                        builder: (context) => editPost(
+                                                            userType:
+                                                                widget.userType,
+                                                            name: data['name'],
+                                                            description: data[
+                                                                'description'],
+                                                            number: data[
+                                                                'Phone number'],
+                                                            website:
+                                                                data['Website'],
+                                                            category: data[
+                                                                'category'],
+                                                            docId:
+                                                                data['docId'],
+                                                            oldImg: data['img'],
+                                                            latitude: data[
+                                                                'latitude'],
+                                                            longitude: data[
+                                                                'longitude']),
                                                       ));
                                                 }),
                                                 child: Container(

@@ -1285,19 +1285,33 @@ class MyInfoState extends State<MyInfo> {
                                 height: 10,
                               ),
                               ToggleSwitch(
-                                minWidth: 175.0,
-                                minHeight: 50.0,
-                                fontSize: 17,
+                                minWidth: 170.0,
+                                minHeight: 45.0,
+                                borderWidth: 1,
+                                borderColor: [
+                                  Colors.blue.shade200,
+                                  Colors.pink.shade200,
+                                ],
+                                customTextStyles: [
+                                  const TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 15,
+                                  ),
+                                  const TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 15,
+                                  )
+                                ],
                                 initialLabelIndex: gender_index,
                                 cornerRadius: 10.0,
-                                activeFgColor: Colors.white,
-                                inactiveBgColor: Colors.grey.shade300,
-                                inactiveFgColor: Colors.white,
+                                activeFgColor: Colors.black,
+                                inactiveBgColor: Colors.white,
+                                inactiveFgColor: Colors.black,
                                 totalSwitches: 2,
                                 labels: ['Male', 'Female'],
                                 activeBgColors: [
-                                  [const Color.fromARGB(255, 111, 174, 225)],
-                                  [const Color.fromARGB(255, 232, 116, 155)]
+                                  [Colors.blue.shade200],
+                                  [Colors.pink.shade200],
                                 ],
                                 onToggle: (index) {
                                   if (index == 0) {

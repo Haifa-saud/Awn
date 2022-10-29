@@ -160,7 +160,7 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                       Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
                           child: FutureBuilder(
-                              future: storage.downloadURL('logo.png'),
+                              future: storage.downloadURL('logo.jpg'),
                               builder: (BuildContext context,
                                   AsyncSnapshot<String> snapshot) {
                                 if (snapshot.connectionState ==
