@@ -111,21 +111,19 @@ class _MyStatefulWidgetState extends State<maps> {
     if (addPost) {
       title = "Add Location";
       collName = 'posts';
-      border = const BorderRadius.only(
-        topRight: Radius.circular(30),
-        bottomRight: Radius.circular(30),
-      );
-      sucessMsg = 'Place is added successfully';
+      border = BorderRadius.circular(30);
+
+      sucessMsg = 'Add a place request is sent successfully.';
     } else if (editRequest) {
       title = "Update Location";
       collName = 'requests';
       border = BorderRadius.circular(30);
-      sucessMsg = 'Request location is updated successfully';
+      sucessMsg = 'Awn request location is updated successfully.';
     } else {
       title = "Add Location";
       collName = 'requests';
       border = BorderRadius.circular(30);
-      sucessMsg = 'Request is sent successfully';
+      sucessMsg = 'Awn request is sent successfully.';
     }
     DBId = widget.dataId;
     notificationService = NotificationService();
@@ -174,12 +172,8 @@ class _MyStatefulWidgetState extends State<maps> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          // leading: Visibility(
-          //     visible: editRequest,
-          //     child: IconButton(
-          //         icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          //         onPressed: () => Navigator.of(context).pop())),
           title: Text(title),
+          centerTitle: true,
           leading: Visibility(
               visible: editRequest,
               child: IconButton(
@@ -253,48 +247,6 @@ class _MyStatefulWidgetState extends State<maps> {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Visibility(
-                      visible: addPost,
-                      child: Container(
-                        width: 120,
-
-                        // margin: const EdgeInsets.fromLTRB(40, 0, 0, 0),
-                        decoration: const BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black26,
-                                offset: Offset(0, 4),
-                                blurRadius: 5.0)
-                          ],
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            stops: [0.0, 1.0],
-                            colors: [
-                              Colors.blue,
-                              Color(0xFF39d6ce),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(30),
-                            bottomLeft: Radius.circular(30),
-                          ),
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            backToHomePage();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            textStyle: const TextStyle(
-                              fontSize: 18,
-                            ),
-                            // side: BorderSide.only(
-                            //     color: Colors.grey.shade400, width: 1),
-                          ),
-                          child: const Text('Skip'),
-                        ),
-                      ),
-                    ),
                     Container(
                       width: 150,
                       // margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),

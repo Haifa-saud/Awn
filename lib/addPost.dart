@@ -245,19 +245,21 @@ class _MyStatefulWidgetState extends State<addPost> {
 
     return Scaffold(
       appBar: AppBar(
-        bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(1.0),
-            child: Padding(
-                padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                child: Container(
-                  color: Colors.grey,
-                  height: 1.0,
-                ))),
-        actions: <Widget>[
-          Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+          bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(1.0),
+              child: Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                  child: Container(
+                    color: Colors.grey,
+                    height: 1.0,
+                  ))),
+          centerTitle: true,
+          title: const Text('Add a Place Request'),
+          automaticallyImplyLeading: false,
+          leading: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
               child: FutureBuilder(
-                  future: storage.downloadURL('logo.png'),
+                  future: storage.downloadURL('logo.jpg'),
                   builder:
                       (BuildContext context, AsyncSnapshot<String> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done &&
@@ -279,41 +281,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                       ));
                     }
                     return Container();
-                  }))
-        ],
-        title: const Text('Add a Place Request', textAlign: TextAlign.center),
-        automaticallyImplyLeading: false,
-        //   leading: IconButton(
-        //     icon: const Icon(Icons.close, color: Colors.black),
-        //     onPressed: () => showDialog<String>(
-        //       context: context,
-        //       builder: (BuildContext context) => AlertDialog(
-        //         content: const Text('Discard the changes you made?'),
-        //         actions: <Widget>[
-        //           TextButton(
-        //             onPressed: () => Navigator.of(context).pop(),
-        //             child: const Text('Keep editing'),
-        //           ),
-        //           TextButton(
-        //             onPressed: () {
-        //               clearForm();
-        //               Navigator.pushReplacement(
-        //                 context,
-        //                 PageRouteBuilder(
-        //                   pageBuilder: (context, animation1, animation2) =>
-        //                       homePage(),
-        //                   transitionDuration: Duration(seconds: 1),
-        //                   reverseTransitionDuration: Duration.zero,
-        //                 ),
-        //               );
-        //             },
-        //             child: const Text('Discard'),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ),
-      ),
+                  }))),
       body: Form(
         key: _formKey,
         child: Padding(

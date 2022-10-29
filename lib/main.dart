@@ -135,7 +135,7 @@ class _MyApp extends State<MyApp> {
           titleTextStyle: TextStyle(
               wordSpacing: 3,
               letterSpacing: 1,
-              color: Colors.blue.shade800, //const Color(0xFF06283D),
+              color: Colors.blue.shade900, //const Color(0xFF06283D),
               fontSize: 22,
               fontWeight: FontWeight.w700),
           scrolledUnderElevation: 1,
