@@ -153,7 +153,7 @@ class _MyApp extends State<MyApp> {
                   .blue), //const Color(0xFF06283D)), //header at the app bar
           bodyText2: TextStyle(
               wordSpacing: 3,
-              color: const Color(0xFF06283D),
+              color: Color.fromARGB(255, 0, 40, 100), //const Color(0xFF06283D),
               letterSpacing: 1,
               fontSize: 20.0,
               fontWeight: FontWeight.bold), //the body text

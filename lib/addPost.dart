@@ -285,8 +285,9 @@ class _MyStatefulWidgetState extends State<addPost> {
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
+          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
           child: ListView(children: <Widget>[
+            SizedBox(height: 10),
             Container(
                 child: const Text(
               '*indicates required fields',
@@ -575,6 +576,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                   textStyle: const TextStyle(
                     fontSize: 18,
                   ),
+                  minimumSize: (const Size(250, 50)),
                 ),
                 onPressed: () {
                   if (!previewImage) {
@@ -584,25 +586,7 @@ class _MyStatefulWidgetState extends State<addPost> {
                     });
                   } else if (_formKey.currentState!.validate()) {
                     addToDB();
-                  } else {
-                    // ScaffoldMessenger.of(context).showSnackBar(
-                    //   SnackBar(
-                    //     content: Text(
-                    //         'Please fill in the required fields above, and in the specified format (if any).'),
-                    //     backgroundColor: Colors.red.shade400,
-                    //     margin: EdgeInsets.fromLTRB(6, 0, 3, 0),
-                    //     behavior: SnackBarBehavior.floating,
-                    //     action: SnackBarAction(
-                    //       label: 'Dismiss',
-                    //       disabledTextColor: Colors.white,
-                    //       textColor: Colors.white,
-                    //       onPressed: () {
-                    //         //Do whatever you want
-                    //       },
-                    //     ),
-                    //   ),
-                    // );
-                  }
+                  } else {}
                 },
                 child: const Text('Next'),
               ),

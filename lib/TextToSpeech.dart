@@ -90,44 +90,43 @@ class _TtsState extends State<Tts> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          actions: <Widget>[
-            Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                child: FutureBuilder(
-                    future: storage.downloadURL('logo.jpg'),
-                    builder:
-                        (BuildContext context, AsyncSnapshot<String> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done &&
-                          snapshot.hasData) {
-                        return Center(
-                          child: Image.network(
-                            snapshot.data!,
-                            fit: BoxFit.cover,
-                            width: 40,
-                            height: 40,
-                          ),
-                        );
-                      }
-                      if (snapshot.connectionState == ConnectionState.waiting ||
-                          !snapshot.hasData) {
-                        return Center(
-                            child: CircularProgressIndicator(
-                          color: Colors.blue,
-                        ));
-                      }
-                      return Container();
-                    }))
-          ],
           automaticallyImplyLeading: false,
           title: const SizedBox(
             child: Text('Text To Speech'),
           ),
+          centerTitle: true,
+          leading: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+              child: FutureBuilder(
+                  future: storage.downloadURL('logo.jpg'),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done &&
+                        snapshot.hasData) {
+                      return Center(
+                        child: Image.network(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
+                          width: 40,
+                          height: 40,
+                        ),
+                      );
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting ||
+                        !snapshot.hasData) {
+                      return Center(
+                          child: CircularProgressIndicator(
+                        color: Colors.blue,
+                      ));
+                    }
+                    return Container();
+                  })),
           bottom: PreferredSize(
               preferredSize: Size.fromHeight(1.0),
               child: Padding(
-                  padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                  padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                   child: Container(
-                    color: Colors.grey,
+                    color: Colors.blue.shade800,
                     height: 1.0,
                   ))),
         ),
@@ -182,7 +181,7 @@ class _TtsState extends State<Tts> {
                               )
                             : const Text(""))),
                 Container(
-                    margin: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+                    // margin: const EdgeInsets.fromLTRB(50, 0, 50, 0),
                     decoration: BoxDecoration(
                       boxShadow: const [
                         BoxShadow(
@@ -211,7 +210,7 @@ class _TtsState extends State<Tts> {
                                   ),
                                 ),
                                 minimumSize: MaterialStateProperty.all(
-                                    const Size(50, 50)),
+                                    const Size(250, 50)),
                                 backgroundColor:
                                     MaterialStateProperty.all(Colors.red),
                                 shadowColor:
@@ -226,7 +225,7 @@ class _TtsState extends State<Tts> {
                                   ),
                                 ),
                                 minimumSize: MaterialStateProperty.all(
-                                    const Size(50, 50)),
+                                    const Size(250, 50)),
                                 backgroundColor: MaterialStateProperty.all(
                                     Colors.transparent),
                                 shadowColor: MaterialStateProperty.all(
