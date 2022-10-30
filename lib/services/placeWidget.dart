@@ -947,7 +947,7 @@ class PlaceState extends State<Place> {
                                               context: context,
                                               builder: (ctx) => AlertDialog(
                                                 title: const Text(
-                                                    "Are You Sure ?"),
+                                                    "Delete Comment?"),
                                                 content: Column(
                                                     mainAxisSize:
                                                         MainAxisSize.min,

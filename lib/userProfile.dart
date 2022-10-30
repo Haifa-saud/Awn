@@ -149,7 +149,7 @@ class UserProfileState extends State<userProfile>
                                     textAlign: TextAlign.left,
                                   ),
                                   content: const Text(
-                                    "Are You Sure You want to log out of your account ?",
+                                    "Are You Sure You want to log out of your account?",
                                     textAlign: TextAlign.left,
                                   ),
                                   actions: <Widget>[
@@ -176,7 +176,6 @@ class UserProfileState extends State<userProfile>
                                         //         SetOptions(merge: true));
                                         Navigator.pushNamed(context, '/login');
                                         await _signOut();
-                                        
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.all(14),
@@ -474,33 +473,17 @@ class UserProfileState extends State<userProfile>
 
                                 var isRequestActive = false;
                                 if (data.docs[index]['status'] == 'Approved') {
-                                  var duration = data.docs[index]['duration'];
-                                  print('total duration: $duration');
+                                  var endDateTime = DateTime.parse(
+                                      data.docs[index]['endDateTime']);
+                                  // print('total duration: $duration');
 
                                   var dateTime = data.docs[index]['date_ymd'];
                                   final now = DateTime.now();
-                                  var year =
-                                      int.parse(dateTime.substring(0, 4));
-                                  var month =
-                                      int.parse(dateTime.substring(5, 7));
-                                  var day =
-                                      int.parse(dateTime.substring(8, 10));
-                                  var hours =
-                                      int.parse(dateTime.substring(11, 13));
-                                  var minutes =
-                                      int.parse(dateTime.substring(14));
 
-                                  final expirationDate = DateTime(
-                                          year, month, day, hours, minutes)
-                                      .add(Duration(
-                                          hours: int.parse(duration.substring(
-                                              0, duration.indexOf(':'))),
-                                          minutes: int.parse(duration.substring(
-                                              duration.indexOf(':') + 1))));
-                                  isRequestActive = expirationDate.isAfter(now);
+                                  isRequestActive = endDateTime.isAfter(now);
 
                                   print(
-                                      "expirationDate $expirationDate $isRequestActive");
+                                      "expirationDate $endDateTime $isRequestActive");
                                 }
 
                                 return FutureBuilder(
@@ -1767,10 +1750,24 @@ class MyInfoState extends State<MyInfo> {
                                     context: context,
                                     builder: (ctx) => AlertDialog(
                                       title: const Text("Delete Account?"),
-                                      content: const Text(
-                                        "Are You Sure You want to delete your Account? , This action can't be undone",
-                                        textAlign: TextAlign.left,
-                                      ),
+                                      content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: const [
+                                            Text(
+                                              "Are You Sure You want to delete your account?",
+                                              textAlign: TextAlign.left,
+                                            ),
+                                            Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  "\n*This action can't be undone",
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w300),
+                                                  textAlign: TextAlign.left,
+                                                ))
+                                          ]),
                                       actions: <Widget>[
                                         TextButton(
                                           onPressed: () {
@@ -1784,11 +1781,12 @@ class MyInfoState extends State<MyInfo> {
                                         TextButton(
                                           onPressed: () async {
                                             Navigator.of(ctx).pop();
-                                            /*SNU request*/ FirebaseFirestore
+
+                                            /*SNU request*/ await FirebaseFirestore
                                                 .instance
                                                 .collection('requests')
                                                 .get()
-                                                .then((snapshot) {
+                                                .then((snapshot) async {
                                               List<DocumentSnapshot> allDocs =
                                                   snapshot.docs;
                                               List<DocumentSnapshot>
@@ -1802,16 +1800,28 @@ class MyInfoState extends State<MyInfo> {
                                                       .toList();
                                               for (DocumentSnapshot ds
                                                   in filteredDocs) {
+                                                await FirebaseFirestore.instance
+                                                    .collection('requests')
+                                                    .doc(ds['docId'])
+                                                    .collection('chats')
+                                                    .get()
+                                                    .then((snapshot) {
+                                                  for (DocumentSnapshot ds
+                                                      in snapshot.docs) {
+                                                    ds.reference.delete();
+                                                  }
+                                                });
+
                                                 ds.reference.delete().then((_) {
-                                                  print("request deleted");
+                                                  print("snu request deleted");
                                                 });
                                               }
                                             });
-                                            /*Volunteer request*/ FirebaseFirestore
+                                            /*Volunteer request*/ await FirebaseFirestore
                                                 .instance
                                                 .collection('requests')
                                                 .get()
-                                                .then((snapshot) {
+                                                .then((snapshot) async {
                                               List<DocumentSnapshot> allDocs =
                                                   snapshot.docs;
                                               List<DocumentSnapshot>
@@ -1849,6 +1859,33 @@ class MyInfoState extends State<MyInfo> {
 
                                                 print(
                                                     "expirationDate $expirationDate $isRequestActive");
+                                                await FirebaseFirestore.instance
+                                                    .collection('requests')
+                                                    .doc(ds['docId'])
+                                                    .collection('chats')
+                                                    .get()
+                                                    .then((snapshot) {
+                                                  List<DocumentSnapshot>
+                                                      allDocs = snapshot.docs;
+                                                  List<DocumentSnapshot>
+                                                      filteredDocs = allDocs
+                                                          .where((document) =>
+                                                              (document.data()
+                                                                      as Map<
+                                                                          String,
+                                                                          dynamic>)[
+                                                                  'text'] !=
+                                                              'This chat offers Text to Speech service, please long press on the chat to try it.')
+                                                          .toList();
+                                                  for (DocumentSnapshot ds
+                                                      in filteredDocs) {
+                                                    ds.reference
+                                                        .delete()
+                                                        .then((_) {
+                                                      print("chat deleted");
+                                                    });
+                                                  }
+                                                });
                                                 if (isRequestActive) {
                                                   ds.reference.update({
                                                     'status': 'Pending',
@@ -1869,7 +1906,8 @@ class MyInfoState extends State<MyInfo> {
                                                 }
                                               }
                                             });
-                                            FirebaseFirestore.instance
+
+                                            await FirebaseFirestore.instance
                                                 .collection('Comments')
                                                 .get()
                                                 .then((snapshot) {
@@ -1894,7 +1932,20 @@ class MyInfoState extends State<MyInfo> {
                                             // await Navigator.pushNamed(
                                             //     context, '/login');
 
-                                            FirebaseFirestore.instance
+                                            await FirebaseFirestore.instance
+                                                .collection("users")
+                                                .doc(userData['id'])
+                                                .collection(
+                                                    "UserDisabilityType")
+                                                .get()
+                                                .then((snapshot) {
+                                              for (DocumentSnapshot ds
+                                                  in snapshot.docs) {
+                                                ds.reference.delete();
+                                              }
+                                            });
+
+                                            await FirebaseFirestore.instance
                                                 .collection("users")
                                                 .doc(userData['id'])
                                                 .delete()
@@ -1904,6 +1955,11 @@ class MyInfoState extends State<MyInfo> {
                                             FirebaseAuth.instance.currentUser!
                                                 .delete()
                                                 .then((value) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                content: Text(
+                                                    'Your account has been deleted successfully.'),
+                                              ));
                                               Navigator.pushNamed(
                                                   context, '/login');
                                             });

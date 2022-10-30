@@ -423,6 +423,10 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Text(
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          letterSpacing: 1,
+                                          wordSpacing: 2),
                                       textAlign: TextAlign.left,
                                       getDate_formated() +
                                           '  -  ' +
@@ -495,8 +499,8 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   firstDate: SelectedDateTime,
                   lastDate: DateTime((SelectedDateTime.year + 1),
                       SelectedDateTime.month, SelectedDateTime.day),
-                  dateLabelText: 'End date and time',
-                  timeLabelText: 'End Time',
+                  // dateLabelText: 'End date and time',
+                  // timeLabelText: 'End Time',
                   timeFieldWidth: 150,
                   // use24HourFormat: false,
                   onChanged: (val) => print(val),
