@@ -149,10 +149,11 @@ class _TtsState extends State<Tts> {
                     child: const Text(
                       "What would like to say?",
                       style: TextStyle(
-                          fontWeight: FontWeight.normal, fontSize: 19),
+                          fontWeight: FontWeight.normal, fontSize: 18),
                     ),
                   ),
                 ]),
+                SizedBox(height: 15),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
@@ -164,7 +165,7 @@ class _TtsState extends State<Tts> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 15),
                 textArea(),
                 Padding(
                     padding: EdgeInsets.fromLTRB(0, 0, 0, 15),

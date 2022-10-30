@@ -174,7 +174,9 @@ class UserProfileState extends State<userProfile>
                                         //         .instance.currentUser!.uid)
                                         //     .set({'token': ''},
                                         //         SetOptions(merge: true));
+                                        Navigator.pushNamed(context, '/login');
                                         await _signOut();
+                                        
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.all(14),
@@ -913,8 +915,6 @@ class MyInfo extends StatefulWidget {
 
 var outDate;
 
-bool isEditing = false;
-
 class MyInfoState extends State<MyInfo> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -925,14 +925,29 @@ class MyInfoState extends State<MyInfo> {
   TextEditingController disabilityController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  var DisabilityType;
+  editing(var value) {
+    setState(() {
+      isEdited = value;
+    });
+  }
 
-  String gender_edit = '', Dis_edit = '';
+  bool isEditing = false;
   bool blind = false;
   bool mute = false;
   bool deaf = false;
   bool physical = false;
   bool other = false;
+  bool blindDB = false,
+      muteDB = false,
+      deafDB = false,
+      physicalDB = false,
+      otherDB = false;
+
+  var DisabilityType;
+  var isEdited;
+
+  String gender_edit = '', Dis_edit = '';
+
   String typeId = "";
   bool getPassword = false;
   bool invalidEmail = false;
@@ -940,23 +955,29 @@ class MyInfoState extends State<MyInfo> {
   var _formKey;
   var userData;
   var gender_index = 1;
-  var isSpecial, dis;
+  var isSpecial;
   String emailErrorMessage = '';
 
   void clearBool() {
-    blind = false;
-    mute = false;
-    deaf = false;
-    physical = false;
-    other = false;
+    // blindDB = false;
+    // muteDB = false;
+    // deafDB = false;
+    // physicalDB = false;
+    // otherDB = false;
+
+    // blind = false;
+    // mute = false;
+    // deaf = false;
+    // physical = false;
+    // other = false;
     typeId = "";
     Dis_edit = '';
-    dis = "";
     getPassword = false;
     passwordController.text = '';
+    isEditing = false;
   }
 
-  void user_disablitiy(String dis) {
+  Future<void> user_disablitiy(String dis) async {
     if (dis.contains('Vocally')) {
       mute = true;
     } else {
@@ -998,6 +1019,9 @@ class MyInfoState extends State<MyInfo> {
     dateController.text = userData['DOB'];
     disabilityController.text = userData['Disability'];
 
+    isEdited = false;
+    user_disablitiy(disabilityController.text);
+
     DisabilityType = FirebaseFirestore.instance
         .collection('users')
         .doc(userData['id'])
@@ -1021,16 +1045,69 @@ class MyInfoState extends State<MyInfo> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    DisabilityType = FirebaseFirestore.instance
+  Future<void> setBool() async {
+    FirebaseFirestore.instance
         .collection('users')
         .doc(userData['id'])
-        .collection('UserDisabilityType');
+        .collection('UserDisabilityType')
+        .snapshots()
+        .map((snapshot) {
+      snapshot.docs.map((DocumentSnapshot document) {
+        switch ((document.data() as Map)['Type']) {
+          case 'Visually Impaired':
+            blind = (document.data() as Map)['Checked'];
+            break;
+          case 'Vocally Impaired':
+            mute = (document.data() as Map)['Checked'];
+            break;
+          case 'Hearing Impaired':
+            deaf = (document.data() as Map)['Checked'];
+            break;
+          case 'Physically Impaired':
+            physical = (document.data() as Map)['Checked'];
+            break;
+          case 'Other':
+            other = (document.data() as Map)['Checked'];
+            break;
+        }
+      });
+    });
+  }
 
-    user_disablitiy(disabilityController.text);
+  isEditingfun() async {
+    setState(() {
+      isEditing = true;
+    });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userData['id'])
+        .collection('UserDisabilityType')
+        .snapshots()
+        .map((snapshot) {
+      snapshot.docs.map((DocumentSnapshot document) {
+        switch ((document.data() as Map)['Type']) {
+          case 'Visually Impaired':
+            blindDB = (document.data() as Map)['Checked'];
+            break;
+          case 'Vocally Impaired':
+            muteDB = (document.data() as Map)['Checked'];
+            break;
+          case 'Hearing Impaired':
+            deafDB = (document.data() as Map)['Checked'];
+            break;
+          case 'Physically Impaired':
+            physicalDB = (document.data() as Map)['Checked'];
+            break;
+          case 'Other':
+            otherDB = (document.data() as Map)['Checked'];
+            break;
+        }
+      });
+    });
+  }
 
-    print(dis);
+  @override
+  Widget build(BuildContext context) {
     var isF = genderController.text == "Female" ? 1 : 0;
     genderIndex(isF);
     DateTime iniDOB = DateTime.parse(userData['DOB']);
@@ -1086,6 +1163,13 @@ class MyInfoState extends State<MyInfo> {
                           return null;
                         }
                       },
+                      onChanged: (value) {
+                        if (nameController.text.trim() != userData['name']) {
+                          editing(true);
+                        } else {
+                          editing(false);
+                        }
+                      },
                     ),
                     const SizedBox(
                       height: 12,
@@ -1099,10 +1183,12 @@ class MyInfoState extends State<MyInfo> {
                         if (userData['Email'] != value) {
                           setState(() {
                             getPassword = true;
+                            editing(true);
                           });
                         } else if (userData['Email'] == value) {
                           setState(() {
                             getPassword = false;
+                            editing(false);
                           });
                         }
                       },
@@ -1199,6 +1285,7 @@ class MyInfoState extends State<MyInfo> {
                     //DOB field
                     TextFormField(
                       enabled: isEditing,
+                      readOnly: true,
                       controller: dateController,
                       onTap: () async {
                         DateTime? newDate = await showDatePicker(
@@ -1211,9 +1298,13 @@ class MyInfoState extends State<MyInfo> {
                           setState(() {
                             dateController.text =
                                 DateFormat('yyyy-MM-dd').format(newDate);
-                            print(newDate);
                             iniDOB = newDate;
                           });
+                          if (dateController.text != userData['DOB']) {
+                            editing(true);
+                          } else {
+                            editing(false);
+                          }
                         } else {
                           print("Date is not selected");
                         }
@@ -1292,12 +1383,12 @@ class MyInfoState extends State<MyInfo> {
                                   Colors.blue.shade200,
                                   Colors.pink.shade200,
                                 ],
-                                customTextStyles: [
-                                  const TextStyle(
+                                customTextStyles: const [
+                                  TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 15,
                                   ),
-                                  const TextStyle(
+                                  TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 15,
                                   )
@@ -1308,7 +1399,7 @@ class MyInfoState extends State<MyInfo> {
                                 inactiveBgColor: Colors.white,
                                 inactiveFgColor: Colors.black,
                                 totalSwitches: 2,
-                                labels: ['Male', 'Female'],
+                                labels: const ['Male', 'Female'],
                                 activeBgColors: [
                                   [Colors.blue.shade200],
                                   [Colors.pink.shade200],
@@ -1324,6 +1415,12 @@ class MyInfoState extends State<MyInfo> {
                                     gender_edit = 'Female';
                                     genderController.text = 'Female';
                                     print('switched to: female');
+                                  }
+                                  if (genderController.text !=
+                                      userData['gender']) {
+                                    editing(true);
+                                  } else {
+                                    editing(false);
                                   }
                                 },
                               ),
@@ -1366,6 +1463,14 @@ class MyInfoState extends State<MyInfo> {
                           return "Please enter a phone number";
                         } else if (value.length != 10) {
                           return "Please enter a valid phone number";
+                        }
+                      },
+                      onChanged: (value) {
+                        if (phoneController.text.trim() !=
+                            userData['phone number']) {
+                          editing(true);
+                        } else {
+                          editing(false);
                         }
                       },
                     ),
@@ -1430,6 +1535,29 @@ class MyInfoState extends State<MyInfo> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: snapshot.data!.docs
                                             .map((DocumentSnapshot document) {
+                                          // switch ((document.data()
+                                          //     as Map)['Type']) {
+                                          //   case 'Visually Impaired':
+                                          //     blindDB = (document.data()
+                                          //         as Map)['Checked'];
+                                          //     break;
+                                          //   case 'Vocally Impaired':
+                                          //     muteDB = (document.data()
+                                          //         as Map)['Checked'];
+                                          //     break;
+                                          //   case 'Hearing Impaired':
+                                          //     deafDB = (document.data()
+                                          //         as Map)['Checked'];
+                                          //     break;
+                                          //   case 'Physically Impaired':
+                                          //     physicalDB = (document.data()
+                                          //         as Map)['Checked'];
+                                          //     break;
+                                          //   case 'Other':
+                                          //     otherDB = (document.data()
+                                          //         as Map)['Checked'];
+                                          //     break;
+                                          // }
                                           return Container(
                                               child: CheckboxListTile(
                                             contentPadding: EdgeInsets.fromLTRB(
@@ -1440,37 +1568,65 @@ class MyInfoState extends State<MyInfo> {
                                               typeId = (document.data()
                                                       as Map)['Type']
                                                   .replaceAll(' ', '');
+
                                               DisabilityType.doc(typeId).update(
                                                   {'Checked': newValue});
+
                                               if ((document.data()
                                                       as Map)['Type'] ==
                                                   'Visually Impaired') {
-                                                blind = !blind;
+                                                // setState(() {
+                                                blind = newValue!;
+                                                // });
                                                 print('blind: $blind');
                                               }
                                               if ((document.data()
                                                       as Map)['Type'] ==
                                                   'Vocally Impaired') {
-                                                mute = !mute;
+                                                // setState(() {
+                                                mute = newValue!;
+                                                // });
                                                 print('mute: $mute');
                                               }
                                               if ((document.data()
                                                       as Map)['Type'] ==
                                                   'Hearing Impaired') {
-                                                deaf = !deaf;
+                                                // setState(() {
+                                                deaf = newValue!;
+                                                // });
                                                 print('deaf: $deaf');
                                               }
                                               if ((document.data()
                                                       as Map)['Type'] ==
                                                   'Physically Impaired') {
-                                                physical = !physical;
+                                                // setState(() {
+                                                physical = newValue!;
+                                                // });
                                                 print('physical: $physical');
                                               }
                                               if ((document.data()
                                                       as Map)['Type'] ==
                                                   'Other') {
-                                                other = !other;
+                                                // setState(() {
+                                                other = newValue!;
+                                                // });
                                                 print('other: $other');
+                                              }
+                                              print('physical: $physicalDB');
+                                              print('deaf: $deafDB');
+
+                                              print('other: $otherDB');
+                                              print('mute: $muteDB');
+                                              print('blind: $blindDB');
+
+                                              if (blindDB == blind &&
+                                                  otherDB == other &&
+                                                  physical == physicalDB &&
+                                                  deafDB == deaf &&
+                                                  muteDB == mute) {
+                                                editing(false);
+                                              } else {
+                                                editing(true);
                                               }
                                             },
                                             title: Text(
@@ -1516,6 +1672,20 @@ class MyInfoState extends State<MyInfo> {
                             labelText: 'Bio',
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                           ),
+                          onChanged: (value) {
+                            if (bioController.text != userData['bio']) {
+                              editing(true);
+                            } else {
+                              editing(false);
+                            }
+                          },
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                (value.trim()).isEmpty) {
+                              return "Please enter a bio";
+                            }
+                          },
                         )),
                     Visibility(
                         visible: userData['Type'] == 'Volunteer',
@@ -1555,9 +1725,7 @@ class MyInfoState extends State<MyInfo> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  setState(() {
-                                    isEditing = true;
-                                  });
+                                  isEditingfun();
                                   FocusScope.of(context).unfocus();
                                 },
                                 child: const Text('Edit'),
@@ -1769,13 +1937,13 @@ class MyInfoState extends State<MyInfo> {
                                       offset: Offset(0, 4),
                                       blurRadius: 5.0)
                                 ],
-                                gradient: const LinearGradient(
+                                gradient: LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
-                                  stops: [0.0, 1.0],
+                                  stops: const [0.0, 1.0],
                                   colors: [
-                                    Colors.blue,
-                                    Color(0xFF39d6ce),
+                                    isEdited ? Colors.blue : Colors.grey,
+                                    isEdited ? Color(0xFF39d6ce) : Colors.grey,
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(30),
@@ -1787,65 +1955,72 @@ class MyInfoState extends State<MyInfo> {
                                   ),
                                 ),
                                 onPressed: () async {
-                                  if (blind == false &&
-                                      mute == false &&
-                                      deaf == false &&
-                                      other == false &&
-                                      physical == false &&
-                                      userData['Type'] != "Volunteer") {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content:
-                                            Text('Please choose a disability'),
-                                        backgroundColor: Colors.deepOrange,
-                                      ),
-                                    );
-                                  } else {
-                                    if (_formKey.currentState!.validate()) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (ctx) => AlertDialog(
-                                          title: const Text("Save?"),
-                                          content: const Text(
-                                            "Are You Sure You want to save changes?",
-                                            textAlign: TextAlign.left,
-                                          ),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(ctx).pop();
-                                                FocusScope.of(context)
-                                                    .unfocus();
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(14),
-                                                child: const Text("Cancel",
-                                                    style: TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 194, 98, 98))),
-                                              ),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                UpdateDB();
-                                                Navigator.of(context).pop();
-                                                FocusScope.of(context)
-                                                    .unfocus();
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(14),
-                                                child: const Text(
-                                                  "Save",
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                  if (isEdited) {
+                                    if (blind == false &&
+                                        mute == false &&
+                                        deaf == false &&
+                                        other == false &&
+                                        physical == false &&
+                                        userData['Type'] != "Volunteer") {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Please choose a disability'),
+                                          backgroundColor: Colors.deepOrange,
                                         ),
                                       );
+                                    } else {
+                                      if (_formKey.currentState!.validate()) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (ctx) => AlertDialog(
+                                            title: const Text("Save?"),
+                                            content: const Text(
+                                              "Are You Sure You want to save changes?",
+                                              textAlign: TextAlign.left,
+                                            ),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(ctx).pop();
+                                                  FocusScope.of(context)
+                                                      .unfocus();
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(14),
+                                                  child: const Text("Cancel",
+                                                      style: TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              194,
+                                                              98,
+                                                              98))),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  UpdateDB();
+                                                  isEdited = false;
+                                                  Navigator.of(context).pop();
+                                                  FocusScope.of(context)
+                                                      .unfocus();
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(14),
+                                                  child: const Text(
+                                                    "Save",
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }
                                     }
-                                  }
+                                  } else {}
                                 },
                                 child: const Text('Save'),
                               ),
@@ -1882,64 +2057,122 @@ class MyInfoState extends State<MyInfo> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (ctx) => AlertDialog(
-                                      title: const Text("Are You Sure ?"),
-                                      content: const Text(
-                                        "Are You Sure You want to Cancel changes ?",
-                                        textAlign: TextAlign.left,
-                                      ),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              isEditing = false;
-                                              userData = widget.user;
-                                              getPassword = false;
-                                              nameController.text =
-                                                  userData['name'];
-                                              emailController.text =
-                                                  userData['Email'];
-                                              genderController.text =
-                                                  userData['gender'];
-                                              phoneController.text =
-                                                  userData['phone number'];
-                                              bioController.text =
-                                                  userData['bio'];
-                                              dateController.text =
-                                                  userData['DOB'];
-                                              disabilityController.text =
-                                                  userData['Disability'];
-                                              invalidEmail = false;
-                                              passwordController.text = '';
-                                            });
-                                            Navigator.of(ctx).pop();
-                                            FocusScope.of(context).unfocus();
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.all(14),
-                                            child: const Text("Yes",
-                                                style: TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 194, 98, 98))),
-                                          ),
+                                  if (isEdited) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (ctx) => AlertDialog(
+                                        title: const Text("Are You Sure?"),
+                                        content: const Text(
+                                          "Are You Sure You want to cancel your changes?",
+                                          textAlign: TextAlign.left,
                                         ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(ctx).pop();
-                                            FocusScope.of(context).unfocus();
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.all(14),
-                                            child: const Text(
-                                              "No",
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () async {
+                                              setState(() {
+                                                isEditing = false;
+                                                userData = widget.user;
+                                                getPassword = false;
+                                                nameController.text =
+                                                    userData['name'];
+                                                emailController.text =
+                                                    userData['Email'];
+                                                genderController.text =
+                                                    userData['gender'];
+                                                phoneController.text =
+                                                    userData['phone number'];
+                                                bioController.text =
+                                                    userData['bio'];
+                                                dateController.text =
+                                                    userData['DOB'];
+                                                disabilityController.text =
+                                                    userData['Disability'];
+                                                invalidEmail = false;
+                                                passwordController.text = '';
+                                              });
+                                              // await FirebaseFirestore.instance
+                                              //     .collection('users')
+                                              //     .doc(widget.user['id'])
+                                              //     .collection('UserDisabilityType')
+                                              //     .doc('Hearing Impaired')
+                                              //     .update({
+                                              //   'Checked': deafDB,
+                                              // });
+                                              // await FirebaseFirestore.instance
+                                              //     .collection('users')
+                                              //     .doc(widget.user['id'])
+                                              //     .collection('UserDisabilityType')
+                                              //     .doc('Physically Impaired')
+                                              //     .update({
+                                              //   'Checked': physicalDB,
+                                              // });
+                                              // await FirebaseFirestore.instance
+                                              //     .collection('users')
+                                              //     .doc(widget.user['id'])
+                                              //     .collection('UserDisabilityType')
+                                              //     .doc('Vocally Impaired')
+                                              //     .update({
+                                              //   'Checked': muteDB,
+                                              // });
+                                              // await FirebaseFirestore.instance
+                                              //     .collection('users')
+                                              //     .doc(widget.user['id'])
+                                              //     .collection('UserDisabilityType').doc('Other').update({
+                                              //   'Checked': otherDB,
+                                              // });
+                                              // await FirebaseFirestore.instance
+                                              //     .collection('users')
+                                              //     .doc(widget.user['id'])
+                                              //     .collection('UserDisabilityType')
+                                              //     .doc('Visually Impaired')
+                                              //     .update({
+                                              //   'Checked': blindDB,
+                                              // });
+                                              Navigator.of(ctx).pop();
+                                              FocusScope.of(context).unfocus();
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(14),
+                                              child: const Text("Yes",
+                                                  style: TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 194, 98, 98))),
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(ctx).pop();
+                                              FocusScope.of(context).unfocus();
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(14),
+                                              child: const Text(
+                                                "No",
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    setState(() {
+                                      isEditing = false;
+                                      userData = widget.user;
+                                      getPassword = false;
+                                      nameController.text = userData['name'];
+                                      emailController.text = userData['Email'];
+                                      genderController.text =
+                                          userData['gender'];
+                                      phoneController.text =
+                                          userData['phone number'];
+                                      bioController.text = userData['bio'];
+                                      dateController.text = userData['DOB'];
+                                      disabilityController.text =
+                                          userData['Disability'];
+                                      invalidEmail = false;
+                                      passwordController.text = '';
+                                    });
+                                  }
                                 },
                                 child: const Text('Cancel'),
                               ),
@@ -1954,6 +2187,7 @@ class MyInfoState extends State<MyInfo> {
   }
 
   Future<void> UpdateDB() async {
+    await setBool();
     Dis_edit = '';
     print('blind: $blind');
     print('mute: $mute');
@@ -1967,6 +2201,7 @@ class MyInfoState extends State<MyInfo> {
     if (other == true) Dis_edit += "Other, ";
     print('in update');
     disabilityController.text = Dis_edit;
+    print(Dis_edit);
 
     var Edit_info =
         FirebaseFirestore.instance.collection('users').doc(widget.user['id']);
@@ -2033,9 +2268,8 @@ class MyInfoState extends State<MyInfo> {
         });
       }
     } else {
-      // if (emailErrorMessage == '') {
       passwordController.text = '';
-      Edit_info.update({
+      await Edit_info.update({
         'name': nameController.text,
         'gender': genderController.text,
         'phone number': phoneController.text,
@@ -2044,8 +2278,6 @@ class MyInfoState extends State<MyInfo> {
         'DOB': dateController.text,
         'Disability': disabilityController.text
       });
-      //  Navigator.pushNamed(context, '/login');
-      // await FirebaseAuth.instance.signOut();
 
       setState(() {
         userName = nameController.text;
@@ -2064,8 +2296,5 @@ class MyInfoState extends State<MyInfo> {
         await FirebaseAuth.instance.signOut();
       }
     }
-    // else {
-    //   isEditing = true;
-    // }
   }
 }

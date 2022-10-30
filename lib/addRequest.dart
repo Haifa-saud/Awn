@@ -385,7 +385,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
             // time and date
             Container(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 6),
-              child: Text('Start Time and Date*'),
+              child: Text('Start Time and Date'),
             ),
 
             //date picker
@@ -481,9 +481,9 @@ class AwnRequestFormState extends State<AwnRequestForm> {
             //End time
             Container(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 6),
-              child: Text('End Time and Date*'),
+              child: Text('End Time and Date'),
             ),
-    
+
             Padding(
                 padding: const EdgeInsets.fromLTRB(4, 5, 4, 0),
                 child: DateTimePicker(
