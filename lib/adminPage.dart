@@ -58,7 +58,7 @@ class _AdminPage extends State<AdminPage> with TickerProviderStateMixin {
                         textAlign: TextAlign.left,
                       ),
                       content: const Text(
-                        "Are You Sure You want to log out of your account ?",
+                        "Are You Sure You want to log out of your account?",
                         textAlign: TextAlign.left,
                       ),
                       actions: <Widget>[
@@ -91,53 +91,39 @@ class _AdminPage extends State<AdminPage> with TickerProviderStateMixin {
                 },
               )),
         ],
-        centerTitle: false,
+        // centerTitle: true,
         backgroundColor: Colors.white, //(0xFFfcfffe),
         foregroundColor: Colors.black,
         automaticallyImplyLeading: false,
         scrolledUnderElevation: 1,
         toolbarHeight: 60,
+        leading: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+            child: FutureBuilder(
+                future: storage.downloadURL('logo.jpg'),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.hasData) {
+                    return Center(
+                      child: Image.network(
+                        snapshot.data!,
+                        fit: BoxFit.cover,
+                        width: 40,
+                        height: 40,
+                      ),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting ||
+                      !snapshot.hasData) {
+                    return const Center(
+                        child: CircularProgressIndicator(
+                      color: Colors.blue,
+                    ));
+                  }
+                  return Container();
+                })),
         title: Row(children: [
-          Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-              child: FutureBuilder(
-                  future: storage.downloadURL('logo.png'),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done &&
-                        snapshot.hasData) {
-                      return Center(
-                        child: Image.network(
-                          snapshot.data!,
-                          fit: BoxFit.cover,
-                          width: 40,
-                          height: 40,
-                        ),
-                      );
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting ||
-                        !snapshot.hasData) {
-                      return const Center(
-                          child: CircularProgressIndicator(
-                        color: Colors.blue,
-                      ));
-                    }
-                    return Container();
-                  })),
-          // Container(
-          //   height: 45,
-          //   width: 45,
-          //   margin: const EdgeInsets.fromLTRB(8, 12, 10, 0),
-          //   child: const CircleAvatar(
-          //     backgroundColor:
-          //         Color.fromARGB(255, 149, 204, 250), //Color(0xffE6E6E6),
-          //     radius: 30,
-          //     child: Icon(Icons.person,
-          //         size: 35, color: Colors.white //Color(0xffCCCCCC),
-          //         ),
-          //   ),
-          // ),
-
           Text('Hello, Awn Admin', style: const TextStyle(fontSize: 22)),
         ]),
       ),
@@ -160,15 +146,15 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
   var activeIndex = 0;
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this)
-      ..addListener(() {
-        if (_tabController.indexIsChanging) {
-          changeColor(_tabController.index);
-          // setState(() {
-          //   activeIndex = _tabController.index;
-          // });
-        }
-      });
+    _tabController = TabController(length: 3, vsync: this);
+    // ..addListener(() {
+    //   if (_tabController.indexIsChanging) {
+    //     changeColor(_tabController.index);
+    //     // setState(() {
+    //     //   activeIndex = _tabController.index;
+    //     // });
+    //   }
+    // });
 
     super.initState();
   }
@@ -178,33 +164,14 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
     return '${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
   }
 
-  changeColor(var index) {
-    setState(() {
-      activeIndex = index;
-    });
-    // if (index == 0) {
-    //   setState(() {
-    //     tabColor = Colors.red.shade300;
-    //   });
-    // } else if (index == 1) {
-    //   setState(() {
-    //     tabColor = Colors.orange.shade200;
-    //   });
-    // } else if (index == 2) {
-    //   setState(() {
-    //     tabColor = Colors.green.shade300;
-    //   });
-    // }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(children: [
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         ButtonsTabBar(
-          onTap: (index) {
-            changeColor(index);
-          },
+          // onTap: (index) {
+          //   changeColor(index);
+          // },
           controller: _tabController,
           height: 50,
           radius: 15,
@@ -212,15 +179,11 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
           unselectedDecoration: const BoxDecoration(
             color: Colors.transparent,
           ),
-          decoration: BoxDecoration(
-              color: activeIndex == 0
-                  ? Colors.red
-                  : Colors.green //Colors.transparent,
-              ),
+
           unselectedLabelStyle:
               const TextStyle(color: Colors.white, fontSize: 16),
           labelStyle: const TextStyle(
-              color: Colors.white, fontSize: 16, fontWeight: FontWeight.w400),
+              color: Colors.white, fontSize: 19, fontWeight: FontWeight.w900),
           tabs: <Tab>[
             Tab(
                 child: Container(
@@ -265,6 +228,10 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
               ),
             )),
           ],
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            border: Border.all(width: 15),
+          ),
         ),
       ]),
       Expanded(
@@ -281,37 +248,37 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
   }
 
   Widget placesList(String status) {
-    var isAdmin = false;
     Stream<QuerySnapshot> list =
         FirebaseFirestore.instance.collection('posts').snapshots();
-    //admin page
-    isAdmin = true;
-    list = FirebaseFirestore.instance
-        .collection('posts')
-        .where('status', isEqualTo: 'Pending')
-        .snapshots();
 
     var color;
+    var textColor;
     if (status == 'Denied') {
       color = Colors.red.shade100;
+      textColor = Colors.red.shade200;
       list = FirebaseFirestore.instance
           .collection('posts')
           .where('status', isEqualTo: 'Denied')
+          .orderBy('date', descending: false)
           .snapshots();
     } else if (status == 'Pending') {
       color = Colors.orange.shade100;
+      textColor = Colors.orange.shade200;
+
       list = FirebaseFirestore.instance
           .collection('posts')
           .where('status', isEqualTo: 'Pending')
+          .orderBy('date', descending: false)
           .snapshots();
     } else if (status == 'Approved') {
       color = Colors.green.shade100;
+      textColor = Colors.green.shade200;
+
       list = FirebaseFirestore.instance
           .collection('posts')
           .where('status', isEqualTo: 'Approved')
+          .orderBy('date', descending: false)
           .snapshots();
-    } else {
-      color = Colors.white;
     }
 
     return Column(
@@ -332,13 +299,16 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
                     return const Center(child: Text('No available posts'));
                   }
                   if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
-                    return const Padding(
-                        padding: EdgeInsets.only(top: 50),
+                    return Padding(
+                        padding: EdgeInsets.only(
+                            left: 10, right: 10, top: 0, bottom: 160),
                         child: Center(
-                            child: Text('There is no places currently.',
+                            child: Text(
+                                'There is no ' + status + ' places currently.',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 17))));
+                                    fontWeight: FontWeight.bold,
+                                    color: textColor,
+                                    fontSize: 18))));
                   } else {
                     final data = snapshot.requireData;
                     return ListView.builder(
@@ -369,7 +339,6 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
                                           context: context,
                                           builder: (context) => buildPlace(
                                               data.docs[index]['docId'],
-                                              isAdmin,
                                               data.docs[index]['status'])),
                                       splashColor: Colors.transparent,
                                       child: Container(
@@ -493,7 +462,7 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
     );
   }
 
-  Widget buildPlace(placeID, var isAdmin, var status) {
+  Widget buildPlace(placeID, var status) {
     late GoogleMapController myController;
     Set<Marker> getMarker(lat, lng) {
       return <Marker>{
@@ -828,9 +797,7 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
                                                         },
                                                       )))),
                                         ])),
-                                    isAdmin
-                                        ? const SizedBox(height: 25)
-                                        : const SizedBox(height: 35),
+                                    const SizedBox(height: 25),
                                     status == 'Pending'
                                         ? Row(
                                             mainAxisAlignment:
@@ -876,7 +843,7 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
                                                         .showSnackBar(
                                                       const SnackBar(
                                                         content: Text(
-                                                            "The place has been approved"),
+                                                            "The place request has been approved successfully."),
                                                       ),
                                                     );
                                                   }, //!for haifa
@@ -904,17 +871,7 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
                                                   onPressed: () {
                                                     String docId =
                                                         data['docId'];
-                                                    updateDBD(docId);
-                                                    Navigator.pushNamed(
-                                                        context, '/adminPage');
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text(
-                                                            "the place has been denied"),
-                                                      ),
-                                                    );
+                                                    alertDialog(docId);
                                                   }, //!for haifa
                                                 ),
                                                 const Spacer(),
@@ -927,19 +884,7 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
                                                       MainAxisAlignment.start,
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Text(
-                                                      'Comments',
-                                                    ),
-                                                    const SizedBox(height: 10),
-                                                    // CommentField(
-                                                    //     placeID: placeID,
-                                                    //     userID: widget.userId,
-                                                    //     userName:
-                                                    //         widget.userName),
-                                                    // const SizedBox(height: 7),
-                                                    // Comments(placeID)
-                                                  ],
+                                                  children: [],
                                                 ))
                                             : const Text('')),
                                   ]))),
@@ -964,5 +909,46 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
     postID.update({
       'status': 'Denied',
     });
+  }
+
+  Future<dynamic> alertDialog(var docId) {
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Deny Place Request?"),
+        content: const Text(
+          "Are you sure you want to deny this place request?",
+          textAlign: TextAlign.left,
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              child: const Text("No"),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              updateDBD(docId);
+              Navigator.pushNamed(context, '/adminPage');
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content:
+                      Text("The place request has been denied successfully."),
+                ),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              child: const Text("Yes",
+                  style: TextStyle(color: Color.fromARGB(255, 164, 10, 10))),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
