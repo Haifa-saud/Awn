@@ -266,8 +266,8 @@ class _requestPageState extends State<requestPage> {
             itemCount: data.size,
             itemBuilder: (context, index) {
               var isRequestActive = false;
-              var duration = data.docs[index]['duration'];
-              print('total duration: $duration');
+              var endDateTime = DateTime.parse(data.docs[index]['endDateTime']);
+              // print('total duration: $duration');
 
               var dateTime = data.docs[index]['date_ymd'];
               final now = DateTime.now();
@@ -277,15 +277,15 @@ class _requestPageState extends State<requestPage> {
               var hours = int.parse(dateTime.substring(11, 13));
               var minutes = int.parse(dateTime.substring(14));
               var requestDate = DateTime(year, month, day, hours, minutes);
-              var expirationDate = DateTime(year, month, day, hours, minutes)
-                  .add(Duration(
-                      hours: int.parse(
-                          duration.substring(0, duration.indexOf(':'))),
-                      minutes: int.parse(
-                          duration.substring(duration.indexOf(':') + 1))));
-              isRequestActive = expirationDate.isAfter(now);
+              // var expirationDate = DateTime(year, month, day, hours, minutes)
+              //     .add(Duration(
+              //         hours: int.parse(
+              //             duration.substring(0, duration.indexOf(':'))),
+              //         minutes: int.parse(
+              //             duration.substring(duration.indexOf(':') + 1))));
+              isRequestActive = endDateTime.isAfter(now);
 
-              print("expirationDate $expirationDate $isRequestActive");
+              print("expirationDate $endDateTime $isRequestActive");
 
               var reqLoc;
               double latitude = double.parse('${data.docs[index]['latitude']}');
@@ -299,8 +299,8 @@ class _requestPageState extends State<requestPage> {
                       // var title = data.docs[index]['title'];
                       titleController.text =
                           data.docs[index]['title'].toString();
-                      durationController.text =
-                          data.docs[index]['duration'].toString();
+                      // durationController.text =
+                      //     data.docs[index]['duration'].toString();
                       descController.text =
                           data.docs[index]['description'].toString();
 
@@ -488,7 +488,7 @@ class _requestPageState extends State<requestPage> {
                                                       .format(requestDate)
                                                       .toString() ==
                                                   DateFormat('d MMM, yy')
-                                                      .format(expirationDate)
+                                                      .format(endDateTime)
                                                       .toString()
                                               ? DateFormat(' d MMM, yy')
                                                   .format(requestDate)
@@ -497,7 +497,7 @@ class _requestPageState extends State<requestPage> {
                                                       .format(requestDate)
                                                       .toString() +
                                                   DateFormat(' - d MMM, yy')
-                                                      .format(expirationDate)
+                                                      .format(endDateTime)
                                                       .toString(),
                                           style: const TextStyle(
                                             letterSpacing: 0.1,
@@ -522,7 +522,7 @@ class _requestPageState extends State<requestPage> {
                                                         .format(requestDate)
                                                         .toString() +
                                                     DateFormat('- hh:mm a')
-                                                        .format(expirationDate)
+                                                        .format(endDateTime)
                                                         .toString(),
                                                 style: const TextStyle(
                                                   letterSpacing: 0.1,

@@ -2,23 +2,23 @@ import 'package:Awn/addPost.dart';
 import 'package:Awn/services/appWidgets.dart';
 import 'package:Awn/services/firebase_storage_services.dart';
 import 'package:Awn/viewRequests.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:duration_picker/duration_picker.dart';
+import 'package:f_datetimerangepicker/f_datetimerangepicker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'dart:io';
-import 'package:path/path.dart' as Path;
 import 'package:intl/intl.dart';
+import 'package:intl/locale.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'chatPage.dart';
 import 'main.dart';
 import 'package:Awn/map.dart';
-
 import 'requestWidget.dart';
 import 'services/localNotification.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 //! bottom bar done
 class addRequest extends StatefulWidget {
@@ -49,6 +49,7 @@ class _AddRequestState extends State<addRequest> {
     notificationService = NotificationService();
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
+    initializeDateFormatting('en');
 
     super.initState();
   }
@@ -91,6 +92,32 @@ class _AddRequestState extends State<addRequest> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+            child: FutureBuilder(
+                future: storage.downloadURL('logo.jpg'),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.hasData) {
+                    return Center(
+                      child: Image.network(
+                        snapshot.data!,
+                        fit: BoxFit.cover,
+                        width: 40,
+                        height: 40,
+                      ),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting ||
+                      !snapshot.hasData) {
+                    return Center(
+                        child: CircularProgressIndicator(
+                      color: Colors.blue,
+                    ));
+                  }
+                  return Container();
+                })),
         bottom: PreferredSize(
             preferredSize: Size.fromHeight(1.0),
             child: Padding(
@@ -99,34 +126,6 @@ class _AddRequestState extends State<addRequest> {
                   color: Colors.grey,
                   height: 1.0,
                 ))),
-        actions: <Widget>[
-          Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-              child: FutureBuilder(
-                  future: storage.downloadURL('logo.png'),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done &&
-                        snapshot.hasData) {
-                      return Center(
-                        child: Image.network(
-                          snapshot.data!,
-                          fit: BoxFit.cover,
-                          width: 40,
-                          height: 40,
-                        ),
-                      );
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting ||
-                        !snapshot.hasData) {
-                      return Center(
-                          child: CircularProgressIndicator(
-                        color: Colors.blue,
-                      ));
-                    }
-                    return Container();
-                  }))
-        ],
         title: const Text('Request Awn', textAlign: TextAlign.center),
       ),
       body: AwnRequestForm(),
@@ -187,6 +186,9 @@ class AwnRequestFormState extends State<AwnRequestForm> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   DateTime dateTime = DateTime.now();
+  DateTime endDateTime = DateTime.now();
+  var selectedEndDateTime;
+
   DateTime SelectedDateTime = DateTime.now();
   bool showDate = true;
   bool showTime = true;
@@ -194,13 +196,13 @@ class AwnRequestFormState extends State<AwnRequestForm> {
   var title = '';
   var description = '';
   var duration = '';
+  var startDateTime = DateTime.now();
 
   // Select for Date
   Future<DateTime> _selectDate(BuildContext context) async {
     final selected = await showDatePicker(
       context: context,
       initialDate: selectedDate,
-      // firstDate: DateTime(2000),
       firstDate: DateTime.now(),
       lastDate: DateTime(2023),
     );
@@ -209,6 +211,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
         selectedDate = selected;
       });
     }
+    getDateTimeSelected();
     return selectedDate;
   }
 
@@ -217,41 +220,41 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     final selected = await showTimePicker(
       context: context,
       initialTime: selectedTime,
+      builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!),
     );
     if (selected != null && selected != selectedTime) {
       setState(() {
         selectedTime = selected;
       });
     }
+    getDateTimeSelected();
     return selectedTime;
   }
+
   // select date time picker
-
-  Future _selectDateTime(BuildContext context) async {
-    final date = await _selectDate(context);
-    if (date == null) return;
-
-    final time = await _selectTime(context);
-
-    if (time == null) return;
-    setState(() {
-      dateTime = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time.hour,
-        time.minute,
-      );
-    });
-  }
+  // Future _selectDateTime(BuildContext context) async {
+  //   final date = await _selectDate(context);
+  //   if (date == null) return;
+  //   final time = await _selectTime(context);
+  //   if (time == null) return;
+  //   setState(() {
+  //     dateTime = DateTime(
+  //       date.year,
+  //       date.month,
+  //       date.day,
+  //       time.hour,
+  //       time.minute,
+  //     );
+  //   });
+  // }
 
   String getDate() {
-    // ignore: unnecessary_null_comparison
     if (selectedDate == null) {
       return 'select date';
     } else {
       print(selectedDate);
-      //return DateFormat('MMM d, yyyy').format(selectedDate);
       return DateFormat('yyyy/MM/dd').format(selectedDate);
     }
   }
@@ -263,11 +266,12 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     } else {
       print(selectedDate);
       //return DateFormat('MMM d, yyyy').format(selectedDate);
-      return DateFormat('dd/MM/yyyy').format(selectedDate);
+      return DateFormat('MMM  dd,  yyyy').format(selectedDate);
     }
   }
 
   String getDateTimeSelected() {
+    //used to add to database
     setState(() {
       SelectedDateTime = DateTime(
         selectedDate.year,
@@ -281,7 +285,6 @@ class AwnRequestFormState extends State<AwnRequestForm> {
   }
 
   String getDateTime() {
-    // ignore: unnecessary_null_comparison
     if (dateTime == null) {
       return 'select date timer';
     } else {
@@ -291,7 +294,6 @@ class AwnRequestFormState extends State<AwnRequestForm> {
 
   String getTime(TimeOfDay tod) {
     final now = DateTime.now();
-
     final dt = DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
     final format = DateFormat.jm();
     return format.format(dt);
@@ -311,11 +313,30 @@ class AwnRequestFormState extends State<AwnRequestForm> {
       double finalTimeNow = ST.hour.toDouble() + (ST.minute.toDouble() / 60);
       double _timeDiff = finalTimeNow - finalTiemSelected;
 
-      // String strinf = finalTimeNow.toString() +
-      //     " " +
-      //     finalTimSelected.toString() +
-      //     " " +
-      //     _timeDiff.toString();
+      return _timeDiff;
+    }
+  }
+
+  double checkEndTime(endDateTime) {
+    getDateTimeSelected();
+    print(SelectedDateTime);
+    DateTime startDate = SelectedDateTime;
+    TimeOfDay startTime = selectedTime;
+    var end = DateTime.parse(endDateTime);
+    print('end $end');
+    print('startDate $startDate');
+    if (end.isBefore(startDate) || end.isAtSameMomentAs(startDate)) {
+      print('-1');
+      return -1;
+    } else {
+      selectedEndDateTime = endDateTime;
+      double finalTiemSelected =
+          selectedTime.hour.toDouble() + (selectedTime.minute.toDouble() / 60);
+      TimeOfDay ST = TimeOfDay.now();
+
+      double finalTimeNow = ST.hour.toDouble() + (ST.minute.toDouble() / 60);
+      double _timeDiff = finalTimeNow - finalTiemSelected;
+
       return _timeDiff;
     }
   }
@@ -364,132 +385,188 @@ class AwnRequestFormState extends State<AwnRequestForm> {
             // time and date
             Container(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 6),
-              child: Text('Time and Date'),
+              child: Text('Start Time and Date*'),
             ),
 
             //date picker
             Row(children: [
               Container(
-                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                // padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
-                      onPressed: () {
-                        _selectDate(context);
+                      onPressed: () async {
+                        await _selectDate(context);
                         showDate = true;
+                        await _selectTime(context);
+                        showTime = true;
                       },
                       style: ElevatedButton.styleFrom(
+                          minimumSize: Size(370, 50),
                           foregroundColor: Colors.black,
                           backgroundColor: Colors.transparent,
-                          padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
+                          padding: const EdgeInsets.fromLTRB(17, 13, 17, 10),
                           textStyle: const TextStyle(
                             fontSize: 18,
                           ),
+                          alignment: Alignment.topLeft,
                           side: BorderSide(
                               color: Colors.grey.shade400, width: 1)),
                       child: showDate
-                          ? Row(
-                              children: [
-                                Container(
-                                    margin: EdgeInsets.only(right: 10),
-                                    child: Text(getDate_formated()
-                                        //   data.docs[index]
-                                        //    ['date_dmy']
-                                        )),
-                                Icon(Icons.calendar_today,
-                                    size: 25, color: Colors.grey.shade600),
-                              ],
-                            )
+                          ? Align(
+                              alignment: Alignment.topLeft,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text(
+                                      textAlign: TextAlign.left,
+                                      getDate_formated() +
+                                          '  -  ' +
+                                          '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}'),
+                                  // Spacer(),
+                                  // Icon(Icons.schedule,
+                                  //     size: 25, color: Colors.grey.shade600),
+                                ],
+                              ))
                           : const SizedBox(),
-                      //  const Text('Edit Date'),
                     ),
                   ],
                 ),
               ),
               //time picker
-              Container(
-                padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        _selectTime(context);
-                        showTime = true;
-                      },
-                      style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          backgroundColor: Colors.transparent,
-                          padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
-                          textStyle: const TextStyle(
-                            fontSize: 18,
-                          ),
-                          side: BorderSide(
-                              color: Colors.grey.shade400, width: 1)),
-                      child: showDate
-                          ? Row(
-                              children: [
-                                Container(
-                                    margin: EdgeInsets.only(right: 10),
-                                    child: Text(getTime(selectedTime)
-                                        //   data.docs[index]
-                                        //    ['date_dmy']
-                                        )),
-                                Icon(Icons.schedule,
-                                    size: 25, color: Colors.grey.shade600),
-                              ],
-                            )
-                          : const SizedBox(),
-                      //  const Text('Edit Date'),
-                    ),
-                  ],
-                ),
-              )
+              // Container(
+              //   padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       ElevatedButton(
+              //         onPressed: () {
+              //           _selectTime(context);
+              //           showTime = true;
+              //         },
+              //         style: ElevatedButton.styleFrom(
+              //             foregroundColor: Colors.black,
+              //             backgroundColor: Colors.transparent,
+              //             padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
+              //             textStyle: const TextStyle(
+              //               fontSize: 18,
+              //             ),
+              //             side: BorderSide(
+              //                 color: Colors.grey.shade400, width: 1)),
+              //         child: showDate
+              //             ? Row(
+              //                 children: [
+              //                   Container(
+              //                       margin: EdgeInsets.only(right: 10),
+              //                       child: Text(getTime(selectedTime)
+              //                           //   data.docs[index]
+              //                           //    ['date_dmy']
+              //                           )),
+              //                   Icon(Icons.schedule,
+              //                       size: 25, color: Colors.grey.shade600),
+              //                 ],
+              //               )
+              //             : const SizedBox(),
+              //         //  const Text('Edit Date'),
+              //       ),
+              //     ],
+              //   ),
+              // )
             ]),
 
-            //duration
             Container(
-              padding: EdgeInsets.fromLTRB(6, 35, 6, 8),
-              child: Text('Duration*'),
+              padding: EdgeInsets.fromLTRB(6, 35, 6, 6),
+              child: Text('End Time and Date*'),
             ),
+            //End time
 
-            Container(
-                padding: const EdgeInsets.fromLTRB(6, 8, 6, 12),
-                child: TextFormField(
-                  readOnly: true,
-                  controller: durationController,
-                  onTap: () async {
-                    selectedDuration = await showDurationPicker(
-                        context: context,
-                        initialTime: const Duration(minutes: 0),
-                        snapToMins: 5.0);
-                    String twoDigits(int n) => n.toString().padLeft(0);
-                    durationController.text =
-                        '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
-                  },
-                  decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.schedule, size: 25),
-                      onPressed: () async {
-                        selectedDuration = await showDurationPicker(
-                            context: context,
-                            initialTime: const Duration(minutes: 0),
-                            snapToMins: 5.0);
-                        String twoDigits(int n) => n.toString().padLeft(0);
-                        durationController.text =
-                            '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
-                      },
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null ||
-                        value.isEmpty ||
-                        (value.trim()).isEmpty) {
-                      return 'Please specify a duration';
+            Padding(
+                padding: const EdgeInsets.fromLTRB(4, 5, 4, 0),
+                child: DateTimePicker(
+                  type: DateTimePickerType.dateTime,
+                  initialValue: '',
+                  locale: Localizations.localeOf(context),
+                  initialDate: SelectedDateTime,
+                  initialTime: selectedTime,
+                  firstDate: SelectedDateTime,
+                  lastDate: DateTime((SelectedDateTime.year + 1),
+                      SelectedDateTime.month, SelectedDateTime.day),
+                  dateLabelText: 'End date and time',
+                  timeLabelText: 'End Time',
+                  timeFieldWidth: 150,
+                  // use24HourFormat: false,
+                  onChanged: (val) => print(val),
+                  validator: (val) {
+                    print(checkEndTime(val) < 0);
+                    if (val!.isEmpty || val == null) {
+                      return 'Please specify a time and a date.';
+                    } else if (checkEndTime(val) == -1) {
+                      return 'Please specify a time and a date after the start time.';
                     }
+                    print('val $val');
+                    return null;
                   },
+                  onSaved: (val) => print(val),
                 )),
+
+            //duration
+            // Container(
+            //   padding: EdgeInsets.fromLTRB(6, 35, 6, 8),
+            //   child: Text('Duration*'),
+            // ),
+
+            // Container(
+            //     padding: const EdgeInsets.fromLTRB(6, 8, 6, 12),
+            //     child: TextFormField(
+            //       readOnly: true,
+            //       controller: durationController,
+            //       onTap: () async {
+            //         DateTimeRangePicker(
+            //             startText: "From",
+            //             endText: "To",
+            //             doneText: "Confirm",
+            //             cancelText: "Cancel",
+            //             interval: 5,
+            //             initialStartTime: DateTime.now(),
+            //             initialEndTime: DateTime.now().add(Duration(days: 20)),
+            //             mode: DateTimeRangePickerMode.dateAndTime,
+            //             minimumTime: DateTime.now().subtract(Duration(days: 5)),
+            //             maximumTime: DateTime.now().add(Duration(days: 25)),
+            //             use24hFormat: true,
+            //             onConfirm: (start, end) {
+            //               print(start);
+            //               print(end);
+            //             }).showPicker(context);
+            //         // String twoDigits(int n) => n.toString().padLeft(0);
+            //         // durationController.text =
+            //         //     '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
+            //       },
+            //       decoration: InputDecoration(
+            //         suffixIcon: IconButton(
+            //           icon: const Icon(Icons.schedule, size: 25),
+            //           onPressed: () async {
+            //             selectedDuration = await showDurationPicker(
+            //                 context: context,
+            //                 initialTime: const Duration(minutes: 0),
+            //                 snapToMins: 5.0);
+            //             String twoDigits(int n) => n.toString().padLeft(0);
+            //             durationController.text =
+            //                 '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
+            //           },
+            //         ),
+            //       ),
+            //       validator: (value) {
+            //         if (value == null ||
+            //             value.isEmpty ||
+            //             (value.trim()).isEmpty) {
+            //           return 'Please specify a duration';
+            //         }
+            //       },
+            //     )),
 
             //description
             Container(
@@ -558,24 +635,6 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   ),
                 ),
                 onPressed: () {
-                  // if (checkCurrentTime() >= 0) {
-                  //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     SnackBar(
-                  //       content: Text('Please select a later time'),
-                  //       backgroundColor: Colors.red.shade400,
-                  //       margin: EdgeInsets.fromLTRB(8, 0, 20, 0),
-                  //       behavior: SnackBarBehavior.floating,
-                  //       action: SnackBarAction(
-                  //         label: 'Dismiss',
-                  //         disabledTextColor: Colors.white,
-                  //         textColor: Colors.white,
-                  //         onPressed: () {
-                  //           //Do whatever you want
-                  //         },
-                  //       ),
-                  //     ),
-                  //   );
-                  // }
                   if (_formKey.currentState!.validate() &&
                       checkCurrentTime() < 0) {
                     addToDB();
@@ -635,7 +694,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
       'date_ymd': getDateTimeSelected(), //getDate
       'date_dmy': getDate_formated(),
       'time': getTime(selectedTime),
-      'duration': durationController.text,
+      // 'duration': durationController.text,
       'description': descController.text,
       'latitude': '',
       'longitude': '',
@@ -643,7 +702,8 @@ class AwnRequestFormState extends State<AwnRequestForm> {
       'docId': '',
       'userID': userId,
       'VolID': '',
-      'notificationStatus': ''
+      'notificationStatus': '',
+      'endDateTime': selectedEndDateTime,
     });
     String reqId = docReference.id;
     requests.doc(reqId).update({'docId': reqId});
@@ -675,6 +735,5 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     titleController.clear();
     durationController.clear();
     descController.clear();
-    ;
   }
 }
