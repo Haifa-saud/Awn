@@ -69,14 +69,20 @@ class PlaceState extends State<Place> {
           .snapshots();
     }
 
+    var textColor;
     var color;
     if (status == 'Denied') {
       color = Colors.red.shade100;
+      textColor = Colors.red.shade200;
     } else if (status == 'Pending') {
       color = Colors.orange.shade100;
+      textColor = Colors.orange.shade200;
     } else if (status == 'Approved') {
       color = Colors.green.shade100;
+      textColor = Colors.green.shade200;
     } else {
+      textColor = Colors.black;
+
       color = Colors.white;
     }
 
@@ -109,11 +115,12 @@ class PlaceState extends State<Place> {
                             }
                             if (snapshot.data == null ||
                                 snapshot.data!.docs.isEmpty) {
-                              return const Center(
+                              return Center(
                                   child: Text('There is no places currently',
                                       style: TextStyle(
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 17)));
+                                          color: textColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18)));
                             } else {
                               final data = snapshot.requireData;
                               return ListView.builder(

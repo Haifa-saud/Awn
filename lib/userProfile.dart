@@ -6,6 +6,7 @@ import 'package:Awn/services/firebase_storage_services.dart';
 import 'package:Awn/services/placeWidget.dart';
 import 'package:Awn/services/localNotification.dart';
 import 'package:Awn/viewRequests.dart';
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,8 +15,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
+import 'package:justino_icons/justino_icons.dart';
 import 'package:workmanager/workmanager.dart';
+import 'TextToSpeech.dart';
+import 'addRequest.dart';
 import 'chatPage.dart';
+import 'homePage.dart';
 import 'services/firebase_options.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -110,8 +115,183 @@ class UserProfileState extends State<userProfile>
         },
       );
 
+  Future<dynamic> alertDialog(var nav) {
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: const Text(
+          "Discard the changes you made?",
+          textAlign: TextAlign.left,
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              child: const Text("Keep editing"),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation1, animation2) => nav,
+                  transitionDuration: const Duration(seconds: 1),
+                  reverseTransitionDuration: Duration.zero,
+                ),
+              );
+              clearForm();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              child: const Text("Discard",
+                  style: TextStyle(color: Color.fromARGB(255, 164, 10, 10))),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //! bottom bar nav
+  final iconSNU = <IconData>[
+    Icons.home,
+    Icons.volume_up,
+    Icons.handshake,
+    Icons.person,
+  ];
+
+  final iconVol = <IconData>[
+    Icons.home,
+    Icons.handshake,
+    Icons.person,
+  ];
   @override
   Widget build(BuildContext context) {
+    var iconList = widget.userType == 'Volunteer'
+        ? <IconData, String>{
+            Icons.home: 'Home',
+            Icons.handshake: "Awn Request",
+            Icons.person: "Profile",
+          }
+        : <IconData, String>{
+            Icons.home: "Home",
+            JustinoIcons.getByName('speech') as IconData: "Text to Speech",
+            Icons.handshake: "Awn Request",
+            Icons.person: "Profile",
+          };
+
+    Future<void> _onItemTapped(int index) async {
+      if (widget.userType == 'Special Need User') {
+        if (index == 0) {
+          var nav = const homePage();
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        } else if (index == 1) {
+          var nav = Tts(userType: widget.userType);
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        } else if (index == 2) {
+          var nav = addRequest(userType: widget.userType);
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        } else if (index == 3) {
+          var nav = userProfile(
+              userType: widget.userType, selectedTab: 0, selectedSubTab: 0);
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        }
+      } else if (widget.userType == 'Volunteer') {
+        if (index == 0) {
+          var nav = const homePage();
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        } else if (index == 1) {
+          var nav = viewRequests(userType: widget.userType, reqID: '');
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        } else if (index == 2) {
+          var nav = userProfile(
+              userType: widget.userType, selectedTab: 0, selectedSubTab: 0);
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        }
+      }
+    }
+
     //! Logout
     Future<void> _signOut() async {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -310,25 +490,48 @@ class UserProfileState extends State<userProfile>
             ),
           ),
         ),
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) =>
-                  addPost(userType: widget.userType),
-              transitionDuration: const Duration(seconds: 1),
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
-        },
+        onPressed: () {},
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      bottomNavigationBar: BottomNavBar(
-        onPress: (int value) => setState(() {
-          _selectedIndex = value;
-        }),
-        userType: widget.userType,
-        currentI: widget.userType == 'Volunteer' ? 2 : 3,
+      bottomNavigationBar: AnimatedBottomNavigationBar.builder(
+        splashColor: Colors.blue,
+        backgroundColor: Colors.white,
+        splashRadius: 1,
+        splashSpeedInMilliseconds: 100,
+        tabBuilder: (int index, bool isActive) {
+          final color = isActive ? Colors.blue : Colors.grey;
+          final size = isActive ? 30.0 : 25.0;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                iconList.keys.toList()[index],
+                size: size,
+                color: color,
+              ),
+              const SizedBox(height: 1),
+              Visibility(
+                visible: isActive,
+                child: Text(
+                  iconList.values.toList()[index],
+                  style: TextStyle(
+                      color: color,
+                      fontSize: 10,
+                      letterSpacing: 1,
+                      wordSpacing: 1),
+                ),
+              )
+            ],
+          );
+        },
+        activeIndex: widget.userType == 'Volunteer' ? 2 : 3,
+        itemCount: widget.userType == 'Volunteer' ? 3 : 4,
+        gapLocation: GapLocation.end,
+        notchSmoothness: NotchSmoothness.smoothEdge,
+        onTap: (index) {
+          _onItemTapped(index);
+        },
       ),
     );
   }
@@ -886,6 +1089,8 @@ class UserProfileState extends State<userProfile>
   }
 }
 
+var isEdited;
+
 //! Mu Info
 class MyInfo extends StatefulWidget {
   // final String userId;
@@ -927,7 +1132,6 @@ class MyInfoState extends State<MyInfo> {
       otherDB = false;
 
   var DisabilityType;
-  var isEdited;
 
   String gender_edit = '', Dis_edit = '';
 
