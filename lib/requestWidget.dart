@@ -361,8 +361,8 @@ class _requestPageState extends State<requestPage> {
                                                     discription:
                                                         data.docs[index]
                                                             ['description'],
-                                                    duartion: data.docs[index]
-                                                        ['duration'],
+                                                    endDate: data.docs[index]
+                                                        ['endDateTime'],
                                                     title: data.docs[index]
                                                         ['title'],
                                                   ),

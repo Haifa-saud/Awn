@@ -266,7 +266,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
     } else {
       print(selectedDate);
       //return DateFormat('MMM d, yyyy').format(selectedDate);
-      return DateFormat('MMM  dd,  yyyy').format(selectedDate);
+      return DateFormat('MMM dd, yyyy').format(selectedDate);
     }
   }
 
@@ -478,12 +478,12 @@ class AwnRequestFormState extends State<AwnRequestForm> {
               // )
             ]),
 
+            //End time
             Container(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 6),
               child: Text('End Time and Date*'),
             ),
-            //End time
-
+    
             Padding(
                 padding: const EdgeInsets.fromLTRB(4, 5, 4, 0),
                 child: DateTimePicker(

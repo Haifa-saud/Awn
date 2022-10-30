@@ -3,6 +3,7 @@ import 'package:Awn/services/appWidgets.dart';
 import 'package:Awn/userProfile.dart';
 import 'package:Awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,7 +28,7 @@ class editRequest extends StatefulWidget {
   final String date_ymd;
   final String title;
   final String discription;
-  final String duartion;
+  final String endDate;
   //final String reqID;
   // const editRequest({Key? key, required this.userType, required this.reqID})
   //     : super(key: key);
@@ -38,7 +39,7 @@ class editRequest extends StatefulWidget {
       required this.date_ymd,
       required this.title,
       required this.discription,
-      required this.duartion})
+      required this.endDate})
       : super(key: key);
 
   @override
@@ -61,7 +62,7 @@ class _EditRequestState extends State<editRequest> {
     super.initState();
     titleController = TextEditingController(text: widget.title);
     descController = TextEditingController(text: widget.discription);
-    durationController = TextEditingController(text: widget.duartion);
+    // durationController = TextEditingController(text: widget.duartion);
   }
 
   //! tapping local notification
@@ -201,14 +202,7 @@ class _EditRequestState extends State<editRequest> {
   }
 
   final _formKey = GlobalKey<FormState>();
-//setting up methods
-  //DateTime selectedDate = DateTime.now();
 
-  // void initState() {
-  //   String dateFromDb = widget.date_ymd.substring(0, 9);
-  //   print('dateFromDb');
-  //   // print(object)
-  // }
   String getDateFromDb() {
     String dateFromDb =
         widget.date_ymd.substring(0, 10).replaceAll(RegExp('[^0-9]'), '');
@@ -229,17 +223,38 @@ class _EditRequestState extends State<editRequest> {
     return int.parse(min);
   }
 
+  String getEndDateFromDb() {
+    String dateFromDb =
+        widget.endDate.substring(0, 10).replaceAll(RegExp('[^0-9]'), '');
+    print('dateFromDb $dateFromDb');
+    return dateFromDb;
+    // DateTime dateFromDb = DateTime.parse(d);
+  }
+
+  int getEndHourFromDb() {
+    String hour = widget.endDate.substring(11, 13);
+    print(hour);
+    return int.parse(hour);
+  }
+
+  int getEndMinuteFromDb() {
+    String min = widget.endDate.substring(15, 17);
+    print(min);
+    return int.parse(min);
+  }
+
   late DateTime selectedDate = DateTime.parse(getDateFromDb());
   late TimeOfDay selectedTime =
       TimeOfDay(hour: getHourFromDb(), minute: getMinuteFromDb());
   DateTime dateTime = DateTime.now();
   DateTime SelectedDateTime = DateTime.now();
+  var selectedEndDateTime;
+
   bool showDate = true;
   bool showTime = true;
   bool showDateTime = false;
   //var title = '';
   var description = '';
-  var duration = '';
 
   // Select for Date
   Future<DateTime> _selectDate(BuildContext context) async {
@@ -264,6 +279,9 @@ class _EditRequestState extends State<editRequest> {
     final selected = await showTimePicker(
       context: context,
       initialTime: selectedTime,
+      builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!),
     );
     if (selected != null && selected != selectedTime) {
       setState(() {
@@ -310,7 +328,7 @@ class _EditRequestState extends State<editRequest> {
     } else {
       // print(selectedDate);
       //return DateFormat('MMM d, yyyy').format(selectedDate);
-      return DateFormat('dd/MM/yyyy').format(selectedDate);
+      return DateFormat('MMM dd, yyyy').format(selectedDate);
     }
   }
 
@@ -358,11 +376,30 @@ class _EditRequestState extends State<editRequest> {
       double finalTimeNow = ST.hour.toDouble() + (ST.minute.toDouble() / 60);
       double _timeDiff = finalTimeNow - finalTiemSelected;
 
-      // String strinf = finalTimeNow.toString() +
-      //     " " +
-      //     finalTimSelected.toString() +
-      //     " " +
-      //     _timeDiff.toString();
+      return _timeDiff;
+    }
+  }
+
+  double checkEndTime(endDateTime) {
+    getDateTimeSelected();
+    print(SelectedDateTime);
+    DateTime startDate = SelectedDateTime;
+    TimeOfDay startTime = selectedTime;
+    var end = DateTime.parse(endDateTime);
+    print('end $end');
+    print('startDate $startDate');
+    if (end.isBefore(startDate) || end.isAtSameMomentAs(startDate)) {
+      print('-1');
+      return -1;
+    } else {
+      selectedEndDateTime = endDateTime;
+      double finalTiemSelected =
+          selectedTime.hour.toDouble() + (selectedTime.minute.toDouble() / 60);
+      TimeOfDay ST = TimeOfDay.now();
+
+      double finalTimeNow = ST.hour.toDouble() + (ST.minute.toDouble() / 60);
+      double _timeDiff = finalTimeNow - finalTiemSelected;
+
       return _timeDiff;
     }
   }
@@ -467,167 +504,275 @@ class _EditRequestState extends State<editRequest> {
                                           )),
 
                                       // time and date
+                                      // Container(
+                                      //   padding:
+                                      //       EdgeInsets.fromLTRB(6, 35, 6, 6),
+                                      //   child: Text('Time and Date'),
+                                      // ),
+
+                                      // //date picker
+                                      // Row(children: [
+                                      //   Container(
+                                      //     padding: const EdgeInsets.fromLTRB(
+                                      //         6, 12, 6, 12),
+                                      //     child: Row(
+                                      //       mainAxisAlignment:
+                                      //           MainAxisAlignment.spaceBetween,
+                                      //       children: [
+                                      //         ElevatedButton(
+                                      //           onPressed: () {
+                                      //             _selectDate(context);
+                                      //             showDate = true;
+                                      //           },
+                                      //           style: ElevatedButton.styleFrom(
+                                      //               foregroundColor:
+                                      //                   Colors.black,
+                                      //               backgroundColor:
+                                      //                   Colors.white,
+                                      //               padding: const EdgeInsets
+                                      //                       .fromLTRB(
+                                      //                   17, 16, 17, 16),
+                                      //               textStyle: const TextStyle(
+                                      //                 fontSize: 18,
+                                      //               ),
+                                      //               side: BorderSide(
+                                      //                   color: Colors
+                                      //                       .grey.shade400,
+                                      //                   width: 1)),
+                                      //           child: showDate
+                                      //               ? Row(
+                                      //                   children: [
+                                      //                     Container(
+                                      //                         margin: EdgeInsets
+                                      //                             .only(
+                                      //                                 right:
+                                      //                                     10),
+                                      //                         child: Text(
+                                      //                             getDate_formated())),
+                                      //                     Icon(
+                                      //                         Icons
+                                      //                             .calendar_today,
+                                      //                         size: 25,
+                                      //                         color: Colors.grey
+                                      //                             .shade600),
+                                      //                   ],
+                                      //                 )
+                                      //               : const SizedBox(),
+                                      //         ),
+                                      //       ],
+                                      //     ),
+                                      //   ),
+                                      //   //time picker
+                                      //   Container(
+                                      //     padding: const EdgeInsets.fromLTRB(
+                                      //         6, 12, 6, 12),
+                                      //     child: Row(
+                                      //       mainAxisAlignment:
+                                      //           MainAxisAlignment.spaceBetween,
+                                      //       children: [
+                                      //         ElevatedButton(
+                                      //           onPressed: () {
+                                      //             _selectTime(context);
+                                      //             showTime = true;
+                                      //           },
+                                      //           style: ElevatedButton.styleFrom(
+                                      //               foregroundColor:
+                                      //                   Colors.black,
+                                      //               backgroundColor:
+                                      //                   Colors.white,
+                                      //               padding: const EdgeInsets
+                                      //                       .fromLTRB(
+                                      //                   17, 16, 17, 16),
+                                      //               textStyle: const TextStyle(
+                                      //                 fontSize: 18,
+                                      //               ),
+                                      //               side: BorderSide(
+                                      //                   color: Colors
+                                      //                       .grey.shade400,
+                                      //                   width: 1)),
+                                      //           child: showDate
+                                      //               ? Row(
+                                      //                   children: [
+                                      //                     Container(
+                                      //                         margin: EdgeInsets
+                                      //                             .only(
+                                      //                                 right:
+                                      //                                     10),
+                                      //                         child: Text(getTime(
+                                      //                             selectedTime))),
+                                      //                     Icon(Icons.schedule,
+                                      //                         size: 25,
+                                      //                         color: Colors.grey
+                                      //                             .shade600),
+                                      //                   ],
+                                      //                 )
+                                      //               : const SizedBox(),
+                                      //           //  const Text('Edit Date'),
+                                      //         ),
+                                      //       ],
+                                      //     ),
+                                      //   )
+                                      // ]),
+
+                                      // time and date
                                       Container(
                                         padding:
                                             EdgeInsets.fromLTRB(6, 35, 6, 6),
-                                        child: Text('Time and Date'),
+                                        child: Text('Start Time and Date'),
                                       ),
 
                                       //date picker
                                       Row(children: [
                                         Container(
                                           padding: const EdgeInsets.fromLTRB(
-                                              6, 12, 6, 12),
+                                              6, 10, 0, 10),
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               ElevatedButton(
-                                                onPressed: () {
-                                                  _selectDate(context);
+                                                onPressed: () async {
+                                                  await _selectDate(context);
                                                   showDate = true;
+                                                  await _selectTime(context);
+                                                  showTime = true;
                                                 },
                                                 style: ElevatedButton.styleFrom(
+                                                    minimumSize: Size(380, 50),
                                                     foregroundColor:
                                                         Colors.black,
                                                     backgroundColor:
-                                                        Colors.white,
+                                                        Colors.transparent,
                                                     padding: const EdgeInsets
                                                             .fromLTRB(
-                                                        17, 16, 17, 16),
+                                                        17, 13, 17, 10),
                                                     textStyle: const TextStyle(
                                                       fontSize: 18,
                                                     ),
+                                                    alignment:
+                                                        Alignment.topLeft,
                                                     side: BorderSide(
                                                         color: Colors
                                                             .grey.shade400,
                                                         width: 1)),
                                                 child: showDate
-                                                    ? Row(
-                                                        children: [
-                                                          Container(
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      right:
-                                                                          10),
-                                                              child: Text(
-                                                                  getDate_formated())),
-                                                          Icon(
-                                                              Icons
-                                                                  .calendar_today,
-                                                              size: 25,
-                                                              color: Colors.grey
-                                                                  .shade600),
-                                                        ],
-                                                      )
+                                                    ? Align(
+                                                        alignment:
+                                                            Alignment.topLeft,
+                                                        child: Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          mainAxisSize:
+                                                              MainAxisSize.max,
+                                                          children: [
+                                                            Text(
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        18,
+                                                                    letterSpacing:
+                                                                        1,
+                                                                    wordSpacing:
+                                                                        2),
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .left,
+                                                                getDate_formated() +
+                                                                    '  -  ' +
+                                                                    '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}'),
+                                                            // Spacer(),
+                                                            // Icon(Icons.schedule,
+                                                            //     size: 25, color: Colors.grey.shade600),
+                                                          ],
+                                                        ))
                                                     : const SizedBox(),
                                               ),
                                             ],
                                           ),
                                         ),
                                         //time picker
-                                        Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              6, 12, 6, 12),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  _selectTime(context);
-                                                  showTime = true;
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                    foregroundColor:
-                                                        Colors.black,
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                    padding: const EdgeInsets
-                                                            .fromLTRB(
-                                                        17, 16, 17, 16),
-                                                    textStyle: const TextStyle(
-                                                      fontSize: 18,
-                                                    ),
-                                                    side: BorderSide(
-                                                        color: Colors
-                                                            .grey.shade400,
-                                                        width: 1)),
-                                                child: showDate
-                                                    ? Row(
-                                                        children: [
-                                                          Container(
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      right:
-                                                                          10),
-                                                              child: Text(getTime(
-                                                                  selectedTime))),
-                                                          Icon(Icons.schedule,
-                                                              size: 25,
-                                                              color: Colors.grey
-                                                                  .shade600),
-                                                        ],
-                                                      )
-                                                    : const SizedBox(),
-                                                //  const Text('Edit Date'),
-                                              ),
-                                            ],
-                                          ),
-                                        )
+                                        // Container(
+                                        //   padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
+                                        //   child: Row(
+                                        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        //     children: [
+                                        //       ElevatedButton(
+                                        //         onPressed: () {
+                                        //           _selectTime(context);
+                                        //           showTime = true;
+                                        //         },
+                                        //         style: ElevatedButton.styleFrom(
+                                        //             foregroundColor: Colors.black,
+                                        //             backgroundColor: Colors.transparent,
+                                        //             padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
+                                        //             textStyle: const TextStyle(
+                                        //               fontSize: 18,
+                                        //             ),
+                                        //             side: BorderSide(
+                                        //                 color: Colors.grey.shade400, width: 1)),
+                                        //         child: showDate
+                                        //             ? Row(
+                                        //                 children: [
+                                        //                   Container(
+                                        //                       margin: EdgeInsets.only(right: 10),
+                                        //                       child: Text(getTime(selectedTime)
+                                        //                           //   data.docs[index]
+                                        //                           //    ['date_dmy']
+                                        //                           )),
+                                        //                   Icon(Icons.schedule,
+                                        //                       size: 25, color: Colors.grey.shade600),
+                                        //                 ],
+                                        //               )
+                                        //             : const SizedBox(),
+                                        //         //  const Text('Edit Date'),
+                                        //       ),
+                                        //     ],
+                                        //   ),
+                                        // )
                                       ]),
 
-                                      //duration
+                                      //End time
                                       Container(
                                         padding:
                                             EdgeInsets.fromLTRB(6, 35, 6, 6),
-                                        child: Text('Duration'),
+                                        child: Text('End Time and Date'),
                                       ),
-                                      Container(
+
+                                      Padding(
                                           padding: const EdgeInsets.fromLTRB(
-                                              6, 8, 6, 12),
-                                          child: TextFormField(
-                                            readOnly: true,
-                                            controller: durationController,
-                                            onTap: () async {
-                                              selectedDuration =
-                                                  await showDurationPicker(
-                                                      context: context,
-                                                      initialTime:
-                                                          const Duration(
-                                                              minutes: 0),
-                                                      snapToMins: 5.0);
-                                              String twoDigits(int n) =>
-                                                  n.toString().padLeft(0);
-                                              durationController.text =
-                                                  '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
-                                            },
-                                            decoration: InputDecoration(
-                                              suffixIcon: IconButton(
-                                                icon: const Icon(Icons.schedule,
-                                                    size: 25),
-                                                onPressed: () async {
-                                                  selectedDuration =
-                                                      await showDurationPicker(
-                                                          context: context,
-                                                          initialTime:
-                                                              const Duration(
-                                                                  minutes: 0),
-                                                          snapToMins: 5.0);
-                                                  String twoDigits(int n) =>
-                                                      n.toString().padLeft(0);
-                                                  durationController.text =
-                                                      '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
-                                                },
-                                              ),
-                                            ),
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty ||
-                                                  (value.trim()).isEmpty) {
-                                                return 'Please specify a duration';
+                                              4, 5, 4, 0),
+                                          child: DateTimePicker(
+                                            type: DateTimePickerType.dateTime,
+                                            initialValue: widget.endDate,
+                                            locale:
+                                                Localizations.localeOf(context),
+                                            initialDate: SelectedDateTime,
+                                            initialTime: selectedTime,
+                                            firstDate: SelectedDateTime,
+                                            lastDate: DateTime(
+                                                (SelectedDateTime.year + 1),
+                                                SelectedDateTime.month,
+                                                SelectedDateTime.day),
+                                            // dateLabelText: 'End date and time',
+                                            // timeLabelText: 'End Time',
+                                            timeFieldWidth: 150,
+                                            // use24HourFormat: false,
+                                            onChanged: (val) => print(val),
+                                            validator: (val) {
+                                              print(checkEndTime(val) < 0);
+                                              if (val!.isEmpty || val == null) {
+                                                return 'Please specify a time and a date.';
+                                              } else if (checkEndTime(val) ==
+                                                  -1) {
+                                                return 'Please specify a time and a date after the start time.';
                                               }
+                                              print('val $val');
+                                              return null;
                                             },
+                                            onSaved: (val) => print(val),
                                           )),
 
                                       //description
@@ -1006,6 +1151,7 @@ class _EditRequestState extends State<editRequest> {
       'date_ymd': getDateTimeSelected(), //getDate
       'date_dmy': getDate_formated(),
       'time': getTime(selectedTime),
+      'endDateTime': selectedEndDateTime,
     });
     Navigator.of(context).pop();
     //clearForm();
