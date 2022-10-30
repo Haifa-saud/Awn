@@ -1,12 +1,13 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:awn/TextToSpeech.dart';
-import 'package:awn/addRequest.dart';
-import 'package:awn/homePage.dart';
-import 'package:awn/viewRequests.dart';
+import 'package:Awn/TextToSpeech.dart';
+import 'package:Awn/addRequest.dart';
+import 'package:Awn/homePage.dart';
+import 'package:Awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:hive/hive.dart';
 import '../userProfile.dart';
 import 'package:justino_icons/justino_icons.dart';
 
@@ -55,6 +56,7 @@ class BottomNavBar extends StatelessWidget {
     Future<void> _onItemTapped(int index) async {
       if (userType == 'Special Need User') {
         if (index == 0) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -64,6 +66,7 @@ class BottomNavBar extends StatelessWidget {
             ),
           );
         } else if (index == 1) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -74,6 +77,7 @@ class BottomNavBar extends StatelessWidget {
             ),
           );
         } else if (index == 2) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -84,11 +88,12 @@ class BottomNavBar extends StatelessWidget {
             ),
           );
         } else if (index == 3) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) =>
-                  userProfile(userType: userType),
+              pageBuilder: (context, animation1, animation2) => userProfile(
+                  userType: userType, selectedTab: 0, selectedSubTab: 0),
               transitionDuration: Duration(seconds: 1),
               reverseTransitionDuration: Duration.zero,
             ),
@@ -96,6 +101,7 @@ class BottomNavBar extends StatelessWidget {
         }
       } else if (userType == 'Volunteer') {
         if (index == 0) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -105,6 +111,7 @@ class BottomNavBar extends StatelessWidget {
             ),
           );
         } else if (index == 1) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -115,11 +122,12 @@ class BottomNavBar extends StatelessWidget {
             ),
           );
         } else if (index == 2) {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) =>
-                  userProfile(userType: userType),
+              pageBuilder: (context, animation1, animation2) => userProfile(
+                  userType: userType, selectedTab: 0, selectedSubTab: 0),
               transitionDuration: Duration(seconds: 1),
               reverseTransitionDuration: Duration.zero,
             ),

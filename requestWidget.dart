@@ -2,8 +2,10 @@
 
 import 'dart:math';
 
-import 'package:awn/addRequest.dart';
-import 'package:awn/chatPage.dart';
+import 'package:Awn/addRequest.dart';
+import 'package:Awn/chatPage.dart';
+import 'package:Awn/services/localNotification.dart';
+import 'package:Awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,6 +14,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
 import 'addPost.dart';
@@ -23,8 +26,10 @@ import 'userProfile.dart';
 class requestPage extends StatefulWidget {
   final String userType;
   final String reqID;
+  String userID;
 
-  const requestPage({Key? key, required this.reqID, required this.userType})
+  requestPage(
+      {Key? key, required this.reqID, required this.userType, this.userID = ''})
       : super(key: key);
 
   @override
@@ -33,6 +38,50 @@ class requestPage extends StatefulWidget {
 
 class _requestPageState extends State<requestPage> {
   int _selectedIndex = 2;
+  var currentUserID;
+  NotificationService notificationService = NotificationService();
+
+  @override
+  initState() {
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
+    Hive.box("currentPage").put("RequestId", widget.reqID);
+  }
+
+  //! tapping local notification
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1),
+                  fromNotification: true),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
+      });
 
   Future<Map<String, dynamic>> readUserData(userID) =>
       FirebaseFirestore.instance.collection('users').doc(userID).get().then(
@@ -89,7 +138,34 @@ class _requestPageState extends State<requestPage> {
         title: const Text('Awn Request'),
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-            onPressed: () => Navigator.of(context).pop()),
+            onPressed: () {
+              if (widget.userType == 'Volunteer') {
+                Hive.box("currentPage").put("RequestId", '');
+                Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation1, animation2) =>
+                        viewRequests(userType: widget.userType),
+                    transitionDuration: const Duration(seconds: 1),
+                    reverseTransitionDuration: Duration.zero,
+                  ),
+                );
+              } else {
+                Hive.box("currentPage").put("RequestId", '');
+                Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation1, animation2) =>
+                        userProfile(
+                            userType: widget.userType,
+                            selectedTab: 1,
+                            selectedSubTab: 0),
+                    transitionDuration: const Duration(seconds: 1),
+                    reverseTransitionDuration: Duration.zero,
+                  ),
+                );
+              }
+            }),
         automaticallyImplyLeading: false,
       ),
       body: requestdetails(),
@@ -115,6 +191,7 @@ class _requestPageState extends State<requestPage> {
           ),
         ),
         onPressed: () {
+          Hive.box("currentPage").put("RequestId", '');
           Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -167,13 +244,7 @@ class _requestPageState extends State<requestPage> {
         .collection('requests')
         .where('docId', isEqualTo: widget.reqID)
         .snapshots();
-    final user = FirebaseAuth.instance.currentUser!;
-    String userId = user.uid;
     final now = DateTime.now();
-
-    setAccept() {
-      viewAcceptButtom = false;
-    }
 
     return Column(children: [
       Expanded(
@@ -260,159 +331,150 @@ class _requestPageState extends State<requestPage> {
                           child: Column(
                             children: [
                               //title and status
-                              Row(
-                                  // mainAxisAlignment:
-                                  //     MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Row(
-                                        // mainAxisAlignment:
-                                        //     MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Text(
-                                            '${data.docs[index]['title']}',
-                                            textAlign: TextAlign.left,
-                                          ),
-                                        ]),
-                                    Spacer(),
-                                    Visibility(
-                                        visible: isPending && isSN,
-                                        child: Row(children: [
-                                          InkWell(
-                                            onTap: (() {
-                                              setState(() {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          editRequest(
-                                                        userType:
-                                                            "Special Need User",
-                                                        docId: data.docs[index]
-                                                            ['docId'],
-                                                        date_ymd:
-                                                            data.docs[index]
-                                                                ['date_ymd'],
-                                                        discription:
-                                                            data.docs[index]
-                                                                ['description'],
-                                                        duartion:
-                                                            data.docs[index]
-                                                                ['duration'],
-                                                        title: data.docs[index]
-                                                            ['title'],
-                                                      ),
-                                                    ));
-                                              });
-                                            }),
-                                            child: Container(
-                                              margin: EdgeInsets.only(top: 5),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 7),
-                                              child: Icon(Icons.edit,
-                                                  size: 30,
-                                                  color: Colors.blueGrey),
-                                            ),
-                                          ),
-                                          InkWell(
-                                            onTap: (() {
-                                              String docId =
-                                                  data.docs[index]['docId'];
-                                              showDialog(
-                                                context: context,
-                                                builder: (ctx) => AlertDialog(
-                                                  content: const Text(
-                                                    "Are you sure you want to withdraw your request ?",
-                                                    textAlign: TextAlign.left,
+                              Row(children: [
+                                Row(children: [
+                                  Text(
+                                    '${data.docs[index]['title']}',
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ]),
+                                Spacer(),
+                                Visibility(
+                                    visible: isPending && isSN,
+                                    child: Row(children: [
+                                      InkWell(
+                                        onTap: (() {
+                                          setState(() {
+                                            Hive.box("currentPage")
+                                                .put("RequestId", '');
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      editRequest(
+                                                    userType:
+                                                        "Special Need User",
+                                                    docId: data.docs[index]
+                                                        ['docId'],
+                                                    date_ymd: data.docs[index]
+                                                        ['date_ymd'],
+                                                    discription:
+                                                        data.docs[index]
+                                                            ['description'],
+                                                    duartion: data.docs[index]
+                                                        ['duration'],
+                                                    title: data.docs[index]
+                                                        ['title'],
                                                   ),
-                                                  actions: <Widget>[
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.of(ctx).pop();
-                                                      },
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(14),
-                                                        child: const Text(
-                                                            "Cancel"),
-                                                      ),
-                                                    ),
-                                                    //delete button
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        deletRequest(docId);
-                                                        // Navigator.of(
-                                                        //         context)
-                                                        //     .popUntil(
-                                                        //         (route) =>
-                                                        //             route.isFirst);
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  userProfile(
-                                                                      userType:
-                                                                          widget
-                                                                              .userType),
-                                                            ));
-                                                        ConfermationDelet();
-                                                      },
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(14),
-                                                        child: const Text(
-                                                            "Withdraw",
-                                                            style: TextStyle(
-                                                                color: Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        164,
-                                                                        10,
-                                                                        10))),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            }),
-                                            child: Container(
-                                              // alignment:
-                                              //     Alignment.topRight,
-                                              margin: EdgeInsets.only(top: 5),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 7),
-                                              child: Icon(Icons.delete,
-                                                  size: 30,
-                                                  color: Colors.red.shade300),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                        ])),
-                                    Visibility(
-                                      visible: isSN,
-                                      child: Container(
-                                        alignment: Alignment.topRight,
-                                        margin: const EdgeInsets.only(
-                                          top: 5,
+                                                ));
+                                          });
+                                        }),
+                                        child: Container(
+                                          margin: EdgeInsets.only(top: 5),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 7),
+                                          child: Icon(Icons.edit,
+                                              size: 30, color: Colors.blueGrey),
                                         ),
-                                        child: Text(data.docs[index]['status'],
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                background: Paint()
-                                                  ..strokeWidth = 18.0
-                                                  ..color = getColor(data
-                                                      .docs[index]['status'])
-                                                  ..style = PaintingStyle.stroke
-                                                  ..strokeJoin =
-                                                      StrokeJoin.round,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w500)),
                                       ),
+                                      InkWell(
+                                        onTap: (() {
+                                          String docId =
+                                              data.docs[index]['docId'];
+                                          showDialog(
+                                            context: context,
+                                            builder: (ctx) => AlertDialog(
+                                              content: const Text(
+                                                "Are you sure you want to withdraw your request ?",
+                                                textAlign: TextAlign.left,
+                                              ),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(ctx).pop();
+                                                  },
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            14),
+                                                    child: const Text("Cancel"),
+                                                  ),
+                                                ),
+                                                //delete button
+                                                TextButton(
+                                                  onPressed: () {
+                                                    deletRequest(docId);
+                                                    Hive.box("currentPage")
+                                                        .put("RequestId", '');
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              userProfile(
+                                                                  userType: widget
+                                                                      .userType,
+                                                                  selectedTab:
+                                                                      1,
+                                                                  selectedSubTab:
+                                                                      1),
+                                                        ));
+                                                    ConfermationDelet();
+                                                  },
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            14),
+                                                    child: const Text(
+                                                        "Withdraw",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    164,
+                                                                    10,
+                                                                    10))),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }),
+                                        child: Container(
+                                          // alignment:
+                                          //     Alignment.topRight,
+                                          margin: EdgeInsets.only(top: 5),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 7),
+                                          child: Icon(Icons.delete,
+                                              size: 30,
+                                              color: Colors.red.shade300),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                    ])),
+                                Visibility(
+                                  visible: isSN,
+                                  child: Container(
+                                    alignment: Alignment.topRight,
+                                    margin: const EdgeInsets.only(
+                                      top: 5,
                                     ),
-                                  ]),
+                                    child: Text(data.docs[index]['status'],
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            background: Paint()
+                                              ..strokeWidth = 18.0
+                                              ..color = getColor(
+                                                  data.docs[index]['status'])
+                                              ..style = PaintingStyle.stroke
+                                              ..strokeJoin = StrokeJoin.round,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500)),
+                                  ),
+                                ),
+                              ]),
                               SizedBox(height: 30),
                               Row(
                                   // mainAxisAlignment:
@@ -478,6 +540,8 @@ class _requestPageState extends State<requestPage> {
                                   padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                   child: InkWell(
                                       onTap: () {
+                                        Hive.box("currentPage")
+                                            .put("RequestId", '');
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -520,6 +584,9 @@ class _requestPageState extends State<requestPage> {
                                         gestureRecognizers: Set()
                                           ..add(Factory<TapGestureRecognizer>(
                                               () => Gesture(() {
+                                                    Hive.box("currentPage")
+                                                        .put("RequestId", '');
+
                                                     Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
@@ -637,6 +704,11 @@ class _requestPageState extends State<requestPage> {
                                                               color:
                                                                   Colors.blue,
                                                               onPressed: () {
+                                                                Hive.box(
+                                                                        "currentPage")
+                                                                    .put(
+                                                                        "RequestId",
+                                                                        '');
                                                                 Navigator.push(
                                                                   context,
                                                                   PageRouteBuilder(

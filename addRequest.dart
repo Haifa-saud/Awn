@@ -1,6 +1,7 @@
-import 'package:awn/addPost.dart';
-import 'package:awn/services/appWidgets.dart';
-import 'package:awn/services/firebase_storage_services.dart';
+import 'package:Awn/addPost.dart';
+import 'package:Awn/services/appWidgets.dart';
+import 'package:Awn/services/firebase_storage_services.dart';
+import 'package:Awn/viewRequests.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +13,12 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path/path.dart' as Path;
 import 'package:intl/intl.dart';
+import 'chatPage.dart';
 import 'main.dart';
-import 'package:awn/map.dart';
+import 'package:Awn/map.dart';
+
+import 'requestWidget.dart';
+import 'services/localNotification.dart';
 
 //! bottom bar done
 class addRequest extends StatefulWidget {
@@ -37,6 +42,50 @@ void clearForm() {
 
 class _AddRequestState extends State<addRequest> {
   int _selectedIndex = 2;
+
+  NotificationService notificationService = NotificationService();
+  @override
+  void initState() {
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
+
+    super.initState();
+  }
+
+  //! tapping local notification
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1),
+                  fromNotification: true),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -596,12 +645,28 @@ class AwnRequestFormState extends State<AwnRequestForm> {
       'VolID': '',
       'notificationStatus': ''
     });
-    String dataId = docReference.id;
-    requests.doc(dataId).update({'docId': dataId});
+    String reqId = docReference.id;
+    requests.doc(reqId).update({'docId': reqId});
+    DocumentReference chatReference =
+        await requests.doc(reqId).collection('chats').add({
+      'audio': '',
+      'audioDuration': '',
+      'author': userId,
+      'id': '',
+      'img': '',
+      'read': true,
+      'text':
+          'This chat offers Text to Speech service, please long press on the chat to try it.',
+      'createdAt': DateTime.now().millisecondsSinceEpoch,
+    });
+
+    String chatId = chatReference.id;
+    requests.doc(reqId).collection('chats').doc(chatId).update({'id': chatId});
+
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => maps(dataId: dataId, typeOfRequest: 'R'),
+          builder: (context) => maps(dataId: reqId, typeOfRequest: 'R'),
         ));
     clearForm();
   }

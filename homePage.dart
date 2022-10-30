@@ -1,12 +1,16 @@
-import 'package:awn/addPost.dart';
-import 'package:awn/services/appWidgets.dart';
-import 'package:awn/services/firebase_storage_services.dart';
-import 'package:awn/services/placeWidget.dart';
-import 'package:awn/services/sendNotification.dart';
-import 'package:awn/services/myGlobal.dart';
-
-import 'package:awn/viewRequests.dart';
+import 'Search.dart';
+import 'addPost.dart';
+import 'chatPage.dart';
+import 'requestWidget.dart';
+import 'services/FCM.dart';
+import 'services/appWidgets.dart';
+import 'package:Awn/services/firebase_storage_services.dart';
+import 'package:Awn/services/placeWidget.dart';
+import 'package:Awn/services/localNotification.dart';
+import 'package:Awn/services/myGlobal.dart';
+import 'package:Awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
@@ -23,16 +27,19 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
   CollectionReference category =
       FirebaseFirestore.instance.collection('postCategory');
 
-  late final NotificationService notificationService;
+  NotificationService notificationService = NotificationService();
+  late final PushNotification acceptanceNotification = PushNotification();
 
   final Storage storage = Storage();
   var userData;
-
   int _selectedIndex = 0;
 
   @override
   void initState() {
     userData = readUserData(FirebaseAuth.instance.currentUser!.uid);
+    getToken();
+    acceptanceNotification.initApp();
+
     notificationService = NotificationService();
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
@@ -40,22 +47,85 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     super.initState();
   }
 
+  //! tapping local notification
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        print(
+            payload.substring(0, payload.indexOf('-')) == 'requestAcceptance');
+
+        print(payload);
+        print(payload.substring(0, payload.indexOf('-')) == 'chat');
+        print(payload.substring(payload.indexOf('-')));
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1),
+                  fromNotification: true),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
+      });
+
+  //! FCM
+  var fcmToken;
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) async {
+      setState(() {
+        fcmToken = token;
+        print('fcmToken: $fcmToken');
+      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({'token': token}, SetOptions(merge: true));
+    });
+
+    await FirebaseMessaging.instance.onTokenRefresh
+        .listen((String token) async {
+      print("New token: $token");
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({'token': token}, SetOptions(merge: true));
+    });
+  }
+
+  void saveToken(String token) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .set({'token': token}, SetOptions(merge: true));
+  }
+
   Future<Map<String, dynamic>> readUserData(var id) =>
       FirebaseFirestore.instance.collection('users').doc(id).get().then(
         (DocumentSnapshot doc) {
           userData = doc.data() as Map<String, dynamic>;
+          print(userData);
           return doc.data() as Map<String, dynamic>;
         },
       );
-
-  void listenToNotificationStream() =>
-      notificationService.behaviorSubject.listen((payload) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    viewRequests(userType: 'Volunteer', reqID: payload)));
-      });
 
   @override
   Widget build(BuildContext context) {
@@ -71,34 +141,51 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
               return Scaffold(
                 appBar: AppBar(
                   actions: <Widget>[
-                    Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                        child: FutureBuilder(
-                            future: storage.downloadURL('logo.png'),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<String> snapshot) {
-                              if (snapshot.connectionState ==
-                                      ConnectionState.done &&
-                                  snapshot.hasData) {
-                                return Center(
-                                  child: Image.network(
-                                    snapshot.data!,
-                                    fit: BoxFit.cover,
-                                    width: 40,
-                                    height: 40,
-                                  ),
-                                );
-                              }
-                              if (snapshot.connectionState ==
-                                      ConnectionState.waiting ||
-                                  !snapshot.hasData) {
-                                return const Center(
-                                    child: CircularProgressIndicator(
-                                  color: Colors.blue,
-                                ));
-                              }
-                              return Container();
-                            }))
+                    Row(children: [
+                      IconButton(
+                        icon: const Icon(Icons.search),
+                        tooltip: 'Search',
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder: (context, animation1, animation2) =>
+                                  search(),
+                              transitionDuration: const Duration(seconds: 1),
+                              reverseTransitionDuration: Duration.zero,
+                            ),
+                          );
+                        },
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                          child: FutureBuilder(
+                              future: storage.downloadURL('logo.png'),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<String> snapshot) {
+                                if (snapshot.connectionState ==
+                                        ConnectionState.done &&
+                                    snapshot.hasData) {
+                                  return Center(
+                                    child: Image.network(
+                                      snapshot.data!,
+                                      fit: BoxFit.cover,
+                                      width: 40,
+                                      height: 40,
+                                    ),
+                                  );
+                                }
+                                if (snapshot.connectionState ==
+                                        ConnectionState.waiting ||
+                                    !snapshot.hasData) {
+                                  return const Center(
+                                      child: CircularProgressIndicator(
+                                    color: Colors.blue,
+                                  ));
+                                }
+                                return Container();
+                              }))
+                    ])
                   ],
 
                   centerTitle: false,
@@ -242,7 +329,6 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                       PageRouteBuilder(
                         pageBuilder: (context, animation1, animation2) =>
                             addPost(userType: userData['Type']),
-                        // comments(),
                         transitionDuration: const Duration(seconds: 1),
                         reverseTransitionDuration: Duration.zero,
                       ),

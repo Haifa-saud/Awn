@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -25,7 +28,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,39 +49,21 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBM8Jl_MuxpnIt1f9IVdeC-14pl_51svqg',
-    appId: '1:1039829394290:web:1c0f6e9700aa0d54d833eb',
-    messagingSenderId: '1039829394290',
-    projectId: 'awn-swe-444-c20ee',
-    authDomain: 'awn-swe-444-c20ee.firebaseapp.com',
-    storageBucket: 'awn-swe-444-c20ee.appspot.com',
-    measurementId: 'G-EFDT4T1DBB',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyADY5AhCL7tHDEwRAnhtuuDRx6nufJHZ5E',
-    appId: '1:1039829394290:android:9a6398d7862f8ed3d833eb',
+    appId: '1:1039829394290:android:a45fad24714ab0a8d833eb',
     messagingSenderId: '1039829394290',
     projectId: 'awn-swe-444-c20ee',
+    databaseURL: 'https://awn-swe-444-c20ee-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'awn-swe-444-c20ee.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBgKTWVMS7uZ0fD1SG2Q5znJo1JUSiQXWY',
-    appId: '1:1039829394290:ios:625f507503c07a0ed833eb',
+    appId: '1:1039829394290:ios:17ba86ab24f3ffd6d833eb',
     messagingSenderId: '1039829394290',
     projectId: 'awn-swe-444-c20ee',
-    storageBucket: 'awn-swe-444-c20ee.appspot.com',
-    iosClientId: '1039829394290-tvsjf7rb5fa6qvmh5copu2jhia5vbno5.apps.googleusercontent.com',
-    iosBundleId: 'com.example.awn',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBgKTWVMS7uZ0fD1SG2Q5znJo1JUSiQXWY',
-    appId: '1:1039829394290:ios:625f507503c07a0ed833eb',
-    messagingSenderId: '1039829394290',
-    projectId: 'awn-swe-444-c20ee',
+    databaseURL: 'https://awn-swe-444-c20ee-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'awn-swe-444-c20ee.appspot.com',
     iosClientId: '1039829394290-tvsjf7rb5fa6qvmh5copu2jhia5vbno5.apps.googleusercontent.com',
     iosBundleId: 'com.example.awn',

@@ -1,14 +1,15 @@
-import 'package:awn/addPost.dart';
-import 'package:awn/login.dart';
-import 'package:awn/requestWidget.dart';
-import 'package:awn/services/appWidgets.dart';
-import 'package:awn/services/firebase_storage_services.dart';
-import 'package:awn/services/placeWidget.dart';
-import 'package:awn/services/sendNotification.dart';
-import 'package:awn/viewRequests.dart';
+import 'package:Awn/addPost.dart';
+import 'package:Awn/login.dart';
+import 'package:Awn/requestWidget.dart';
+import 'package:Awn/services/appWidgets.dart';
+import 'package:Awn/services/firebase_storage_services.dart';
+import 'package:Awn/services/placeWidget.dart';
+import 'package:Awn/services/localNotification.dart';
+import 'package:Awn/viewRequests.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
@@ -22,9 +23,16 @@ import 'package:toggle_switch/toggle_switch.dart';
 var userName = '';
 
 class userProfile extends StatefulWidget {
-  const userProfile({Key? key, required this.userType}) : super(key: key);
+  const userProfile(
+      {Key? key,
+      required this.userType,
+      required this.selectedTab,
+      required this.selectedSubTab})
+      : super(key: key);
 
   final String userType;
+  final int selectedTab;
+  final int selectedSubTab;
 
   @override
   UserProfileState createState() => UserProfileState();
@@ -34,29 +42,64 @@ ScrollController _scrollController = ScrollController();
 
 class UserProfileState extends State<userProfile>
     with TickerProviderStateMixin {
-  late final NotificationService notificationService;
+  NotificationService notificationService = NotificationService();
   final Storage storage = Storage();
   var userData;
   var userId = FirebaseAuth.instance.currentUser!.uid;
 
   int _selectedIndex = 3;
+  late TabController _mainTabController;
+  late TabController _requestsTabController;
+  late TabController _placesTabController;
 
   @override
   initState() {
     notificationService = NotificationService();
     listenToNotificationStream();
+
     notificationService.initializePlatformNotifications();
+    _mainTabController =
+        TabController(length: 3, vsync: this, initialIndex: widget.selectedTab);
+    _requestsTabController = TabController(
+        length: 2, vsync: this, initialIndex: widget.selectedSubTab);
+    _placesTabController = TabController(
+        length: 3, vsync: this, initialIndex: widget.selectedSubTab);
 
     super.initState();
   }
 
+  //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        Navigator.push(
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    viewRequests(userType: 'Volunteer', reqID: payload)));
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1),
+                  fromNotification: true),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
       });
 
   Future<Map<String, dynamic>> readUserData(var id) =>
@@ -69,8 +112,7 @@ class UserProfileState extends State<userProfile>
 
   @override
   Widget build(BuildContext context) {
-    TabController _tabController = TabController(length: 3, vsync: this);
-//! Logout
+    //! Logout
     Future<void> _signOut() async {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         Workmanager().cancelAll();
@@ -124,10 +166,17 @@ class UserProfileState extends State<userProfile>
                                     //log in ok button
                                     TextButton(
                                       onPressed: () async {
+                                        await FirebaseMessaging.instance
+                                            .deleteToken();
+                                        // await FirebaseFirestore.instance
+                                        //     .collection('users')
+                                        //     .doc(FirebaseAuth
+                                        //         .instance.currentUser!.uid)
+                                        //     .set({'token': ''},
+                                        //         SetOptions(merge: true));
                                         await _signOut();
                                       },
                                       child: Container(
-                                        //color: Color.fromARGB(255, 164, 20, 20),
                                         padding: const EdgeInsets.all(14),
                                         child: const Text("Log out",
                                             style: TextStyle(
@@ -142,7 +191,7 @@ class UserProfileState extends State<userProfile>
                           )),
                     ],
                     centerTitle: false,
-                    backgroundColor: Colors.white, //(0xFFfcfffe),
+                    backgroundColor: Colors.white,
                     foregroundColor: Colors.black,
                     automaticallyImplyLeading: false,
                     scrolledUnderElevation: 1,
@@ -190,7 +239,7 @@ class UserProfileState extends State<userProfile>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TabBar(
-                                controller: _tabController,
+                                controller: _mainTabController,
                                 labelPadding: const EdgeInsets.only(
                                     left: 0.0, right: 0.0),
                                 indicator: const BoxDecoration(
@@ -226,7 +275,7 @@ class UserProfileState extends State<userProfile>
                             width: double.maxFinite,
                             height: MediaQuery.of(context).size.height,
                             child: TabBarView(
-                                controller: _tabController,
+                                controller: _mainTabController,
                                 children: [
                                   myInfo(userData),
                                   MyRequests(isVolunteer),
@@ -281,7 +330,7 @@ class UserProfileState extends State<userProfile>
         currentI: widget.userType == 'Volunteer' ? 2 : 3,
       ),
     );
-  } // end of class
+  }
 
 //! My Info
   Widget myInfo(var userData) {
@@ -751,7 +800,7 @@ class UserProfileState extends State<userProfile>
               return Column(children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   ButtonsTabBar(
-                    controller: _tabController,
+                    controller: _placesTabController,
                     height: 50,
                     radius: 15,
                     buttonMargin: const EdgeInsets.fromLTRB(4, 8, 4, 1),
@@ -779,7 +828,7 @@ class UserProfileState extends State<userProfile>
                           color: Colors.transparent,
                         ),
                         child: Text(
-                          "Declined",
+                          "Denied",
                           style: TextStyle(color: Colors.red.shade300),
                         ),
                       )),
@@ -820,30 +869,31 @@ class UserProfileState extends State<userProfile>
                     child: Container(
                         width: double.maxFinite,
                         height: MediaQuery.of(context).size.height,
-                        child:
-                            TabBarView(controller: _tabController, children: [
-                          Place(
-                            userId: userId,
-                            category: '',
-                            status: 'Declined',
-                            userName: userData['name'],
-                            userType: userData['Type'],
-                          ),
-                          Place(
-                            userId: userId,
-                            category: '',
-                            status: 'Pending',
-                            userName: userData['name'],
-                            userType: userData['Type'],
-                          ),
-                          Place(
-                            userId: userId,
-                            category: '',
-                            status: 'Approved',
-                            userName: userData['name'],
-                            userType: userData['Type'],
-                          ),
-                        ])))
+                        child: TabBarView(
+                            controller: _placesTabController,
+                            children: [
+                              Place(
+                                userId: userId,
+                                category: '',
+                                status: 'Denied',
+                                userName: userData['name'],
+                                userType: userData['Type'],
+                              ),
+                              Place(
+                                userId: userId,
+                                category: '',
+                                status: 'Pending',
+                                userName: userData['name'],
+                                userType: userData['Type'],
+                              ),
+                              Place(
+                                userId: userId,
+                                category: '',
+                                status: 'Approved',
+                                userName: userData['name'],
+                                userType: userData['Type'],
+                              ),
+                            ])))
               ]);
             }
           },
@@ -934,8 +984,11 @@ class MyInfoState extends State<MyInfo> {
     }
   }
 
+  var user;
   @override
   initState() {
+    user = FirebaseAuth.instance.currentUser!;
+
     userData = widget.user;
     nameController.text = userData['name'];
     emailController.text = userData['Email'];
@@ -1617,11 +1670,12 @@ class MyInfoState extends State<MyInfo> {
                                                 if (isRequestActive) {
                                                   ds.reference.update({
                                                     'status': 'Pending',
-                                                    'VolID': ''
+                                                    'VolID': '',
                                                   }).then((_) {
                                                     print(
                                                         "vol request updated");
                                                   });
+                                                  // ds.reference.collection(chat)
                                                 } else {
                                                   ds.reference.update({
                                                     'status': 'Expired',

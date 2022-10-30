@@ -1,6 +1,7 @@
-import 'package:awn/addRequest.dart';
-import 'package:awn/services/appWidgets.dart';
-import 'package:awn/userProfile.dart';
+import 'package:Awn/addRequest.dart';
+import 'package:Awn/services/appWidgets.dart';
+import 'package:Awn/userProfile.dart';
+import 'package:Awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:duration_picker/duration_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,9 +14,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
 import 'addPost.dart';
+import 'chatPage.dart';
 import 'editRequest.dart';
 import 'map.dart';
 import 'mapsPage.dart';
+import 'requestWidget.dart';
+import 'services/localNotification.dart';
 
 class editRequest extends StatefulWidget {
   final String userType;
@@ -47,13 +51,58 @@ late TextEditingController descController;
 //final Storage storage = Storage();
 
 class _EditRequestState extends State<editRequest> {
+  NotificationService notificationService = NotificationService();
+
   @override
   void initState() {
+    notificationService = NotificationService();
+    listenToNotificationStream();
+    notificationService.initializePlatformNotifications();
     super.initState();
     titleController = TextEditingController(text: widget.title);
     descController = TextEditingController(text: widget.discription);
     durationController = TextEditingController(text: widget.duartion);
   }
+
+  //! tapping local notification
+  void listenToNotificationStream() =>
+      notificationService.behaviorSubject.listen((payload) {
+        print(
+            payload.substring(0, payload.indexOf('-')) == 'requestAcceptance');
+
+        print(payload);
+        print(payload.substring(0, payload.indexOf('-')) == 'chat');
+        print(payload.substring(payload.indexOf('-')));
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1),
+                  fromNotification: true),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      viewRequests(userType: 'Volunteer', reqID: payload)));
+        }
+      });
 
   int _selectedIndex = 2;
   @override
@@ -62,15 +111,6 @@ class _EditRequestState extends State<editRequest> {
       List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
       return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
     }
-
-    // var data, latitude, longitude, isLocSet;
-    // Future<String> getReq(var id) =>
-    //     FirebaseFirestore.instance.collection('requests').doc(id).get().then(
-    //       (DocumentSnapshot doc) {
-    //         //data = doc.data() as Map<String, dynamic>;
-    //         return doc.data() as req<String>;
-    //       },
-    //     );
 
     return Scaffold(
       appBar: AppBar(
@@ -803,12 +843,13 @@ class _EditRequestState extends State<editRequest> {
                                                           Navigator.push(
                                                               context,
                                                               MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        userProfile(
-                                                                  userType: widget
-                                                                      .userType,
-                                                                ),
+                                                                builder: (context) => userProfile(
+                                                                    userType: widget
+                                                                        .userType,
+                                                                    selectedTab:
+                                                                        1,
+                                                                    selectedSubTab:
+                                                                        1),
                                                               ));
                                                         },
                                                         child: Container(

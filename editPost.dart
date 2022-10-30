@@ -1,17 +1,20 @@
-import 'package:awn/addRequest.dart';
-import 'package:awn/homePage.dart';
-import 'package:awn/map.dart';
-import 'package:awn/services/appWidgets.dart';
-import 'package:awn/services/firebase_storage_services.dart';
-import 'package:awn/services/sendNotification.dart';
-import 'package:awn/viewRequests.dart';
+import 'package:Awn/addRequest.dart';
+import 'package:Awn/homePage.dart';
+import 'package:Awn/map.dart';
+import 'package:Awn/services/appWidgets.dart';
+import 'package:Awn/services/firebase_storage_services.dart';
+import 'package:Awn/services/localNotification.dart';
+import 'package:Awn/viewRequests.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:regexed_validator/regexed_validator.dart';
@@ -33,6 +36,8 @@ class editPost extends StatefulWidget {
   final String category;
   final String docId;
   final String oldImg;
+  final String latitude;
+  final String longitude;
   const editPost(
       {Key? key,
       required this.userType,
@@ -42,7 +47,9 @@ class editPost extends StatefulWidget {
       required this.website,
       required this.category,
       required this.docId,
-      required this.oldImg})
+      required this.oldImg,
+      required this.latitude,
+      required this.longitude})
       : super(key: key);
 
   @override
@@ -66,6 +73,8 @@ class _MyStatefulWidgetState extends State<editPost> {
     numberController = TextEditingController(text: widget.number);
     websiteController = TextEditingController(text: widget.website);
     imagectrl = widget.oldImg;
+    // double latitude = double.parse(widget.latitude);
+    // double longitude = double.parse(widget.longitude);
 
     notificationService = NotificationService();
     listenToNotificationStream();
@@ -89,10 +98,28 @@ class _MyStatefulWidgetState extends State<editPost> {
       FirebaseFirestore.instance.collection('postCategory');
 
   var selectedCategory;
+  var selectedCategory2;
 
+  // var editImg = '';
   var editImg = '';
   int _selectedIndex = 2;
   final Storage storage = Storage();
+
+  late GoogleMapController myController;
+  Set<Marker> getMarker(lat, lng) {
+    return <Marker>{
+      Marker(
+          markerId: const MarkerId(''),
+          position: LatLng(lat, lng),
+          icon: BitmapDescriptor.defaultMarker,
+          infoWindow: const InfoWindow(title: 'location'))
+    };
+  }
+
+  Future<String> getLocationAsString(var lat, var lng) async {
+    List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
+    return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,13 +208,21 @@ class _MyStatefulWidgetState extends State<editPost> {
                       if (!snapshot.hasData) {
                         return Text("Loading");
                       } else {
+                        var newValue;
                         return DropdownButtonFormField(
                           isDense: true,
-                          onChanged: (value) {
+                          onChanged: (newValue) {
                             setState(() {
-                              selectedCategory = value;
+                              print(newValue);
+                              selectedCategory = newValue;
+                              selectedCategory2 = newValue;
                             });
                           },
+                          //  onChanged: (String newValue) {
+                          //   setState(() {
+                          //     selectedCategory = newValue;
+                          //   });
+                          // },
                           validator: (value) => value == null
                               ? 'Please select a category.'
                               : null,
@@ -354,6 +389,81 @@ class _MyStatefulWidgetState extends State<editPost> {
                 ),
               ),
             ),
+            // /*location*/
+            // Container(
+            //   padding: EdgeInsets.fromLTRB(6, 25, 6, 8),
+            //   child: Text('Location',
+            //       style: TextStyle(fontWeight: FontWeight.bold)),
+            // ),
+
+            // Container(
+            //     // width: 180,
+            //     height: 250,
+            //     decoration: BoxDecoration(
+            //       color: Colors.white,
+            //       borderRadius: BorderRadius.circular(15),
+            //     ),
+            //     child: ClipRRect(
+            //         borderRadius: BorderRadius.circular(10),
+            //         child: Container(
+            //             child: GoogleMap(
+            //           gestureRecognizers: Set()
+            //             ..add(Factory<TapGestureRecognizer>(() => Gesture(() {
+            //                   Navigator.push(
+            //                       context,
+            //                       MaterialPageRoute(
+            //                         builder: (context) => maps(
+            //                             dataId: widget.docId,
+            //                             typeOfRequest: 'E',
+            //                             latitude: double.parse(widget.latitude),
+            //                             longitude:
+            //                                 double.parse(widget.longitude)),
+            //                       ));
+            //                 }))),
+            //           markers: getMarker(double.parse(widget.latitude),
+            //               double.parse(widget.longitude)),
+            //           mapType: MapType.normal,
+            //           initialCameraPosition: CameraPosition(
+            //             target: LatLng(double.parse(widget.latitude),
+            //                 double.parse(widget.longitude)),
+            //             zoom: 12.0,
+            //           ),
+            //           onMapCreated: (GoogleMapController controller) {
+            //             myController = controller;
+            //           },
+            //         )))),
+            // /*location*/ Padding(
+            //     padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+            //     child: InkWell(
+            //         onTap: () {
+            //           Navigator.push(
+            //               context,
+            //               MaterialPageRoute(
+            //                 builder: (context) => maps(
+            //                     dataId: widget.docId,
+            //                     typeOfRequest: 'E',
+            //                     latitude: double.parse(widget.latitude),
+            //                     longitude: double.parse(widget.longitude)),
+            //               ));
+            //         },
+            //         child: Row(
+            //           children: [
+            //             Flexible(
+            //                 // width: 150,
+            //                 child: Text(reqLoc!,
+            //                     style: TextStyle(
+            //                       // color: Colors
+            //                       //     .grey.shade500,
+            //                       fontWeight: FontWeight.w400,
+            //                       letterSpacing: 0.1,
+            //                       wordSpacing: 0.1,
+            //                       fontSize: 15,
+            //                       decoration: TextDecoration.underline,
+            //                     )))
+            //           ],
+            //         ))),
+
+            //update botton
             Container(
               margin: const EdgeInsets.fromLTRB(60, 10, 50, 10),
               width: 250,
@@ -383,7 +493,7 @@ class _MyStatefulWidgetState extends State<editPost> {
                 ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    print(selectedCategory);
+                    print(selectedCategory2);
                     updateDB(widget.docId);
                   } else {
                     // ScaffoldMessenger.of(context).showSnackBar(
@@ -405,7 +515,7 @@ class _MyStatefulWidgetState extends State<editPost> {
                     // );
                   }
                 },
-                child: const Text('Next'),
+                child: const Text('Update'),
               ),
             ),
           ]),
@@ -455,6 +565,7 @@ class _MyStatefulWidgetState extends State<editPost> {
     );
   }
 
+  // String imagePath = '';
   String imagePath = '';
   File? imageDB;
   String strImg = '';
@@ -465,13 +576,15 @@ class _MyStatefulWidgetState extends State<editPost> {
     if (permissionStatus.isGranted) {
       XFile? img = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-      setState(() {
+      setState(() async {
         File image = File(img!.path);
-        //  print('Image path $image');
+        print('Image path $image');
         imagePath = image.toString();
+        print('Image path $imagePath');
         imageDB = image;
         editImg = 'Update Image';
-        imagectrl = imagePath;
+        //imagectrl = imagePath;
+        // File image = imageDB!;
       });
     }
   }
@@ -479,24 +592,26 @@ class _MyStatefulWidgetState extends State<editPost> {
   Future<void> updateDB(docId) async {
     final posts = FirebaseFirestore.instance.collection('posts').doc(docId);
 
-    if (imagePath != '') {
-      File image = imageDB!;
-      final storage =
-          FirebaseStorage.instance.ref().child('postsImage/${image}');
-      strImg = Path.basename(image.path);
-      UploadTask uploadTask = storage.putFile(image);
-      TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
-      imagePath = await (await uploadTask).ref.getDownloadURL();
-    }
+    // if (imagePath != '') {
+    //   File image = imageDB!;
+    //   final storage =
+    //       FirebaseStorage.instance.ref().child('postsImage/${image}');
+    //   strImg = Path.basename(image.path);
+    //   UploadTask uploadTask = storage.putFile(image);
+    //   TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+    //   imagePath = await (await uploadTask).ref.getDownloadURL();
+    // }
     DateTime _date = DateTime.now();
     String date = DateFormat('yyyy-MM-dd HH: mm').format(_date);
 
     String dataId = '';
     print('will be added to db');
     //add all value without the location
+    var s3 = selectedCategory2 == '' ? selectedCategory : selectedCategory2;
+
     posts.update({
       'name': nameController.text,
-      'category': selectedCategory,
+      'category': s3,
       //  'img': imagePath,
       // 'latitude': '',
       // 'longitude': '',
@@ -569,5 +684,27 @@ class _MyStatefulWidgetState extends State<editPost> {
     numberController.clear();
     websiteController.clear();
     imagePath = '';
+  }
+}
+
+class Gesture extends TapGestureRecognizer {
+  Function _test;
+
+  Gesture(this._test);
+
+  @override
+  void resolve(GestureDisposition disposition) {
+    super.resolve(disposition);
+    this._test();
+  }
+
+  @override
+  // TODO: implement debugDescription
+  String get debugDescription => throw UnimplementedError();
+
+  @override
+  bool isFlingGesture(VelocityEstimate estimate, PointerDeviceKind kind) {
+    // TODO: implement isFlingGesture
+    throw UnimplementedError();
   }
 }

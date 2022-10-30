@@ -1,18 +1,55 @@
-import 'package:awn/adminPage.dart';
-import 'package:awn/homePage.dart';
-import 'package:awn/login.dart';
-import 'package:awn/register.dart';
-import 'package:awn/viewRequests.dart';
+import 'package:Awn/adminPage.dart';
+import 'package:Awn/homePage.dart';
+import 'package:Awn/login.dart';
+import 'package:Awn/register.dart';
+import 'package:Awn/requestWidget.dart';
+import 'package:Awn/services/FCM.dart';
+import 'package:Awn/viewRequests.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:workmanager/workmanager.dart';
+import 'chatPage.dart';
 import 'services/firebase_options.dart';
+import 'package:hive/hive.dart';
+
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  print('handling message in background');
+}
+
+late Box box;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  var dir = await getApplicationDocumentsDirectory();
+  Hive.init(dir.path);
+  box = await Hive.openBox('currentPage');
+  //! Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  final user = FirebaseAuth.instance.currentUser!.uid;
+
+  //! FCM
+  FirebaseMessaging.instance.onTokenRefresh.listen((String token) async {
+    print("New token: $token");
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({'token': token}, SetOptions(merge: true));
+    }
+  });
+  await FirebaseMessaging.instance.getInitialMessage();
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  //! Local Notifications
   FlutterLocalNotificationsPlugin notification =
       FlutterLocalNotificationsPlugin();
   var notificationAppLaunchDetails =
@@ -24,12 +61,12 @@ Future<void> main() async {
   } else {
     runApp(MyApp(true, false));
   }
+
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (user == null) {
       Workmanager().cancelAll();
       runApp(MyApp(false));
     } else {
-      //! haifa
       if (notificationAppLaunchDetails.didNotificationLaunchApp) {
         var Payload = notificationAppLaunchDetails.payload;
         runApp(MyApp(true, true, Payload!, false));
@@ -50,15 +87,17 @@ class MyApp extends StatefulWidget {
       this.isAdmin = false]);
 
   bool auth;
+  bool isAdmin;
   bool notification;
   String payload;
-  bool isAdmin;
 
   @override
   State<MyApp> createState() => _MyApp();
 }
 
 class _MyApp extends State<MyApp> {
+  final user = FirebaseAuth.instance.currentUser!.uid;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -67,7 +106,7 @@ class _MyApp extends State<MyApp> {
         '/volunteerPage': (ctx) => const homePage(),
         "/register": (ctx) => const register(),
         "/login": (ctx) => const login(),
-        "/adminPage": (ctx) => const adminPage(),
+        "/adminPage": (ctx) => AdminPage(),
       },
       debugShowCheckedModeBanner: false,
       title: 'Home Page',
@@ -153,7 +192,7 @@ class _MyApp extends State<MyApp> {
       home: widget.auth
           ? (widget.notification
               ? viewRequests(userType: 'Volunteer', reqID: widget.payload)
-              : (widget.isAdmin ? const adminPage() : const homePage()))
+              : (widget.isAdmin ? AdminPage() : const homePage()))
           : const login(),
     );
   }
