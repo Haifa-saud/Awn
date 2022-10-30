@@ -111,7 +111,7 @@ class _requestPageState extends State<requestPage> {
           Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
               child: FutureBuilder(
-                  future: storage.downloadURL('logo.png'),
+                  future: storage.downloadURL('logo.jpg'),
                   builder:
                       (BuildContext context, AsyncSnapshot<String> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done &&
@@ -476,65 +476,62 @@ class _requestPageState extends State<requestPage> {
                                 ),
                               ]),
                               SizedBox(height: 30),
-                              Row(
-                                  // mainAxisAlignment:
-                                  //     MainAxisAlignment.spaceAround,
-                                  children: [
-                                    /*date*/ Row(children: [
-                                      Icon(Icons.calendar_today,
-                                          size: 20, color: Colors.red.shade200),
-                                      Text(
-                                          DateFormat('d MMM, yy')
-                                                      .format(requestDate)
-                                                      .toString() ==
-                                                  DateFormat('d MMM, yy')
-                                                      .format(endDateTime)
-                                                      .toString()
-                                              ? DateFormat(' d MMM, yy')
+                              Row(children: [
+                                /*date*/ Row(children: [
+                                  Icon(Icons.calendar_today,
+                                      size: 20, color: Colors.red.shade200),
+                                  Text(
+                                      DateFormat('MMM dd, yyyy')
                                                   .format(requestDate)
+                                                  .toString() ==
+                                              DateFormat('MMM dd, yyyy')
+                                                  .format(endDateTime)
                                                   .toString()
-                                              : DateFormat(' d MMM, yy')
-                                                      .format(requestDate)
-                                                      .toString() +
-                                                  DateFormat(' - d MMM, yy')
-                                                      .format(endDateTime)
-                                                      .toString(),
-                                          style: const TextStyle(
-                                            letterSpacing: 0.1,
-                                            wordSpacing: 0.1,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w400,
-                                          )),
-                                    ]),
-                                    Container(
-                                        constraints: BoxConstraints(
-                                            minWidth: 15,
-                                            maxWidth: double.infinity)),
-                                    /*time*/ Row(children: [
-                                      Icon(Icons.schedule,
-                                          size: 20, color: Colors.red.shade200),
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 0),
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                                DateFormat(' hh:mm a ')
-                                                        .format(requestDate)
-                                                        .toString() +
-                                                    DateFormat('- hh:mm a')
-                                                        .format(endDateTime)
-                                                        .toString(),
-                                                style: const TextStyle(
-                                                  letterSpacing: 0.1,
-                                                  wordSpacing: 0.1,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w400,
-                                                )),
-                                          ],
-                                        ),
-                                      ),
-                                    ]),
-                                  ]),
+                                          ? DateFormat(' MMM dd, yyyy')
+                                              .format(requestDate)
+                                              .toString()
+                                          : DateFormat(' MMM dd, yy')
+                                                  .format(requestDate)
+                                                  .toString() +
+                                              DateFormat(' - MMM dd, yy')
+                                                  .format(endDateTime)
+                                                  .toString(),
+                                      style: const TextStyle(
+                                        letterSpacing: 0.1,
+                                        wordSpacing: 0.1,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                      )),
+                                ]),
+                                Container(
+                                    constraints: BoxConstraints(
+                                        minWidth: 15,
+                                        maxWidth: double.infinity)),
+                                /*time*/ Row(children: [
+                                  Icon(Icons.schedule,
+                                      size: 20, color: Colors.red.shade200),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 0),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                            DateFormat(' hh:mm a ')
+                                                    .format(requestDate)
+                                                    .toString() +
+                                                DateFormat('- hh:mm a')
+                                                    .format(endDateTime)
+                                                    .toString(),
+                                            style: const TextStyle(
+                                              letterSpacing: 0.1,
+                                              wordSpacing: 0.1,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                ]),
+                              ]),
                               const SizedBox(height: 20),
                               /*location*/ Padding(
                                   padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
