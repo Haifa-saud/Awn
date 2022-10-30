@@ -50,6 +50,7 @@ class PlaceState extends State<Place> {
     Stream<QuerySnapshot> list = FirebaseFirestore.instance
         .collection('posts')
         .where('status', isEqualTo: 'Approved')
+        .orderBy('date', descending: true)
         .snapshots();
     if (cate != 'All' && cate != '') {
       //home page

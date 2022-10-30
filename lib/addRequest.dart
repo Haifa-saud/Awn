@@ -1,7 +1,9 @@
 import 'package:Awn/addPost.dart';
 import 'package:Awn/services/appWidgets.dart';
 import 'package:Awn/services/firebase_storage_services.dart';
+import 'package:Awn/userProfile.dart';
 import 'package:Awn/viewRequests.dart';
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:duration_picker/duration_picker.dart';
@@ -12,8 +14,11 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:intl/locale.dart';
+import 'package:justino_icons/justino_icons.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'TextToSpeech.dart';
 import 'chatPage.dart';
+import 'homePage.dart';
 import 'main.dart';
 import 'package:Awn/map.dart';
 import 'requestWidget.dart';
@@ -88,8 +93,42 @@ class _AddRequestState extends State<addRequest> {
         }
       });
 
+  //! bottom bar nav
+  final iconSNU = <IconData>[
+    Icons.home,
+    Icons.volume_up,
+    Icons.handshake,
+    Icons.person,
+  ];
+
   @override
   Widget build(BuildContext context) {
+    var iconList = <IconData, String>{
+      Icons.home: "Home",
+      JustinoIcons.getByName('speech') as IconData: "Text to Speech",
+      Icons.handshake: "Awn Request",
+      Icons.person: "Profile",
+    };
+
+    Future<void> _onItemTapped(int index) async {
+      if (widget.userType == 'Special Need User') {
+        if (index == 0) {
+          var nav = const homePage();
+          alertDialog(nav);
+        } else if (index == 1) {
+          var nav = Tts(userType: widget.userType);
+          alertDialog(nav);
+        } else if (index == 2) {
+          var nav = addRequest(userType: widget.userType);
+          alertDialog(nav);
+        } else if (index == 3) {
+          var nav = userProfile(
+              userType: widget.userType, selectedTab: 0, selectedSubTab: 0);
+          alertDialog(nav);
+        }
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -123,10 +162,11 @@ class _AddRequestState extends State<addRequest> {
             child: Padding(
                 padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                 child: Container(
-                  color: Colors.grey,
+                  color: Colors.blue.shade800,
                   height: 1.0,
                 ))),
         title: const Text('Request Awn', textAlign: TextAlign.center),
+        centerTitle: true,
       ),
       body: AwnRequestForm(),
       floatingActionButton: FloatingActionButton(
@@ -150,25 +190,89 @@ class _AddRequestState extends State<addRequest> {
             ),
           ),
         ),
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) =>
-                  addPost(userType: widget.userType),
-              transitionDuration: Duration(seconds: 1),
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
-        },
+        onPressed: () {},
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      bottomNavigationBar: BottomNavBar(
-        onPress: (int value) => setState(() {
-          _selectedIndex = value;
-        }),
-        userType: widget.userType,
-        currentI: 2,
+      bottomNavigationBar: AnimatedBottomNavigationBar.builder(
+        splashColor: Colors.blue,
+        backgroundColor: Colors.white,
+        splashRadius: 1,
+        splashSpeedInMilliseconds: 100,
+        tabBuilder: (int index, bool isActive) {
+          final color = isActive ? Colors.blue : Colors.grey;
+          final size = isActive ? 30.0 : 25.0;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                iconList.keys.toList()[index],
+                size: size,
+                color: color,
+              ),
+              const SizedBox(height: 1),
+              Visibility(
+                visible: isActive,
+                child: Text(
+                  iconList.values.toList()[index],
+                  style: TextStyle(
+                      color: color,
+                      fontSize: 10,
+                      letterSpacing: 1,
+                      wordSpacing: 1),
+                ),
+              )
+            ],
+          );
+        },
+        activeIndex: 2,
+        itemCount: 4,
+        gapLocation: GapLocation.end,
+        notchSmoothness: NotchSmoothness.smoothEdge,
+        onTap: (index) {
+          _onItemTapped(index);
+        },
+      ),
+    );
+  }
+
+  Future<dynamic> alertDialog(var nav) {
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: const Text(
+          "Discard the changes you made?",
+          textAlign: TextAlign.left,
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              child: const Text("Keep editing"),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation1, animation2) => nav,
+                  transitionDuration: const Duration(seconds: 1),
+                  reverseTransitionDuration: Duration.zero,
+                ),
+              );
+              clearForm();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              child: const Text("Discard",
+                  style: TextStyle(color: Color.fromARGB(255, 164, 10, 10))),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -193,6 +297,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
   bool showDate = true;
   bool showTime = true;
   bool showDateTime = false;
+  bool invalidStartDate = false;
   var title = '';
   var description = '';
   var duration = '';
@@ -351,15 +456,15 @@ class AwnRequestFormState extends State<AwnRequestForm> {
         padding: const EdgeInsets.all(15),
         child: ListView(
           children: <Widget>[
-            Container(
-                child: Text(
-              '*indicates required fields',
-              style: TextStyle(fontSize: 15),
-            )),
+            // Container(
+            //     child: Text(
+            //   '*indicates required fields',
+            //   style: TextStyle(fontSize: 15),
+            // )),
 
             /*title*/ Container(
               padding: const EdgeInsets.fromLTRB(6, 12, 6, 6),
-              child: Text('What help do you need?*'),
+              child: Text('What help do you need?'),
             ),
 
             Container(
@@ -370,13 +475,11 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   decoration: const InputDecoration(
                     hintText: 'E.g. Help with shopping',
                   ),
-                  // onChanged: (value) {title = value; },
                   validator: (value) {
                     if (value == null ||
                         value.isEmpty ||
                         (value.trim()).isEmpty) {
-                      // double s = checkCurrentTime();
-                      return 'Please enter a title '; //s.toString()
+                      return 'Please enter a title.';
                     }
                     return null;
                   },
@@ -384,11 +487,12 @@ class AwnRequestFormState extends State<AwnRequestForm> {
 
             // time and date
             Container(
-              padding: EdgeInsets.fromLTRB(6, 35, 6, 6),
+              padding: EdgeInsets.fromLTRB(6, 15, 6, 6),
               child: Text('Start Time and Date'),
             ),
 
             //date picker
+
             Row(children: [
               Container(
                 // padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
@@ -412,7 +516,10 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                           ),
                           alignment: Alignment.topLeft,
                           side: BorderSide(
-                              color: Colors.grey.shade400, width: 1)),
+                              color: invalidStartDate
+                                  ? Colors.red
+                                  : Colors.grey.shade400,
+                              width: invalidStartDate ? 2 : 1)),
                       child: showDate
                           ? Align(
                               alignment: Alignment.topLeft,
@@ -431,9 +538,6 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                                       getDate_formated() +
                                           '  -  ' +
                                           '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}'),
-                                  // Spacer(),
-                                  // Icon(Icons.schedule,
-                                  //     size: 25, color: Colors.grey.shade600),
                                 ],
                               ))
                           : const SizedBox(),
@@ -441,46 +545,25 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   ],
                 ),
               ),
-              //time picker
-              // Container(
-              //   padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: [
-              //       ElevatedButton(
-              //         onPressed: () {
-              //           _selectTime(context);
-              //           showTime = true;
-              //         },
-              //         style: ElevatedButton.styleFrom(
-              //             foregroundColor: Colors.black,
-              //             backgroundColor: Colors.transparent,
-              //             padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
-              //             textStyle: const TextStyle(
-              //               fontSize: 18,
-              //             ),
-              //             side: BorderSide(
-              //                 color: Colors.grey.shade400, width: 1)),
-              //         child: showDate
-              //             ? Row(
-              //                 children: [
-              //                   Container(
-              //                       margin: EdgeInsets.only(right: 10),
-              //                       child: Text(getTime(selectedTime)
-              //                           //   data.docs[index]
-              //                           //    ['date_dmy']
-              //                           )),
-              //                   Icon(Icons.schedule,
-              //                       size: 25, color: Colors.grey.shade600),
-              //                 ],
-              //               )
-              //             : const SizedBox(),
-              //         //  const Text('Edit Date'),
-              //       ),
-              //     ],
-              //   ),
-              // )
             ]),
+            Visibility(
+              visible: invalidStartDate,
+              child: const SizedBox(height: 10),
+            ),
+            Visibility(
+                visible: invalidStartDate,
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(17, 0, 0, 0),
+                      child: Text('Please enter a later time.',
+                          style: TextStyle(
+                              color: Colors.red.shade700,
+                              fontSize: 12,
+                              wordSpacing: 0.1,
+                              letterSpacing: 0,
+                              fontWeight: FontWeight.normal)),
+                    ))),
 
             //End time
             Container(
@@ -505,7 +588,6 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   // use24HourFormat: false,
                   onChanged: (val) => print(val),
                   validator: (val) {
-                    print(checkEndTime(val) < 0);
                     if (val!.isEmpty || val == null) {
                       return 'Please specify a time and a date.';
                     } else if (checkEndTime(val) == -1) {
@@ -516,61 +598,6 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   },
                   onSaved: (val) => print(val),
                 )),
-
-            //duration
-            // Container(
-            //   padding: EdgeInsets.fromLTRB(6, 35, 6, 8),
-            //   child: Text('Duration*'),
-            // ),
-
-            // Container(
-            //     padding: const EdgeInsets.fromLTRB(6, 8, 6, 12),
-            //     child: TextFormField(
-            //       readOnly: true,
-            //       controller: durationController,
-            //       onTap: () async {
-            //         DateTimeRangePicker(
-            //             startText: "From",
-            //             endText: "To",
-            //             doneText: "Confirm",
-            //             cancelText: "Cancel",
-            //             interval: 5,
-            //             initialStartTime: DateTime.now(),
-            //             initialEndTime: DateTime.now().add(Duration(days: 20)),
-            //             mode: DateTimeRangePickerMode.dateAndTime,
-            //             minimumTime: DateTime.now().subtract(Duration(days: 5)),
-            //             maximumTime: DateTime.now().add(Duration(days: 25)),
-            //             use24hFormat: true,
-            //             onConfirm: (start, end) {
-            //               print(start);
-            //               print(end);
-            //             }).showPicker(context);
-            //         // String twoDigits(int n) => n.toString().padLeft(0);
-            //         // durationController.text =
-            //         //     '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
-            //       },
-            //       decoration: InputDecoration(
-            //         suffixIcon: IconButton(
-            //           icon: const Icon(Icons.schedule, size: 25),
-            //           onPressed: () async {
-            //             selectedDuration = await showDurationPicker(
-            //                 context: context,
-            //                 initialTime: const Duration(minutes: 0),
-            //                 snapToMins: 5.0);
-            //             String twoDigits(int n) => n.toString().padLeft(0);
-            //             durationController.text =
-            //                 '${twoDigits(selectedDuration!.inHours.remainder(60))}:${twoDigits(selectedDuration.inMinutes.remainder(60))}';
-            //           },
-            //         ),
-            //       ),
-            //       validator: (value) {
-            //         if (value == null ||
-            //             value.isEmpty ||
-            //             (value.trim()).isEmpty) {
-            //           return 'Please specify a duration';
-            //         }
-            //       },
-            //     )),
 
             //description
             Container(
@@ -641,41 +668,34 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                 onPressed: () {
                   if (_formKey.currentState!.validate() &&
                       checkCurrentTime() < 0) {
+                    setState(() {
+                      invalidStartDate = false;
+                    });
                     addToDB();
                   } else if (checkCurrentTime() >= 0) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Please select a later time'),
-                        backgroundColor: Colors.red.shade400,
-                        margin: EdgeInsets.fromLTRB(8, 0, 20, 0),
-                        behavior: SnackBarBehavior.floating,
-                        action: SnackBarAction(
-                          label: 'Dismiss',
-                          disabledTextColor: Colors.white,
-                          textColor: Colors.white,
-                          onPressed: () {
-                            //Do whatever you want
-                          },
-                        ),
-                      ),
-                    );
+                    setState(() {
+                      invalidStartDate = true;
+                    });
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Please fill the required fields above'),
-                        backgroundColor: Colors.red.shade400,
-                        margin: EdgeInsets.fromLTRB(8, 0, 20, 0),
-                        behavior: SnackBarBehavior.floating,
-                        action: SnackBarAction(
-                          label: 'Dismiss',
-                          disabledTextColor: Colors.white,
-                          textColor: Colors.white,
-                          onPressed: () {
-                            //Do whatever you want
-                          },
-                        ),
-                      ),
-                    );
+                    setState(() {
+                      invalidStartDate = false;
+                    });
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //   SnackBar(
+                    //     content: Text('Please fill the required fields above'),
+                    //     backgroundColor: Colors.red.shade400,
+                    //     margin: EdgeInsets.fromLTRB(8, 0, 20, 0),
+                    //     behavior: SnackBarBehavior.floating,
+                    //     action: SnackBarAction(
+                    //       label: 'Dismiss',
+                    //       disabledTextColor: Colors.white,
+                    //       textColor: Colors.white,
+                    //       onPressed: () {
+                    //         //Do whatever you want
+                    //       },
+                    //     ),
+                    //   ),
+                    // );
                   }
                 },
                 child: const Text('Next'),
