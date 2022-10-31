@@ -27,9 +27,15 @@ class requestPage extends StatefulWidget {
   final String userType;
   final String reqID;
   String userID;
+  bool fromVolNotification, fromSNUNotification;
 
   requestPage(
-      {Key? key, required this.reqID, required this.userType, this.userID = ''})
+      {Key? key,
+      required this.reqID,
+      required this.userType,
+      this.userID = '',
+      this.fromVolNotification = false,
+      this.fromSNUNotification = false})
       : super(key: key);
 
   @override
@@ -52,28 +58,32 @@ class _requestPageState extends State<requestPage> {
   //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) => requestPage(
-                  userType: 'Special Need User',
-                  reqID: payload.substring(payload.indexOf('-') + 1)),
-              transitionDuration: const Duration(seconds: 1),
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
-        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) => ChatPage(
-                  requestID: payload.substring(payload.indexOf('-') + 1),
-                  fromNotification: true),
-              transitionDuration: const Duration(seconds: 1),
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
+        if (payload.contains('-')) {
+          if (payload.substring(0, payload.indexOf('-')) ==
+              'requestAcceptance') {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => requestPage(
+                    fromSNUNotification: true,
+                    userType: 'Special Need User',
+                    reqID: payload.substring(payload.indexOf('-') + 1)),
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => ChatPage(
+                    requestID: payload.substring(payload.indexOf('-') + 1),
+                    fromNotification: true),
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
         } else {
           Navigator.push(
               context,
@@ -107,40 +117,55 @@ class _requestPageState extends State<requestPage> {
                   color: Colors.grey,
                   height: 1.0,
                 ))),
-        actions: <Widget>[
-          Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-              child: FutureBuilder(
-                  future: storage.downloadURL('logo.jpg'),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done &&
-                        snapshot.hasData) {
-                      return Center(
-                        child: Image.network(
-                          snapshot.data!,
-                          fit: BoxFit.cover,
-                          width: 40,
-                          height: 40,
-                        ),
-                      );
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting ||
-                        !snapshot.hasData) {
-                      return Center(
-                          child: CircularProgressIndicator(
-                        color: Colors.blue,
-                      ));
-                    }
-                    return Container();
-                  }))
-        ],
+        // actions: <Widget>[
+        //   Padding(
+        //       padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+        //       child: FutureBuilder(
+        //           future: storage.downloadURL('logo.jpg'),
+        //           builder:
+        //               (BuildContext context, AsyncSnapshot<String> snapshot) {
+        //             if (snapshot.connectionState == ConnectionState.done &&
+        //                 snapshot.hasData) {
+        //               return Center(
+        //                 child: Image.network(
+        //                   snapshot.data!,
+        //                   fit: BoxFit.cover,
+        //                   width: 40,
+        //                   height: 40,
+        //                 ),
+        //               );
+        //             }
+        //             if (snapshot.connectionState == ConnectionState.waiting ||
+        //                 !snapshot.hasData) {
+        //               return Center(
+        //                   child: CircularProgressIndicator(
+        //                 color: Colors.blue,
+        //               ));
+        //             }
+        //             return Container();
+        //           }))
+        // ],
+        centerTitle: true,
         title: const Text('Awn Request'),
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
             onPressed: () {
-              if (widget.userType == 'Volunteer') {
-                Hive.box("currentPage").put("RequestId", '');
+              Hive.box("currentPage").put("RequestId", '');
+              if (widget.fromSNUNotification) {
+                Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation1, animation2) =>
+                        userProfile(
+                      userType: 'Special Need User',
+                      selectedTab: 1,
+                      selectedSubTab: 1,
+                    ),
+                    transitionDuration: const Duration(seconds: 1),
+                    reverseTransitionDuration: Duration.zero,
+                  ),
+                );
+              } else if (widget.fromVolNotification) {
                 Navigator.pushReplacement(
                   context,
                   PageRouteBuilder(
@@ -151,19 +176,7 @@ class _requestPageState extends State<requestPage> {
                   ),
                 );
               } else {
-                Hive.box("currentPage").put("RequestId", '');
-                Navigator.pushReplacement(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation1, animation2) =>
-                        userProfile(
-                            userType: widget.userType,
-                            selectedTab: 1,
-                            selectedSubTab: 0),
-                    transitionDuration: const Duration(seconds: 1),
-                    reverseTransitionDuration: Duration.zero,
-                  ),
-                );
+                Navigator.of(context).pop();
               }
             }),
         automaticallyImplyLeading: false,

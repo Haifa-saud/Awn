@@ -122,29 +122,29 @@ class _loginState extends State<login> {
                     SizedBox(
                       height: height * 0.05,
                     ),
-                    // StreamBuilder<List<usersModel>>(
-                    //   stream: readVolunteer(),
-                    //   builder: (context, snapshot) {
-                    //     if (snapshot.connectionState ==
-                    //         ConnectionState.waiting) {
-                    //       return const Center(
-                    //           child: CircularProgressIndicator());
-                    //     }
-                    //     if (snapshot.hasError) {
-                    //       return Text(
-                    //           'Something went wrong! ${snapshot.error}');
-                    //     } else if (snapshot.hasData) {
-                    //       final AllshopOwners = snapshot.data!.toList();
-                    //       for (int i = 0; i < AllshopOwners.length; i++) {
-                    //         myList.add(AllshopOwners[i].id);
-                    //       }
-                    //     } else {
-                    //       return const Center(
-                    //           child: CircularProgressIndicator());
-                    //     }
-                    //     return const Text('');
-                    //   },
-                    // ),
+                    StreamBuilder<List<usersModel>>(
+                      stream: readVolunteer(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return Text(
+                              'Something went wrong! ${snapshot.error}');
+                        } else if (snapshot.hasData) {
+                          final AllshopOwners = snapshot.data!.toList();
+                          for (int i = 0; i < AllshopOwners.length; i++) {
+                            myList.add(AllshopOwners[i].id);
+                          }
+                        } else {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        return const Text('');
+                      },
+                    ),
                     Center(
                       child: Text(
                         "Login",
@@ -254,7 +254,6 @@ class _loginState extends State<login> {
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal)),
                         )),
-
                     SizedBox(
                       height: height * 0.02,
                     ),
@@ -320,16 +319,17 @@ class _loginState extends State<login> {
                                   VolunteerId = '';
                                   emailController.clear();
                                   passwordController.clear();
-                                  Navigator.pushNamed(
-                                      context, '/volunteerPage');
-                                  await Workmanager().initialize(
-                                      callbackDispatcher,
-                                      isInDebugMode: false);
-
+                                  await Workmanager()
+                                      .initialize(callbackDispatcher,
+                                          isInDebugMode: true)
+                                      .then((value) => print('workmanager'));
+                                  print('workmanager2');
                                   var time = DateTime.now().second.toString();
                                   await Workmanager().registerPeriodicTask(
                                       time, 'firstTask',
                                       frequency: const Duration(minutes: 15));
+                                  Navigator.pushNamed(
+                                      context, '/volunteerPage');
                                 } else if (VolunteerId ==
                                     'GvQo5Qz5ZnTfQYq5GOhZi22HGCB2') {
                                   Navigator.pushNamed(context, '/adminPage');

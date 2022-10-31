@@ -50,34 +50,32 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
   //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        print(
-            payload.substring(0, payload.indexOf('-')) == 'requestAcceptance');
-
-        print(payload);
-        print(payload.substring(0, payload.indexOf('-')) == 'chat');
-        print(payload.substring(payload.indexOf('-')));
-        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) => requestPage(
-                  userType: 'Special Need User',
-                  reqID: payload.substring(payload.indexOf('-') + 1)),
-              transitionDuration: const Duration(seconds: 1),
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
-        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) => ChatPage(
-                  requestID: payload.substring(payload.indexOf('-') + 1),
-                  fromNotification: true),
-              transitionDuration: const Duration(seconds: 1),
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
+        if (payload.contains('-')) {
+          if (payload.substring(0, payload.indexOf('-')) ==
+              'requestAcceptance') {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => requestPage(
+                    fromSNUNotification: true,
+                    userType: 'Special Need User',
+                    reqID: payload.substring(payload.indexOf('-') + 1)),
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => ChatPage(
+                    requestID: payload.substring(payload.indexOf('-') + 1),
+                    fromNotification: true),
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
         } else {
           Navigator.push(
               context,

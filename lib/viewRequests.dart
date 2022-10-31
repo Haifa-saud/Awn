@@ -44,28 +44,32 @@ class _AddRequestState extends State<viewRequests>
   //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) => requestPage(
-                  userType: 'Special Need User',
-                  reqID: payload.substring(payload.indexOf('-') + 1)),
-              transitionDuration: const Duration(seconds: 1),
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
-        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) => ChatPage(
-                  requestID: payload.substring(payload.indexOf('-') + 1),
-                  fromNotification: true),
-              transitionDuration: const Duration(seconds: 1),
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
+        if (payload.contains('-')) {
+          if (payload.substring(0, payload.indexOf('-')) ==
+              'requestAcceptance') {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => requestPage(
+                    fromSNUNotification: true,
+                    userType: 'Special Need User',
+                    reqID: payload.substring(payload.indexOf('-') + 1)),
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => ChatPage(
+                    requestID: payload.substring(payload.indexOf('-') + 1),
+                    fromNotification: true),
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
         } else {
           Navigator.push(
               context,
@@ -126,6 +130,7 @@ class _AddRequestState extends State<viewRequests>
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w500,
                                           ))),
+                                  Spacer(),
                                   Align(
                                       alignment: Alignment.topRight,
                                       child: IconButton(
@@ -145,7 +150,7 @@ class _AddRequestState extends State<viewRequests>
                               ),
                               Padding(
                                   padding:
-                                      const EdgeInsets.fromLTRB(20, 15, 0, 15),
+                                      const EdgeInsets.fromLTRB(20, 5, 0, 15),
                                   child: Container(
                                       height: 100,
                                       child: const Center(
@@ -346,36 +351,35 @@ class _AddRequestState extends State<viewRequests>
 
     return Scaffold(
       appBar: AppBar(
+        leading: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+            child: FutureBuilder(
+                future: storage.downloadURL('logo.jpg'),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.hasData) {
+                    return Center(
+                      child: Image.network(
+                        snapshot.data!,
+                        fit: BoxFit.cover,
+                        width: 40,
+                        height: 40,
+                      ),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting ||
+                      !snapshot.hasData) {
+                    return Center(
+                        child: CircularProgressIndicator(
+                      color: Colors.blue,
+                    ));
+                  }
+                  return Container();
+                })),
+        centerTitle: true,
         title: const Text('Awn Requests'),
         automaticallyImplyLeading: false,
-        actions: <Widget>[
-          Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-              child: FutureBuilder(
-                  future: storage.downloadURL('logo.png'),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done &&
-                        snapshot.hasData) {
-                      return Center(
-                        child: Image.network(
-                          snapshot.data!,
-                          fit: BoxFit.cover,
-                          width: 40,
-                          height: 40,
-                        ),
-                      );
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting ||
-                        !snapshot.hasData) {
-                      return Center(
-                          child: CircularProgressIndicator(
-                        color: Colors.blue,
-                      ));
-                    }
-                    return Container();
-                  }))
-        ],
       ),
       body: Column(children: [
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

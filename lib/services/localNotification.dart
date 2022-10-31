@@ -27,29 +27,32 @@ void callbackDispatcher() {
 
       if (payload != null && payload.isNotEmpty) {
         print(payload);
-
-        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
-          Navigator.pushReplacement(
-            GlobalContextService.navigatorKey.currentState!.context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) => requestPage(
-                  userType: 'Special Need User',
-                  reqID: payload.substring(payload.indexOf('-') + 1)),
-              transitionDuration: const Duration(seconds: 1),
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
-        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
-          Navigator.pushReplacement(
-            GlobalContextService.navigatorKey.currentState!.context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) => ChatPage(
-                  requestID: payload.substring(payload.indexOf('-') + 1),
-                  fromNotification: true),
-              transitionDuration: const Duration(seconds: 1),
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
+        if (payload.contains('-')) {
+          if (payload.substring(0, payload.indexOf('-')) ==
+              'requestAcceptance') {
+            Navigator.pushReplacement(
+              GlobalContextService.navigatorKey.currentState!.context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => requestPage(
+                    fromSNUNotification: true,
+                    userType: 'Special Need User',
+                    reqID: payload.substring(payload.indexOf('-') + 1)),
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+            Navigator.pushReplacement(
+              GlobalContextService.navigatorKey.currentState!.context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => ChatPage(
+                    requestID: payload.substring(payload.indexOf('-') + 1),
+                    fromNotification: true),
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
         } else {
           Navigator.push(
               GlobalContextService.navigatorKey.currentState!.context,

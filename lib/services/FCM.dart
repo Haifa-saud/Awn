@@ -58,7 +58,8 @@ class PushNotification {
           pageBuilder: (context, animation1, animation2) => requestPage(
               userType: 'Special Need User',
               reqID: message.data['id'],
-              userID: message.data['userID']),
+              userID: message.data['userID'],
+              fromSNUNotification: true),
           transitionDuration: const Duration(seconds: 1),
           reverseTransitionDuration: Duration.zero,
         ),

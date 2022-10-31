@@ -65,6 +65,19 @@ class ChatPageState extends State<ChatPage>
         audioPlayer.setSubscriptionDuration(const Duration(milliseconds: 500));
   }
 
+  void _scrollDown() {
+    if (_controller.hasClients) {
+      print('scroll down');
+      _controller.jumpTo(_controller.position.maxScrollExtent);
+
+      // _controller.animateTo(
+      //   _controller.position.maxScrollExtent,
+      //   duration: Duration(seconds: 2),
+      //   curve: Curves.fastOutSlowIn,
+      // );
+    }
+  }
+
   NotificationService notificationService = NotificationService();
 
   @override
@@ -75,6 +88,7 @@ class ChatPageState extends State<ChatPage>
     Hive.box("currentPage").put("ChatReqId", widget.requestID);
     notificationService = NotificationService();
     listenToNotificationStream();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollDown());
     notificationService.initializePlatformNotifications();
     super.initState();
   }
@@ -82,28 +96,32 @@ class ChatPageState extends State<ChatPage>
   //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) => requestPage(
-                  userType: 'Special Need User',
-                  reqID: payload.substring(payload.indexOf('-') + 1)),
-              transitionDuration: const Duration(seconds: 1),
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
-        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) => ChatPage(
-                  requestID: payload.substring(payload.indexOf('-') + 1),
-                  fromNotification: true),
-              transitionDuration: const Duration(seconds: 1),
-              reverseTransitionDuration: Duration.zero,
-            ),
-          );
+        if (payload.contains('-')) {
+          if (payload.substring(0, payload.indexOf('-')) ==
+              'requestAcceptance') {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => requestPage(
+                    fromSNUNotification: true,
+                    userType: 'Special Need User',
+                    reqID: payload.substring(payload.indexOf('-') + 1)),
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => ChatPage(
+                    requestID: payload.substring(payload.indexOf('-') + 1),
+                    fromNotification: true),
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
         } else {
           Navigator.push(
               context,
@@ -160,6 +178,7 @@ class ChatPageState extends State<ChatPage>
   }
 
   final FlutterTts flutterTts = FlutterTts();
+  final ScrollController _controller = ScrollController();
 
   speak(String text) async {
     await flutterTts.setLanguage("en-US");
@@ -230,7 +249,7 @@ class ChatPageState extends State<ChatPage>
                           child: Padding(
                               padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                               child: Container(
-                                color: Colors.grey,
+                                color: Colors.blue.shade800,
                                 height: 1.0,
                               ))),
                     ),
@@ -256,6 +275,7 @@ class ChatPageState extends State<ChatPage>
                                 } else {
                                   final messages = snapshot.data;
                                   return ListView.builder(
+                                    controller: _controller,
                                     shrinkWrap: true,
                                     physics: const BouncingScrollPhysics(),
                                     itemCount: messages.size,
