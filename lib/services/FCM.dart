@@ -68,7 +68,7 @@ class PushNotification {
         GlobalContextService.navigatorKey.currentContext!,
         PageRouteBuilder(
           pageBuilder: (context, animation1, animation2) =>
-              ChatPage(requestID: message.data['id']),
+              ChatPage(requestID: message.data['id'], fromNotification: true),
           transitionDuration: const Duration(seconds: 1),
           reverseTransitionDuration: Duration.zero,
         ),

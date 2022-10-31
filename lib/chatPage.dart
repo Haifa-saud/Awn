@@ -171,7 +171,7 @@ class ChatPageState extends State<ChatPage>
 
   @override
   Widget build(BuildContext context) {
-    var upcomingMessageDate = '00/00/0000';
+    var previousMessageDate = '00/00/0000';
     var unreadMessages = false;
     var showOnce = true;
     const radius = Radius.circular(12);
@@ -242,7 +242,7 @@ class ChatPageState extends State<ChatPage>
                               .collection('requests')
                               .doc(widget.requestID)
                               .collection('chats')
-                              .orderBy('createdAt', descending: true)
+                              .orderBy('createdAt', descending: false)
                               .snapshots(),
                           builder: (context, snapshot) {
                             switch (snapshot.connectionState) {
@@ -258,7 +258,6 @@ class ChatPageState extends State<ChatPage>
                                   return ListView.builder(
                                     shrinkWrap: true,
                                     physics: const BouncingScrollPhysics(),
-                                    reverse: true,
                                     itemCount: messages.size,
                                     padding:
                                         const EdgeInsets.fromLTRB(0, 0, 0, 20),
@@ -271,12 +270,12 @@ class ChatPageState extends State<ChatPage>
                                         unreadMessages = true;
                                         showOnce = false;
                                       }
-                                      if (index != messages.size - 1) {
-                                        upcomingMessageDate =
+                                      if (index != 0) {
+                                        previousMessageDate =
                                             DateFormat('d/M/y')
                                                 .format(DateTime
                                                     .fromMillisecondsSinceEpoch(
-                                                        messages.docs[index + 1]
+                                                        messages.docs[index - 1]
                                                             ['createdAt']))
                                                 .toString();
                                       }
@@ -315,7 +314,7 @@ class ChatPageState extends State<ChatPage>
                                         // ),
 
                                         Center(
-                                          child: upcomingMessageDate !=
+                                          child: previousMessageDate !=
                                                       currentDate &&
                                                   messages.size != 1
                                               ? Container(
@@ -354,7 +353,7 @@ class ChatPageState extends State<ChatPage>
                                               : const SizedBox(height: 0),
                                         ),
                                         Center(
-                                            child: index == messages.size - 1
+                                            child: index == 0
                                                 ? Container(
                                                     margin:
                                                         const EdgeInsets.all(
@@ -393,57 +392,91 @@ class ChatPageState extends State<ChatPage>
                                                   )
                                                 : const SizedBox(height: 0)),
                                         CupertinoContextMenu(
-                                            actions: [
-                                              CupertinoContextMenuAction(
-                                                onPressed: () {
-                                                  var str = messages.docs[index]
-                                                              ['text'] !=
-                                                          ''
-                                                      ? messages.docs[index]
-                                                          ['text']
-                                                      : (messages.docs[index]
-                                                                  ['audio'] !=
-                                                              ''
-                                                          ? 'This is an audio chat'
-                                                          : 'This is an image');
-                                                  Navigator.of(context).pop();
-                                                  speak(str);
-                                                },
-                                                trailingIcon:
-                                                    CupertinoIcons.play,
-                                                child: const Text(
-                                                  "Play",
-                                                ),
-                                              )
-                                            ],
-                                            // child: SingleChildScrollView(
-                                            child: SingleChildScrollView(
-                                              child: Chat(
-                                                message: messages.docs[index]
-                                                    ['text'],
-                                                isMe: messages.docs[index]
-                                                        ['author'] ==
-                                                    currentUser.uid,
-                                                time: DateTime
-                                                    .fromMillisecondsSinceEpoch(
-                                                  messages.docs[index]
-                                                      ['createdAt'],
-                                                ),
-                                                isRead: messages.docs[index]
-                                                    ['read'],
-                                                img: messages.docs[index]
-                                                    ['img'],
-                                                audio: messages.docs[index]
-                                                    ['audio'],
-                                                audioDuration:
+                                          previewBuilder: (BuildContext context,
+                                              Animation<double> animation,
+                                              Widget child) {
+                                            return SingleChildScrollView(
+                                                child: Column(
+                                              children: [
+                                                // your widget's content goes here...
+                                                Chat(
+                                                  message: messages.docs[index]
+                                                      ['text'],
+                                                  isMe: messages.docs[index]
+                                                          ['author'] ==
+                                                      currentUser.uid,
+                                                  time: DateTime
+                                                      .fromMillisecondsSinceEpoch(
                                                     messages.docs[index]
-                                                        ['audioDuration'],
-                                                isPlayerReady: isPlayerReady,
-                                                isPlaying: isPlaying,
-                                                audioPlayer: audioPlayer,
-                                                audioRecorder: audioRecorder,
+                                                        ['createdAt'],
+                                                  ),
+                                                  isRead: messages.docs[index]
+                                                      ['read'],
+                                                  img: messages.docs[index]
+                                                      ['img'],
+                                                  audio: messages.docs[index]
+                                                      ['audio'],
+                                                  audioDuration:
+                                                      messages.docs[index]
+                                                          ['audioDuration'],
+                                                  isPlayerReady: isPlayerReady,
+                                                  isPlaying: isPlaying,
+                                                  audioPlayer: audioPlayer,
+                                                  audioRecorder: audioRecorder,
+                                                ),
+                                              ],
+                                            ));
+                                          },
+                                          actions: [
+                                            CupertinoContextMenuAction(
+                                              onPressed: () {
+                                                var str = messages.docs[index]
+                                                            ['text'] !=
+                                                        ''
+                                                    ? messages.docs[index]
+                                                        ['text']
+                                                    : (messages.docs[index]
+                                                                ['audio'] !=
+                                                            ''
+                                                        ? 'This is an audio chat'
+                                                        : 'This is an image');
+                                                Navigator.of(context).pop();
+                                                speak(str);
+                                              },
+                                              trailingIcon: CupertinoIcons.play,
+                                              child: const Text(
+                                                "Play",
                                               ),
-                                            ))
+                                            )
+                                          ],
+                                          child: SingleChildScrollView(
+                                              child: Container(
+                                            color: const Color(0xFFfcfffe),
+                                            child: Chat(
+                                              message: messages.docs[index]
+                                                  ['text'],
+                                              isMe: messages.docs[index]
+                                                      ['author'] ==
+                                                  currentUser.uid,
+                                              time: DateTime
+                                                  .fromMillisecondsSinceEpoch(
+                                                messages.docs[index]
+                                                    ['createdAt'],
+                                              ),
+                                              isRead: messages.docs[index]
+                                                  ['read'],
+                                              img: messages.docs[index]['img'],
+                                              audio: messages.docs[index]
+                                                  ['audio'],
+                                              audioDuration: messages
+                                                  .docs[index]['audioDuration'],
+                                              isPlayerReady: isPlayerReady,
+                                              isPlaying: isPlaying,
+                                              audioPlayer: audioPlayer,
+                                              audioRecorder: audioRecorder,
+                                            ),
+                                          )),
+                                        )
                                       ]);
                                     },
                                   );
@@ -587,201 +620,215 @@ class ChatState extends State<Chat> with SingleTickerProviderStateMixin {
     const radius = Radius.circular(12);
     const borderRadius = BorderRadius.all(radius);
     return Material(
+        color: const Color(0xFFfcfffe),
         child: Row(
             mainAxisAlignment:
                 widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: <Widget>[
-          Container(
-            margin: const EdgeInsets.fromLTRB(10, 4, 10, 4),
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.8,
-                minWidth: 120),
-            decoration: widget.isMe
-                ? BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      stops: [0.0, 1.0],
-                      colors: [
-                        Colors.blue,
-                        Color(0xFF39d6ce),
-                      ],
-                    ),
-                    borderRadius: borderRadius.subtract(const BorderRadius.only(
-                        bottomRight: Radius.circular(12))))
-                : BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: borderRadius.subtract(const BorderRadius.only(
-                        bottomLeft: Radius.circular(12))),
-                  ),
-            child: Column(
-                crossAxisAlignment: widget.isMe
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                      padding: widget.img == ''
-                          ? const EdgeInsets.fromLTRB(16, 8, 16, 8)
-                          : const EdgeInsets.all(3),
-                      child: Column(
-                          crossAxisAlignment: widget.isMe
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
-                          children: <Widget>[
-                            /*img*/ Visibility(
-                                visible: widget.img != '',
-                                child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: Image.network(
-                                      widget.img,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (BuildContext context,
-                                          Object exception,
-                                          StackTrace? stackTrace) {
-                                        return const Text(
-                                            'Image could not be load');
-                                      },
-                                    ))),
-                            /*audio*/ Visibility(
-                                visible: widget.audio != '',
-                                child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      widget.isPlaying
-                                          ? IconButton(
-                                              icon: (widget.isMe
-                                                  ? const Icon(Icons.stop,
-                                                      color: Colors.white,
-                                                      size: 35)
-                                                  : const Icon(Icons.stop,
-                                                      size: 35)),
-                                              onPressed: () async {
-                                                stopPlayer();
-                                                setState(() {
-                                                  position = Duration.zero;
-                                                });
-                                                cancelPlayerSubscriptions();
-                                              })
-                                          : IconButton(
-                                              icon: (widget.isMe
-                                                  ? const Icon(Icons.play_arrow,
-                                                      color: Colors.white,
-                                                      size: 35)
-                                                  : const Icon(Icons.play_arrow,
-                                                      size: 35)),
-                                              onPressed: () async {
-                                                playAudio(widget.audio);
-                                              }),
-                                      Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const SizedBox(height: 28),
-                                            SliderTheme(
-                                                data: SliderThemeData(
-                                                  overlayShape:
-                                                      SliderComponentShape
-                                                          .noOverlay,
-                                                  trackHeight: 1.5,
-                                                  activeTrackColor: widget.isMe
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                  inactiveTrackColor:
-                                                      Colors.grey.shade300,
-                                                  thumbColor: widget.isMe
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                  thumbShape:
-                                                      const RoundSliderThumbShape(
-                                                          enabledThumbRadius:
-                                                              6),
-                                                ),
-                                                child: Slider(
-                                                    value: position.inSeconds
-                                                        .toDouble(),
-                                                    min: 0,
-                                                    max: duration.inSeconds
-                                                        .toDouble(),
-                                                    onChanged:
-                                                        (double value) async {
-                                                      final position = Duration(
-                                                          seconds:
-                                                              value.toInt());
-                                                      await widget.audioPlayer
-                                                          .seekToPlayer(
-                                                              position);
-                                                    })),
-                                            const SizedBox(height: 6),
-                                            widget.isPlaying
-                                                ? Text(
-                                                    '${position.inMinutes.remainder(60)}:${position.inSeconds.remainder(60)}',
-                                                    style: TextStyle(
-                                                        color: widget.isMe
-                                                            ? Colors.white
-                                                            : Colors.black,
-                                                        fontSize: 14),
-                                                    textAlign: TextAlign.right,
-                                                  )
-                                                : Text(widget.audioDuration,
-                                                    style: TextStyle(
-                                                        color: widget.isMe
-                                                            ? Colors.white
-                                                            : Colors.black,
-                                                        fontSize: 14)),
-                                          ]),
-                                    ])),
-                            /*text*/ Visibility(
-                                visible: widget.message != '',
-                                child: Text(
-                                  widget.message,
-                                  style: TextStyle(
-                                      color: widget.isMe
-                                          ? Colors.white
-                                          : Colors.black,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500),
-                                  textAlign: widget.isMe
-                                      ? TextAlign.end
-                                      : TextAlign.start,
-                                )),
-                          ])),
-                  Padding(
-                      padding: const EdgeInsets.fromLTRB(4, 2, 6, 6),
-                      child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            /*time*/ Align(
-                                alignment: Alignment.topRight,
-                                child: Text(
-                                  DateFormat('hh:mm a')
-                                      .format(widget.time)
-                                      .toString(),
-                                  style: TextStyle(
-                                      color: widget.isMe
-                                          ? Colors.grey.shade200
-                                          : Colors.grey,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 11,
-                                      wordSpacing: 0.2,
-                                      letterSpacing: 0.1),
-                                )),
-                            Visibility(
-                                visible: widget.isMe,
-                                child: const SizedBox(width: 2)),
-                            /*read/unread*/ Visibility(
-                                visible: widget.isMe,
-                                child: Icon(
-                                    widget.isRead ? Icons.done_all : Icons.done,
-                                    color: Colors.grey.shade200,
-                                    size: 14)),
-                          ]))
-                ]),
-          )
-        ]));
+              Container(
+                margin: const EdgeInsets.fromLTRB(10, 4, 10, 4),
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.8,
+                    minWidth: 120),
+                decoration: widget.isMe
+                    ? BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          stops: [0.0, 1.0],
+                          colors: [
+                            Colors.blue,
+                            Color(0xFF39d6ce),
+                          ],
+                        ),
+                        borderRadius: borderRadius.subtract(
+                            const BorderRadius.only(
+                                bottomRight: Radius.circular(12))))
+                    : BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: borderRadius.subtract(
+                            const BorderRadius.only(
+                                bottomLeft: Radius.circular(12))),
+                      ),
+                child: Column(
+                    crossAxisAlignment: widget.isMe
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                          padding: widget.img == ''
+                              ? const EdgeInsets.fromLTRB(16, 8, 16, 8)
+                              : const EdgeInsets.all(3),
+                          child: Column(
+                              crossAxisAlignment: widget.isMe
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
+                              children: <Widget>[
+                                /*img*/ Visibility(
+                                    visible: widget.img != '',
+                                    child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        child: Image.network(
+                                          widget.img,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (BuildContext context,
+                                              Object exception,
+                                              StackTrace? stackTrace) {
+                                            return const Text(
+                                                'Image could not be load');
+                                          },
+                                        ))),
+                                /*audio*/ Visibility(
+                                    visible: widget.audio != '',
+                                    child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          widget.isPlaying
+                                              ? IconButton(
+                                                  icon: (widget.isMe
+                                                      ? const Icon(Icons.stop,
+                                                          color: Colors.white,
+                                                          size: 35)
+                                                      : const Icon(Icons.stop,
+                                                          size: 35)),
+                                                  onPressed: () async {
+                                                    stopPlayer();
+                                                    setState(() {
+                                                      position = Duration.zero;
+                                                    });
+                                                    cancelPlayerSubscriptions();
+                                                  })
+                                              : IconButton(
+                                                  icon: (widget.isMe
+                                                      ? const Icon(
+                                                          Icons.play_arrow,
+                                                          color: Colors.white,
+                                                          size: 35)
+                                                      : const Icon(
+                                                          Icons.play_arrow,
+                                                          size: 35)),
+                                                  onPressed: () async {
+                                                    playAudio(widget.audio);
+                                                  }),
+                                          Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const SizedBox(height: 28),
+                                                SliderTheme(
+                                                    data: SliderThemeData(
+                                                      overlayShape:
+                                                          SliderComponentShape
+                                                              .noOverlay,
+                                                      trackHeight: 1.5,
+                                                      activeTrackColor:
+                                                          widget.isMe
+                                                              ? Colors.white
+                                                              : Colors.black,
+                                                      inactiveTrackColor:
+                                                          Colors.grey.shade300,
+                                                      thumbColor: widget.isMe
+                                                          ? Colors.white
+                                                          : Colors.black,
+                                                      thumbShape:
+                                                          const RoundSliderThumbShape(
+                                                              enabledThumbRadius:
+                                                                  6),
+                                                    ),
+                                                    child: Slider(
+                                                        value: position
+                                                            .inSeconds
+                                                            .toDouble(),
+                                                        min: 0,
+                                                        max: duration.inSeconds
+                                                            .toDouble(),
+                                                        onChanged: (double
+                                                            value) async {
+                                                          final position =
+                                                              Duration(
+                                                                  seconds: value
+                                                                      .toInt());
+                                                          await widget
+                                                              .audioPlayer
+                                                              .seekToPlayer(
+                                                                  position);
+                                                        })),
+                                                const SizedBox(height: 6),
+                                                widget.isPlaying
+                                                    ? Text(
+                                                        '${position.inMinutes.remainder(60)}:${position.inSeconds.remainder(60)}',
+                                                        style: TextStyle(
+                                                            color: widget.isMe
+                                                                ? Colors.white
+                                                                : Colors.black,
+                                                            fontSize: 14),
+                                                        textAlign:
+                                                            TextAlign.right,
+                                                      )
+                                                    : Text(widget.audioDuration,
+                                                        style: TextStyle(
+                                                            color: widget.isMe
+                                                                ? Colors.white
+                                                                : Colors.black,
+                                                            fontSize: 14)),
+                                              ]),
+                                        ])),
+                                /*text*/ Visibility(
+                                    visible: widget.message != '',
+                                    child: Text(
+                                      widget.message,
+                                      style: TextStyle(
+                                          color: widget.isMe
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500),
+                                      textAlign: widget.isMe
+                                          ? TextAlign.end
+                                          : TextAlign.start,
+                                    )),
+                              ])),
+                      Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 2, 6, 6),
+                          child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                /*time*/ Align(
+                                    alignment: Alignment.topRight,
+                                    child: Text(
+                                      DateFormat('hh:mm a')
+                                          .format(widget.time)
+                                          .toString(),
+                                      style: TextStyle(
+                                          color: widget.isMe
+                                              ? Colors.grey.shade200
+                                              : Colors.grey,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11,
+                                          wordSpacing: 0.2,
+                                          letterSpacing: 0.1),
+                                    )),
+                                Visibility(
+                                    visible: widget.isMe,
+                                    child: const SizedBox(width: 2)),
+                                /*read/unread*/ Visibility(
+                                    visible: widget.isMe,
+                                    child: Icon(
+                                        widget.isRead
+                                            ? Icons.done_all
+                                            : Icons.done,
+                                        color: Colors.grey.shade200,
+                                        size: 14)),
+                              ]))
+                    ]),
+              )
+            ]));
   }
 }
 

@@ -55,15 +55,15 @@ Future<void> main() async {
   var notificationAppLaunchDetails =
       await notification.getNotificationAppLaunchDetails();
 
-  if (notificationAppLaunchDetails!.didNotificationLaunchApp) {
-    var Payload = notificationAppLaunchDetails.payload;
-    runApp(MyApp(
-        auth: true, notification: true, payload: Payload!, isAdmin: false));
-  }
+  // if (notificationAppLaunchDetails!.didNotificationLaunchApp) {
+  //   var Payload = notificationAppLaunchDetails.payload;
+  //   runApp(MyApp(
+  //       auth: true, notification: true, payload: Payload!, isAdmin: false));
+  // }
 
-  bool auth = false, notificationB = false, isAdmin = false;
-  String payloadRun = '';
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    bool auth = false, notificationB = false, isAdmin = false;
+    String payloadRun = '';
     if (user == null) {
       Workmanager().cancelAll();
       auth = false;
@@ -71,7 +71,7 @@ Future<void> main() async {
       payloadRun = "";
       isAdmin = false;
     } else {
-      if (notificationAppLaunchDetails.didNotificationLaunchApp) {
+      if (notificationAppLaunchDetails!.didNotificationLaunchApp) {
         payloadRun = notificationAppLaunchDetails.payload!;
         auth = true;
         notificationB = true;
@@ -88,13 +88,12 @@ Future<void> main() async {
         isAdmin = false;
       }
     }
+    runApp(MyApp(
+        auth: auth,
+        notification: notificationB,
+        payload: payloadRun,
+        isAdmin: isAdmin));
   });
-
-  runApp(MyApp(
-      auth: auth,
-      notification: notificationB,
-      payload: payloadRun,
-      isAdmin: isAdmin));
 }
 
 class MyApp extends StatefulWidget {
@@ -119,13 +118,12 @@ class _MyApp extends State<MyApp> {
   Widget build(BuildContext context) {
     print(widget.auth);
     return MaterialApp(
-      
       routes: {
         '/homePage': (ctx) => const homePage(),
         '/volunteerPage': (ctx) => const homePage(),
         "/register": (ctx) => const register(),
         "/login": (ctx) => const login(),
-        "/adminPage": (ctx) => AdminPage(),
+        "/adminPage": (ctx) => const AdminPage(),
       },
       debugShowCheckedModeBanner: false,
       title: 'Home Page',
@@ -145,7 +143,7 @@ class _MyApp extends State<MyApp> {
           color: Colors.white, // Colors.transparent,
           foregroundColor: Colors.black,
         ),
-        textTheme: TextTheme(
+        textTheme: const TextTheme(
           headline6: TextStyle(
               wordSpacing: 3,
               letterSpacing: 1,
@@ -160,7 +158,7 @@ class _MyApp extends State<MyApp> {
               fontWeight: FontWeight.bold), //the body text
           subtitle1: TextStyle(
               wordSpacing: 3,
-              color: const Color(0xFF06283D),
+              color: Color(0xFF06283D),
               letterSpacing: 1,
               fontSize: 18.0), //the text field label
           // subtitle2: TextStyle(
@@ -194,7 +192,7 @@ class _MyApp extends State<MyApp> {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent, // background (button) color
+              backgroundColor: Colors.transparent,
               foregroundColor: const Color(0xFFfcfffe),
               shadowColor: Colors.transparent,
               padding: const EdgeInsets.all(5),
@@ -202,7 +200,7 @@ class _MyApp extends State<MyApp> {
                   borderRadius: BorderRadius.circular(30.0))),
         ),
         snackBarTheme: const SnackBarThemeData(
-          backgroundColor: Colors.blue, //Color(0xFF39d6ce),
+          backgroundColor: Colors.blue,
           actionTextColor: Colors.black,
           behavior: SnackBarBehavior.floating,
           elevation: 1,
@@ -212,7 +210,7 @@ class _MyApp extends State<MyApp> {
       home: widget.auth
           ? (widget.notification
               ? viewRequests(userType: 'Volunteer', reqID: widget.payload)
-              : (widget.isAdmin ? AdminPage() : const homePage()))
+              : (widget.isAdmin ? const AdminPage() : const homePage()))
           : const login(),
     );
   }
