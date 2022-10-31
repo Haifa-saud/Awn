@@ -316,7 +316,7 @@ class ChatPageState extends State<ChatPage>
                                         Center(
                                           child: previousMessageDate !=
                                                       currentDate &&
-                                                  messages.size != 1
+                                                  index != 0
                                               ? Container(
                                                   margin:
                                                       const EdgeInsets.all(12),
