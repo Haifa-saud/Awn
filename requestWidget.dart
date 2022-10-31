@@ -835,7 +835,7 @@ Future<void> deletRequest(docId) async {
       FirebaseFirestore.instance.collection('requests').doc(docId.toString());
   db.delete();
 
-  print(docId);
+  // print(docId);
 }
 
 Future<void> updateDB(docId) async {

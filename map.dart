@@ -42,6 +42,7 @@ class _MyStatefulWidgetState extends State<maps> {
   String DBId = ' ';
   bool addPost = true;
   bool editRequest = false;
+  bool editPost = false;
   String collName = ' ', sucessMsg = '', title = '';
   BorderRadius border = BorderRadius.circular(0);
 
@@ -87,7 +88,7 @@ class _MyStatefulWidgetState extends State<maps> {
   NotificationService notificationService = NotificationService();
   @override
   void initState() {
-    if (widget.typeOfRequest == 'E') {
+    if (widget.typeOfRequest == 'E' || widget.typeOfRequest == 'EP') {
       setState(() {
         position = Position.fromMap(
             {'latitude': widget.latitude, 'longitude': widget.longitude});
@@ -108,6 +109,8 @@ class _MyStatefulWidgetState extends State<maps> {
 
     addPost = widget.typeOfRequest == 'P' ? true : false;
     editRequest = widget.typeOfRequest == 'E' ? true : false;
+    editPost = widget.typeOfRequest == 'EP' ? true : false;
+
     if (addPost) {
       title = "Add Location";
       collName = 'posts';
@@ -121,6 +124,11 @@ class _MyStatefulWidgetState extends State<maps> {
       collName = 'requests';
       border = BorderRadius.circular(30);
       sucessMsg = 'Request location is updated successfully';
+    } else if (editPost) {
+      title = "Update Location";
+      collName = 'posts';
+      border = BorderRadius.circular(30);
+      sucessMsg = 'Place location is updated successfully';
     } else {
       title = "Add Location";
       collName = 'requests';
@@ -181,7 +189,7 @@ class _MyStatefulWidgetState extends State<maps> {
           //         onPressed: () => Navigator.of(context).pop())),
           title: Text(title),
           leading: Visibility(
-              visible: editRequest,
+              visible: editRequest | editPost,
               child: IconButton(
                   icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
                   onPressed: () => Navigator.of(context).pop())),
@@ -320,7 +328,7 @@ class _MyStatefulWidgetState extends State<maps> {
                       child: ElevatedButton(
                         onPressed: () {
                           updateDB();
-                          if (editRequest) {
+                          if (editRequest | editPost) {
                             backToEditPage();
                           } else
                             backToHomePage();
