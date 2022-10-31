@@ -91,6 +91,7 @@ dependencies:
   date_time_picker: ^2.1.0
   syncfusion_flutter_datepicker: ^20.3.52
   f_datetimerangepicker: ^0.2.0
+  firestore_search: ^0.1.9
 
 
   

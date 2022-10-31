@@ -714,6 +714,7 @@ class _MyStatefulWidgetState extends State<addPost> {
     //add all value without the location
     DocumentReference docReference = await posts.add({
       'name': nameController.text,
+      'searchName': (nameController.text).toLowerCase(),
       'category': selectedCategory,
       'img': imagePath,
       'latitude': '',

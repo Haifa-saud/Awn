@@ -91,9 +91,8 @@ class PlaceState extends State<Place> {
       color = Colors.green.shade100;
       textColor = Colors.green.shade200;
     } else {
-      textColor = Colors.black;
-
       color = Colors.white;
+      textColor = Colors.black;
     }
 
     return Scaffold(
@@ -126,7 +125,7 @@ class PlaceState extends State<Place> {
                             if (snapshot.data == null ||
                                 snapshot.data!.docs.isEmpty) {
                               return Center(
-                                  child: Text('There is no places currently',
+                                  child: Text('There is no places currently.',
                                       style: TextStyle(
                                           color: textColor,
                                           fontWeight: FontWeight.bold,
@@ -149,160 +148,161 @@ class PlaceState extends State<Place> {
                                         builder: (context, snap) {
                                           if (snap.hasData) {
                                             var reqLoc = snap.data;
-                                            return Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 24,
-                                                  right: 24,
-                                                  top: 8,
-                                                  bottom: 16),
-                                              child: InkWell(
-                                                onTap: () =>
-                                                    showModalBottomSheet(
-                                                        isScrollControlled:
-                                                            true,
-                                                        backgroundColor:
-                                                            Colors.transparent,
-                                                        context: context,
-                                                        builder: (context) =>
-                                                            buildPlace(
-                                                                data.docs[index]
-                                                                    ['docId'],
-                                                                isAdmin,
-                                                                data.docs[index]
-                                                                    [
-                                                                    'status'])),
-                                                splashColor: Colors.transparent,
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                      color: color,
-                                                      boxShadow: const [
-                                                        BoxShadow(
-                                                            blurRadius: 32,
-                                                            color:
-                                                                Colors.black45,
-                                                            spreadRadius: -8)
-                                                      ],
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15)),
-                                                  child: Stack(
-                                                    children: <Widget>[
-                                                      Column(
-                                                        children: <Widget>[
-                                                          ClipRRect(
-                                                              borderRadius:
-                                                                  const BorderRadius
-                                                                      .only(
-                                                                topLeft: Radius
-                                                                    .circular(
-                                                                        16.0),
-                                                                topRight: Radius
-                                                                    .circular(
-                                                                        16.0),
-                                                              ),
-                                                              child:
-                                                                  AspectRatio(
-                                                                aspectRatio: 2,
-                                                                child: Image
-                                                                    .network(
+                                            return isSearch &&
+                                                    data.docs[index]
+                                                            ['status'] !=
+                                                        'Approved'
+                                                ? Container()
+                                                : Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 24,
+                                                            right: 24,
+                                                            top: 8,
+                                                            bottom: 16),
+                                                    child: InkWell(
+                                                      onTap: () => showModalBottomSheet(
+                                                          isScrollControlled:
+                                                              true,
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .transparent,
+                                                          context: context,
+                                                          builder: (context) =>
+                                                              buildPlace(
                                                                   data.docs[
                                                                           index]
-                                                                      ['img'],
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  errorBuilder: (BuildContext
-                                                                          context,
-                                                                      Object
-                                                                          exception,
-                                                                      StackTrace?
-                                                                          stackTrace) {
-                                                                    return const Text(
-                                                                        'Image could not be load');
-                                                                  },
-                                                                ),
-                                                              )),
-                                                          Container(
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
+                                                                      ['docId'],
+                                                                  isAdmin,
+                                                                  data.docs[
+                                                                          index]
+                                                                      [
+                                                                      'status'])),
+                                                      splashColor:
+                                                          Colors.transparent,
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                            color: color,
+                                                            boxShadow: const [
+                                                              BoxShadow(
+                                                                  blurRadius:
+                                                                      32,
+                                                                  color: Colors
+                                                                      .black45,
+                                                                  spreadRadius:
+                                                                      -8)
+                                                            ],
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15)),
+                                                        child: Stack(
+                                                          children: <Widget>[
+                                                            Column(
                                                               children: <
                                                                   Widget>[
-                                                                Expanded(
-                                                                  child:
-                                                                      Container(
-                                                                          child:
-                                                                              Padding(
-                                                                    padding:
-                                                                        const EdgeInsets.fromLTRB(
-                                                                            13,
-                                                                            8,
-                                                                            0,
-                                                                            8),
-                                                                    child: Text(
-                                                                      data.docs[
-                                                                              index]
-                                                                          [
-                                                                          'name'],
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .left,
-                                                                      style:
-                                                                          const TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.w600,
-                                                                        fontSize:
-                                                                            20,
-                                                                      ),
+                                                                ClipRRect(
+                                                                    borderRadius:
+                                                                        const BorderRadius
+                                                                            .only(
+                                                                      topLeft: Radius
+                                                                          .circular(
+                                                                              16.0),
+                                                                      topRight:
+                                                                          Radius.circular(
+                                                                              16.0),
                                                                     ),
-                                                                  )),
+                                                                    child:
+                                                                        AspectRatio(
+                                                                      aspectRatio:
+                                                                          2,
+                                                                      child: Image
+                                                                          .network(
+                                                                        data.docs[index]
+                                                                            [
+                                                                            'img'],
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                        errorBuilder: (BuildContext context,
+                                                                            Object
+                                                                                exception,
+                                                                            StackTrace?
+                                                                                stackTrace) {
+                                                                          return const Text(
+                                                                              'Image could not be load');
+                                                                        },
+                                                                      ),
+                                                                    )),
+                                                                Container(
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: <
+                                                                        Widget>[
+                                                                      Expanded(
+                                                                        child: Container(
+                                                                            child: Padding(
+                                                                          padding: const EdgeInsets.fromLTRB(
+                                                                              13,
+                                                                              8,
+                                                                              0,
+                                                                              8),
+                                                                          child:
+                                                                              Text(
+                                                                            data.docs[index]['name'],
+                                                                            textAlign:
+                                                                                TextAlign.left,
+                                                                            style:
+                                                                                const TextStyle(
+                                                                              fontWeight: FontWeight.w600,
+                                                                              fontSize: 20,
+                                                                            ),
+                                                                          ),
+                                                                        )),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                                Row(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .center,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .start,
+                                                                  children: <
+                                                                      Widget>[
+                                                                    Padding(
+                                                                        padding: const EdgeInsets.fromLTRB(
+                                                                            13,
+                                                                            0,
+                                                                            0,
+                                                                            15),
+                                                                        child:
+                                                                            Text(
+                                                                          data.docs[index]
+                                                                              [
+                                                                              'category'],
+                                                                          style: TextStyle(
+                                                                              fontSize: 14,
+                                                                              color: Colors.grey.withOpacity(0.8)),
+                                                                        )),
+                                                                    const SizedBox(
+                                                                      width: 4,
+                                                                    ),
+                                                                  ],
                                                                 ),
                                                               ],
                                                             ),
-                                                          ),
-                                                          Row(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .center,
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            children: <Widget>[
-                                                              Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                              .fromLTRB(
-                                                                          13,
-                                                                          0,
-                                                                          0,
-                                                                          15),
-                                                                  child: Text(
-                                                                    data.docs[
-                                                                            index]
-                                                                        [
-                                                                        'category'],
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            14,
-                                                                        color: Colors
-                                                                            .grey
-                                                                            .withOpacity(0.8)),
-                                                                  )),
-                                                              const SizedBox(
-                                                                width: 4,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            );
+                                                    ),
+                                                  );
                                           } else {
                                             return const Center(
                                                 child: Text(''));

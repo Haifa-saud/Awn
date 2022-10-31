@@ -3,6 +3,7 @@ import 'addPost.dart';
 import 'chatPage.dart';
 import 'requestWidget.dart';
 import 'services/FCM.dart';
+import 'package:firestore_search/firestore_search.dart';
 import 'services/appWidgets.dart';
 import 'package:Awn/services/firebase_storage_services.dart';
 import 'package:Awn/services/placeWidget.dart';
@@ -216,11 +217,11 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                               setState(() {
                                 list = FirebaseFirestore.instance
                                     .collection('posts')
-                                    .where('name',
-                                        arrayContains:
-                                            'Winter Wonderland') //_searchController.text)
-                                    .where('status', isEqualTo: 'Approved')
-                                    .snapshots();
+                                    .orderBy('searchName')
+                                    .startAt([value.toLowerCase()]).endAt([
+                                  value.toLowerCase() + '\uf8ff'
+                                ]).snapshots();
+                                _tabController.animateTo((0));
                                 isSearch = true;
                               });
                             } else {
@@ -276,6 +277,10 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   ButtonsTabBar(
+                                    onTap: (index) {
+                                      if (isSearch)
+                                        _tabController.animateTo((0));
+                                    },
                                     controller: _tabController,
                                     decoration: const BoxDecoration(
                                       gradient: LinearGradient(
@@ -310,33 +315,34 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                                 ]),
                             Expanded(
                                 child: Container(
-                                    width: double.maxFinite,
-                                    height: MediaQuery.of(context).size.height,
-                                    child: isSearch
-                                        ? Place(
-                                            userId: userData['id'],
-                                            category: '',
-                                            status: '',
-                                            isSearch: true,
-                                            searchList: list,
-                                            userName: userData['name'],
-                                            userType: userData['Type'],
-                                          )
-                                        : TabBarView(
-                                            controller: _tabController,
-                                            children: snapshot.data!.docs.map(
-                                                (DocumentSnapshot document) {
-                                              String cate = ((document.data()
-                                                  as Map)['category']);
-                                              return Place(
-                                                userId: userData['id'],
-                                                category: cate,
-                                                status: '',
-                                                userName: userData['name'],
-                                                userType: userData['Type'],
-                                              );
-                                            }).toList(),
-                                          )))
+                              width: double.maxFinite,
+                              height: MediaQuery.of(context).size.height,
+                              child: isSearch
+                                  ? Place(
+                                      userId: userData['id'],
+                                      category: '',
+                                      status: '',
+                                      isSearch: true,
+                                      searchList: list,
+                                      userName: userData['name'],
+                                      userType: userData['Type'],
+                                    )
+                                  : TabBarView(
+                                      controller: _tabController,
+                                      children: snapshot.data!.docs
+                                          .map((DocumentSnapshot document) {
+                                        String cate = ((document.data()
+                                            as Map)['category']);
+                                        return Place(
+                                          userId: userData['id'],
+                                          category: cate,
+                                          status: '',
+                                          userName: userData['name'],
+                                          userType: userData['Type'],
+                                        );
+                                      }).toList(),
+                                    ),
+                            ))
                           ]);
                         }
                       },
