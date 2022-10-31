@@ -39,6 +39,9 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
     userData = readUserData(FirebaseAuth.instance.currentUser!.uid);
     getToken();
     acceptanceNotification.initApp();
+    list = FirebaseFirestore.instance.collection('posts').snapshots();
+
+    isSearch = false;
 
     notificationService = NotificationService();
     listenToNotificationStream();
@@ -125,6 +128,11 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
         },
       );
 
+  TextEditingController _searchController = TextEditingController();
+
+  var isSearch;
+  var list;
+
   @override
   Widget build(BuildContext context) {
     print(userData);
@@ -200,6 +208,29 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                           child: Text(
                             "Hello, " + userData['name'],
                           ),
+                        ),
+                        TextField(
+                          controller: _searchController,
+                          onChanged: (value) {
+                            if (_searchController.text.trim() != '') {
+                              setState(() {
+                                list = FirebaseFirestore.instance
+                                    .collection('posts')
+                                    .where('name',
+                                        arrayContains:
+                                            'Winter Wonderland') //_searchController.text)
+                                    .where('status', isEqualTo: 'Approved')
+                                    .snapshots();
+                                isSearch = true;
+                              });
+                            } else {
+                              setState(() {
+                                isSearch = false;
+                              });
+                            }
+                          },
+                          decoration:
+                              InputDecoration(suffixIcon: Icon(Icons.search)),
                         ),
 
                         // Container(
@@ -281,21 +312,31 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
                                 child: Container(
                                     width: double.maxFinite,
                                     height: MediaQuery.of(context).size.height,
-                                    child: TabBarView(
-                                      controller: _tabController,
-                                      children: snapshot.data!.docs
-                                          .map((DocumentSnapshot document) {
-                                        String cate = ((document.data()
-                                            as Map)['category']);
-                                        return Place(
-                                          userId: userData['id'],
-                                          category: cate,
-                                          status: '',
-                                          userName: userData['name'],
-                                          userType: userData['Type'],
-                                        );
-                                      }).toList(),
-                                    )))
+                                    child: isSearch
+                                        ? Place(
+                                            userId: userData['id'],
+                                            category: '',
+                                            status: '',
+                                            isSearch: true,
+                                            searchList: list,
+                                            userName: userData['name'],
+                                            userType: userData['Type'],
+                                          )
+                                        : TabBarView(
+                                            controller: _tabController,
+                                            children: snapshot.data!.docs.map(
+                                                (DocumentSnapshot document) {
+                                              String cate = ((document.data()
+                                                  as Map)['category']);
+                                              return Place(
+                                                userId: userData['id'],
+                                                category: cate,
+                                                status: '',
+                                                userName: userData['name'],
+                                                userType: userData['Type'],
+                                              );
+                                            }).toList(),
+                                          )))
                           ]);
                         }
                       },

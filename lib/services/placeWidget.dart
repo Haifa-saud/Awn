@@ -19,8 +19,12 @@ class Place extends StatefulWidget {
       required this.category,
       required this.status,
       required this.userName,
-      required this.userType});
+      required this.userType,
+      this.isSearch = false,
+      this.searchList});
 
+  var isSearch;
+  var searchList;
   final userId;
   final category;
   final status;
@@ -34,7 +38,8 @@ class Place extends StatefulWidget {
 class PlaceState extends State<Place> {
   @override
   Widget build(BuildContext context) {
-    return placesList(widget.category, widget.status, widget.userId);
+    return placesList(widget.category, widget.status, widget.userId,
+        widget.isSearch, widget.searchList);
   }
 
   Future<String> getLocationAsString(var lat, var lng) async {
@@ -44,7 +49,8 @@ class PlaceState extends State<Place> {
 
   TextEditingController _searchController = TextEditingController();
 
-  Widget placesList(String cate, String status, String userId) {
+  Widget placesList(
+      String cate, String status, String userId, isSearch, searchList) {
     // Wedd : add search controller
     var isAdmin = false;
     Stream<QuerySnapshot> list = FirebaseFirestore.instance
@@ -52,21 +58,25 @@ class PlaceState extends State<Place> {
         .where('status', isEqualTo: 'Approved')
         .orderBy('date', descending: true)
         .snapshots();
-    if (cate != 'All' && cate != '') {
-      //home page
-      list = FirebaseFirestore.instance
-          .collection('posts')
-          .where('category', isEqualTo: cate)
-          .where('status', isEqualTo: 'Approved')
-          .snapshots();
-    }
-    if (status != '' && userId != '') {
-      //user profile
-      list = FirebaseFirestore.instance
-          .collection('posts')
-          .where('status', isEqualTo: status)
-          .where('userId', isEqualTo: userId)
-          .snapshots();
+    if (isSearch) {
+      list = searchList;
+    } else {
+      if (cate != 'All' && cate != '') {
+        //home page
+        list = FirebaseFirestore.instance
+            .collection('posts')
+            .where('category', isEqualTo: cate)
+            .where('status', isEqualTo: 'Approved')
+            .snapshots();
+      }
+      if (status != '' && userId != '') {
+        //user profile
+        list = FirebaseFirestore.instance
+            .collection('posts')
+            .where('status', isEqualTo: status)
+            .where('userId', isEqualTo: userId)
+            .snapshots();
+      }
     }
 
     var textColor;
