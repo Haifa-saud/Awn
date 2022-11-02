@@ -254,7 +254,7 @@ class _MyStatefulWidgetState extends State<addPost> {
               child: Padding(
                   padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                   child: Container(
-                    color: Colors.grey,
+                    color: Colors.blue.shade800,
                     height: 1.0,
                   ))),
           centerTitle: true,
@@ -292,15 +292,11 @@ class _MyStatefulWidgetState extends State<addPost> {
           padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
           child: ListView(children: <Widget>[
             SizedBox(height: 10),
-            Container(
-                child: const Text(
-              '*indicates required fields',
-              style: TextStyle(fontSize: 15),
-            )),
+
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 12, 6, 10),
               child: Text(
-                'Institution Details*',
+                'Institution Details',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -363,7 +359,7 @@ class _MyStatefulWidgetState extends State<addPost> {
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
-                'Institution Image*',
+                'Institution Image',
               ),
             ),
             /*image*/ Column(
@@ -442,7 +438,7 @@ class _MyStatefulWidgetState extends State<addPost> {
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
-                'Contact Information*',
+                'Contact Information',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -483,12 +479,12 @@ class _MyStatefulWidgetState extends State<addPost> {
                 textAlign: TextAlign.left,
                 controller: numberController,
                 decoration: const InputDecoration(
-                    labelText: 'Phone Number', hintText: '05XXXXXXXX'),
+                    labelText: 'Contact Number', hintText: '05XXXXXXXX'),
                 validator: (value) {
                   if (value == null ||
                       value.isEmpty ||
                       (value.trim()).isEmpty) {
-                    return 'Please enter a website.';
+                    return 'Please enter a phone number.';
                   } else {
                     if (value.length > 10 || value.length < 3) {
                       return 'Please enter a valid phone number.';
@@ -508,7 +504,7 @@ class _MyStatefulWidgetState extends State<addPost> {
             const Padding(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 10),
               child: Text(
-                'About*',
+                'About',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),

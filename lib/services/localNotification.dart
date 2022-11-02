@@ -78,7 +78,7 @@ void callbackDispatcher() {
           notificationService.showLocalNotification(
               id: notificationID,
               title: 'Someone Needs Awn!',
-              body: 'New Awn request: ${doc.data()["description"]}',
+              body: 'New Awn request: ${doc.data()["title"]}',
               payload: doc.data()["docId"]);
           await doc.reference.update({
             'notificationStatus': 'sent',

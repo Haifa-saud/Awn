@@ -598,6 +598,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
                   firstDate: SelectedDateTime,
                   lastDate: DateTime((SelectedDateTime.year + 1),
                       SelectedDateTime.month, SelectedDateTime.day),
+                  dateLabelText: "Pick a date and time",
                   // dateLabelText: 'End date and time',
                   // timeLabelText: 'End Time',
                   timeFieldWidth: 150,
@@ -618,7 +619,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
             //description
             Container(
               padding: EdgeInsets.fromLTRB(6, 35, 6, 8),
-              child: Text('Description*',
+              child: Text('Description',
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
 

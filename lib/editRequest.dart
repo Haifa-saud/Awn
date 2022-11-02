@@ -252,40 +252,41 @@ class _EditRequestState extends State<editRequest> {
             child: Padding(
                 padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                 child: Container(
-                  color: Colors.grey,
+                  color: Colors.blue.shade800,
                   height: 1.0,
                 ))),
-        actions: <Widget>[
-          Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-              child: FutureBuilder(
-                  future: storage.downloadURL('logo.png'),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done &&
-                        snapshot.hasData) {
-                      return Center(
-                        child: Image.network(
-                          snapshot.data!,
-                          fit: BoxFit.cover,
-                          width: 40,
-                          height: 40,
-                        ),
-                      );
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting ||
-                        !snapshot.hasData) {
-                      return Center(
-                          child: CircularProgressIndicator(
-                        color: Colors.blue,
-                      ));
-                    }
-                    return Container();
-                  }))
-        ],
+        // actions: <Widget>[
+        //   Padding(
+        //       padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+        //       child: FutureBuilder(
+        //           future: storage.downloadURL('logo.png'),
+        //           builder:
+        //               (BuildContext context, AsyncSnapshot<String> snapshot) {
+        //             if (snapshot.connectionState == ConnectionState.done &&
+        //                 snapshot.hasData) {
+        //               return Center(
+        //                 child: Image.network(
+        //                   snapshot.data!,
+        //                   fit: BoxFit.cover,
+        //                   width: 40,
+        //                   height: 40,
+        //                 ),
+        //               );
+        //             }
+        //             if (snapshot.connectionState == ConnectionState.waiting ||
+        //                 !snapshot.hasData) {
+        //               return Center(
+        //                   child: CircularProgressIndicator(
+        //                 color: Colors.blue,
+        //               ));
+        //             }
+        //             return Container();
+        //           }))
+        // ],
         title: const Text('Edit Request', textAlign: TextAlign.center),
+        centerTitle: true,
         leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+            icon: Icon(Icons.arrow_back_ios, color: Colors.blue.shade800),
             onPressed: () {
               if (isEdited) {
                 showDialog(
@@ -519,23 +520,17 @@ class _EditRequestState extends State<editRequest> {
   }
 
   String getDate() {
-    // ignore: unnecessary_null_comparison
     if (selectedDate == null) {
       return 'select date';
     } else {
-      //print(selectedDate);
-      //return DateFormat('MMM d, yyyy').format(selectedDate);
       return DateFormat('yyyy/MM/dd').format(selectedDate);
     }
   }
 
   String getDate_formated() {
-    // ignore: unnecessary_null_comparison
     if (selectedDate == null) {
       return 'select date';
     } else {
-      // print(selectedDate);
-      //return DateFormat('MMM d, yyyy').format(selectedDate);
       return DateFormat('MMM dd, yyyy').format(selectedDate);
     }
   }
@@ -554,7 +549,6 @@ class _EditRequestState extends State<editRequest> {
   }
 
   String getDateTime() {
-    // ignore: unnecessary_null_comparison
     if (dateTime == null) {
       return 'select date timer';
     } else {
@@ -638,13 +632,11 @@ class _EditRequestState extends State<editRequest> {
     final user = FirebaseAuth.instance.currentUser!;
     String userId = user.uid;
     final now = DateTime.now();
-    // editReq() {}
-    return Form(
-        // key: _formKey,
-        child: Column(children: [
+
+    return Column(children: [
       Expanded(
           child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 20),
+              padding: const EdgeInsets.symmetric(vertical: 0),
               child: StreamBuilder<QuerySnapshot>(
                 stream: reqDetails,
                 builder: (
@@ -692,7 +684,7 @@ class _EditRequestState extends State<editRequest> {
                                       ),
                                       Container(
                                           padding: const EdgeInsets.fromLTRB(
-                                              6, 12, 6, 12),
+                                              6, 12, 6, 6),
                                           child: TextFormField(
                                               maxLength: 20,
                                               controller: titleController,
@@ -720,120 +712,9 @@ class _EditRequestState extends State<editRequest> {
                                               })),
 
                                       // time and date
-                                      // Container(
-                                      //   padding:
-                                      //       EdgeInsets.fromLTRB(6, 35, 6, 6),
-                                      //   child: Text('Time and Date'),
-                                      // ),
-
-                                      // //date picker
-                                      // Row(children: [
-                                      //   Container(
-                                      //     padding: const EdgeInsets.fromLTRB(
-                                      //         6, 12, 6, 12),
-                                      //     child: Row(
-                                      //       mainAxisAlignment:
-                                      //           MainAxisAlignment.spaceBetween,
-                                      //       children: [
-                                      //         ElevatedButton(
-                                      //           onPressed: () {
-                                      //             _selectDate(context);
-                                      //             showDate = true;
-                                      //           },
-                                      //           style: ElevatedButton.styleFrom(
-                                      //               foregroundColor:
-                                      //                   Colors.black,
-                                      //               backgroundColor:
-                                      //                   Colors.white,
-                                      //               padding: const EdgeInsets
-                                      //                       .fromLTRB(
-                                      //                   17, 16, 17, 16),
-                                      //               textStyle: const TextStyle(
-                                      //                 fontSize: 18,
-                                      //               ),
-                                      //               side: BorderSide(
-                                      //                   color: Colors
-                                      //                       .grey.shade400,
-                                      //                   width: 1)),
-                                      //           child: showDate
-                                      //               ? Row(
-                                      //                   children: [
-                                      //                     Container(
-                                      //                         margin: EdgeInsets
-                                      //                             .only(
-                                      //                                 right:
-                                      //                                     10),
-                                      //                         child: Text(
-                                      //                             getDate_formated())),
-                                      //                     Icon(
-                                      //                         Icons
-                                      //                             .calendar_today,
-                                      //                         size: 25,
-                                      //                         color: Colors.grey
-                                      //                             .shade600),
-                                      //                   ],
-                                      //                 )
-                                      //               : const SizedBox(),
-                                      //         ),
-                                      //       ],
-                                      //     ),
-                                      //   ),
-                                      //   //time picker
-                                      //   Container(
-                                      //     padding: const EdgeInsets.fromLTRB(
-                                      //         6, 12, 6, 12),
-                                      //     child: Row(
-                                      //       mainAxisAlignment:
-                                      //           MainAxisAlignment.spaceBetween,
-                                      //       children: [
-                                      //         ElevatedButton(
-                                      //           onPressed: () {
-                                      //             _selectTime(context);
-                                      //             showTime = true;
-                                      //           },
-                                      //           style: ElevatedButton.styleFrom(
-                                      //               foregroundColor:
-                                      //                   Colors.black,
-                                      //               backgroundColor:
-                                      //                   Colors.white,
-                                      //               padding: const EdgeInsets
-                                      //                       .fromLTRB(
-                                      //                   17, 16, 17, 16),
-                                      //               textStyle: const TextStyle(
-                                      //                 fontSize: 18,
-                                      //               ),
-                                      //               side: BorderSide(
-                                      //                   color: Colors
-                                      //                       .grey.shade400,
-                                      //                   width: 1)),
-                                      //           child: showDate
-                                      //               ? Row(
-                                      //                   children: [
-                                      //                     Container(
-                                      //                         margin: EdgeInsets
-                                      //                             .only(
-                                      //                                 right:
-                                      //                                     10),
-                                      //                         child: Text(getTime(
-                                      //                             selectedTime))),
-                                      //                     Icon(Icons.schedule,
-                                      //                         size: 25,
-                                      //                         color: Colors.grey
-                                      //                             .shade600),
-                                      //                   ],
-                                      //                 )
-                                      //               : const SizedBox(),
-                                      //           //  const Text('Edit Date'),
-                                      //         ),
-                                      //       ],
-                                      //     ),
-                                      //   )
-                                      // ]),
-
-                                      // time and date
                                       Container(
                                         padding:
-                                            EdgeInsets.fromLTRB(6, 35, 6, 6),
+                                            EdgeInsets.fromLTRB(6, 15, 6, 6),
                                         child: Text('Start Time and Date'),
                                       ),
 
@@ -899,9 +780,6 @@ class _EditRequestState extends State<editRequest> {
                                                                 getDate_formated() +
                                                                     '  -  ' +
                                                                     '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}'),
-                                                            // Spacer(),
-                                                            // Icon(Icons.schedule,
-                                                            //     size: 25, color: Colors.grey.shade600),
                                                           ],
                                                         ))
                                                     : const SizedBox(),
@@ -909,45 +787,6 @@ class _EditRequestState extends State<editRequest> {
                                             ],
                                           ),
                                         ),
-                                        //time picker
-                                        // Container(
-                                        //   padding: const EdgeInsets.fromLTRB(6, 12, 6, 12),
-                                        //   child: Row(
-                                        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        //     children: [
-                                        //       ElevatedButton(
-                                        //         onPressed: () {
-                                        //           _selectTime(context);
-                                        //           showTime = true;
-                                        //         },
-                                        //         style: ElevatedButton.styleFrom(
-                                        //             foregroundColor: Colors.black,
-                                        //             backgroundColor: Colors.transparent,
-                                        //             padding: const EdgeInsets.fromLTRB(17, 16, 17, 16),
-                                        //             textStyle: const TextStyle(
-                                        //               fontSize: 18,
-                                        //             ),
-                                        //             side: BorderSide(
-                                        //                 color: Colors.grey.shade400, width: 1)),
-                                        //         child: showDate
-                                        //             ? Row(
-                                        //                 children: [
-                                        //                   Container(
-                                        //                       margin: EdgeInsets.only(right: 10),
-                                        //                       child: Text(getTime(selectedTime)
-                                        //                           //   data.docs[index]
-                                        //                           //    ['date_dmy']
-                                        //                           )),
-                                        //                   Icon(Icons.schedule,
-                                        //                       size: 25, color: Colors.grey.shade600),
-                                        //                 ],
-                                        //               )
-                                        //             : const SizedBox(),
-                                        //         //  const Text('Edit Date'),
-                                        //       ),
-                                        //     ],
-                                        //   ),
-                                        // )
                                       ]),
 
                                       //End time
@@ -1047,7 +886,7 @@ class _EditRequestState extends State<editRequest> {
                                       /*location*/
                                       Container(
                                         padding:
-                                            EdgeInsets.fromLTRB(6, 25, 6, 8),
+                                            EdgeInsets.fromLTRB(6, 15, 6, 8),
                                         child: Text('Location',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold)),
@@ -1146,7 +985,6 @@ class _EditRequestState extends State<editRequest> {
                                                           )))
                                                 ],
                                               ))),
-
                                       Center(
                                           child: Row(
                                         crossAxisAlignment:
@@ -1269,7 +1107,6 @@ class _EditRequestState extends State<editRequest> {
                                             child: Visibility(
                                                 //visible: isEdited,
                                                 child:
-                                                    //  visabile
                                                     ElevatedButton(
                                               style: ElevatedButton.styleFrom(
                                                 textStyle: const TextStyle(
@@ -1352,7 +1189,7 @@ class _EditRequestState extends State<editRequest> {
                   );
                 },
               )))
-    ]));
+    ]);
   }
 
   void Confermation() {
@@ -1364,10 +1201,7 @@ class _EditRequestState extends State<editRequest> {
   }
 
   Future<void> updateDB(docId) async {
-//String docId=
     final postID = FirebaseFirestore.instance
-        // .collection('userData')
-        // .doc(userId)
         .collection('requests')
         .doc(docId);
     print(titleController.text);

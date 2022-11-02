@@ -1,5 +1,6 @@
 import 'package:Awn/editRequest.dart';
 import 'package:Awn/requestWidget.dart';
+import 'package:Awn/services/firebase_storage_services.dart';
 import 'package:Awn/services/localNotification.dart';
 import 'package:Awn/viewRequests.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -174,11 +175,13 @@ class _MyStatefulWidgetState extends State<maps> {
       });
 
   LatLng selectedLoc = LatLng(24.7136, 46.6753);
+  final Storage storage = Storage();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
           // leading: Visibility(
           //     visible: editRequest,
           //     child: IconButton(
@@ -186,11 +189,40 @@ class _MyStatefulWidgetState extends State<maps> {
           //         onPressed: () => Navigator.of(context).pop())),
           title: Text(title),
           centerTitle: true,
-          leading: Visibility(
-              visible: editRequest | editPost,
-              child: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-                  onPressed: () => Navigator.of(context).pop())),
+          leading: editRequest | editPost
+              ? Visibility(
+                  visible: editRequest | editPost,
+                  child: IconButton(
+                      icon:
+                          const Icon(Icons.arrow_back_ios, color: Colors.black),
+                      onPressed: () => Navigator.of(context).pop()))
+              : Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+                  child: FutureBuilder(
+                      future: storage.downloadURL('logo.jpg'),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<String> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done &&
+                            snapshot.hasData) {
+                          return Center(
+                            child: Image.network(
+                              snapshot.data!,
+                              fit: BoxFit.cover,
+                              width: 40,
+                              height: 40,
+                            ),
+                          );
+                        }
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
+                            !snapshot.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator(
+                            color: Colors.blue,
+                          ));
+                        }
+                        return Container();
+                      })),
           automaticallyImplyLeading: false),
       body: Stack(
         children: <Widget>[

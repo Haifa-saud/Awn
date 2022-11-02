@@ -327,15 +327,17 @@ class _registerState extends State<register> {
                                           offset: Offset(0, 4),
                                           blurRadius: 5.0)
                                     ],
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      stops: [0.0, 1.0],
-                                      colors: [
-                                        Colors.blue,
-                                        Colors.cyanAccent,
-                                      ],
-                                    ),
+                                    color: Colors.white,
+                                    border: Border.all(color: Colors.blue),
+                                    // gradient: const LinearGradient(
+                                    //   begin: Alignment.topLeft,
+                                    //   end: Alignment.bottomRight,
+                                    //   stops: [0.0, 1.0],
+                                    //   colors: [
+                                    //     Colors.blue,
+                                    //     Colors.cyanAccent,
+                                    //   ],
+                                    // ),
                                     borderRadius: BorderRadius.circular(30),
                                   ),
                                   child: ElevatedButton(
@@ -348,17 +350,23 @@ class _registerState extends State<register> {
                                           ),
                                         ),
                                         minimumSize: MaterialStateProperty.all(
-                                            const Size(160, 50)),
+                                            Size(
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.2,
+                                                50)),
                                         backgroundColor:
                                             MaterialStateProperty.all(
                                                 Colors.transparent),
                                         shadowColor: MaterialStateProperty.all(
                                             Colors.transparent),
                                       ),
-                                      child: const Text(
+                                      child: Text(
                                         'Back',
                                         style: TextStyle(
-                                            fontSize: 18, color: Colors.white),
+                                            fontSize: 18,
+                                            color: Colors.blue.shade800),
                                       ),
                                       onPressed: controls.onStepCancel),
                                 )),
@@ -393,7 +401,12 @@ class _registerState extends State<register> {
                                           ),
                                         ),
                                         minimumSize: MaterialStateProperty.all(
-                                            const Size(170, 50)),
+                                            Size(
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.5,
+                                                50)),
                                         backgroundColor:
                                             MaterialStateProperty.all(
                                                 Colors.transparent),
@@ -484,7 +497,8 @@ class _registerState extends State<register> {
                                   height: 5,
                                 ),
                                 ToggleSwitch(
-                                  minWidth: 180.0,
+                                  minWidth:
+                                      MediaQuery.of(context).size.width * 0.43,
                                   minHeight: 45.0,
                                   borderWidth: 1,
                                   borderColor: [Colors.blue, Colors.blue],
@@ -605,7 +619,7 @@ class _registerState extends State<register> {
                                     RegExp digit = RegExp(r"(?=.*[0-9])");
                                     if (value == null || value.isEmpty) {
                                       return "Please enter a password";
-                                    } else if (value.length < 7) {
+                                    } else if (value.length < 8) {
                                       return "password should at least be 8 characters"; //ود موجودة ؟
                                     } else if (!Upper.hasMatch(value)) {
                                       return "Password should contain an Upper case";

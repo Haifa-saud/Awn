@@ -1900,7 +1900,7 @@ class MyInfoState extends State<MyInfo> {
                           children: [
                             Container(
                               margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                              width: 150,
+                              width: MediaQuery.of(context).size.width * 0.35,
                               decoration: BoxDecoration(
                                 boxShadow: const [
                                   BoxShadow(
@@ -1932,12 +1932,12 @@ class MyInfoState extends State<MyInfo> {
                                 child: const Text('Edit'),
                               ),
                             ),
-                            const SizedBox(
-                              width: 10,
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.05,
                             ),
                             Container(
                               margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                              width: 150,
+                              width: MediaQuery.of(context).size.width * 0.35,
                               decoration: BoxDecoration(
                                 boxShadow: const [
                                   BoxShadow(
@@ -2203,7 +2203,7 @@ class MyInfoState extends State<MyInfo> {
                           children: [
                             Container(
                               margin: const EdgeInsets.all(10),
-                              width: 150,
+                              width: MediaQuery.of(context).size.width * 0.35,
                               decoration: BoxDecoration(
                                 boxShadow: const [
                                   BoxShadow(
@@ -2299,13 +2299,13 @@ class MyInfoState extends State<MyInfo> {
                                 child: const Text('Save'),
                               ),
                             ),
-                            const SizedBox(
-                              width: 10,
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.05,
                             ),
                             // Cancel changes
                             Container(
                               margin: const EdgeInsets.all(10),
-                              width: 150,
+                              width: MediaQuery.of(context).size.width * 0.35,
                               decoration: BoxDecoration(
                                 boxShadow: const [
                                   BoxShadow(

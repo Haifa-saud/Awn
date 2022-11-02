@@ -321,7 +321,7 @@ class _loginState extends State<login> {
                                   passwordController.clear();
                                   await Workmanager()
                                       .initialize(callbackDispatcher,
-                                          isInDebugMode: true)
+                                          isInDebugMode: false)
                                       .then((value) => print('workmanager'));
                                   print('workmanager2');
                                   var time = DateTime.now().second.toString();

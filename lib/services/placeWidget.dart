@@ -445,6 +445,8 @@ class PlaceState extends State<Place> {
                                                     context: context,
                                                     builder: (ctx) =>
                                                         AlertDialog(
+                                                      title:
+                                                          Text("Delete Place?"),
                                                       content: const Text(
                                                         "Are you sure you want to delete your Place ?",
                                                         textAlign:
