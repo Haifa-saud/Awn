@@ -109,42 +109,6 @@ class _requestPageState extends State<requestPage> {
 
     return Scaffold(
       appBar: AppBar(
-        // bottom: PreferredSize(
-        //     preferredSize: Size.fromHeight(1.0),
-        //     child: Padding(
-        //         padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-        //         child: Container(
-        //           color: Colors.blue.shade800,
-        //           height: 1.0,
-        //         ))),
-        // actions: <Widget>[
-        //   Padding(
-        //       padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-        //       child: FutureBuilder(
-        //           future: storage.downloadURL('logo.jpg'),
-        //           builder:
-        //               (BuildContext context, AsyncSnapshot<String> snapshot) {
-        //             if (snapshot.connectionState == ConnectionState.done &&
-        //                 snapshot.hasData) {
-        //               return Center(
-        //                 child: Image.network(
-        //                   snapshot.data!,
-        //                   fit: BoxFit.cover,
-        //                   width: 40,
-        //                   height: 40,
-        //                 ),
-        //               );
-        //             }
-        //             if (snapshot.connectionState == ConnectionState.waiting ||
-        //                 !snapshot.hasData) {
-        //               return Center(
-        //                   child: CircularProgressIndicator(
-        //                 color: Colors.blue,
-        //               ));
-        //             }
-        //             return Container();
-        //           }))
-        // ],
         centerTitle: true,
         title: const Text('Awn Request'),
         leading: IconButton(

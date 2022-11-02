@@ -751,7 +751,10 @@ class TabButtonsState extends State<TabButtons> with TickerProviderStateMixin {
                                           Container(
                                               margin: const EdgeInsets.fromLTRB(
                                                   6, 0, 0, 0),
-                                              width: 180,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.43,
                                               height: 250,
                                               decoration: BoxDecoration(
                                                 color: Colors.white,
