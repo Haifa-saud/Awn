@@ -94,7 +94,7 @@ class PlaceState extends State<Place> {
       textColor = Colors.green.shade200;
     } else {
       color = Colors.white;
-      textColor = Colors.black;
+      textColor = Colors.blue.shade800;
     }
 
     return Scaffold(
@@ -127,7 +127,10 @@ class PlaceState extends State<Place> {
                             if (snapshot.data == null ||
                                 snapshot.data!.docs.isEmpty) {
                               return Center(
-                                  child: Text('There is no places currently.',
+                                  child: Text(
+                                      isSearch
+                                          ? 'Your search does not match any place.'
+                                          : 'There is no places currently.',
                                       style: TextStyle(
                                           color: textColor,
                                           fontWeight: FontWeight.bold,
@@ -761,7 +764,10 @@ class PlaceState extends State<Place> {
                                                 margin:
                                                     const EdgeInsets.fromLTRB(
                                                         6, 0, 0, 0),
-                                                width: 180,
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.43,
                                                 height: 250,
                                                 decoration: BoxDecoration(
                                                   color: Colors.white,
@@ -933,47 +939,6 @@ class PlaceState extends State<Place> {
               return const Text('');
             }
           }),
-      // floatingActionButton: FloatingActionButton(
-      //   child: Container(
-      //     width: 60,
-      //     height: 60,
-      //     decoration: const BoxDecoration(
-      //       shape: BoxShape.circle,
-      //       gradient: LinearGradient(
-      //         begin: Alignment.topLeft,
-      //         end: Alignment.bottomRight,
-      //         stops: [0.0, 1.0],
-      //         colors: [
-      //           Colors.blue,
-      //           Color(0xFF39d6ce),
-      //         ],
-      //       ),
-      //     ),
-      //     child: const Icon(
-      //       Icons.add,
-      //       size: 40,
-      //     ),
-      //   ),
-      //   onPressed: () {
-      //     Navigator.pushReplacement(
-      //       context,
-      //       PageRouteBuilder(
-      //         pageBuilder: (context, animation1, animation2) => addPost(
-      //           userType: widget.userType,
-      //         ),
-      //         // comments(),
-      //         transitionDuration: const Duration(seconds: 1),
-      //         reverseTransitionDuration: Duration.zero,
-      //       ),
-      //     );
-      //   },
-      // ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      // bottomNavigationBar: BottomNavBar(
-      //   onPress: (int value) {},
-      //   userType: widget.userType,
-      //   currentI: 0,
-      // ),
     );
   }
 

@@ -682,34 +682,46 @@ class _EditRequestState extends State<editRequest> {
                                           textAlign: TextAlign.left,
                                         ),
                                       ),
-                                      Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              6, 12, 6, 6),
-                                          child: TextFormField(
-                                              maxLength: 20,
-                                              controller: titleController,
-                                              decoration: const InputDecoration(
-                                                hintText:
-                                                    'E.g. Help with shopping',
-                                              ),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty ||
-                                                    (value.trim()).isEmpty) {
-                                                  // double s = checkCurrentTime();
-                                                  return 'Please enter a title '; //s.toString()
-                                                }
-                                                return null;
-                                              },
-                                              onChanged: (value) {
-                                                if (titleController.text
-                                                        .trim() !=
-                                                    '') {
-                                                  editing(true);
-                                                } else {
-                                                  editing(false);
-                                                }
-                                              })),
+                                      StatefulBuilder(builder:
+                                          (BuildContext context,
+                                              void Function(void Function())
+                                                  setState) {
+                                        return Container(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                6, 12, 6, 6),
+                                            child: TextFormField(
+                                                maxLength: 20,
+                                                controller: titleController,
+                                                decoration:
+                                                    const InputDecoration(
+                                                  hintText:
+                                                      'E.g. Help with shopping',
+                                                ),
+                                                validator: (value) {
+                                                  if (value == null ||
+                                                      value.isEmpty ||
+                                                      (value.trim()).isEmpty) {
+                                                    // double s = checkCurrentTime();
+                                                    return 'Please enter a title '; //s.toString()
+                                                  }
+                                                  return null;
+                                                },
+                                                onChanged: (value) {
+                                                  if (titleController.text
+                                                          .trim() !=
+                                                      '') {
+                                                    setState(() {
+                                                      isEdited = true;
+                                                    });
+                                                    // editing(true);
+                                                  } else {
+                                                    setState(() {
+                                                      isEdited = false;
+                                                    });
+                                                    // editing(false);
+                                                  }
+                                                }));
+                                      }),
 
                                       // time and date
                                       Container(
@@ -838,50 +850,65 @@ class _EditRequestState extends State<editRequest> {
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold)),
                                       ),
-                                      Container(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            6, 8, 6, 12),
-                                        child: TextFormField(
-                                          controller: descController,
-                                          decoration: InputDecoration(
-                                            hintText:
-                                                'Describe the help in more details',
-                                            enabledBorder: OutlineInputBorder(
+
+                                      StatefulBuilder(builder:
+                                          (BuildContext context,
+                                              void Function(void Function())
+                                                  setState) {
+                                        return Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              6, 8, 6, 12),
+                                          child: TextFormField(
+                                            controller: descController,
+                                            decoration: InputDecoration(
+                                              hintText:
+                                                  'Describe the help in more details',
+                                              enabledBorder: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          30.0),
+                                                  borderSide: BorderSide(
+                                                      color: Colors
+                                                          .grey.shade400)),
+                                              focusedBorder: OutlineInputBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(30.0),
                                                 borderSide: BorderSide(
-                                                    color:
-                                                        Colors.grey.shade400)),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30.0),
-                                              borderSide: BorderSide(
-                                                  color: Colors.blue, width: 2),
+                                                    color: Colors.blue,
+                                                    width: 2),
+                                              ),
                                             ),
-                                          ),
 
-                                          //keyboardType: TextInputType.datetime,
-                                          keyboardType: TextInputType.multiline,
-                                          maxLines: 3,
-                                          maxLength: 150,
-                                          onChanged: (value) {
-                                            description = value;
-                                            if (descController.text.trim() !=
-                                                '') {
-                                              editing(true);
-                                            } else {
-                                              editing(false);
-                                            }
-                                          },
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty ||
-                                                (value.trim()).isEmpty) {
-                                              return 'Please provide a description';
-                                            }
-                                          },
-                                        ),
-                                      ),
+                                            //keyboardType: TextInputType.datetime,
+                                            keyboardType:
+                                                TextInputType.multiline,
+                                            maxLines: 3,
+                                            maxLength: 150,
+                                            onChanged: (value) {
+                                              description = value;
+                                              if (descController.text.trim() !=
+                                                  '') {
+                                                setState(() {
+                                                  isEdited = true;
+                                                });
+                                                // editing(true);
+                                              } else {
+                                                setState(() {
+                                                  isEdited = false;
+                                                });
+                                                // editing(false);
+                                              }
+                                            },
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty ||
+                                                  (value.trim()).isEmpty) {
+                                                return 'Please provide a description';
+                                              }
+                                            },
+                                          ),
+                                        );
+                                      }),
 
                                       /*location*/
                                       Container(
@@ -1106,8 +1133,7 @@ class _EditRequestState extends State<editRequest> {
                                             ),
                                             child: Visibility(
                                                 //visible: isEdited,
-                                                child:
-                                                    ElevatedButton(
+                                                child: ElevatedButton(
                                               style: ElevatedButton.styleFrom(
                                                 textStyle: const TextStyle(
                                                   fontSize: 18,
@@ -1201,9 +1227,7 @@ class _EditRequestState extends State<editRequest> {
   }
 
   Future<void> updateDB(docId) async {
-    final postID = FirebaseFirestore.instance
-        .collection('requests')
-        .doc(docId);
+    final postID = FirebaseFirestore.instance.collection('requests').doc(docId);
     print(titleController.text);
     postID.update({
       'title': titleController.text,

@@ -66,21 +66,21 @@ class editPost extends StatefulWidget {
   State<editPost> createState() => _MyStatefulWidgetState();
 }
 
-// TextEditingController nameController = TextEditingController();
-late TextEditingController nameController;
-//late TextEditingController contactInfoController;
-late TextEditingController descriptionController;
-late TextEditingController numberController;
-late TextEditingController websiteController;
-late var imagectrl;
-var isEdited;
-var imgErrorMessage;
-var selectedCategory;
-
-var reqLoc = '';
-
 class _MyStatefulWidgetState extends State<editPost> {
+  late TextEditingController nameController;
+  late TextEditingController descriptionController;
+  late TextEditingController numberController;
+  late TextEditingController websiteController;
+
+  late var imagectrl;
+  var imgErrorMessage;
+  var selectedCategory;
+
+  var reqLoc = '';
+  var isEdited;
+
   late final NotificationService notificationService;
+
   @override
   void initState() {
     nameController = TextEditingController(text: widget.name);
@@ -146,7 +146,6 @@ class _MyStatefulWidgetState extends State<editPost> {
 
   var selectedCategory2;
 
-  // var editImg = '';
   var editImg = '';
   bool previewImage = false;
   int _selectedIndex = 2;
@@ -176,8 +175,6 @@ class _MyStatefulWidgetState extends State<editPost> {
 
   @override
   Widget build(BuildContext context) {
-    //reqLoc = getLocationAsString(widget.latitude, widget.longitude);
-
     var iconList = widget.userType == 'Volunteer'
         ? <IconData, String>{
             Icons.home: 'Home',
@@ -299,27 +296,6 @@ class _MyStatefulWidgetState extends State<editPost> {
       }
     }
 
-    late GoogleMapController myController;
-    Set<Marker> getMarker(lat, lng) {
-      return <Marker>{
-        Marker(
-            markerId: const MarkerId(''),
-            position: LatLng(lat, lng),
-            icon: BitmapDescriptor.defaultMarker,
-            infoWindow: const InfoWindow(title: 'location'))
-      };
-    }
-
-    Future<String> getLocationAsString(var lat, var lng) async {
-      List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
-      return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
-    }
-
-    final Stream<QuerySnapshot> postDetails = FirebaseFirestore.instance
-        .collection('posts')
-        .where('docId', isEqualTo: widget.docId)
-        .snapshots();
-
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
@@ -330,34 +306,6 @@ class _MyStatefulWidgetState extends State<editPost> {
                   color: Colors.blue.shade800,
                   height: 1.0,
                 ))),
-        // actions: <Widget>[
-        //   Padding(
-        //       padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-        //       child: FutureBuilder(
-        //           future: storage.downloadURL('logo.png'),
-        //           builder:
-        //               (BuildContext context, AsyncSnapshot<String> snapshot) {
-        //             if (snapshot.connectionState == ConnectionState.done &&
-        //                 snapshot.hasData) {
-        //               return Center(
-        //                 child: Image.network(
-        //                   snapshot.data!,
-        //                   fit: BoxFit.cover,
-        //                   width: 40,
-        //                   height: 40,
-        //                 ),
-        //               );
-        //             }
-        //             if (snapshot.connectionState == ConnectionState.waiting ||
-        //                 !snapshot.hasData) {
-        //               return Center(
-        //                   child: CircularProgressIndicator(
-        //                 color: Colors.blue,
-        //               ));
-        //             }
-        //             return Container();
-        //           }))
-        // ],
         centerTitle: true,
         title: const Text('Edit Place', textAlign: TextAlign.center),
         leading: IconButton(
@@ -407,750 +355,7 @@ class _MyStatefulWidgetState extends State<editPost> {
             }),
         automaticallyImplyLeading: false,
       ),
-      body: Column(children: [
-        Expanded(
-            child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 0),
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: postDetails,
-                  builder: (
-                    BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot,
-                  ) {
-                    if (snapshot.hasError) {
-                      return Text('Something went wrong');
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text('Loading');
-                    }
-                    final data = snapshot.requireData;
-                    return ListView.builder(
-                      itemCount: data.size,
-                      itemBuilder: (context, index) {
-                        var reqLoc;
-                        double latitude =
-                            double.parse('${data.docs[index]['latitude']}');
-                        double longitude =
-                            double.parse('${data.docs[index]['longitude']}');
-                        return FutureBuilder(
-                            future: getLocationAsString(latitude, longitude),
-                            builder: (context, snap) {
-                              if (snap.hasData) {
-                                var reqLoc = snap.data;
-
-                                return Form(
-                                  key: _formKey,
-                                  child: Padding(
-                                    padding:
-                                        EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                    child: Column(
-                                      // mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(6, 12, 6, 10),
-                                          child: Text(
-                                            'Institution Details',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                        /*name*/ Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              6, 12, 6, 12),
-                                          child: TextFormField(
-                                              textAlign: TextAlign.left,
-                                              controller: nameController,
-                                              maxLength: 25,
-                                              decoration: const InputDecoration(
-                                                  labelText: "Name",
-                                                  hintText:
-                                                      "E.g. King Saud University"),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty ||
-                                                    (value.trim()).isEmpty) {
-                                                  return 'Please enter the institution name.';
-                                                }
-                                                return null;
-                                              },
-                                              onChanged: (value) {
-                                                if (nameController.text
-                                                        .trim() !=
-                                                    '') {
-                                                  editing(true);
-                                                } else {
-                                                  editing(false);
-                                                }
-                                              }),
-                                        ),
-                                        /*category*/ Container(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                6, 12, 6, 12),
-                                            child: StreamBuilder<QuerySnapshot>(
-                                                stream: category.snapshots(),
-                                                builder: (context, snapshot) {
-                                                  if (!snapshot.hasData) {
-                                                    return Text("Loading");
-                                                  } else {
-                                                    var newValue;
-                                                    return DropdownButtonFormField(
-                                                      isDense: true,
-                                                      onChanged: (newValue) {
-                                                        setState(() {
-                                                          print('newValue');
-                                                          print(newValue);
-                                                          selectedCategory =
-                                                              newValue;
-                                                          selectedCategory2 =
-                                                              newValue;
-                                                          isSedited = true;
-                                                        });
-                                                        editing(true);
-                                                      },
-                                                      //  onChanged: (String newValue) {
-                                                      //   setState(() {
-                                                      //     selectedCategory = newValue;
-                                                      //   });
-                                                      // },
-                                                      validator: (value) =>
-                                                          value == null
-                                                              ? 'Please select a category.'
-                                                              : null,
-                                                      // hint: const Text('Category'),
-                                                      items: snapshot.data!.docs
-                                                          .map((DocumentSnapshot
-                                                              document) {
-                                                        return DropdownMenuItem<
-                                                            String>(
-                                                          value:
-                                                              ((document.data()
-                                                                      as Map)[
-                                                                  'category']),
-                                                          child: Text(
-                                                              (document.data()
-                                                                      as Map)[
-                                                                  'category']),
-                                                        );
-                                                      }).toList(),
-                                                      value: selectedCategory,
-                                                      isExpanded: false,
-                                                    );
-                                                  }
-                                                })),
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(6, 35, 6, 10),
-                                          child: Text(
-                                            'Institution Image',
-                                          ),
-                                        ),
-                                        /*image fromdb */
-                                        Visibility(
-                                            visible: !previewImage,
-                                            child: ClipRRect(
-                                                borderRadius: const BorderRadius
-                                                        .all(
-                                                    Radius.circular(16.0)
-                                                    // topLeft: Radius.circular(16.0),
-                                                    // topRight: Radius.circular(16.0),
-                                                    ),
-                                                child: AspectRatio(
-                                                  aspectRatio: 2,
-                                                  child: Image.network(
-                                                    imagectrl,
-                                                    fit: BoxFit.cover,
-                                                    errorBuilder:
-                                                        (BuildContext context,
-                                                            Object exception,
-                                                            StackTrace?
-                                                                stackTrace) {
-                                                      return const Text(
-                                                          'Image could not be load');
-                                                    },
-                                                  ),
-                                                ))),
-                                        /*image changed*/ Column(
-                                          children: [
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                previewImage
-                                                    ? AspectRatio(
-                                                        aspectRatio: 2,
-                                                        child: ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10),
-                                                            child: Container(
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  border: Border.all(
-                                                                      width: 0,
-                                                                      color: Colors
-                                                                          .blue
-                                                                          .shade50),
-                                                                ),
-                                                                child: Image
-                                                                    .memory(
-                                                                  memoryPath,
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  errorBuilder: (BuildContext
-                                                                          context,
-                                                                      Object
-                                                                          exception,
-                                                                      StackTrace?
-                                                                          stackTrace) {
-                                                                    print(
-                                                                        'error');
-                                                                    return const Text(
-                                                                        'Image could not be load');
-                                                                  },
-                                                                ))))
-                                                    : Container(),
-                                                const SizedBox(height: 8),
-                                                Align(
-                                                  alignment: Alignment.topLeft,
-                                                  child: ElevatedButton(
-                                                    onPressed: () async {
-                                                      List img =
-                                                          await PickImage(
-                                                              ImageSource
-                                                                  .gallery);
-                                                      setState(() {
-                                                        imagePath = img[0];
-                                                        memoryPath = img[1];
-                                                        previewImage = true;
-                                                        print('imagePath');
-                                                        print(imagePath);
-                                                        print('memoryPath');
-                                                        print(memoryPath);
-                                                      });
-                                                      editing(true);
-                                                    },
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                            minimumSize: Size(150,
-                                                                20),
-                                                            foregroundColor:
-                                                                Colors.blue,
-                                                            backgroundColor:
-                                                                Colors.white,
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .fromLTRB(
-                                                                    17,
-                                                                    16,
-                                                                    17,
-                                                                    16),
-                                                            textStyle:
-                                                                const TextStyle(
-                                                              fontSize: 18,
-                                                            ),
-                                                            side: BorderSide(
-                                                                color: imgErrorMessage
-                                                                    ? Colors.red
-                                                                    : Colors
-                                                                        .grey
-                                                                        .shade400,
-                                                                width:
-                                                                    imgErrorMessage
-                                                                        ? 2
-                                                                        : 1)),
-                                                    // child: Text(editImg == '' ? 'Add Image' : editImg),
-                                                    child: Text("Update image"),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                            imgErrorMessage
-                                                ? const Align(
-                                                    alignment:
-                                                        Alignment.topLeft,
-                                                    child: Padding(
-                                                      padding:
-                                                          EdgeInsets.fromLTRB(
-                                                              20, 5, 0, 0),
-                                                      child: Text(
-                                                          'Pleas select an image.',
-                                                          style: TextStyle(
-                                                              color: Colors.red,
-                                                              fontSize: 12,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal)),
-                                                    ))
-                                                : SizedBox(),
-                                          ],
-                                        ),
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(6, 35, 6, 10),
-                                          child: Text(
-                                            'Contact Information',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-
-                                        //website
-                                        Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              6, 12, 6, 12),
-                                          child: TextFormField(
-                                              textAlign: TextAlign.left,
-                                              controller: websiteController,
-                                              decoration: const InputDecoration(
-                                                  labelText: 'Website'),
-                                              validator: (value) {
-                                                if (value!.isNotEmpty &&
-                                                    !validator.url(value)) {
-                                                  return 'Please enter a valid website Url';
-                                                }
-                                                return null;
-                                              },
-                                              onChanged: (value) {
-                                                if (websiteController.text
-                                                        .trim() !=
-                                                    '') {
-                                                  editing(true);
-                                                } else {
-                                                  editing(false);
-                                                }
-                                              }),
-                                        ),
-                                        //phone number
-                                        Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              6, 12, 6, 12),
-                                          child: TextFormField(
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: <
-                                                TextInputFormatter>[
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly
-                                            ],
-                                            // maxLength: 10,
-                                            textAlign: TextAlign.left,
-                                            controller: numberController,
-                                            decoration: const InputDecoration(
-                                                labelText: 'Contact Number',
-                                                hintText: '05XXXXXXXX'),
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty ||
-                                                  (value.trim()).isEmpty) {
-                                                return 'Please enter a phone number.';
-                                              } else {
-                                                if (value.length > 10 ||
-                                                    value.length < 3) {
-                                                  return 'Please enter a valid phone number.';
-                                                }
-                                              }
-                                            },
-                                            onChanged: (value) {
-                                              if (numberController.text
-                                                      .trim() !=
-                                                  '') {
-                                                editing(true);
-                                              } else {
-                                                editing(false);
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                        //description
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(6, 35, 6, 10),
-                                          child: Text(
-                                            'About',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              6, 12, 6, 12),
-                                          child: TextFormField(
-                                            keyboardType:
-                                                TextInputType.multiline,
-                                            maxLines: null,
-                                            maxLength: 400,
-                                            textAlign: TextAlign.left,
-                                            controller: descriptionController,
-                                            decoration: InputDecoration(
-                                              labelText: 'Description',
-                                              enabledBorder: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          30.0),
-                                                  borderSide: BorderSide(
-                                                      color: Colors
-                                                          .grey.shade400)),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(30.0),
-                                                borderSide: const BorderSide(
-                                                    color: Colors.blue,
-                                                    width: 2),
-                                              ),
-                                              errorBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(30.0),
-                                                borderSide: const BorderSide(
-                                                    color: Colors.red,
-                                                    width: 2),
-                                              ),
-                                              focusedErrorBorder:
-                                                  OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(30.0),
-                                                borderSide: const BorderSide(
-                                                    color: Colors.red,
-                                                    width: 2),
-                                              ),
-                                            ),
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty ||
-                                                  (value.trim()).isEmpty) {
-                                                return 'Please enter a description for the place.';
-                                              }
-                                            },
-                                            onChanged: (value) {
-                                              if (descriptionController.text
-                                                      .trim() !=
-                                                  '') {
-                                                editing(true);
-                                              } else {
-                                                editing(false);
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                        /*location*/
-                                        Container(
-                                          padding:
-                                              EdgeInsets.fromLTRB(6, 25, 6, 8),
-                                          child: Text('Location',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                        //loc1,2
-                                        Container(
-                                            child: Column(children: [
-                                          //loc1
-                                          Container(
-                                              // width: 180,
-                                              height: 250,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                              ),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  child: Container(
-                                                      child: GoogleMap(
-                                                    gestureRecognizers: Set()
-                                                      ..add(Factory<
-                                                              TapGestureRecognizer>(
-                                                          () => Gesture(() {
-                                                                Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder: (context) => maps(
-                                                                          dataId: widget
-                                                                              .docId,
-                                                                          typeOfRequest:
-                                                                              'EP',
-                                                                          latitude: double.parse(data.docs[index]
-                                                                              [
-                                                                              'latitude']),
-                                                                          longitude:
-                                                                              double.parse(data.docs[index]['longitude'])),
-                                                                    ));
-                                                              }))),
-                                                    markers: getMarker(
-                                                        latitude, longitude),
-                                                    mapType: MapType.normal,
-                                                    initialCameraPosition:
-                                                        CameraPosition(
-                                                      target: LatLng(
-                                                          double.parse(
-                                                              widget.latitude),
-                                                          double.parse(widget
-                                                              .longitude)),
-                                                      zoom: 12.0,
-                                                    ),
-                                                    onMapCreated:
-                                                        (GoogleMapController
-                                                            controller) {
-                                                      myController = controller;
-                                                    },
-                                                  )))),
-                                          /*location2*/ Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  0, 10, 0, 0),
-                                              child: InkWell(
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) => maps(
-                                                              dataId: data
-                                                                      .docs[index]
-                                                                  ['docId'],
-                                                              typeOfRequest:
-                                                                  'EP',
-                                                              latitude: double.parse(data
-                                                                      .docs[index]
-                                                                  ['latitude']),
-                                                              longitude: double
-                                                                  .parse(data.docs[
-                                                                          index]
-                                                                      ['longitude'])),
-                                                        ));
-                                                  },
-                                                  child: Row(
-                                                    children: [
-                                                      Flexible(
-                                                          // width: 150,
-                                                          child: Text(reqLoc!,
-                                                              style: TextStyle(
-                                                                // color: Colors
-                                                                //     .grey.shade500,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                letterSpacing:
-                                                                    0.1,
-                                                                wordSpacing:
-                                                                    0.1,
-                                                                fontSize: 15,
-                                                                decoration:
-                                                                    TextDecoration
-                                                                        .underline,
-                                                              )))
-                                                    ],
-                                                  )))
-                                        ])),
-                                        // bottons
-                                        Center(
-                                            child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            /*button*/ Container(
-                                              width: 150,
-                                              decoration: BoxDecoration(
-                                                boxShadow: const [
-                                                  BoxShadow(
-                                                      color: Colors.black26,
-                                                      offset: Offset(0, 4),
-                                                      blurRadius: 5.0)
-                                                ],
-                                                gradient: const LinearGradient(
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                  stops: [0.0, 1.0],
-                                                  colors: [
-                                                    Colors.blue,
-                                                    Color(0xFF39d6ce),
-                                                  ],
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                              ),
-                                              child: ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  textStyle: const TextStyle(
-                                                    fontSize: 18,
-                                                  ),
-                                                ),
-                                                onPressed: () {
-                                                  if (isEdited) {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (ctx) =>
-                                                          AlertDialog(
-                                                        content: const Text(
-                                                          "Discard the changes you made?",
-                                                          textAlign:
-                                                              TextAlign.left,
-                                                        ),
-                                                        actions: <Widget>[
-                                                          // cancle button
-                                                          TextButton(
-                                                            onPressed: () {
-                                                              Navigator.of(ctx)
-                                                                  .pop();
-                                                            },
-                                                            child: Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(14),
-                                                              child: const Text(
-                                                                  "Keep editing"),
-                                                            ),
-                                                          ),
-                                                          //ok button
-                                                          TextButton(
-                                                            onPressed:
-                                                                () async {
-                                                              // Navigator.push(
-                                                              //     context,
-                                                              //     MaterialPageRoute(
-                                                              //       builder: (context) => userProfile(
-                                                              //           userType: widget
-                                                              //               .userType,
-                                                              //           selectedTab:
-                                                              //               2,
-                                                              //           selectedSubTab:
-                                                              //               1),
-                                                              //     ));
-                                                              var n =
-                                                                  Navigator.of(
-                                                                      context);
-                                                              n.pop();
-                                                              n.pop();
-                                                              clearForm();
-                                                            },
-                                                            child: Container(
-                                                              //color: Color.fromARGB(255, 164, 20, 20),
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(14),
-                                                              child: const Text(
-                                                                  "Discard",
-                                                                  style: TextStyle(
-                                                                      color: Color.fromARGB(
-                                                                          255,
-                                                                          164,
-                                                                          10,
-                                                                          10))),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    Navigator.of(context).pop();
-                                                  }
-                                                },
-                                                child: const Text('Cancel'),
-                                              ),
-                                            ),
-                                            Container(
-                                              margin: const EdgeInsets.fromLTRB(
-                                                  10, 20, 10, 20),
-                                              width: 150,
-                                              decoration: BoxDecoration(
-                                                boxShadow: const [
-                                                  BoxShadow(
-                                                      color: Colors.black26,
-                                                      offset: Offset(0, 4),
-                                                      blurRadius: 5.0)
-                                                ],
-                                                gradient: const LinearGradient(
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                  stops: [0.0, 1.0],
-                                                  colors: [
-                                                    Colors.blue,
-                                                    Color(0xFF39d6ce),
-                                                  ],
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                              ),
-                                              child: Visibility(
-                                                  visible: isEdited,
-                                                  child: ElevatedButton(
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      textStyle:
-                                                          const TextStyle(
-                                                        fontSize: 18,
-                                                      ),
-                                                    ),
-                                                    onPressed: () {
-                                                      if (_formKey.currentState!
-                                                          .validate()) {
-                                                        print(
-                                                            'selectedCategory');
-                                                        print(selectedCategory);
-                                                        print(
-                                                            'selectedCategory2');
-                                                        print(
-                                                            selectedCategory2);
-                                                        updateDB(widget.docId);
-                                                        setState(() {
-                                                          isSedited = false;
-                                                        });
-                                                        print('end of');
-                                                      } else {
-                                                        ScaffoldMessenger.of(
-                                                                context)
-                                                            .showSnackBar(
-                                                          SnackBar(
-                                                            content: Text(
-                                                                'Please fill the required fields above'),
-                                                            backgroundColor:
-                                                                Colors.red
-                                                                    .shade400,
-                                                            margin: EdgeInsets
-                                                                .fromLTRB(8, 0,
-                                                                    20, 0),
-                                                            behavior:
-                                                                SnackBarBehavior
-                                                                    .floating,
-                                                            action:
-                                                                SnackBarAction(
-                                                              label: 'Dismiss',
-                                                              disabledTextColor:
-                                                                  Colors.white,
-                                                              textColor:
-                                                                  Colors.white,
-                                                              onPressed: () {
-                                                                //Do whatever you want
-                                                              },
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }
-                                                    },
-                                                    child: const Text('Update'),
-                                                  )),
-                                            ),
-                                          ],
-                                        ))
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              }
-                            });
-                      },
-                    );
-                  },
-                )))
-      ]),
-      // placedetails(),
-      //  postdetails(),
+      body: placedetails(),
       floatingActionButton: FloatingActionButton(
         child: Container(
           width: 60,
@@ -1249,12 +454,16 @@ class _MyStatefulWidgetState extends State<editPost> {
         .collection('posts')
         .where('docId', isEqualTo: widget.docId)
         .snapshots();
+
     return Column(children: [
       Expanded(
           child: Container(
               padding: const EdgeInsets.symmetric(vertical: 0),
               child: StreamBuilder<QuerySnapshot>(
-                stream: postDetails,
+                stream: FirebaseFirestore.instance
+                    .collection('posts')
+                    .where('docId', isEqualTo: widget.docId)
+                    .snapshots(),
                 builder: (
                   BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot,
@@ -1298,35 +507,51 @@ class _MyStatefulWidgetState extends State<editPost> {
                                               fontWeight: FontWeight.bold),
                                         ),
                                       ),
-                                      /*name*/ Container(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            6, 12, 6, 12),
-                                        child: TextFormField(
-                                            textAlign: TextAlign.left,
-                                            controller: nameController,
-                                            maxLength: 25,
-                                            decoration: const InputDecoration(
-                                                labelText: "Name",
-                                                hintText:
-                                                    "E.g. King Saud University"),
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty ||
-                                                  (value.trim()).isEmpty) {
-                                                return 'Please enter the institution name.';
-                                              }
-                                              return null;
-                                            },
-                                            onChanged: (value) {
-                                              if (nameController.text.trim() !=
-                                                  '') {
-                                                editing(true);
-                                              } else {
-                                                editing(false);
-                                              }
-                                            }),
-                                      ),
-                                      /*category*/ Container(
+                                      /*name*/ StatefulBuilder(builder:
+                                          (BuildContext context,
+                                              void Function(void Function())
+                                                  setState) {
+                                        return Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              6, 12, 6, 12),
+                                          child: TextFormField(
+                                              textAlign: TextAlign.left,
+                                              controller: nameController,
+                                              maxLength: 25,
+                                              decoration: const InputDecoration(
+                                                  labelText: "Name",
+                                                  hintText:
+                                                      "E.g. King Saud University"),
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty ||
+                                                    (value.trim()).isEmpty) {
+                                                  return 'Please enter the institution name.';
+                                                }
+                                                return null;
+                                              },
+                                              onChanged: (value) {
+                                                if (nameController.text
+                                                        .trim() !=
+                                                    '') {
+                                                  setState(() {
+                                                    isEdited = true;
+                                                  });
+                                                  // editing(true);
+                                                } else {
+                                                  setState(() {
+                                                    isEdited = false;
+                                                  });
+                                                  // editing(false);
+                                                }
+                                              }),
+                                        );
+                                      }),
+                                      /*category*/ StatefulBuilder(builder:
+                                          (BuildContext context,
+                                              void Function(void Function())
+                                                  setState) {
+                                        return Container(
                                           padding: const EdgeInsets.fromLTRB(
                                               6, 12, 6, 12),
                                           child: StreamBuilder<QuerySnapshot>(
@@ -1348,7 +573,9 @@ class _MyStatefulWidgetState extends State<editPost> {
                                                             newValue;
                                                         isSedited = true;
                                                       });
-                                                      editing(true);
+                                                      setState(() {
+                                                        isEdited = true;
+                                                      });
                                                     },
                                                     //  onChanged: (String newValue) {
                                                     //   setState(() {
@@ -1377,7 +604,9 @@ class _MyStatefulWidgetState extends State<editPost> {
                                                     isExpanded: false,
                                                   );
                                                 }
-                                              })),
+                                              }),
+                                        );
+                                      }),
                                       const Padding(
                                         padding:
                                             EdgeInsets.fromLTRB(6, 35, 6, 10),
@@ -1449,55 +678,66 @@ class _MyStatefulWidgetState extends State<editPost> {
                                                               ))))
                                                   : Container(),
                                               const SizedBox(height: 8),
-                                              Align(
-                                                alignment: Alignment.topLeft,
-                                                child: ElevatedButton(
-                                                  onPressed: () async {
-                                                    List img = await PickImage(
-                                                        ImageSource.gallery);
-                                                    setState(() {
-                                                      imagePath = img[0];
-                                                      memoryPath = img[1];
-                                                      previewImage = true;
-                                                      print('imagePath');
-                                                      print(imagePath);
-                                                      print('memoryPath');
-                                                      print(memoryPath);
-                                                    });
-                                                    editing(true);
-                                                  },
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                          minimumSize:
-                                                              Size(150, 20),
-                                                          foregroundColor: Colors
-                                                              .blue,
-                                                          backgroundColor: Colors
-                                                              .white,
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  17,
-                                                                  16,
-                                                                  17,
-                                                                  16),
-                                                          textStyle:
-                                                              const TextStyle(
-                                                            fontSize: 18,
-                                                          ),
-                                                          side: BorderSide(
-                                                              color: imgErrorMessage
-                                                                  ? Colors.red
-                                                                  : Colors.grey
-                                                                      .shade400,
-                                                              width:
-                                                                  imgErrorMessage
-                                                                      ? 2
-                                                                      : 1)),
-                                                  // child: Text(editImg == '' ? 'Add Image' : editImg),
-                                                  child: Text("Update image"),
-                                                ),
-                                              )
+                                              StatefulBuilder(builder:
+                                                  (BuildContext context,
+                                                      void Function(
+                                                              void Function())
+                                                          setState) {
+                                                return Align(
+                                                  alignment: Alignment.topLeft,
+                                                  child: ElevatedButton(
+                                                    onPressed: () async {
+                                                      List img =
+                                                          await PickImage(
+                                                              ImageSource
+                                                                  .gallery);
+                                                      setState(() {
+                                                        imagePath = img[0];
+                                                        memoryPath = img[1];
+                                                        previewImage = true;
+                                                        print('imagePath');
+                                                        print(imagePath);
+                                                        print('memoryPath');
+                                                        print(memoryPath);
+                                                      });
+                                                      setState(() {
+                                                        isEdited = true;
+                                                      });
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                            minimumSize: Size(150,
+                                                                20),
+                                                            foregroundColor:
+                                                                Colors.blue,
+                                                            backgroundColor:
+                                                                Colors.white,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .fromLTRB(
+                                                                    17,
+                                                                    16,
+                                                                    17,
+                                                                    16),
+                                                            textStyle:
+                                                                const TextStyle(
+                                                              fontSize: 18,
+                                                            ),
+                                                            side: BorderSide(
+                                                                color: imgErrorMessage
+                                                                    ? Colors.red
+                                                                    : Colors
+                                                                        .grey
+                                                                        .shade400,
+                                                                width:
+                                                                    imgErrorMessage
+                                                                        ? 2
+                                                                        : 1)),
+                                                    // child: Text(editImg == '' ? 'Add Image' : editImg),
+                                                    child: Text("Update image"),
+                                                  ),
+                                                );
+                                              }),
                                             ],
                                           ),
                                           imgErrorMessage
@@ -1530,70 +770,95 @@ class _MyStatefulWidgetState extends State<editPost> {
                                       ),
 
                                       //website
-                                      Container(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            6, 12, 6, 12),
-                                        child: TextFormField(
+                                      StatefulBuilder(builder:
+                                          (BuildContext context,
+                                              void Function(void Function())
+                                                  setState) {
+                                        return Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              6, 12, 6, 12),
+                                          child: TextFormField(
+                                              textAlign: TextAlign.left,
+                                              controller: websiteController,
+                                              decoration: const InputDecoration(
+                                                  labelText: 'Website'),
+                                              validator: (value) {
+                                                if (value!.isNotEmpty &&
+                                                    !validator.url(value)) {
+                                                  return 'Please enter a valid website Url';
+                                                }
+                                                return null;
+                                              },
+                                              onChanged: (value) {
+                                                if (websiteController.text
+                                                        .trim() !=
+                                                    '') {
+                                                  setState(() {
+                                                    isEdited = true;
+                                                  });
+                                                  // editing(true);
+                                                } else {
+                                                  setState(() {
+                                                    isEdited = false;
+                                                  });
+                                                  // editing(false);
+                                                }
+                                              }),
+                                        );
+                                      }),
+                                      //phone number
+                                      StatefulBuilder(builder:
+                                          (BuildContext context,
+                                              void Function(void Function())
+                                                  setState) {
+                                        return Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              6, 12, 6, 12),
+                                          child: TextFormField(
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: <
+                                                TextInputFormatter>[
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly
+                                            ],
+                                            // maxLength: 10,
                                             textAlign: TextAlign.left,
-                                            controller: websiteController,
+                                            controller: numberController,
                                             decoration: const InputDecoration(
-                                                labelText: 'Website'),
+                                                labelText: 'Contact Number',
+                                                hintText: '05XXXXXXXX'),
                                             validator: (value) {
-                                              if (value!.isNotEmpty &&
-                                                  !validator.url(value)) {
-                                                return 'Please enter a valid website Url';
+                                              if (value == null ||
+                                                  value.isEmpty ||
+                                                  (value.trim()).isEmpty) {
+                                                return 'Please enter a phone number.';
+                                              } else {
+                                                if (value.length > 10 ||
+                                                    value.length < 3) {
+                                                  return 'Please enter a valid phone number.';
+                                                }
                                               }
-                                              return null;
                                             },
                                             onChanged: (value) {
-                                              if (websiteController.text
+                                              if (numberController.text
                                                       .trim() !=
                                                   '') {
-                                                editing(true);
+                                                setState(() {
+                                                  isEdited = true;
+                                                });
+                                                // editing(true);
                                               } else {
-                                                editing(false);
+                                                setState(() {
+                                                  isEdited = false;
+                                                });
+                                                // editing(false);
                                               }
-                                            }),
-                                      ),
-                                      //phone number
-                                      Container(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            6, 12, 6, 12),
-                                        child: TextFormField(
-                                          keyboardType: TextInputType.number,
-                                          inputFormatters: <TextInputFormatter>[
-                                            FilteringTextInputFormatter
-                                                .digitsOnly
-                                          ],
-                                          // maxLength: 10,
-                                          textAlign: TextAlign.left,
-                                          controller: numberController,
-                                          decoration: const InputDecoration(
-                                              labelText: 'Contact Number',
-                                              hintText: '05XXXXXXXX'),
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty ||
-                                                (value.trim()).isEmpty) {
-                                              return 'Please enter a phone number.';
-                                            } else {
-                                              if (value.length > 10 ||
-                                                  value.length < 3) {
-                                                return 'Please enter a valid phone number.';
-                                              }
-                                            }
-                                          },
-                                          onChanged: (value) {
-                                            if (numberController.text.trim() !=
-                                                '') {
-                                              editing(true);
-                                            } else {
-                                              editing(false);
-                                            }
-                                          },
-                                        ),
-                                      ),
+                                            },
+                                          ),
+                                        );
+                                      }),
                                       //description
+
                                       const Padding(
                                         padding:
                                             EdgeInsets.fromLTRB(6, 35, 6, 10),
@@ -1603,61 +868,78 @@ class _MyStatefulWidgetState extends State<editPost> {
                                               fontWeight: FontWeight.bold),
                                         ),
                                       ),
-                                      Container(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            6, 12, 6, 12),
-                                        child: TextFormField(
-                                          keyboardType: TextInputType.multiline,
-                                          maxLines: null,
-                                          maxLength: 400,
-                                          textAlign: TextAlign.left,
-                                          controller: descriptionController,
-                                          decoration: InputDecoration(
-                                            labelText: 'Description',
-                                            enabledBorder: OutlineInputBorder(
+                                      StatefulBuilder(builder:
+                                          (BuildContext context,
+                                              void Function(void Function())
+                                                  setState) {
+                                        return Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              6, 12, 6, 12),
+                                          child: TextFormField(
+                                            keyboardType:
+                                                TextInputType.multiline,
+                                            maxLines: null,
+                                            maxLength: 400,
+                                            textAlign: TextAlign.left,
+                                            controller: descriptionController,
+                                            decoration: InputDecoration(
+                                              labelText: 'Description',
+                                              enabledBorder: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          30.0),
+                                                  borderSide: BorderSide(
+                                                      color: Colors
+                                                          .grey.shade400)),
+                                              focusedBorder: OutlineInputBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(30.0),
-                                                borderSide: BorderSide(
-                                                    color:
-                                                        Colors.grey.shade400)),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30.0),
-                                              borderSide: const BorderSide(
-                                                  color: Colors.blue, width: 2),
+                                                borderSide: const BorderSide(
+                                                    color: Colors.blue,
+                                                    width: 2),
+                                              ),
+                                              errorBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(30.0),
+                                                borderSide: const BorderSide(
+                                                    color: Colors.red,
+                                                    width: 2),
+                                              ),
+                                              focusedErrorBorder:
+                                                  OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(30.0),
+                                                borderSide: const BorderSide(
+                                                    color: Colors.red,
+                                                    width: 2),
+                                              ),
                                             ),
-                                            errorBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30.0),
-                                              borderSide: const BorderSide(
-                                                  color: Colors.red, width: 2),
-                                            ),
-                                            focusedErrorBorder:
-                                                OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30.0),
-                                              borderSide: const BorderSide(
-                                                  color: Colors.red, width: 2),
-                                            ),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty ||
+                                                  (value.trim()).isEmpty) {
+                                                return 'Please enter a description for the place.';
+                                              }
+                                            },
+                                            onChanged: (value) {
+                                              if (descriptionController.text
+                                                      .trim() !=
+                                                  '') {
+                                                setState(() {
+                                                  isEdited = true;
+                                                });
+                                                // editing(true);
+                                              } else {
+                                                setState(() {
+                                                  isEdited = false;
+                                                });
+                                                // editing(false);
+                                              }
+                                            },
                                           ),
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty ||
-                                                (value.trim()).isEmpty) {
-                                              return 'Please enter a description for the place.';
-                                            }
-                                          },
-                                          onChanged: (value) {
-                                            if (descriptionController.text
-                                                    .trim() !=
-                                                '') {
-                                              editing(true);
-                                            } else {
-                                              editing(false);
-                                            }
-                                          },
-                                        ),
-                                      ),
+                                        );
+                                      }),
+
                                       /*location*/
                                       Container(
                                         padding:
@@ -1764,6 +1046,7 @@ class _MyStatefulWidgetState extends State<editPost> {
                                                   ],
                                                 )))
                                       ])),
+
                                       // bottons
                                       Center(
                                           child: Row(
@@ -1952,7 +1235,7 @@ class _MyStatefulWidgetState extends State<editPost> {
                                                 )),
                                           ),
                                         ],
-                                      ))
+                                      )),
                                     ],
                                   ),
                                 ),
@@ -1984,8 +1267,6 @@ class _MyStatefulWidgetState extends State<editPost> {
         ));
   }
 
-  // String imagePath = '';
-  // String imagePath = '';
   File? imageDB;
   String strImg = '';
   Future<List<dynamic>> PickImage(var imgSource) async {
@@ -2020,25 +1301,6 @@ class _MyStatefulWidgetState extends State<editPost> {
     TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
     imagePath = await (await uploadTask).ref.getDownloadURL();
   }
-
-  // Future<void> addImage() async {
-  //   await Permission.photos.request();
-  //   var permissionStatus = await Permission.photos.status;
-  //   if (permissionStatus.isGranted) {
-  //     XFile? img = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-  //     setState(() async {
-  //       File image = File(img!.path);
-  //       print('Image path $image');
-  //       imagePath = image.toString();
-  //       print('Image path $imagePath');
-  //       imageDB = image;
-  //       editImg = 'Update Image';
-  //       //imagectrl = imagePath;
-  //       // File image = imageDB!;
-  //     });
-  //   }
-  // }
 
   Future<void> updateDB(docId) async {
     final posts = FirebaseFirestore.instance.collection('posts').doc(docId);
