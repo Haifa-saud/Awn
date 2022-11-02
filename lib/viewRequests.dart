@@ -548,6 +548,7 @@ class _AddRequestState extends State<viewRequests>
       body: Column(children: [
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           TabBar(
+            physics: NeverScrollableScrollPhysics(),
             controller: _tabController,
             labelPadding: const EdgeInsets.only(left: 0.0, right: 0.0),
             indicator: const BoxDecoration(
@@ -580,124 +581,132 @@ class _AddRequestState extends State<viewRequests>
           child: Container(
             width: double.maxFinite,
             height: MediaQuery.of(context).size.height,
-            child: TabBarView(controller: _tabController, children: [
-              loadMap(widget.userType),
-              Column(children: [
-                Expanded(
-                    child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: requests,
-                          builder: (
-                            BuildContext context,
-                            AsyncSnapshot<QuerySnapshot> snapshot,
-                          ) {
-                            if (snapshot.hasError) {
-                              return const Text('Something went wrong');
-                            }
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
-                            }
-                            if (snapshot.data == null ||
-                                snapshot.data!.docs.isEmpty) {
-                              return const Center(
-                                  child: Text('There is no requests currently',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 17)));
-                            }
-                            final data = snapshot.requireData;
-                            return ListView.builder(
-                              itemCount: data.size,
-                              itemBuilder: (context, index) {
-                                numOFReq = data.size;
-                                if (numOFReq > 0) {
-                                  var reqLoc;
-                                  double latitude = double.parse(
-                                      '${data.docs[index]['latitude']}');
-                                  double longitude = double.parse(
-                                      '${data.docs[index]['longitude']}');
-                                  bool description =
-                                      data.docs[index]['description'] == ''
-                                          ? false
-                                          : true;
-                                  return FutureBuilder(
-                                      future: getLocationAsString(
-                                          latitude, longitude),
-                                      builder: (context, snap) {
-                                        if (snap.hasData) {
-                                          var reqLoc = snap.data;
-                                          return Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
+            child: TabBarView(
+                controller: _tabController,
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  loadMap(widget.userType),
+                  Column(children: [
+                    Expanded(
+                        child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            child: StreamBuilder<QuerySnapshot>(
+                              stream: requests,
+                              builder: (
+                                BuildContext context,
+                                AsyncSnapshot<QuerySnapshot> snapshot,
+                              ) {
+                                if (snapshot.hasError) {
+                                  return const Text('Something went wrong');
+                                }
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                }
+                                if (snapshot.data == null ||
+                                    snapshot.data!.docs.isEmpty) {
+                                  return const Center(
+                                      child: Text(
+                                          'There is no requests currently',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.normal,
+                                              fontSize: 17)));
+                                }
+                                final data = snapshot.requireData;
+                                return ListView.builder(
+                                  itemCount: data.size,
+                                  itemBuilder: (context, index) {
+                                    numOFReq = data.size;
+                                    if (numOFReq > 0) {
+                                      var reqLoc;
+                                      double latitude = double.parse(
+                                          '${data.docs[index]['latitude']}');
+                                      double longitude = double.parse(
+                                          '${data.docs[index]['longitude']}');
+                                      bool description =
+                                          data.docs[index]['description'] == ''
+                                              ? false
+                                              : true;
+                                      return FutureBuilder(
+                                          future: getLocationAsString(
+                                              latitude, longitude),
+                                          builder: (context, snap) {
+                                            if (snap.hasData) {
+                                              var reqLoc = snap.data;
+                                              return Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
                                                       horizontal: 10.0,
                                                       vertical: 10),
-                                              child: Stack(children: [
-                                                InkWell(
-                                                    onTap: () {
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder:
-                                                                (context) =>
-                                                                    requestPage(
-                                                              reqID: data.docs[
-                                                                      index]
-                                                                  ['docId'],
-                                                              userType: widget
-                                                                  .userType,
-                                                            ),
-                                                          ));
-                                                    },
-                                                    child: Container(
-                                                      width: 600,
-                                                      margin:
-                                                          const EdgeInsets.only(
-                                                              top: 12),
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              1),
-                                                      decoration: BoxDecoration(
-                                                          color: Colors.white,
-                                                          boxShadow: const [
-                                                            BoxShadow(
-                                                                blurRadius: 32,
-                                                                color: Colors
-                                                                    .black45,
-                                                                spreadRadius:
-                                                                    -8)
-                                                          ],
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      15)),
-                                                      child: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceEvenly,
-                                                          mainAxisSize:
-                                                              MainAxisSize.max,
-                                                          children: [
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .fromLTRB(
-                                                                      8,
-                                                                      1,
-                                                                      1,
-                                                                      1),
-                                                              child: Column(
-                                                                children: [
-                                                                  Padding(
-                                                                      padding: EdgeInsets
-                                                                          .fromLTRB(
+                                                  child: Stack(children: [
+                                                    InkWell(
+                                                        onTap: () {
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        requestPage(
+                                                                  reqID: data.docs[
+                                                                          index]
+                                                                      ['docId'],
+                                                                  userType: widget
+                                                                      .userType,
+                                                                ),
+                                                              ));
+                                                        },
+                                                        child: Container(
+                                                          width: 600,
+                                                          margin:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  top: 12),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(1),
+                                                          decoration: BoxDecoration(
+                                                              color:
+                                                                  Colors.white,
+                                                              boxShadow: const [
+                                                                BoxShadow(
+                                                                    blurRadius:
+                                                                        32,
+                                                                    color: Colors
+                                                                        .black45,
+                                                                    spreadRadius:
+                                                                        -8)
+                                                              ],
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15)),
+                                                          child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceEvenly,
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .max,
+                                                              children: [
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                              .fromLTRB(
+                                                                          8,
+                                                                          1,
+                                                                          1,
+                                                                          1),
+                                                                  child: Column(
+                                                                    children: [
+                                                                      Padding(
+                                                                          padding: EdgeInsets.fromLTRB(
                                                                               6,
                                                                               10,
                                                                               15,
                                                                               15),
-                                                                      child: Stack(
-                                                                          children: [
+                                                                          child:
+                                                                              Stack(children: [
                                                                             Align(
                                                                                 alignment: Alignment.topLeft,
                                                                                 child: Container(
@@ -712,75 +721,70 @@ class _AddRequestState extends State<viewRequests>
                                                                                           textAlign: TextAlign.left,
                                                                                         )))),
                                                                           ])),
-                                                                  // date and time
-                                                                  Padding(
-                                                                    padding:
-                                                                        const EdgeInsets.fromLTRB(
+                                                                      // date and time
+                                                                      Padding(
+                                                                        padding: const EdgeInsets.fromLTRB(
                                                                             6,
                                                                             20,
                                                                             0,
                                                                             10),
-                                                                    child: Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .start,
-                                                                      children: [
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.only(left: 0),
-                                                                          child:
-                                                                              Row(
-                                                                            children: [
-                                                                              Icon(Icons.calendar_today, size: 20, color: Colors.red.shade200),
-                                                                              Text(' ${data.docs[index]['date_dmy']}',
-                                                                                  style: const TextStyle(
-                                                                                    fontSize: 17,
-                                                                                    fontWeight: FontWeight.w400,
-                                                                                  )),
-                                                                            ],
-                                                                          ),
+                                                                        child:
+                                                                            Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.start,
+                                                                          children: [
+                                                                            Padding(
+                                                                              padding: const EdgeInsets.only(left: 0),
+                                                                              child: Row(
+                                                                                children: [
+                                                                                  Icon(Icons.calendar_today, size: 20, color: Colors.red.shade200),
+                                                                                  Text(' ${data.docs[index]['date_dmy']}',
+                                                                                      style: const TextStyle(
+                                                                                        fontSize: 17,
+                                                                                        fontWeight: FontWeight.w400,
+                                                                                      )),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                            Padding(
+                                                                              padding: const EdgeInsets.only(left: 40),
+                                                                              child: Row(
+                                                                                children: [
+                                                                                  Icon(Icons.schedule, size: 20, color: Colors.red.shade200),
+                                                                                  Text(' ${data.docs[index]['time']}',
+                                                                                      style: const TextStyle(
+                                                                                        fontSize: 17,
+                                                                                        fontWeight: FontWeight.w400,
+                                                                                      )),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                          ],
                                                                         ),
-                                                                        Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.only(left: 40),
-                                                                          child:
-                                                                              Row(
-                                                                            children: [
-                                                                              Icon(Icons.schedule, size: 20, color: Colors.red.shade200),
-                                                                              Text(' ${data.docs[index]['time']}',
-                                                                                  style: const TextStyle(
-                                                                                    fontSize: 17,
-                                                                                    fontWeight: FontWeight.w400,
-                                                                                  )),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
+                                                                      ),
+                                                                    ],
                                                                   ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ]),
-                                                    ))
-                                              ]));
-                                        } else {
-                                          return const Center(
-                                              child:
-                                                  CircularProgressIndicator());
-                                        }
-                                      });
-                                } else {
-                                  return const Center(
-                                      child: Text('No available requests'));
-                                }
+                                                                ),
+                                                              ]),
+                                                        ))
+                                                  ]));
+                                            } else {
+                                              return const Center(
+                                                  child:
+                                                      CircularProgressIndicator());
+                                            }
+                                          });
+                                    } else {
+                                      return const Center(
+                                          child: Text('No available requests'));
+                                    }
+                                  },
+                                );
                               },
-                            );
-                          },
-                        )))
-              ]),
-              //! for haifa
-            ]),
+                            )))
+                  ]),
+                  //! for haifa
+                ]),
           ),
         ),
       ]),

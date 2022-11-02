@@ -109,14 +109,14 @@ class _requestPageState extends State<requestPage> {
 
     return Scaffold(
       appBar: AppBar(
-        bottom: PreferredSize(
-            preferredSize: Size.fromHeight(1.0),
-            child: Padding(
-                padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-                child: Container(
-                  color: Colors.blue.shade800,
-                  height: 1.0,
-                ))),
+        // bottom: PreferredSize(
+        //     preferredSize: Size.fromHeight(1.0),
+        //     child: Padding(
+        //         padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+        //         child: Container(
+        //           color: Colors.blue.shade800,
+        //           height: 1.0,
+        //         ))),
         // actions: <Widget>[
         //   Padding(
         //       padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
@@ -148,7 +148,7 @@ class _requestPageState extends State<requestPage> {
         centerTitle: true,
         title: const Text('Awn Request'),
         leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+            icon: Icon(Icons.arrow_back_ios, color: Colors.blue.shade800),
             onPressed: () {
               Hive.box("currentPage").put("RequestId", '');
               if (widget.fromSNUNotification) {

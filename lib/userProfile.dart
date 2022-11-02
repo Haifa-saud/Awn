@@ -660,14 +660,15 @@ class UserProfileState extends State<userProfile>
                         }
                         if (snapshot.data == null ||
                             snapshot.data!.docs.isEmpty) {
-                          return const Padding(
+                          return Padding(
                               padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
                               child: Align(
                                   alignment: Alignment.topCenter,
                                   child: Text('There is no requests currently.',
                                       style: TextStyle(
                                           fontWeight: FontWeight.normal,
-                                          fontSize: 17))));
+                                          fontSize: 17,
+                                          color: Colors.blue.shade800))));
                         } else {
                           final data = snapshot.requireData;
                           return ListView.builder(
