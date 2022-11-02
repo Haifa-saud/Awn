@@ -42,6 +42,7 @@ class _MyStatefulWidgetState extends State<maps> {
   String DBId = ' ';
   bool addPost = true;
   bool editRequest = false;
+  bool editPost = false;
   String collName = ' ', sucessMsg = '', title = '';
   BorderRadius border = BorderRadius.circular(0);
 
@@ -87,7 +88,7 @@ class _MyStatefulWidgetState extends State<maps> {
   NotificationService notificationService = NotificationService();
   @override
   void initState() {
-    if (widget.typeOfRequest == 'E') {
+    if (widget.typeOfRequest == 'E' || widget.typeOfRequest == 'EP') {
       setState(() {
         position = Position.fromMap(
             {'latitude': widget.latitude, 'longitude': widget.longitude});
@@ -108,22 +109,28 @@ class _MyStatefulWidgetState extends State<maps> {
 
     addPost = widget.typeOfRequest == 'P' ? true : false;
     editRequest = widget.typeOfRequest == 'E' ? true : false;
+    editPost = widget.typeOfRequest == 'EP' ? true : false;
+    border = BorderRadius.circular(30);
+
     if (addPost) {
       title = "Add Location";
       collName = 'posts';
-      border = BorderRadius.circular(30);
-
-      sucessMsg = 'Add a place request is sent successfully.';
+      sucessMsg = 'Place request is sent successfully.';
     } else if (editRequest) {
       title = "Update Location";
       collName = 'requests';
       border = BorderRadius.circular(30);
-      sucessMsg = 'Awn request location is updated successfully.';
+      sucessMsg = 'Request location is updated successfully.';
+    } else if (editPost) {
+      title = "Update Location";
+      collName = 'posts';
+      border = BorderRadius.circular(30);
+      sucessMsg = 'Place location is updated successfully.';
     } else {
       title = "Add Location";
       collName = 'requests';
       border = BorderRadius.circular(30);
-      sucessMsg = 'Awn request is sent successfully.';
+      sucessMsg = 'Aen Request is sent successfully.';
     }
     DBId = widget.dataId;
     notificationService = NotificationService();
@@ -135,32 +142,28 @@ class _MyStatefulWidgetState extends State<maps> {
   //! tapping local notification
   void listenToNotificationStream() =>
       notificationService.behaviorSubject.listen((payload) {
-        if (payload.contains('-')) {
-          if (payload.substring(0, payload.indexOf('-')) ==
-              'requestAcceptance') {
-            Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation1, animation2) => requestPage(
-                    fromSNUNotification: true,
-                    userType: 'Special Need User',
-                    reqID: payload.substring(payload.indexOf('-') + 1)),
-                transitionDuration: const Duration(seconds: 1),
-                reverseTransitionDuration: Duration.zero,
-              ),
-            );
-          } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
-            Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation1, animation2) => ChatPage(
-                    requestID: payload.substring(payload.indexOf('-') + 1),
-                    fromNotification: true),
-                transitionDuration: const Duration(seconds: 1),
-                reverseTransitionDuration: Duration.zero,
-              ),
-            );
-          }
+        if (payload.substring(0, payload.indexOf('-')) == 'requestAcceptance') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => requestPage(
+                  userType: 'Special Need User',
+                  reqID: payload.substring(payload.indexOf('-') + 1)),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        } else if (payload.substring(0, payload.indexOf('-')) == 'chat') {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => ChatPage(
+                  requestID: payload.substring(payload.indexOf('-') + 1),
+                  fromNotification: true),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
         } else {
           Navigator.push(
               context,
@@ -176,10 +179,15 @@ class _MyStatefulWidgetState extends State<maps> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          // leading: Visibility(
+          //     visible: editRequest,
+          //     child: IconButton(
+          //         icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          //         onPressed: () => Navigator.of(context).pop())),
           title: Text(title),
           centerTitle: true,
           leading: Visibility(
-              visible: editRequest,
+              visible: editRequest | editPost,
               child: IconButton(
                   icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
                   onPressed: () => Navigator.of(context).pop())),
@@ -270,13 +278,13 @@ class _MyStatefulWidgetState extends State<maps> {
                             Color(0xFF39d6ce),
                           ],
                         ),
-                        // borderRadius: BorderRadius.circular(30),
-                        borderRadius: border,
+                        borderRadius: BorderRadius.circular(30),
+                        // borderRadius: border,
                       ),
                       child: ElevatedButton(
                         onPressed: () {
                           updateDB();
-                          if (editRequest) {
+                          if (editRequest | editPost) {
                             backToEditPage();
                           } else
                             backToHomePage();

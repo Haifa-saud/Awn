@@ -1,4 +1,3 @@
-import 'Search.dart';
 import 'addPost.dart';
 import 'chatPage.dart';
 import 'requestWidget.dart';
@@ -147,92 +146,157 @@ class MyHomePage extends State<homePage> with TickerProviderStateMixin {
               userData = snapshot.data as Map<String, dynamic>;
               return Scaffold(
                 appBar: AppBar(
-                  actions: <Widget>[
-                    Row(children: [
-                      IconButton(
-                        icon: const Icon(Icons.search),
-                        tooltip: 'Search',
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder: (context, animation1, animation2) =>
-                                  search(),
-                              transitionDuration: const Duration(seconds: 1),
-                              reverseTransitionDuration: Duration.zero,
-                            ),
-                          );
-                        },
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                          child: FutureBuilder(
-                              future: storage.downloadURL('logo.jpg'),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<String> snapshot) {
-                                if (snapshot.connectionState ==
-                                        ConnectionState.done &&
-                                    snapshot.hasData) {
-                                  return Center(
-                                    child: Image.network(
-                                      snapshot.data!,
-                                      fit: BoxFit.cover,
-                                      width: 40,
-                                      height: 40,
-                                    ),
-                                  );
-                                }
-                                if (snapshot.connectionState ==
-                                        ConnectionState.waiting ||
-                                    !snapshot.hasData) {
-                                  return const Center(
-                                      child: CircularProgressIndicator(
-                                    color: Colors.blue,
-                                  ));
-                                }
-                                return Container();
-                              }))
-                    ])
-                  ],
-
                   centerTitle: false,
                   backgroundColor: Colors.white, //(0xFFfcfffe)
                   automaticallyImplyLeading: false,
                   scrolledUnderElevation: 1,
-                  toolbarHeight: 60,
+                  toolbarHeight: 70,
+                  leading: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+                      child: FutureBuilder(
+                          future: storage.downloadURL('logo.jpg'),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<String> snapshot) {
+                            if (snapshot.connectionState ==
+                                    ConnectionState.done &&
+                                snapshot.hasData) {
+                              return Center(
+                                child: Image.network(
+                                  snapshot.data!,
+                                  fit: BoxFit.cover,
+                                  width: 40,
+                                  height: 40,
+                                ),
+                              );
+                            }
+                            if (snapshot.connectionState ==
+                                    ConnectionState.waiting ||
+                                !snapshot.hasData) {
+                              return const Center(
+                                  child: CircularProgressIndicator(
+                                color: Colors.blue,
+                              ));
+                            }
+                            return Container();
+                          })),
                   title: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 15, 0, 2),
-                          child: Text(
-                            "Hello, " + userData['name'],
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Padding(
+                            //     padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+                            //     child: FutureBuilder(
+                            //         future: storage.downloadURL('logo.jpg'),
+                            //         builder: (BuildContext context,
+                            //             AsyncSnapshot<String> snapshot) {
+                            //           if (snapshot.connectionState ==
+                            //                   ConnectionState.done &&
+                            //               snapshot.hasData) {
+                            //             return Center(
+                            //               child: Image.network(
+                            //                 snapshot.data!,
+                            //                 fit: BoxFit.cover,
+                            //                 width: 40,
+                            //                 height: 40,
+                            //               ),
+                            //             );
+                            //           }
+                            //           if (snapshot.connectionState ==
+                            //                   ConnectionState.waiting ||
+                            //               !snapshot.hasData) {
+                            //             return const Center(
+                            //                 child: CircularProgressIndicator(
+                            //               color: Colors.blue,
+                            //             ));
+                            //           }
+                            //           return Container();
+                            //         })),
+                            // Container(
+                            //   // padding: const EdgeInsets.fromLTRB(0, 0, 0, 2),
+                            //   alignment: Alignment.center,
+                            //   child: Text('Awn', textAlign: TextAlign.center),
+                            //   // "Hello, " + userData['name'],
+                            // ),
+                          ],
                         ),
-                        TextField(
-                          controller: _searchController,
-                          onChanged: (value) {
-                            if (_searchController.text.trim() != '') {
-                              setState(() {
-                                list = FirebaseFirestore.instance
-                                    .collection('posts')
-                                    .orderBy('searchName')
-                                    .startAt([value.toLowerCase()]).endAt([
-                                  value.toLowerCase() + '\uf8ff'
-                                ]).snapshots();
-                                _tabController.animateTo((0));
-                                isSearch = true;
-                              });
-                            } else {
-                              setState(() {
-                                isSearch = false;
-                              });
-                            }
-                          },
-                          decoration:
-                              InputDecoration(suffixIcon: Icon(Icons.search)),
-                        ),
+                        Container(
+                            height: 40,
+                            width: 480,
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black26,
+                                    offset: Offset(0, 4),
+                                    blurRadius: 5.0)
+                              ],
+                              color: Colors.white,
+                              // gradient: LinearGradient(
+                              //   begin: Alignment.bottomRight,
+                              //   end: Alignment.topLeft,
+                              //   stops: [0.0, 1.0],
+                              //   colors: [
+                              //     Color(0xFF39d6ce),
+                              //     Colors.blue,
+                              //   ],
+                              // ),
+                              // borderRadius: BorderRadius.circular(30),
+                              // borderRadius: border,
+                              borderRadius: BorderRadius.circular(100.0),
+                            ),
+                            child: TextField(
+                                controller: _searchController,
+                                onChanged: (value) {
+                                  if (_searchController.text.trim() != '') {
+                                    setState(() {
+                                      list = FirebaseFirestore.instance
+                                          .collection('posts')
+                                          .orderBy('searchName')
+                                          .startAt(
+                                              [value.toLowerCase()]).endAt([
+                                        value.toLowerCase() + '\uf8ff'
+                                      ]).snapshots();
+                                      _tabController.animateTo((0));
+                                      isSearch = true;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      isSearch = false;
+                                    });
+                                  }
+                                },
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    // height: 2.0,
+                                    color: Colors.black),
+                                decoration: InputDecoration(
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0),
+                                      borderSide: BorderSide(
+                                          color: Colors.transparent)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0),
+                                      borderSide: const BorderSide(
+                                          color: Colors.white, width: 2)),
+
+                                  // // isCollapsed: true,
+                                  // filled: true,
+                                  // fillColor: Colors.blue.shade200,
+                                  contentPadding:
+                                      EdgeInsets.fromLTRB(20, 1, 20, 1),
+                                  hintText: 'Looking for a specific place?',
+                                  hintStyle: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey.shade700),
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.never,
+                                  suffixIcon:
+                                      Icon(Icons.search, color: Colors.black),
+                                ))),
 
                         // Container(
                         //   width: double.infinity,

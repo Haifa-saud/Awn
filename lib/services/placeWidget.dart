@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../editPost.dart';
+import '../userProfile.dart';
 import 'appWidgets.dart';
 import 'myGlobal.dart' as globals;
 
@@ -420,7 +422,9 @@ class PlaceState extends State<Place> {
                                                             latitude: data[
                                                                 'latitude'],
                                                             longitude: data[
-                                                                'longitude']),
+                                                                'longitude'],
+                                                            userId:
+                                                                data['userId']),
                                                       ));
                                                 }),
                                                 child: Container(
@@ -431,6 +435,88 @@ class PlaceState extends State<Place> {
                                                   child: Icon(Icons.edit,
                                                       size: 30,
                                                       color: Colors.blueGrey),
+                                                ),
+                                              ),
+                                              //delete
+                                              InkWell(
+                                                onTap: (() {
+                                                  String docId = data['docId'];
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (ctx) =>
+                                                        AlertDialog(
+                                                      content: const Text(
+                                                        "Are you sure you want to delete your Place ?",
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                      ),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(ctx)
+                                                                .pop();
+                                                          },
+                                                          child: Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(14),
+                                                            child: const Text(
+                                                                "Cancel"),
+                                                          ),
+                                                        ),
+                                                        //delete button
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            deletPost(docId);
+                                                            Hive.box(
+                                                                    "currentPage")
+                                                                .put(
+                                                                    "RequestId",
+                                                                    '');
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (context) => userProfile(
+                                                                      userType:
+                                                                          widget
+                                                                              .userType,
+                                                                      selectedTab:
+                                                                          2,
+                                                                      selectedSubTab:
+                                                                          1),
+                                                                ));
+                                                            // ConfermationDelet();
+                                                          },
+                                                          child: Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(14),
+                                                            child: const Text(
+                                                                "Delete",
+                                                                style: TextStyle(
+                                                                    color: Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            164,
+                                                                            10,
+                                                                            10))),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                }),
+                                                child: Container(
+                                                  // alignment:
+                                                  //     Alignment.topRight,
+                                                  margin:
+                                                      EdgeInsets.only(top: 5),
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 7),
+                                                  child: Icon(Icons.delete,
+                                                      size: 30,
+                                                      color:
+                                                          Colors.red.shade300),
                                                 ),
                                               ),
                                             ],
@@ -887,6 +973,22 @@ class PlaceState extends State<Place> {
       //   currentI: 0,
       // ),
     );
+  }
+
+  void ConfermationDelet() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Your place has been deleted"),
+      ),
+    );
+  }
+
+  Future<void> deletPost(docId) async {
+    final db =
+        FirebaseFirestore.instance.collection('posts').doc(docId.toString());
+    db.delete();
+
+    ConfermationDelet();
   }
 
   Widget Comments(placeID) {

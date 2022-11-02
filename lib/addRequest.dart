@@ -154,7 +154,7 @@ class _AddRequestState extends State<addRequest> {
                   }
                   if (snapshot.connectionState == ConnectionState.waiting ||
                       !snapshot.hasData) {
-                    return Center(
+                    return const Center(
                         child: CircularProgressIndicator(
                       color: Colors.blue,
                     ));
@@ -194,7 +194,18 @@ class _AddRequestState extends State<addRequest> {
             ),
           ),
         ),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => addPost(
+                userType: widget.userType,
+              ),
+              transitionDuration: const Duration(seconds: 1),
+              reverseTransitionDuration: Duration.zero,
+            ),
+          );
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
@@ -310,6 +321,7 @@ class AwnRequestFormState extends State<AwnRequestForm> {
   // Select for Date
   Future<DateTime> _selectDate(BuildContext context) async {
     final selected = await showDatePicker(
+      locale: Localizations.localeOf(context),
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime.now(),

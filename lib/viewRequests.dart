@@ -7,6 +7,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'MapView.dart';
 import 'chatPage.dart';
 import 'requestWidget.dart';
 import 'services/localNotification.dart';
@@ -39,6 +42,14 @@ class _AddRequestState extends State<viewRequests>
     listenToNotificationStream();
     notificationService.initializePlatformNotifications();
     super.initState();
+    //added here
+    Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((currloc) {
+      setState(() {
+        currentLocation = currloc;
+        mapToggle = true;
+      });
+    });
   }
 
   //! tapping local notification
@@ -344,7 +355,160 @@ class _AddRequestState extends State<viewRequests>
 
   int numOFReq = 0;
   final Storage storage = Storage();
+  // starting here
+  var currentLocation;
+  var currentLocation1;
+  bool isEnabled = false;
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  List<Marker> allMarkers = [];
+  Text info = const Text(
+    'View This Request',
+    style: TextStyle(
+      decoration: TextDecoration.underline,
+      color: Colors.blue,
+    ),
+  );
+  Widget loadMap(type) {
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('requests')
+            .where('status', isEqualTo: 'Pending')
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const CircularProgressIndicator();
+          }
+          for (int i = 0; i < snapshot.data!.docs.length; i++) {
+            allMarkers.add(Marker(
+                markerId: MarkerId(snapshot.data!.docs[i].id),
+                position: LatLng(
+                    double.parse(snapshot.data!.docs[i]['latitude']),
+                    double.parse(snapshot.data!.docs[i]['longitude'])),
+                icon: BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueBlue),
+                infoWindow: InfoWindow(
+                  title: info.data,
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => requestPage(
+                              reqID: snapshot.data!.docs[i]['docId'],
+                              userType: type))),
+                )));
+          }
 
+          return isEnabled
+              ? Stack(children: [
+                  GoogleMap(
+                    onMapCreated: onMapCreated,
+                    myLocationEnabled: true,
+
+                    // initialCameraPosition: CameraPosition(
+                    //   target: LatLng(24.72595440733058, 46.62468224955453),
+                    //   zoom: 10.0,
+                    // ),
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(
+                          currentLocation.latitude, currentLocation.longitude),
+                      zoom: 10.0,
+                    ),
+
+                    markers: Set<Marker>.of(allMarkers),
+                  ),
+                ]
+                  //floatingActionButton: floatingActionButton(),
+                  )
+              : GoogleMap(
+                  onMapCreated: onMapCreated,
+                  myLocationEnabled: true,
+
+                  // initialCameraPosition: CameraPosition(
+                  //   target: LatLng(24.72595440733058, 46.62468224955453),
+                  //   zoom: 10.0,
+                  // ),
+                  initialCameraPosition: const CameraPosition(
+                    target: LatLng(24.72595440733058, 46.62468224955453),
+                    zoom: 10.0,
+                  ),
+
+                  markers: Set<Marker>.of(allMarkers),
+                );
+        });
+  }
+
+  void onMapCreated(controller) {
+    setState(() {
+      mapController = controller;
+    });
+  }
+
+  Widget floatingActionButton() {
+    return FloatingActionButton.extended(
+      onPressed: () async {
+        mapController.animateCamera(CameraUpdate.newCameraPosition(
+            CameraPosition(
+                // target: LatLng(position.latitude, position.longitude),
+                target:
+                    LatLng(currentLocation.latitude, currentLocation.longitude),
+                zoom: 14)));
+
+        //markers.clear();
+
+        // allMarkers.add(Marker(
+        //     markerId: const MarkerId('currentLocation'),
+        //     position:
+        //         LatLng(currentLocation.latitude, currentLocation.longitude),
+        //     icon: BitmapDescriptor.defaultMarkerWithHue(
+        //         BitmapDescriptor.hueRed),
+        //     infoWindow: const InfoWindow(title: 'Current Location')));
+
+        setState(() {});
+      },
+      label: const Text(
+        "Current Location",
+        style: TextStyle(
+          decoration: TextDecoration.underline,
+        ),
+      ),
+      icon: const Icon(Icons.location_history),
+    );
+  }
+
+  void _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled');
+    }
+
+    permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+
+      if (permission == LocationPermission.denied) {
+        return Future.error("Location permission denied");
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error('Location permissions are permanently denied');
+    }
+    var position = await Geolocator.getCurrentPosition();
+
+    currentLocation = position;
+    setState(() {
+      isEnabled = true;
+    });
+
+    //return position;
+  }
+
+  bool mapToggle = false;
+  late GoogleMapController mapController;
   @override
   Widget build(BuildContext context) {
     TabController _tabController = TabController(length: 2, vsync: this);
@@ -403,8 +567,8 @@ class _AddRequestState extends State<viewRequests>
             indicatorWeight: 5,
             indicatorPadding: const EdgeInsets.only(top: 47),
             tabs: const <Tab>[
-              Tab(text: 'List View'),
               Tab(text: 'Map View'),
+              Tab(text: 'List View'),
             ],
             labelColor: Colors.blue,
             unselectedLabelColor: Colors.grey,
@@ -417,6 +581,7 @@ class _AddRequestState extends State<viewRequests>
             width: double.maxFinite,
             height: MediaQuery.of(context).size.height,
             child: TabBarView(controller: _tabController, children: [
+              loadMap(widget.userType),
               Column(children: [
                 Expanded(
                     child: Container(
@@ -614,7 +779,7 @@ class _AddRequestState extends State<viewRequests>
                           },
                         )))
               ]),
-              Text("map"),
+              //! for haifa
             ]),
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:Awn/addRequest.dart';
 import 'package:Awn/services/appWidgets.dart';
 import 'package:Awn/userProfile.dart';
 import 'package:Awn/viewRequests.dart';
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:duration_picker/duration_picker.dart';
@@ -13,10 +14,13 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:justino_icons/justino_icons.dart';
 
+import 'TextToSpeech.dart';
 import 'addPost.dart';
 import 'chatPage.dart';
 import 'editRequest.dart';
+import 'homePage.dart';
 import 'map.dart';
 import 'mapsPage.dart';
 import 'requestWidget.dart';
@@ -49,6 +53,7 @@ class editRequest extends StatefulWidget {
 late TextEditingController titleController;
 late TextEditingController durationController = TextEditingController();
 late TextEditingController descController;
+var isEdited;
 //final Storage storage = Storage();
 
 class _EditRequestState extends State<editRequest> {
@@ -62,6 +67,7 @@ class _EditRequestState extends State<editRequest> {
     super.initState();
     titleController = TextEditingController(text: widget.title);
     descController = TextEditingController(text: widget.discription);
+    isEdited = false;
     // durationController = TextEditingController(text: widget.duartion);
   }
 
@@ -105,11 +111,138 @@ class _EditRequestState extends State<editRequest> {
       });
 
   int _selectedIndex = 2;
+  editing(var value) {
+    setState(() {
+      isEdited = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Future<String> getLocationAsString(var lat, var lng) async {
       List<Placemark> placemark = await placemarkFromCoordinates(lat, lng);
       return '${placemark[0].street}, ${placemark[0].subLocality}, ${placemark[0].administrativeArea}, ${placemark[0].country}';
+    }
+
+    var iconList = widget.userType == 'Volunteer'
+        ? <IconData, String>{
+            Icons.home: 'Home',
+            Icons.handshake: "Awn Request",
+            Icons.person: "Profile",
+          }
+        : <IconData, String>{
+            Icons.home: "Home",
+            JustinoIcons.getByName('speech') as IconData: "Text to Speech",
+            Icons.handshake: "Awn Request",
+            Icons.person: "Profile",
+          };
+
+    Future<void> _onItemTapped(int index) async {
+      if (widget.userType == 'Special Need User') {
+        if (index == 0) {
+          var nav = const homePage();
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        } else if (index == 1) {
+          var nav = Tts(userType: widget.userType);
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        } else if (index == 2) {
+          var nav = addRequest(userType: widget.userType);
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        } else if (index == 3) {
+          var nav = userProfile(
+              userType: widget.userType, selectedTab: 0, selectedSubTab: 0);
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        }
+      } else if (widget.userType == 'Volunteer') {
+        if (index == 0) {
+          var nav = const homePage();
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        } else if (index == 1) {
+          var nav = viewRequests(userType: widget.userType, reqID: '');
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        } else if (index == 2) {
+          var nav = userProfile(
+              userType: widget.userType, selectedTab: 0, selectedSubTab: 0);
+          if (isEdited) {
+            alertDialog(nav);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          }
+        }
+      }
     }
 
     return Scaffold(
@@ -153,7 +286,49 @@ class _EditRequestState extends State<editRequest> {
         title: const Text('Edit Request', textAlign: TextAlign.center),
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-            onPressed: () => Navigator.of(context).pop()),
+            onPressed: () {
+              if (isEdited) {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    content: const Text(
+                      "Discard the changes you made?",
+                      textAlign: TextAlign.left,
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(14),
+                          child: const Text("Keep editing"),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          // int count = 0;
+                          var n = Navigator.of(context);
+                          n.pop();
+                          n.pop();
+
+                          clearForm();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(14),
+                          child: const Text("Discard",
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 164, 10, 10))),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+                // print('alertDialogBack');
+              } else {
+                Navigator.of(context).pop();
+              }
+            }),
       ),
       body: requestdetails(),
       floatingActionButton: FloatingActionButton(
@@ -190,12 +365,45 @@ class _EditRequestState extends State<editRequest> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      bottomNavigationBar: BottomNavBar(
-        onPress: (int value) => setState(() {
-          _selectedIndex = value;
-        }),
-        userType: widget.userType,
-        currentI: 3,
+      bottomNavigationBar: AnimatedBottomNavigationBar.builder(
+        splashColor: Colors.blue,
+        backgroundColor: Colors.white,
+        splashRadius: 1,
+        splashSpeedInMilliseconds: 100,
+        tabBuilder: (int index, bool isActive) {
+          final color = isActive ? Colors.blue : Colors.grey;
+          final size = isActive ? 30.0 : 25.0;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                iconList.keys.toList()[index],
+                size: size,
+                color: color,
+              ),
+              const SizedBox(height: 1),
+              Visibility(
+                visible: isActive,
+                child: Text(
+                  iconList.values.toList()[index],
+                  style: TextStyle(
+                      color: color,
+                      fontSize: 10,
+                      letterSpacing: 1,
+                      wordSpacing: 1),
+                ),
+              )
+            ],
+          );
+        },
+        activeIndex: 3,
+        itemCount: widget.userType == 'Volunteer' ? 3 : 4,
+        gapLocation: GapLocation.end,
+        notchSmoothness: NotchSmoothness.smoothEdge,
+        onTap: (index) {
+          _onItemTapped(index);
+        },
       ),
     );
   }
@@ -258,6 +466,7 @@ class _EditRequestState extends State<editRequest> {
   // Select for Date
   Future<DateTime> _selectDate(BuildContext context) async {
     final selected = await showDatePicker(
+      locale: Localizations.localeOf(context),
       context: context,
       initialDate: selectedDate,
       // firstDate: DateTime(2000),
@@ -485,22 +694,30 @@ class _EditRequestState extends State<editRequest> {
                                           padding: const EdgeInsets.fromLTRB(
                                               6, 12, 6, 12),
                                           child: TextFormField(
-                                            maxLength: 20,
-                                            controller: titleController,
-                                            decoration: const InputDecoration(
-                                              hintText:
-                                                  'E.g. Help with shopping',
-                                            ),
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty ||
-                                                  (value.trim()).isEmpty) {
-                                                // double s = checkCurrentTime();
-                                                return 'Please enter a title '; //s.toString()
-                                              }
-                                              return null;
-                                            },
-                                          )),
+                                              maxLength: 20,
+                                              controller: titleController,
+                                              decoration: const InputDecoration(
+                                                hintText:
+                                                    'E.g. Help with shopping',
+                                              ),
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty ||
+                                                    (value.trim()).isEmpty) {
+                                                  // double s = checkCurrentTime();
+                                                  return 'Please enter a title '; //s.toString()
+                                                }
+                                                return null;
+                                              },
+                                              onChanged: (value) {
+                                                if (titleController.text
+                                                        .trim() !=
+                                                    '') {
+                                                  editing(true);
+                                                } else {
+                                                  editing(false);
+                                                }
+                                              })),
 
                                       // time and date
                                       // Container(
@@ -810,6 +1027,12 @@ class _EditRequestState extends State<editRequest> {
                                           maxLength: 150,
                                           onChanged: (value) {
                                             description = value;
+                                            if (descController.text.trim() !=
+                                                '') {
+                                              editing(true);
+                                            } else {
+                                              editing(false);
+                                            }
                                           },
                                           validator: (value) {
                                             if (value == null ||
@@ -963,7 +1186,7 @@ class _EditRequestState extends State<editRequest> {
                                                   context: context,
                                                   builder: (ctx) => AlertDialog(
                                                     content: const Text(
-                                                      "Discard all edits?",
+                                                      "Discard the changes you made?",
                                                       textAlign: TextAlign.left,
                                                     ),
                                                     actions: <Widget>[
@@ -978,7 +1201,7 @@ class _EditRequestState extends State<editRequest> {
                                                               const EdgeInsets
                                                                   .all(14),
                                                           child: const Text(
-                                                              "Cancel"),
+                                                              "Keep Editing"),
                                                         ),
                                                       ),
                                                       //ok button
@@ -995,6 +1218,7 @@ class _EditRequestState extends State<editRequest> {
                                                                     selectedSubTab:
                                                                         1),
                                                               ));
+                                                          clearForm();
                                                         },
                                                         child: Container(
                                                           //color: Color.fromARGB(255, 164, 20, 20),
@@ -1042,7 +1266,11 @@ class _EditRequestState extends State<editRequest> {
                                               borderRadius:
                                                   BorderRadius.circular(30),
                                             ),
-                                            child: ElevatedButton(
+                                            child: Visibility(
+                                                //visible: isEdited,
+                                                child:
+                                                    //  visabile
+                                                    ElevatedButton(
                                               style: ElevatedButton.styleFrom(
                                                 textStyle: const TextStyle(
                                                   fontSize: 18,
@@ -1107,7 +1335,7 @@ class _EditRequestState extends State<editRequest> {
                                                 }
                                               },
                                               child: const Text('Update'),
-                                            ),
+                                            )),
                                           ),
                                         ],
                                       ))
@@ -1160,6 +1388,48 @@ class _EditRequestState extends State<editRequest> {
     titleController.clear();
     durationController.clear();
     descController.clear();
+    isEdited = false;
+  }
+
+  Future<dynamic> alertDialog(var nav) {
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: const Text(
+          "Discard the changes you made?",
+          textAlign: TextAlign.left,
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              child: const Text("Keep editing"),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation1, animation2) => nav,
+                  transitionDuration: const Duration(seconds: 1),
+                  reverseTransitionDuration: Duration.zero,
+                ),
+              );
+              clearForm();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              child: const Text("Discard",
+                  style: TextStyle(color: Color.fromARGB(255, 164, 10, 10))),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
