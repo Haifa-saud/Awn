@@ -402,31 +402,4 @@ class _loginState extends State<login> {
       ),
     );
   }
-
-  Future signIn() async {
-    try {
-      final newUser = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-    } on FirebaseAuthException catch (e) {
-      if (emailController.text.isNotEmpty &&
-          passwordController.text.isNotEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Invalid email/password'),
-            backgroundColor: Colors.red.shade400,
-            margin: const EdgeInsets.fromLTRB(6, 0, 3, 0),
-            behavior: SnackBarBehavior.floating,
-            action: SnackBarAction(
-              label: 'Dismiss',
-              disabledTextColor: Colors.white,
-              textColor: Colors.white,
-              onPressed: () {},
-            ),
-          ),
-        );
-      }
-    }
-  }
-}
+}//end of class
