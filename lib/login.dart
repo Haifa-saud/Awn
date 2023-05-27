@@ -330,10 +330,12 @@ class _loginState extends State<login> {
                                       frequency: const Duration(minutes: 15));
                                   Navigator.pushNamed(
                                       context, '/volunteerPage');
-                                } else if (VolunteerId ==
+                                }
+                                if (VolunteerId ==
                                     'GvQo5Qz5ZnTfQYq5GOhZi22HGCB2') {
                                   Navigator.pushNamed(context, '/adminPage');
-                                } else {
+                                }
+                                {
                                   VolunteerId = '';
                                   emailController.clear();
                                   passwordController.clear();
