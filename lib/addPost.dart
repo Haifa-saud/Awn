@@ -140,12 +140,18 @@ class _MyStatefulWidgetState extends State<addPost> {
           };
 
     Future<void> _onItemTapped(int index) async {
+      var nav ; 
       if (widget.userType == 'Special Need User') {
+       
         if (index == 0) {
-          var nav = const homePage();
-          if (isEdited) {
+          nav = const homePage();
+          }
+
+        if (isEdited && index == 0) {
             alertDialog(nav);
-          } else {
+          } 
+
+        if (!isEdited && index == 0) {
             Navigator.pushReplacement(
               context,
               PageRouteBuilder(
@@ -155,11 +161,31 @@ class _MyStatefulWidgetState extends State<addPost> {
               ),
             );
           }
-        } else if (index == 1) {
-          var nav = Tts(userType: widget.userType);
-          if (isEdited) {
+       if (index == 1) {
+          nav = Tts(userType: widget.userType);}
+
+       if (isEdited && index == 1) {
             alertDialog(nav);
-          } else {
+          } 
+
+       if (!isEdited && index == 1){
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+        } 
+       if (index == 2) {
+           nav = addRequest(userType: widget.userType);
+          }
+
+       if (isEdited && index ==2) {
+            alertDialog(nav);
+          }
+       if (!isEdited && index ==2) {
             Navigator.pushReplacement(
               context,
               PageRouteBuilder(
@@ -169,11 +195,16 @@ class _MyStatefulWidgetState extends State<addPost> {
               ),
             );
           }
-        } else if (index == 2) {
-          var nav = addRequest(userType: widget.userType);
-          if (isEdited) {
+
+       if (index == 3) {
+           nav = userProfile(
+              userType: widget.userType, selectedTab: 0, selectedSubTab: 0);}
+
+       if (isEdited && index == 3) {
             alertDialog(nav);
-          } else {
+          } 
+
+        if (!isEdited && index == 3) {
             Navigator.pushReplacement(
               context,
               PageRouteBuilder(
@@ -183,28 +214,32 @@ class _MyStatefulWidgetState extends State<addPost> {
               ),
             );
           }
-        } else if (index == 3) {
-          var nav = userProfile(
-              userType: widget.userType, selectedTab: 0, selectedSubTab: 0);
-          if (isEdited) {
-            alertDialog(nav);
-          } else {
-            Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation1, animation2) => nav,
-                transitionDuration: const Duration(seconds: 1),
-                reverseTransitionDuration: Duration.zero,
-              ),
-            );
-          }
-        }
+        
+        
       } else if (widget.userType == 'Volunteer') {
+        var nav; 
         if (index == 0) {
-          var nav = const homePage();
-          if (isEdited) {
+           nav = const homePage();
+          }
+        if (isEdited && index ==0) {
             alertDialog(nav);
-          } else {
+          }
+        if(!isEdited && index ==0) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) => nav,
+                transitionDuration: const Duration(seconds: 1),
+                reverseTransitionDuration: Duration.zero,
+              ),  );
+          } 
+         if (index == 1) {
+           nav = viewRequests(userType: widget.userType, reqID: '');
+         }
+          if (isEdited && index ==1) {
+            alertDialog(nav);
+          } 
+          if(!isEdited && index ==1) {
             Navigator.pushReplacement(
               context,
               PageRouteBuilder(
@@ -214,26 +249,14 @@ class _MyStatefulWidgetState extends State<addPost> {
               ),
             );
           }
-        } else if (index == 1) {
-          var nav = viewRequests(userType: widget.userType, reqID: '');
-          if (isEdited) {
-            alertDialog(nav);
-          } else {
-            Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation1, animation2) => nav,
-                transitionDuration: const Duration(seconds: 1),
-                reverseTransitionDuration: Duration.zero,
-              ),
-            );
-          }
-        } else if (index == 2) {
+        
+        if (index == 2) {
           var nav = userProfile(
               userType: widget.userType, selectedTab: 0, selectedSubTab: 0);
-          if (isEdited) {
+        if (isEdited && index == 2) {
             alertDialog(nav);
-          } else {
+          } 
+        if(!isEdited && index == 2){
             Navigator.pushReplacement(
               context,
               PageRouteBuilder(
@@ -246,6 +269,7 @@ class _MyStatefulWidgetState extends State<addPost> {
         }
       }
     }
+
 
     return Scaffold(
       appBar: AppBar(
