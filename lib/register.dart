@@ -33,7 +33,7 @@ TextEditingController bioController = TextEditingController();
 TextEditingController DOBController = TextEditingController();
 
 String group = "Female";
-String group1 = "Special Need User";
+String userType = "Special Need User";
 bool blind = false;
 bool mute = false;
 bool deaf = false;
@@ -58,7 +58,7 @@ class _registerState extends State<register> {
   @override
   void clearForm() {
     group = "Female";
-    group1 = "Special Need User";
+    userType = "Special Need User";
     emailController.text = "";
     passwordController.text = "";
     cofirmPasswordController.text = "";
@@ -528,13 +528,13 @@ class _registerState extends State<register> {
                                       type_index = 0;
                                       type_edit = 'Special Need User';
                                       setState(() {
-                                        group1 = 'Special Need User';
+                                        userType = 'Special Need User';
                                       });
                                     } else {
                                       type_index = 1;
                                       type_edit = 'Volunteer';
                                       setState(() {
-                                        group1 = 'Volunteer';
+                                        userType = 'Volunteer';
                                       });
                                     }
                                   },
@@ -877,7 +877,7 @@ class _registerState extends State<register> {
                               Container(
                                 child: LayoutBuilder(
                                     builder: (context, constraints) {
-                                  if (group1 == "Volunteer") {
+                                  if (userType == "Volunteer") {
                                     return TextFormField(
                                       maxLines: 5,
                                       maxLength: 180,
@@ -909,7 +909,7 @@ class _registerState extends State<register> {
                                         }
                                       },
                                     );
-                                  } else if (group1 == 'Special Need User') {
+                                  } else if (userType == 'Special Need User') {
                                     return Column(
                                       children: [
                                         Row(
@@ -1121,7 +1121,7 @@ class _registerState extends State<register> {
     if (!((await userRef.get()).exists)) {
       await userRef.set({
         "Email": email,
-        "Type": group1,
+        "Type": userType,
         "bio": bio,
         "gender": group,
         "name": name,

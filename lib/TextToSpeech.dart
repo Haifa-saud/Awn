@@ -134,141 +134,7 @@ class _TtsState extends State<Tts> {
                     height: 1.0,
                   ))),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-              padding: EdgeInsets.fromLTRB(15, 10, 15, 0),
-              child: Column(children: [
-                Column(children: [
-                  Align(
-                      alignment: Alignment.topLeft,
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: const Text("Let us be your voice!",
-                            style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.w900)),
-                      )),
-                  Container(
-                    alignment: Alignment.topLeft,
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
-                    child: const Text(
-                      "What would like to say?",
-                      style: TextStyle(
-                          fontWeight: FontWeight.normal, fontSize: 18),
-                    ),
-                  ),
-                ]),
-                SizedBox(height: 15),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    child: const Text(
-                      "*Please Write in English",
-                      style: TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.normal),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 15),
-                textArea(),
-                Padding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
-                    child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: flag1
-                            ? const Text(
-                                'Please enter a text to proceed.',
-                                style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.normal),
-                                textAlign: TextAlign.left,
-                              )
-                            : const Text(""))),
-                Container(
-                    // margin: const EdgeInsets.fromLTRB(50, 0, 50, 0),
-                    decoration: BoxDecoration(
-                      boxShadow: const [
-                        BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(0, 4),
-                            blurRadius: 5.0)
-                      ],
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        stops: [0.0, 1.0],
-                        colors: [
-                          Colors.blue,
-                          Colors.cyanAccent,
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: ElevatedButton(
-                        style: showRed
-                            ? ButtonStyle(
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                ),
-                                minimumSize: MaterialStateProperty.all(
-                                    const Size(250, 50)),
-                                backgroundColor:
-                                    MaterialStateProperty.all(Colors.red),
-                                shadowColor:
-                                    MaterialStateProperty.all(Colors.red),
-                                side: MaterialStateProperty.all(
-                                    const BorderSide(color: Colors.red)))
-                            : ButtonStyle(
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                ),
-                                minimumSize: MaterialStateProperty.all(
-                                    const Size(250, 50)),
-                                backgroundColor: MaterialStateProperty.all(
-                                    Colors.transparent),
-                                shadowColor: MaterialStateProperty.all(
-                                    Colors.transparent),
-                              ),
-                        child: const Padding(
-                          padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
-                          child: Text(
-                            'Play',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            setState(() {
-                              if (textEditingController.text.trim().length >
-                                  0) {
-                                setState(() {
-                                  showRed = true;
-                                  flag1 = false;
-                                });
-                              }
-                              if (textEditingController.text.isNotEmpty &&
-                                  textEditingController.text.length > 120) {
-                                flag = true;
-                                flag1 = false;
-                              }
-                              if (textEditingController.text.trim().length ==
-                                  0) {
-                                flag1 = true;
-                              }
-                            });
-                            speak(textEditingController.text);
-                          });
-                        })),
-                flag ? const CircularProgressIndicator() : const Text(""),
-              ])),
-        ),
+        body: SingleChildScrollViewWidget(),
         floatingActionButton: FloatingActionButton(
           child: Container(
             width: 60,
@@ -310,6 +176,144 @@ class _TtsState extends State<Tts> {
           userType: widget.userType,
           currentI: 1,
         ));
+  }
+
+  SingleChildScrollView SingleChildScrollViewWidget() {
+    return SingleChildScrollView(
+        child: Padding(
+            padding: EdgeInsets.fromLTRB(15, 10, 15, 0),
+            child: Column(children: [
+              Column(children: [
+                Align(
+                    alignment: Alignment.topLeft,
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      child: const Text("Let us be your voice!",
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.w900)),
+                    )),
+                Container(
+                  alignment: Alignment.topLeft,
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
+                  child: const Text(
+                    "What would like to say?",
+                    style: TextStyle(
+                        fontWeight: FontWeight.normal, fontSize: 18),
+                  ),
+                ),
+              ]),
+              SizedBox(height: 15),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: const Text(
+                    "*Please Write in English",
+                    style: TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.normal),
+                  ),
+                ),
+              ),
+              SizedBox(height: 15),
+              textArea(),
+              Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: flag1
+                          ? const Text(
+                              'Please enter a text to proceed.',
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.normal),
+                              textAlign: TextAlign.left,
+                            )
+                          : const Text(""))),
+              Container(
+                  // margin: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+                  decoration: BoxDecoration(
+                    boxShadow: const [
+                      BoxShadow(
+                          color: Colors.black26,
+                          offset: Offset(0, 4),
+                          blurRadius: 5.0)
+                    ],
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      stops: [0.0, 1.0],
+                      colors: [
+                        Colors.blue,
+                        Colors.cyanAccent,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: ElevatedButton(
+                      style: showRed
+                          ? ButtonStyle(
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                              ),
+                              minimumSize: MaterialStateProperty.all(
+                                  const Size(250, 50)),
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.red),
+                              shadowColor:
+                                  MaterialStateProperty.all(Colors.red),
+                              side: MaterialStateProperty.all(
+                                  const BorderSide(color: Colors.red)))
+                          : ButtonStyle(
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                              ),
+                              minimumSize: MaterialStateProperty.all(
+                                  const Size(250, 50)),
+                              backgroundColor: MaterialStateProperty.all(
+                                  Colors.transparent),
+                              shadowColor: MaterialStateProperty.all(
+                                  Colors.transparent),
+                            ),
+                      child: const Padding(
+                        padding: EdgeInsets.fromLTRB(30, 10, 30, 10),
+                        child: Text(
+                          'Play',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          setState(() {
+                            if (textEditingController.text.trim().length >
+                                0) {
+                              setState(() {
+                                showRed = true;
+                                flag1 = false;
+                              });
+                            }
+                            if (textEditingController.text.isNotEmpty &&
+                                textEditingController.text.length > 120) {
+                              flag = true;
+                              flag1 = false;
+                            }
+                            if (textEditingController.text.trim().length ==
+                                0) {
+                              flag1 = true;
+                            }
+                          });
+                          speak(textEditingController.text);
+                        });
+                      })),
+              flag ? const CircularProgressIndicator() : const Text(""),
+            ])),
+      );
   }
 
   int _selectedIndex = 1;

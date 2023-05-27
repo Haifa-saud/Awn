@@ -15,7 +15,7 @@ class _StationsMap1 extends State<StationsMap1> {
   bool mapToggle = false;
 
   var currentLocation;
-  var currentLocation1;
+  // var currentLocation1; unused variable discovered after slicng 
   bool isEnabled = false;
 
   late GoogleMapController mapController;

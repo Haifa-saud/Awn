@@ -330,10 +330,12 @@ class _loginState extends State<login> {
                                       frequency: const Duration(minutes: 15));
                                   Navigator.pushNamed(
                                       context, '/volunteerPage');
-                                } else if (VolunteerId ==
+                                }
+                                if (VolunteerId ==
                                     'GvQo5Qz5ZnTfQYq5GOhZi22HGCB2') {
                                   Navigator.pushNamed(context, '/adminPage');
-                                } else {
+                                }
+                                {
                                   VolunteerId = '';
                                   emailController.clear();
                                   passwordController.clear();
@@ -401,30 +403,31 @@ class _loginState extends State<login> {
     );
   }
 
-  Future signIn() async {
-    try {
-      final newUser = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-    } on FirebaseAuthException catch (e) {
-      if (emailController.text.isNotEmpty &&
-          passwordController.text.isNotEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Invalid email/password'),
-            backgroundColor: Colors.red.shade400,
-            margin: const EdgeInsets.fromLTRB(6, 0, 3, 0),
-            behavior: SnackBarBehavior.floating,
-            action: SnackBarAction(
-              label: 'Dismiss',
-              disabledTextColor: Colors.white,
-              textColor: Colors.white,
-              onPressed: () {},
-            ),
-          ),
-        );
-      }
-    }
-  }
-}
+  //DEAD CODE DISCOVERED AFTER SLICING
+  //  Future signIn() async {
+  //   try {
+  //     final newUser = await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //       email: emailController.text.trim(),
+  //       password: passwordController.text.trim(),
+  //     );
+  //   } on FirebaseAuthException catch (e) {
+  //     if (emailController.text.isNotEmpty &&
+  //         passwordController.text.isNotEmpty) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: const Text('Invalid email/password'),
+  //           backgroundColor: Colors.red.shade400,
+  //           margin: const EdgeInsets.fromLTRB(6, 0, 3, 0),
+  //           behavior: SnackBarBehavior.floating,
+  //           action: SnackBarAction(
+  //             label: 'Dismiss',
+  //             disabledTextColor: Colors.white,
+  //             textColor: Colors.white,
+  //             onPressed: () {},
+  //           ),
+  //         ),
+  //       );
+  //     }
+  //   }
+  // }
+}//end of class
